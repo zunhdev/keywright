@@ -1,0 +1,51 @@
+name: Bug report
+description: Something doesn't work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! For security problems, please use [private vulnerability reporting](https://github.com/zunhdev/keywright/security/advisories/new) instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Connect the keyboard over Bluetooth
+        2. ...
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Connection
+      options:
+        - USB
+        - Bluetooth
+        - Switching between USB and Bluetooth
+        - Not connected
+  - type: input
+    id: keyboard
+    attributes:
+      label: Keyboard and firmware
+      placeholder: Sofle Choc Pro BT, stock Keebart firmware
+  - type: input
+    id: version
+    attributes:
+      label: Keywright version or commit
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: macOS 26.1
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or diagnostics
+      description: Paste any relevant output. Review it for anything you don't want to share first.
+      render: text
