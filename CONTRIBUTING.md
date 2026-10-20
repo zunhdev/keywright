@@ -26,7 +26,17 @@ Workflows must:
 - declare `permissions: {}` at the top, and grant each job only the permissions it needs;
 - check out with `persist-credentials: false`, unless a job has to push.
 
-[actionlint](https://github.com/rhysd/actionlint) and [zizmor](https://github.com/zizmorcore/zizmor) check this on every pull request. Dependabot proposes action updates weekly, and waits 7 days after a new version is published before proposing it.
+[actionlint](https://github.com/rhysd/actionlint) and [zizmor](https://github.com/zizmorcore/zizmor) check this on every pull request.
+
+## Dependency updates
+
+[Renovate](https://docs.renovatebot.com) keeps dependencies current. That covers GitHub Actions today, and Cargo, Bun, the Rust toolchain and mise tools as they are added. Its configuration is in [`renovate.json`](renovate.json).
+
+- Non-major updates arrive as one grouped pull request per week.
+- Major updates get their own pull requests.
+- A new release is only proposed once it is at least 3 days old.
+- Security fixes are proposed right away.
+- Renovate's *Dependency Dashboard* issue lists everything pending.
 
 ## Development setup
 

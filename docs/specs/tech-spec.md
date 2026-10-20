@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Draft v0.1 — for review |
+| **Status** | Draft v0.2 — for review |
 | **Date** | 2026-10-21 |
 | **Owner** | zunh |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -489,7 +489,7 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | **typos** | Spell-checking of code, docs and identifiers |
 | **actionlint + zizmor** | Workflow correctness and security (already in place) |
 | **CodeQL** | Default setup for Actions (on), plus JavaScript/TypeScript and Rust once code lands |
-| **Renovate** | **Update bot** for Cargo, Bun, GitHub Actions (digest-pinned), `rust-toolchain.toml` and `mise.toml`, which Dependabot can't update. It waits 3 days after a release, groups minor/patch updates weekly, and opens vulnerability PRs immediately. It replaces Dependabot *version updates*; Dependabot *alerts* stay on (ADR-0008). |
+| **Renovate** | **Update bot** configured in `renovate.json`. It covers Cargo, Bun, GitHub Actions (digest-pinned with semver comments), `rust-toolchain.toml` and `mise.toml`, which Dependabot can't update. It waits 3 days after a release, groups non-major updates weekly, maintains lockfiles weekly, and opens vulnerability PRs immediately, from GitHub alerts plus OSV. It replaces Dependabot *version* and *security* updates, which are turned off to avoid duplicate PRs. Dependabot *alerts* stay on (ADR-0008). |
 | **lefthook** (optional) | Local pre-commit hook running `mise run fmt` and fast lints on staged files. Opt-in, never required. |
 
 ### 13.5 CI workflows
@@ -604,8 +604,8 @@ Recorded in `docs/adr/` (MADR format) when the corresponding code lands:
 | T-R2 | `bluest` maintenance has slowed | Spike S2; the transport trait isolates the choice |
 | T-R3 | `oxfmt` is pre-1.0 | Pinned version; fall back to Prettier-compatible output if a regression blocks us |
 | T-R4 | Serial reliability with the device's 30-byte RX buffer | Spike S1; one request in flight; optional pacing |
-| Q-T1 | Bundle identifier: `dev.zunh.keywright` (proposed) | Before M2 |
-| Q-T2 | Renovate needs the Renovate GitHub App installed on the repo by the owner | Before M1 code lands |
+| Q-T1 | ~~Bundle identifier~~ *Resolved*: `dev.zunh.keywright` | — |
+| Q-T2 | ~~Renovate GitHub App~~ *Resolved*: installed on the repo; configured in `renovate.json` | — |
 | Q-T3 | End-to-end UI tests on macOS (revisit with Tauri 3 / WebDriver support) | v1.x |
 
 ---
@@ -632,3 +632,4 @@ Recorded in `docs/adr/` (MADR format) when the corresponding code lands:
 | Version | Date | Changes |
 |---|---|---|
 | 0.1 | 2026-10-21 | First draft |
+| 0.2 | 2026-10-21 | Q-T1 resolved: bundle identifier `dev.zunh.keywright`. Q-T2 resolved: Renovate installed and configured, and Dependabot version and security updates replaced (alerts stay on). |
