@@ -2,11 +2,11 @@
 
 | | |
 |---|---|
-| **Status** | Draft v0.2 — for review |
+| **Status** | Draft v0.3 — for review |
 | **Date** | 2026-10-21 |
 | **Owner** | zunh |
 | **Scope** | v1.0: Keebart Sofle Choc Pro BT, macOS on Apple Silicon |
-| **Next documents** | Design spec (UX/UI) → Tech spec (architecture, Rust) |
+| **Related** | [Design spec](design-spec.md) · [Tech spec](tech-spec.md) |
 
 ---
 
@@ -16,7 +16,7 @@
 
 You plug the keyboard in, or connect it over Bluetooth. You click a key, press the shortcut you want, and that's it: the change works on the keyboard immediately. Nothing is built or flashed. You never see ZMK jargon or `&kp LG(C)` syntax. Keywright speaks Mac: ⌘ ⌥ ⌃ ⇧, Mission Control and Spotlight. Key labels match the input source you actually type in. Keywright is also careful: changes can be undone, you review everything before it's saved, and backups are made automatically.
 
-It ships as a native-feeling GUI and a small `keywright` CLI, both built on the same Rust core.
+It ships as a polished desktop app with its own clean design language and Mac manners, plus a small `keywright` CLI. Both are built on the same Rust core.
 
 ---
 
@@ -171,12 +171,12 @@ The full table is also part of the user docs.
 3. The layer count reads "4 of 4 layers used", with a plain explanation of the limit.
 
 **J5. Review, save, undo.**
-1. Press ⌘S. A review sheet lists every change in plain words, e.g. *Navigation · B: Unlock editing → ⌘C Copy*. Any single change can be reverted from the sheet.
+1. Press ⌘S. A review sheet lists every change in plain words, e.g. *Navigation · C: Copy (Linux style) → ⌘C Copy*. Any single change can be reverted from the sheet.
 2. Confirming saves to the keyboard.
 3. ⌘Z keeps working after saving: undoing a saved change makes it "trying" again.
 
 **J6. Go wireless mid-session.**
-1. The user unplugs the cable. Keywright continues over Bluetooth, the status changes to *Bluetooth*, and undo history and pending changes are intact.
+1. The user unplugs the cable. Keywright reconnects over Bluetooth and the status changes to *Bluetooth*. The keyboard locks itself whenever it switches connection, so Keywright asks for the unlock keys again. Undo history and pending changes are intact.
 2. If the keyboard isn't paired with this Mac, or its active Bluetooth slot points at another device, Keywright explains what to do in one or two sentences (e.g. *hold Raise and tap 1–5 to pick a Bluetooth slot*).
 
 **J7. Back up and restore.**
@@ -211,7 +211,7 @@ IDs are stable so the design and tech specs can refer to them.
 |---|---|---|
 | CON-1 | Must | Automatically detect a supported keyboard connected by USB. The user never chooses a serial port. |
 | CON-2 | Must | Automatically detect and connect over Bluetooth when the keyboard is paired with this Mac and its active Bluetooth slot is this Mac. Pairing itself stays in macOS System Settings; Keywright explains how. |
-| CON-3 | Must | When both transports are available, prefer USB. Switching between them (cable plugged or unplugged) never loses the session: undo history, pending changes and selection survive. |
+| CON-3 | Must | Talk to the keyboard over the connection it is currently typing over: by default the cable when plugged in, otherwise Bluetooth. The firmware only allows editing on that one. Switching connections never loses the session: undo history, pending changes and selection survive. The keyboard locks itself on every switch, so Keywright asks for the unlock keys again (SAF-1). |
 | CON-4 | Must | Always show connection state: keyboard name, transport (USB / Bluetooth), locked/unlocked, and trying/saved. |
 | CON-5 | Should | Recognise common problems and say what to do in plain words: cable in the right half; keyboard asleep or switched off (power switch on the inner side); Bluetooth slot pointing at another device; firmware without live editing; Bluetooth live editing unavailable. |
 | CON-6 | Must | Ask for macOS Bluetooth permission only when it's first needed, after a one-line explanation. If permission is denied, USB still works, and the app explains how to enable Bluetooth later. |
@@ -222,7 +222,7 @@ IDs are stable so the design and tech specs can refer to them.
 
 | ID | Pri | Requirement |
 |---|---|---|
-| SAF-1 | Must | When the keyboard is locked, show exactly which keys unlock it, highlighted on the keyboard illustration (stock Sofle: hold Raise, tap B). Detect unlocking automatically. |
+| SAF-1 | Must | When the keyboard is locked, show exactly which keys unlock it, highlighted on the keyboard illustration (stock Sofle: hold Raise, tap B). Detect unlocking automatically. The keyboard also locks itself after 10 minutes without editing activity and when it changes connection; this is handled without losing the session. |
 | SAF-2 | Must | **Lockout guards.** Before applying, warn when a change would: remove the last *Unlock editing* key; make a layer impossible to reach; or make it impossible to leave a layer (e.g. "Switch to layer" with no way back). The user may proceed after the warning. |
 | SAF-3 | Must | Destructive operations (restore stock settings, import over the current keymap, firmware update) require a confirmation. It states exactly what will be lost and offers a backup first. |
 | SAF-4 | Must | **Automatic backups**: a local backup of the keyboard's keymap on first connect of each session, and before every destructive operation. At least the last 20 are kept, in a browsable list. |
@@ -264,14 +264,14 @@ IDs are stable so the design and tech specs can refer to them.
 | MAC-5 | Must | **Input-source aware labels**: key labels show what the key produces in the active macOS input source (e.g. German, Russian, Dvorak) and update live when it changes. Shortcuts are labelled the way macOS menus show them for that input source. |
 | MAC-6 | Should | **Secondary labels**: optionally show a second input source on each key (e.g. ABC + Russian), like dual-printed keycaps. |
 | MAC-7 | Must | **Mac compatibility check**: on connect, find assignments that do nothing or misbehave on macOS (e.g. HID Undo/Cut/Copy/Paste, Context Menu, keyboard Lock), explain why in one sentence, and offer one-click Mac replacements. Shown as one summary; each item can be dismissed and stays dismissed. |
-| MAC-8 | Should | The Globe 🌐 key is available, with an honest note: it works for Globe-shortcuts, but not as fn for F-keys. |
-| MAC-9 | Must | **Native Mac conventions**: standard menu bar menus; ⌘Z / ⇧⌘Z undo/redo; ⌘S Save to keyboard; ⌘, Settings; light/dark mode; system accent colour; full keyboard navigation; respects Reduce Motion and Increase Contrast. |
+| MAC-8 | Should | **Globe 🌐 helper.** macOS doesn't reliably accept the Globe key from non-Apple keyboards. Keywright says so honestly, and guides the user to make a chosen key act as Globe through System Settings › Keyboard › Modifier Keys. |
+| MAC-9 | Must | **Mac manners**: standard Mac menu bar menus; ⌘Z / ⇧⌘Z undo/redo; ⌘S Save to keyboard; ⌘, Settings; light/dark following the system; full keyboard navigation; respects Reduce Motion and Increase Contrast. Keywright has its own visual design and does not imitate Apple's UI (see the design spec). |
 
 ### 8.6 Layers (LAY)
 
 | ID | Pri | Requirement |
 |---|---|---|
-| LAY-1 | Must | Rename layers. Names appear in the app and on the keyboard's display. |
+| LAY-1 | Must | Rename layers, up to 19 characters (a firmware limit). Names appear in the app and on the keyboard's display. |
 | LAY-2 | Must | Reorder layers. After reordering, every layer key still points at the same layer it did before. |
 | LAY-3 | Must | Add and remove layers within the firmware's limit. The limit is always visible ("4 of 4 layers used"), with a plain explanation of why it exists and what would raise it (stock Sofle firmware has no spare layers). |
 | LAY-4 | Must | Show how each layer is reached: the keys that activate it, plus firmware-defined combinations the support pack knows about (stock: Adjust = Lower + Raise), labelled *built into the firmware*. |
@@ -318,7 +318,7 @@ IDs are stable so the design and tech specs can refer to them.
 | BAR-2 | Must | Battery level is shown for each half **only if the keyboard reports it**. Otherwise it reads "not reported". Values are never estimated or faked. |
 | BAR-3 | Should | Low-battery notification with a configurable threshold (default 15%). |
 | BAR-4 | Must | The menu bar item opens the editor. With the editor window closed, Keywright can live in the menu bar only (no Dock icon). |
-| BAR-5 | Should | "Open at login" option, off by default. |
+| BAR-5 | Should | "Open at login" option, off by default. If macOS refuses it (possible with unsigned builds), Keywright says so and opens the Login Items settings. |
 
 ### 8.11 Command-line tool (CLI)
 
@@ -353,7 +353,7 @@ IDs are stable so the design and tech specs can refer to them.
 | NFR-4 | Privacy | No accounts, no telemetry, no network access in normal use. Any future network feature (e.g. firmware download) runs only on explicit user action. **Copy diagnostics** produces a report the user can review before pasting it into an issue. |
 | NFR-5 | Accessibility | Full VoiceOver support (e.g. "Left half, row 3, key 1: tap for Escape, hold for Control"). Fully operable by keyboard. Colour is never the only signal. WCAG AA contrast. Reduce Motion is respected. |
 | NFR-6 | Localisation readiness | English UI in v1. All user-facing strings are externalised so translations can be contributed. Key labels follow the input source, independent of UI language. |
-| NFR-7 | Portability | Core logic (protocol, keymap model, change tracking, backup format, key/shortcut translation) is independent of the UI and the OS. macOS-specific parts (Bluetooth, USB, input sources, menu bar, recorder) are isolated behind interfaces, so Linux/Windows ports and new keyboards don't touch the core. |
+| NFR-7 | Portability | Core logic (protocol, keymap model, change tracking, backup format, key/shortcut translation) is independent of the UI and the OS. The UI is cross-platform web technology. macOS-specific parts (input sources, firmware-volume detection, menu bar behaviour, login item) are isolated behind interfaces, so Linux/Windows ports and new keyboards don't touch the core. |
 | NFR-8 | Testability | All core behaviour is testable without hardware using a **simulated keyboard**, which is shared with demo mode (DEV-6). Device-protocol decoding is robust to malformed input (fuzzed). |
 | NFR-9 | Code quality | CI on every change: build, formatting, lint with warnings as errors, tests. Explicit error handling, with no crashes on device or file input. Architecture decisions recorded as ADRs. Details in the tech spec. |
 | NFR-10 | Distribution | **v1: build from source, or unsigned binaries on GitHub Releases.** Building from source needs one documented command sequence on a clean Mac with the stated toolchain. Each tagged release attaches the app bundle and the `keywright` CLI as Apple Silicon archives, with SHA-256 checksums. Binaries are not Developer ID–signed or notarized, so the docs must walk users through the first-launch approval (R5). There is no in-app updater. *v1.x: signed and notarized builds through a Homebrew cask that installs the app and CLI. Homebrew has required casks to pass Gatekeeper since 1 Sept 2026.* |
@@ -383,7 +383,10 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 | Editing firmware-defined layer combinations (Adjust = Lower + Raise) | Not exposed | Shown read-only via support pack; editable in v2 |
 | Showing the active layer or live key presses | Not reported by the protocol | Later idea |
 | Live editing via the right half's USB port | Only the left (central) half has live editing | Explained in-app (CON-5) |
-| Right-half battery level | Depends on firmware support | Shown if reported (BAR-2). See R3. |
+| Editing over both connections at once | The firmware only allows editing on the connection it is typing over, and locks itself when that changes | Handled in-app (CON-3) |
+| Right-half battery level | Stock firmware doesn't report it (it needs a firmware option) | v2 firmware path |
+| Battery level while on USB | ZMK reports battery over Bluetooth only | Shown as "not reported" (BAR-2) |
+| Sending the Globe key directly | macOS only fully accepts Globe from Apple keyboards | Guided workaround (MAC-8) |
 
 ---
 
@@ -428,16 +431,16 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 
 | ID | Risk | Mitigation |
 |---|---|---|
-| R1 | ZMK Studio's protocol is officially *alpha*; upstream changes may break compatibility. | Detect protocol versions and fail safely (DEV-5). Test against pinned firmware versions. Engage upstream. |
-| R2 | Bluetooth live editing on macOS: stock firmware must expose Studio's Bluetooth transport, and macOS must let an app reach it while the system holds the keyboard connection. | Early technical spike (first item in the tech spec) on real hardware. |
-| R3 | Stock firmware may not report the right half's battery to the host. | Verify on hardware. Show only what's reported (BAR-2). Consider it for the v2 firmware. |
-| R4 | Recording system-reserved shortcuts may need Accessibility / Input Monitoring permissions. | Picker fallback (MAC-3). Decide in the design/tech spec whether the permission is worth asking for. |
-| R5 | Unsigned v1 binaries add friction for newcomers. Gatekeeper blocks the first launch, and on recent macOS the user must approve the app in System Settings › Privacy & Security. Ad-hoc signed builds also change identity with every release, so macOS may ask for Bluetooth permission again after each update. | An illustrated first-launch guide plus a one-line Terminal alternative. Release notes mention the permission re-prompt. Signed Homebrew builds in v1.x (Q1). |
-| R6 | Layer reordering may not update layer references on the firmware side. | Verify in the tech spec. If needed, Keywright rewrites references itself (LAY-2 is a product guarantee). |
+| R1 | ZMK Studio's protocol is officially *alpha*, has no version field, and upstream changes may break compatibility. | Probe and fail safely (DEV-5). Test against pinned firmware versions. Engage upstream. |
+| R2 | Bluetooth live editing on macOS. *Firmware side confirmed*: Studio's Bluetooth transport is on by default on stock firmware. *macOS side*: the official ZMK Studio app reaches it while the system holds the keyboard, so there is precedent. | Hardware spike (tech spec §15). |
+| R3 | ~~Right-half battery may not be reported.~~ *Resolved*: stock firmware reports only the left half, and only over Bluetooth. | BAR-2 shows "not reported". Revisit with the v2 firmware path. |
+| R4 | Recording system-reserved shortcuts would need Input Monitoring or Accessibility permission. | *Decided*: no extra permission in v1; a picker covers them (MAC-3, design spec §5.3). |
+| R5 | Unsigned v1 binaries add friction for newcomers. Gatekeeper blocks the first launch, and on recent macOS the user must approve the app in System Settings › Privacy & Security. Ad-hoc signed builds also change identity with every release, so macOS asks again after each update for Bluetooth and removable-drive access, and may refuse launch at login. | An illustrated first-launch guide plus a one-line Terminal alternative. Release notes mention the permission re-prompt. Evaluate a stable self-signed identity (tech spec §15). Signed Homebrew builds in v1.x (Q1). |
+| R6 | ~~Layer reordering may break layer keys.~~ *Resolved*: layer keys refer to stable layer IDs, so reordering only changes priority. | None needed. |
 
 ### 13.2 Assumptions
 
-- Implementation language is **Rust**. GUI toolkit, crates and structure are decided in the tech spec.
+- The core, CLI and app backend are **Rust**. The app uses **Tauri v2**, with a **React + TypeScript** UI built with **Bun**. Details are in the tech spec.
 - The user's keyboard runs Keebart's stock firmware with live editing on the left half, as shipped.
 - The user's Mac can pair with the keyboard over Bluetooth through System Settings, as with any Bluetooth keyboard.
 
@@ -448,8 +451,8 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 | Q1 | Who holds the Apple Developer ID ($99/yr) for signed Homebrew builds? | Before v1.x |
 | Q2 | Reach out to Keebart (endorsement, docs links, firmware release location, test hardware)? | Before v1.0 |
 | Q3 | Does Keebart publish firmware releases at a stable URL (needed for FW-5)? | Before M4 |
-| Q4 | Is the menu bar item on by default? Default window vs. menu-bar-only behaviour? | Design spec |
-| Q5 | Backup file format and extension (e.g. `.keywright`)? | Tech spec |
+| Q4 | ~~Is the menu bar item on by default?~~ *Resolved*: it is offered in the first run, pre-checked (design spec §8). | — |
+| Q5 | ~~Backup file format and extension?~~ *Resolved*: see tech spec §9. | — |
 
 ---
 
@@ -472,3 +475,4 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 |---|---|---|
 | 0.1 | 2026-10-20 | First draft |
 | 0.2 | 2026-10-21 | Apple Silicon only (Intel and Universal binaries dropped). v1 distribution changed to build from source plus unsigned GitHub Release binaries; signed Homebrew builds moved to v1.x. Risks and open questions renumbered. |
+| 0.3 | 2026-10-21 | Aligned with the design and tech specs. The UI is Keywright's own design language rather than an imitation of Apple's, and the stack is Tauri + React + Bun. CON-3 and SAF-1 now reflect the firmware's single editing connection and its auto-lock. MAC-8 becomes a Globe helper. Layer names are limited to 19 characters. The battery and Globe limitations are documented. R3, R4 and R6 are resolved, and Q4 and Q5 answered. |
