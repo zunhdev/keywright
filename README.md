@@ -11,7 +11,8 @@ The first supported keyboard is the [Keebart Sofle Choc Pro BT](https://www.keeb
 ## Documentation
 
 - [Product spec](docs/specs/product-spec.md): what we're building and why.
-- Design spec and tech spec: coming next.
+- [Design spec](docs/specs/design-spec.md): how it looks, reads and behaves.
+- [Tech spec](docs/specs/tech-spec.md): how it's built (Rust core, Tauri v2, React + TypeScript with Bun).
 
 ## Contributing
 
