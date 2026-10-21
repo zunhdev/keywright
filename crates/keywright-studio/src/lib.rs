@@ -13,6 +13,9 @@
 //! The crate knows the protocol, but not keymaps as people see them. `keywright-core`
 //! interprets bindings as actions, and `keywright-device` combines the two.
 //!
-//! Tech spec §5 describes the design.
+//! Tech spec §5 describes the design, and ADR-0003 explains why Keywright has its own
+//! client. Its design was informed by the
+//! [`zmk-studio-api`](https://github.com/srwi/zmk-studio-api) crate (Apache-2.0), with
+//! thanks to its authors.
 
 #![forbid(unsafe_code)]
