@@ -1,0 +1,14 @@
+# Spell-check settings for typos (tech spec §13.4). `mise run lint:spelling` runs it.
+# Reference: https://github.com/crate-ci/typos/blob/master/docs/reference.md
+
+[files]
+# Check hidden files too, such as the workflows and templates in .github/, which typos
+# skips by default. Git's own folder stays out.
+ignore-hidden = false
+# Lockfiles list other projects' package names, which aren't ours to spell.
+extend-exclude = [".git/", "Cargo.lock", "bun.lock"]
+
+[default.extend-words]
+# Words that typos would "correct" but that are right here, such as names from ZMK or
+# macOS. Map each word to itself, and say where it comes from, for example:
+# darw = "darw" # ZMK's deprecated alias for the down arrow key

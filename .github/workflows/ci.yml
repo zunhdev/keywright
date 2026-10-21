@@ -33,7 +33,7 @@ jobs:
       - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           minimum_release_age: 3d
-          install_args: github:nextest-rs/nextest github:Boshen/cargo-shear aqua:taiki-e/cargo-llvm-cov
+          install_args: github:nextest-rs/nextest github:Boshen/cargo-shear aqua:taiki-e/cargo-llvm-cov cargo-deny
 
       - name: Install the Rust toolchain from rust-toolchain.toml
         run: rustup toolchain install
@@ -44,6 +44,9 @@ jobs:
 
       - name: Check that Cargo.lock is up to date
         run: cargo fetch --locked
+
+      - name: Audit crates (cargo-deny)
+        run: mise run audit:rust
 
       - name: Lint (rustfmt, clippy, cargo-shear)
         run: mise run lint:rust
@@ -105,6 +108,9 @@ jobs:
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Audit packages (bun audit)
+        run: mise run audit:ts
 
       - name: Lint (oxfmt, oxlint, tsc, knip)
         run: mise run lint:ts

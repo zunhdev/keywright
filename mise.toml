@@ -93,9 +93,21 @@ description = "Run the TypeScript tests"
 depends = ["deps:ts"]
 run = "bun run --filter '*' test"
 
+[tasks.audit]
+description = "Check dependencies for known vulnerabilities, and Rust crates for licence and source problems"
+depends = ["audit:*"]
+
+[tasks."audit:rust"]
+description = "Check Rust crates against deny.toml: advisories, licences, banned crates and sources"
+run = "cargo deny check"
+
+[tasks."audit:ts"]
+description = "Check the packages in bun.lock for known vulnerabilities"
+run = "bun audit"
+
 [tasks.check]
 description = "Run everything CI requires"
-depends = ["lint", "test"]
+depends = ["lint", "test", "audit"]
 
 [tasks.build]
 description = "Build the release binaries"
@@ -111,3 +123,13 @@ run = [
 [tasks.coverage]
 description = "Measure Rust test coverage"
 run = ["rustup component add llvm-tools", "cargo llvm-cov nextest --workspace"]
+
+[tasks.mutants]
+description = "Mutation-test keywright-core: change its code in small ways, and report changes no test catches"
+# cargo-mutants has no Apple Silicon release binary, so mise builds it from source, the
+# first time this task runs. Declaring it here rather than under [tools] keeps
+# `mise install` from building it for everyone.
+tools = { "cargo:cargo-mutants" = "27.1.0" }
+# Code without any tests is reported as missed mutants, rather than failing the run.
+env = { NEXTEST_NO_TESTS = "warn" }
+run = "cargo mutants --package keywright-core --test-tool nextest"
