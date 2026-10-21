@@ -8,7 +8,7 @@ Keywright is pre-release. Security fixes go to the `main` branch and, once relea
 
 Please **do not** open a public issue for a security problem.
 
-Report it privately through GitHub instead: **[Report a vulnerability](https://github.com/zunhdev/keywright/security/advisories/new)**. You can also find this under *Security → Advisories → Report a vulnerability*.
+Report it privately through GitHub instead: **[Report a vulnerability](https://github.com/zunhdev/keywright/security/advisories/new)**. You can also find this under _Security → Advisories → Report a vulnerability_.
 
 Please include:
 

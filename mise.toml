@@ -30,7 +30,12 @@ shellcheck = "0.11.0"
 zizmor = "1.31.1"
 
 # Each top-level task runs all of its per-area tasks (`lint` runs `lint:*`, and so on),
-# so new areas, such as the UI, plug in by adding a task with the right prefix.
+# so a new area plugs in by adding a task with the right prefix. The `ts` tasks run the
+# TypeScript toolchain from node_modules, on Bun's runtime (bunfig.toml), never Node.
+
+[tasks."deps:ts"]
+description = "Install the TypeScript toolchain's packages, exactly as bun.lock records them"
+run = "bun install --frozen-lockfile"
 
 [tasks.fmt]
 description = "Format all code"
@@ -39,6 +44,11 @@ depends = ["fmt:*"]
 [tasks."fmt:rust"]
 description = "Format Rust code"
 run = "cargo fmt --all"
+
+[tasks."fmt:ts"]
+description = "Format every file that isn't Rust: TypeScript, CSS, JSON, Markdown, YAML and TOML"
+depends = ["deps:ts"]
+run = "bun run oxfmt"
 
 [tasks.lint]
 description = "Run every linter and formatting check"
@@ -50,6 +60,16 @@ run = [
   "cargo fmt --all --check",
   "cargo clippy --workspace --all-targets --all-features -- -D warnings",
   "cargo shear",
+]
+
+[tasks."lint:ts"]
+description = "Check formatting of non-Rust files, lint and type-check TypeScript, and look for unused code"
+depends = ["deps:ts"]
+run = [
+  "bun run oxfmt --check",
+  "bun run oxlint --type-aware --deny-warnings",
+  "bun run --filter '*' typecheck",
+  "bun run knip",
 ]
 
 [tasks."lint:workflows"]
@@ -68,6 +88,11 @@ depends = ["test:*"]
 description = "Run the Rust tests, including doc examples"
 run = ["cargo nextest run --workspace", "cargo test --workspace --doc"]
 
+[tasks."test:ts"]
+description = "Run the TypeScript tests"
+depends = ["deps:ts"]
+run = "bun run --filter '*' test"
+
 [tasks.check]
 description = "Run everything CI requires"
 depends = ["lint", "test"]
@@ -78,7 +103,4 @@ run = "cargo build --release --package keywright-cli"
 
 [tasks.coverage]
 description = "Measure Rust test coverage"
-run = [
-  "rustup component add llvm-tools",
-  "cargo llvm-cov nextest --workspace",
-]
+run = ["rustup component add llvm-tools", "cargo llvm-cov nextest --workspace"]
