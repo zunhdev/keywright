@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.5 — for review                                         |
+| **Status**    | Draft v0.6 — for review                                         |
 | **Date**      | 2026-10-21                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -604,21 +604,21 @@ The install docs cover moving the app to /Applications before first launch (whic
 
 ## 18. Architecture decision records
 
-Recorded in `docs/adr/` (MADR format) when the corresponding code lands:
+Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../adr/0001-record-architecture-decisions.md)). Each ADR gives the context, the options considered and the consequences; the table summarises the decisions.
 
-| ADR  | Decision                                                                                                                                                                                               |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 0001 | Record architecture decisions                                                                                                                                                                          |
-| 0002 | Tauri v2 + React + TypeScript, with Bun as the only JS toolchain                                                                                                                                       |
-| 0003 | Own ZMK Studio client crate. The young `zmk-studio-api` crate (Apache-2.0) was studied and credited, but Keywright needs control over pacing, endpoint handling, validation, and a matching simulator. |
-| 0004 | Functional core, imperative shell; the session as an actor                                                                                                                                             |
-| 0005 | Backup format: TOML `.keywright`, name-based behavior references                                                                                                                                       |
-| 0006 | No keep-alive to defeat the keyboard's idle lock                                                                                                                                                       |
-| 0007 | mise for tool pinning and tasks                                                                                                                                                                        |
-| 0008 | Renovate for updates; Dependabot alerts stay on                                                                                                                                                        |
-| 0009 | BLE library (after spike S2)                                                                                                                                                                           |
-| 0010 | Typed IPC via tauri-specta                                                                                                                                                                             |
-| 0011 | No Input Monitoring / Accessibility permissions in v1 (recorder limits accepted)                                                                                                                       |
+| ADR                                                                     | Decision                                                                                                                                                                                               |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [0001](../adr/0001-record-architecture-decisions.md)                    | Record architecture decisions                                                                                                                                                                          |
+| [0002](../adr/0002-tauri-react-typescript-and-bun.md)                   | Tauri v2 + React + TypeScript, with Bun as the only JS toolchain                                                                                                                                       |
+| [0003](../adr/0003-own-zmk-studio-client-crate.md)                      | Own ZMK Studio client crate. The young `zmk-studio-api` crate (Apache-2.0) was studied and credited, but Keywright needs control over pacing, endpoint handling, validation, and a matching simulator. |
+| [0004](../adr/0004-functional-core-and-session-actor.md)                | Functional core, imperative shell; the session as an actor                                                                                                                                             |
+| [0005](../adr/0005-toml-backup-format-with-name-based-references.md)    | Backup format: TOML `.keywright`, name-based behavior references                                                                                                                                       |
+| [0006](../adr/0006-no-keep-alive-against-the-idle-lock.md)              | No keep-alive to defeat the keyboard's idle lock                                                                                                                                                       |
+| [0007](../adr/0007-mise-for-tools-and-tasks.md)                         | mise for tool pinning and tasks                                                                                                                                                                        |
+| [0008](../adr/0008-renovate-for-updates.md)                             | Renovate for updates; Dependabot alerts stay on                                                                                                                                                        |
+| 0009                                                                    | BLE library (after spike S2)                                                                                                                                                                           |
+| [0010](../adr/0010-typed-ipc-with-tauri-specta.md)                      | Typed IPC via tauri-specta                                                                                                                                                                             |
+| [0011](../adr/0011-no-input-monitoring-or-accessibility-permissions.md) | No Input Monitoring / Accessibility permissions in v1 (recorder limits accepted)                                                                                                                       |
 
 ---
 
@@ -662,3 +662,4 @@ Recorded in `docs/adr/` (MADR format) when the corresponding code lands:
 | 0.3     | 2026-10-21 | `keywright-studio` defines the `Transport` trait, and `keywright-transport` implements it (§2, §6). The new `architecture-tests` crate checks the dependency rules and the `unsafe` policy (§2, §3, §4, §13.2). |
 | 0.4     | 2026-10-21 | TypeScript toolchain set up (§3, §13.3): one root `.oxlintrc.json` and `tsconfig.base.json`; tools run on Bun via `bunfig.toml`; no Bun catalog yet, because Renovate can't update one; knip needs no config.   |
 | 0.5     | 2026-10-21 | CI added (§13.5): `lint-workflows.yml` takes its tools from mise; the coverage gate waits for the core's first code.                                                                                            |
+| 0.6     | 2026-10-21 | ADRs 0001–0008, 0010 and 0011 written and linked from §18.                                                                                                                                                      |
