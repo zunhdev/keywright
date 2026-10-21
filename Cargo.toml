@@ -13,6 +13,12 @@ publish = false
 # Shared versions for third-party crates. A member opts in with `name.workspace = true`.
 [workspace.dependencies]
 cargo_metadata = "0.23.1"
+proptest = "1.12.0"
+proptest-derive = "0.9.0"
+prost = "0.14.4"
+prost-build = "0.14.4"
+protox = "0.10.0"
+thiserror = "2.0.21"
 
 # Every member inherits these lints with `[lints] workspace = true` (tech spec §13.2).
 # CI runs clippy with `-D warnings`, so warnings fail the build there too.

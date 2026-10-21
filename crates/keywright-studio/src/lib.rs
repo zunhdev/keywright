@@ -2,7 +2,8 @@
 //!
 //! This crate covers the protocol and nothing above it:
 //!
-//! - the `.proto` messages, vendored from `zmk-studio-messages` at a pinned commit;
+//! - the `.proto` messages, vendored from `zmk-studio-messages` at a pinned commit, and
+//!   Keywright's own types for them, in [`message`];
 //! - the frame codec;
 //! - a typed async RPC client with request correlation, timeouts and notifications.
 //!
@@ -19,3 +20,5 @@
 //! thanks to its authors.
 
 #![forbid(unsafe_code)]
+
+pub mod message;
