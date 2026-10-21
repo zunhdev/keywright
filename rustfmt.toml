@@ -1,0 +1,8 @@
+# Stable rustfmt options only: the pinned toolchain is stable.
+# `cargo fmt` takes the edition from Cargo.toml. Setting it here too keeps editors that
+# call rustfmt directly in step.
+edition = "2024"
+style_edition = "2024"
+newline_style = "Unix"
+use_field_init_shorthand = true
+use_try_shorthand = true

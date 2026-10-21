@@ -1,0 +1,12 @@
+[package]
+name = "keywright-core"
+description = "Keywright's pure domain core: keymap model, edits, guards, backups and support packs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
