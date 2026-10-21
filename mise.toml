@@ -101,6 +101,13 @@ depends = ["lint", "test"]
 description = "Build the release binaries"
 run = "cargo build --release --package keywright-cli"
 
+[tasks.portable]
+description = "Build and test the crates that must stay portable (core, studio, sim), as CI does on Linux"
+run = [
+  "cargo build --package keywright-core --package keywright-studio --package keywright-sim",
+  "cargo nextest run --package keywright-core --package keywright-studio --package keywright-sim --no-tests=warn",
+]
+
 [tasks.coverage]
 description = "Measure Rust test coverage"
 run = ["rustup component add llvm-tools", "cargo llvm-cov nextest --workspace"]

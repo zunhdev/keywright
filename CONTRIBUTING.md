@@ -27,9 +27,10 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
 | `mise run test`     | Runs all tests: Rust with nextest, TypeScript with `bun test`.                                                                                                                           |
 | `mise run check`    | Runs `lint` and `test`: everything CI requires.                                                                                                                                          |
 | `mise run build`    | Builds the release `keywright` CLI into `target/release/`.                                                                                                                               |
+| `mise run portable` | Builds and tests the crates that must stay portable (core, studio, sim), as CI does on Linux.                                                                                            |
 | `mise run coverage` | Measures Rust test coverage.                                                                                                                                                             |
 
-Each task runs its parts for every area, such as `lint:rust` and `lint:ts`, which you can also run on their own. The TypeScript tasks install the Bun packages from `bun.lock` first. `mise tasks` lists them all. To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
+Each task runs its parts for every area, such as `lint:rust` and `lint:ts`, which you can also run on their own. The TypeScript tasks install the Bun packages from `bun.lock` first. `mise tasks` lists them all. CI runs the same tasks, split into jobs (`.github/workflows/ci.yml`). To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
 
 ## Making changes
 
@@ -49,7 +50,8 @@ Workflows must:
 
 - pin every action to a full commit SHA, with the version in a comment: `uses: owner/action@<sha> # v1.2.3`. The repository rejects actions that aren't pinned;
 - declare `permissions: {}` at the top, and grant each job only the permissions it needs;
-- check out with `persist-credentials: false`, unless a job has to push.
+- check out with `persist-credentials: false`, unless a job has to push;
+- install tools with `jdx/mise-action`, so their versions come from `mise.toml`.
 
 [actionlint](https://github.com/rhysd/actionlint) and [zizmor](https://github.com/zizmorcore/zizmor) check this on every pull request.
 

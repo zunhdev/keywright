@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.4 — for review                                         |
+| **Status**    | Draft v0.5 — for review                                         |
 | **Date**      | 2026-10-21                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -523,11 +523,11 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | Workflow             | Trigger            | Jobs                                                                                                                                                                                                                                                                                                                                 |
 | -------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ci.yml`             | PR, push to `main` | **rust** (macOS arm64): fmt, clippy, nextest, coverage, deny, shear · **rust-portable** (Ubuntu): core, studio and sim crates build and test, guarding NFR-7 · **ui**: install, oxfmt, oxlint, tsc, knip, bun test, audit, contrast · **app** (macOS arm64): bindings freshness, `tauri build --debug --no-bundle` · **repo**: typos |
-| `lint-workflows.yml` | PR, push           | actionlint, zizmor (exists)                                                                                                                                                                                                                                                                                                          |
+| `lint-workflows.yml` | PR, push           | actionlint, zizmor, with versions from `mise.toml`                                                                                                                                                                                                                                                                                   |
 | `scheduled.yml`      | Daily / weekly     | `cargo deny check advisories`, `bun audit`, nightly fuzzing, weekly cargo-mutants                                                                                                                                                                                                                                                    |
 | `release.yml`        | Tag `v*`           | §17                                                                                                                                                                                                                                                                                                                                  |
 
-All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
+All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The core coverage gate (≥ 80% lines) switches on with the core's first code: on an empty crate, llvm-cov counts 0 of 0 lines as a failure. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
 
 ---
 
@@ -661,3 +661,4 @@ Recorded in `docs/adr/` (MADR format) when the corresponding code lands:
 | 0.2     | 2026-10-21 | Q-T1 resolved: bundle identifier `dev.zunh.keywright`. Q-T2 resolved: Renovate installed and configured, and Dependabot version and security updates replaced (alerts stay on).                                 |
 | 0.3     | 2026-10-21 | `keywright-studio` defines the `Transport` trait, and `keywright-transport` implements it (§2, §6). The new `architecture-tests` crate checks the dependency rules and the `unsafe` policy (§2, §3, §4, §13.2). |
 | 0.4     | 2026-10-21 | TypeScript toolchain set up (§3, §13.3): one root `.oxlintrc.json` and `tsconfig.base.json`; tools run on Bun via `bunfig.toml`; no Bun catalog yet, because Renovate can't update one; knip needs no config.   |
+| 0.5     | 2026-10-21 | CI added (§13.5): `lint-workflows.yml` takes its tools from mise; the coverage gate waits for the core's first code.                                                                                            |
