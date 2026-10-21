@@ -1,0 +1,6 @@
+# The Rust toolchain for this repository. rustup reads this file and installs the
+# toolchain on first use. Renovate keeps the version current (tech spec §13.4).
+[toolchain]
+channel = "1.99"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Draft v0.2 — for review |
+| **Status** | Draft v0.3 — for review |
 | **Date** | 2026-10-21 |
 | **Owner** | zunh |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -64,19 +64,21 @@ Version numbers are the current releases as of the date above. Exact pins live i
    ┌──▼──────────────────────┐    ┌─────────────────────────┐
    │ keywright-studio        │    │ keywright-sim           │
    │ protobuf, framing, RPC  │◀───│ simulated keyboard      │
-   │ client over Transport   │    │ (server side of RPC)    │
-   └──┬──────────────────────┘    └─────────────────────────┘
-   ┌──▼──────────────────────┐
+   │ client + Transport trait│    │ (server side of RPC)    │
+   └──▲──────────────────────┘    └─────────────────────────┘
+   ┌──┴──────────────────────┐
    │ keywright-transport     │
-   │ serial (USB CDC), BLE   │
+   │ serial (USB CDC), BLE:  │
+   │ implements Transport    │
    └─────────────────────────┘
 ```
 
-**Dependency rules** (enforced in CI with a workspace dependency check, §13.2):
+**Dependency rules** (checked by the `architecture-tests` crate, §13.2):
 
-- `keywright-core` depends on no I/O, async or platform crates. It is plain Rust plus `serde` and `toml`.
+- `keywright-core` depends on no I/O, async or platform crates. It is plain Rust plus `serde`, `toml` and `thiserror`.
 - `keywright-studio` knows the protocol but not keymaps as users see them.
-- `keywright-device` is the only crate that combines the core and the protocol.
+- `keywright-transport` implements the `Transport` trait that `keywright-studio` defines. The protocol client and the simulator therefore never pull in serial or Bluetooth libraries, and stay portable.
+- `keywright-device` is the only crate that combines the core and the protocol. The exception is the simulator, which plays the keyboard's side and loads its state from a support pack.
 - `keywright-app` and `keywright-cli` are thin. Commands map 1:1 to device or core APIs and contain no business logic.
 - Platform-specific code lives only in `keywright-platform` (behind `cfg(target_os)`) and in the app shell.
 
@@ -101,7 +103,8 @@ keywright/
 │   ├── keywright-transport/
 │   ├── keywright-device/
 │   ├── keywright-platform/
-│   └── keywright-cli/
+│   ├── keywright-cli/
+│   └── architecture-tests/    # workspace policy tests: §2 dependency rules, §4 unsafe policy
 ├── app/
 │   ├── src-tauri/             # crate keywright-app, tauri.conf.json, capabilities/
 │   └── ui/                    # React app: package.json, tsconfig.json, .oxlintrc.json, src/
@@ -127,8 +130,9 @@ keywright/
 | `keywright-platform` | lib | `Platform` traits plus the macOS implementation: input-source key labels, input-source change events, UF2 volume detection, login item, window "edited" dot | `objc2`, `objc2-foundation`, `objc2-app-kit`, `objc2-disk-arbitration`, `objc2-service-management`; a minimal hand-written Carbon FFI for TIS/`UCKeyTranslate` |
 | `keywright-cli` | bin | `keywright` command line (CLI-*) | `clap`, `serde_json`, `anyhow` |
 | `keywright-app` | bin | Tauri shell: commands, events, menus, tray, windows | `tauri`, `tauri-specta`, Tauri plugins (§12.1) |
+| `architecture-tests` | tests only | Workspace policy tests: the dependency rules (§2) and the `unsafe` policy below. Ships nothing. | `cargo_metadata` (dev) |
 
-`unsafe` is forbidden workspace-wide (`unsafe_code = "forbid"`), except in `keywright-platform`. There, it is `deny`, with an `allow` scoped to the `ffi` modules, and every `unsafe` block carries a `// SAFETY:` comment (enforced by `clippy::undocumented_unsafe_blocks`).
+`unsafe` is forbidden in every crate except `keywright-platform`. Each crate root says `#![forbid(unsafe_code)]`, and `architecture-tests` checks that none is missing. Cargo can't relax one inherited lint per crate, so the workspace sets `unsafe_code = "deny"`. That level applies in `keywright-platform`, with an `allow` scoped to the `ffi` modules. Every `unsafe` block carries a `// SAFETY:` comment (enforced by `clippy::undocumented_unsafe_blocks`).
 
 ---
 
@@ -181,6 +185,8 @@ pub trait Transport: Send {
     fn kind(&self) -> TransportKind;                              // Usb | Bluetooth | InMemory
 }
 ```
+
+The trait lives in `keywright-studio`, next to the RPC client that uses it. This crate implements it for USB and Bluetooth, and `keywright-sim` implements it in memory.
 
 ### 6.1 USB serial
 
@@ -465,7 +471,7 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | **cargo-llvm-cov** | Code coverage | Core crates ≥ 80% lines |
 | **cargo-fuzz** | Fuzzing of frame decoder, protobuf decode and backup parser | Short run on each PR touching those crates; long run nightly |
 | **cargo-mutants** | Mutation testing: checks that tests actually catch changed logic | Weekly on `keywright-core`, report only |
-| **Dependency check** | A small test asserting the crate dependency rules from §2 | Required |
+| **Architecture tests** | The `architecture-tests` crate. Its tests read `cargo metadata` and assert the crate dependency rules from §2 and the `unsafe` policy from §4. They run with the other tests. | Required |
 
 ### 13.3 TypeScript tools
 
@@ -633,3 +639,4 @@ Recorded in `docs/adr/` (MADR format) when the corresponding code lands:
 |---|---|---|
 | 0.1 | 2026-10-21 | First draft |
 | 0.2 | 2026-10-21 | Q-T1 resolved: bundle identifier `dev.zunh.keywright`. Q-T2 resolved: Renovate installed and configured, and Dependabot version and security updates replaced (alerts stay on). |
+| 0.3 | 2026-10-21 | `keywright-studio` defines the `Transport` trait, and `keywright-transport` implements it (§2, §6). The new `architecture-tests` crate checks the dependency rules and the `unsafe` policy (§2, §3, §4, §13.2). |

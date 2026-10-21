@@ -1,0 +1,38 @@
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/zunhdev/keywright"
+publish = false
+
+# Shared versions for third-party crates. A member opts in with `name.workspace = true`.
+[workspace.dependencies]
+cargo_metadata = "0.23.1"
+
+# Every member inherits these lints with `[lints] workspace = true` (tech spec §13.2).
+# CI runs clippy with `-D warnings`, so warnings fail the build there too.
+[workspace.lints.rust]
+# `unsafe` is forbidden everywhere except in keywright-platform's `ffi` modules (tech spec §4).
+# A crate can't relax a single inherited lint, so the workspace level is `deny`, and every
+# crate other than keywright-platform adds `#![forbid(unsafe_code)]` at its root.
+# The architecture-tests crate fails if one doesn't.
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+# No crashes or stray output on device or file input (tech spec §16). clippy.toml lets
+# tests use these, and the CLI allows `print_stdout` at its crate root.
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+# Every `unsafe` block needs a `// SAFETY:` comment explaining why it is sound.
+undocumented_unsafe_blocks = "deny"
