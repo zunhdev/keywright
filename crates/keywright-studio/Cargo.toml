@@ -8,5 +8,18 @@ license.workspace = true
 repository.workspace = true
 publish.workspace = true
 
+[dependencies]
+prost.workspace = true
+thiserror.workspace = true
+
+# build.rs generates the message types from the vendored .proto files (tech spec §5.1).
+[build-dependencies]
+prost-build.workspace = true
+protox.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+proptest-derive.workspace = true
+
 [lints]
 workspace = true
