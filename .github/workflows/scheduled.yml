@@ -1,0 +1,127 @@
+name: Scheduled checks
+
+on:
+  schedule:
+    # Daily: new advisories appear without any change to the code.
+    - cron: "23 4 * * *"
+    # Weekly, on Mondays: mutation testing.
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+  # A pull request that changes this workflow runs it, so it's tested before it merges.
+  pull_request:
+    paths: [.github/workflows/scheduled.yml]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  # As in ci.yml, each job installs only the tools it names in `install_args`.
+  MISE_TASK_RUN_AUTO_INSTALL: "false"
+
+# The checks that don't need a code change to find something new (tech spec §13.5).
+# Nightly fuzzing joins them once the first fuzz target exists.
+jobs:
+  rust-advisories:
+    name: Rust advisories (cargo-deny)
+    if: github.event_name != 'schedule' || github.event.schedule == '23 4 * * *'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install_args: cargo-deny
+
+      # cargo-deny reads the dependency graph through Cargo.
+      - name: Install the Rust toolchain from rust-toolchain.toml
+        run: rustup toolchain install
+
+      # Licences, bans and sources only change with Cargo.lock, which CI checks on every
+      # pull request.
+      - name: Check for new advisories
+        run: mise run audit:rust advisories
+
+  bun-advisories:
+    name: Bun advisories (bun audit)
+    if: github.event_name != 'schedule' || github.event.schedule == '23 4 * * *'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install_args: bun
+
+      - name: Check for new advisories
+        run: mise run audit:ts
+
+  mutants:
+    name: Mutation testing (keywright-core)
+    if: github.event_name != 'schedule' || github.event.schedule == '23 5 * * 1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    env:
+      # The mutants task installs cargo-mutants itself, since no other task uses it.
+      MISE_TASK_RUN_AUTO_INSTALL: "true"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install_args: github:nextest-rs/nextest
+
+      - name: Install the Rust toolchain from rust-toolchain.toml
+        run: rustup toolchain install
+
+      # Report only: cargo-mutants exits with 2 when no test catches some of its changes,
+      # and with 3 when some of them time out. Those go into the job summary, and the job
+      # still passes. Any other exit code means cargo-mutants itself failed, which fails
+      # the job.
+      - name: Run cargo-mutants and summarise the results
+        run: |
+          status=0
+          mise run mutants || status=$?
+
+          if [ "$status" -ne 0 ] && [ "$status" -ne 2 ] && [ "$status" -ne 3 ]; then
+            echo "cargo-mutants failed with exit code $status. The job log has the details." >> "$GITHUB_STEP_SUMMARY"
+            exit "$status"
+          fi
+
+          {
+            echo "## Mutation testing: keywright-core"
+            echo
+            echo "| Outcome | Mutants |"
+            echo "| ------- | ------- |"
+            for outcome in caught missed timeout unviable; do
+              echo "| $outcome | $(wc -l < "mutants.out/$outcome.txt") |"
+            done
+            if [ -s mutants.out/missed.txt ]; then
+              echo
+              echo "### Missed: no test failed after these changes"
+              echo
+              echo '```'
+              cat mutants.out/missed.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -25,12 +25,16 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
 | `mise run fmt`      | Formats all code: rustfmt for Rust, oxfmt for everything else.                                                                                                                           |
 | `mise run lint`     | Checks formatting, lints Rust (clippy) and TypeScript (oxlint, tsc), finds unused code and dependencies (cargo-shear, knip), checks workflows (actionlint, zizmor) and spelling (typos). |
 | `mise run test`     | Runs all tests: Rust with nextest, TypeScript with `bun test`.                                                                                                                           |
-| `mise run check`    | Runs `lint` and `test`: everything CI requires.                                                                                                                                          |
+| `mise run audit`    | Checks dependencies for known vulnerabilities (cargo-deny, `bun audit`), and Rust crates for their licences and sources.                                                                 |
+| `mise run check`    | Runs `lint`, `test` and `audit`: everything CI requires.                                                                                                                                 |
 | `mise run build`    | Builds the release `keywright` CLI into `target/release/`.                                                                                                                               |
 | `mise run portable` | Builds and tests the crates that must stay portable (core, studio, sim), as CI does on Linux.                                                                                            |
 | `mise run coverage` | Measures Rust test coverage.                                                                                                                                                             |
+| `mise run mutants`  | Mutation-tests `keywright-core`, as CI does weekly. The first run also builds cargo-mutants.                                                                                             |
 
 Each task runs its parts for every area, such as `lint:rust` and `lint:ts`, which you can also run on their own. The TypeScript tasks install the Bun packages from `bun.lock` first. `mise tasks` lists them all. CI runs the same tasks, split into jobs (`.github/workflows/ci.yml`). To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
+
+If [typos](https://github.com/crate-ci/typos) flags a word that is spelled correctly, such as a ZMK name, add it to [`typos.toml`](typos.toml).
 
 ## Making changes
 
@@ -54,6 +58,15 @@ Workflows must:
 - install tools with `jdx/mise-action`, so their versions come from `mise.toml`.
 
 [actionlint](https://github.com/rhysd/actionlint) and [zizmor](https://github.com/zizmorcore/zizmor) check this on every pull request.
+
+## Adding a dependency
+
+Every dependency must pass `mise run audit`:
+
+- Rust crates come from crates.io, under a licence that [`deny.toml`](deny.toml) allows: MIT, Apache-2.0, the BSD licences, ISC, Zlib and Unicode-3.0. A crate under another licence needs a pull request that changes `deny.toml` and explains why.
+- No crate or package may have a known vulnerability. An advisory that doesn't affect Keywright can be ignored, with the reason in a comment: in `deny.toml` for a crate, or as `--ignore=<GHSA ID>` on the `audit:ts` task in `mise.toml` for a package.
+
+Advisories are also checked daily on `main` (`.github/workflows/scheduled.yml`), because new ones appear without any change to the code.
 
 ## Dependency updates
 

@@ -6,3 +6,7 @@
 
 # Bun dependencies
 node_modules/
+
+# cargo-mutants output
+mutants.out/
+mutants.out.old/
