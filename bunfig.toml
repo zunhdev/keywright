@@ -1,0 +1,15 @@
+# Bun settings for the whole repository (tech spec §13.3).
+
+[install]
+# Only install versions published at least 3 days ago (259,200 seconds), as with Renovate
+# and mise. This guards against freshly compromised releases (tech spec §16).
+minimumReleaseAge = 259200
+# Each package can only import the dependencies it declares.
+linker = "isolated"
+# `bun add` saves exact versions instead of `^` ranges.
+exact = true
+
+[run]
+# Run every `bun run` command, package scripts included, on Bun's runtime, even where a
+# tool asks for Node. The project has no Node dependency (tech spec §1).
+bun = true

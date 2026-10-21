@@ -8,7 +8,7 @@ Open an issue using one of the templates. For a security problem, **don't** open
 
 ## Development setup
 
-Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mise.jdx.dev) installs every tool at the version the project pins, and runs the same checks as CI.
+Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mise.jdx.dev) installs every tool at the version the project pins, including Bun, and runs the same checks as CI. You don't need Node.
 
 1. Install [rustup](https://rustup.rs). The first `cargo` command then installs the Rust version pinned in `rust-toolchain.toml`.
 2. Install mise, for example with `brew install mise`.
@@ -20,16 +20,16 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
    mise run check  # run everything CI requires
    ```
 
-| Command | What it does |
-|---|---|
-| `mise run fmt` | Formats all code. |
-| `mise run lint` | Checks formatting, and runs clippy, cargo-shear (unused dependencies), actionlint and zizmor (workflows), and typos (spelling). |
-| `mise run test` | Runs all tests. |
-| `mise run check` | Runs `lint` and `test`: everything CI requires. |
-| `mise run build` | Builds the release `keywright` CLI into `target/release/`. |
-| `mise run coverage` | Measures Rust test coverage. |
+| Command             | What it does                                                                                                                                                                             |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mise run fmt`      | Formats all code: rustfmt for Rust, oxfmt for everything else.                                                                                                                           |
+| `mise run lint`     | Checks formatting, lints Rust (clippy) and TypeScript (oxlint, tsc), finds unused code and dependencies (cargo-shear, knip), checks workflows (actionlint, zizmor) and spelling (typos). |
+| `mise run test`     | Runs all tests: Rust with nextest, TypeScript with `bun test`.                                                                                                                           |
+| `mise run check`    | Runs `lint` and `test`: everything CI requires.                                                                                                                                          |
+| `mise run build`    | Builds the release `keywright` CLI into `target/release/`.                                                                                                                               |
+| `mise run coverage` | Measures Rust test coverage.                                                                                                                                                             |
 
-Each task runs its parts for every area, such as `lint:rust` and `lint:workflows`, which you can also run on their own. `mise tasks` lists them all. To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
+Each task runs its parts for every area, such as `lint:rust` and `lint:ts`, which you can also run on their own. The TypeScript tasks install the Bun packages from `bun.lock` first. `mise tasks` lists them all. To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
 
 ## Making changes
 
@@ -55,13 +55,13 @@ Workflows must:
 
 ## Dependency updates
 
-[Renovate](https://docs.renovatebot.com) keeps dependencies current. That covers GitHub Actions, Cargo crates, the Rust toolchain and the tools in `mise.toml`, and it will cover Bun packages once they are added. Its configuration is in [`renovate.json`](renovate.json).
+[Renovate](https://docs.renovatebot.com) keeps dependencies current. That covers GitHub Actions, Cargo crates, Bun packages, the Rust toolchain and the tools in `mise.toml`. Its configuration is in [`renovate.json`](renovate.json).
 
 - Non-major updates arrive as one grouped pull request per week.
 - Major updates get their own pull requests.
 - A new release is only proposed once it is at least 3 days old.
 - Security fixes are proposed right away.
-- Renovate's *Dependency Dashboard* issue lists everything pending.
+- Renovate's _Dependency Dashboard_ issue lists everything pending.
 
 ## License
 
