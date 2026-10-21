@@ -2,7 +2,8 @@ name: Scheduled checks
 
 on:
   schedule:
-    # Daily: new advisories appear without any change to the code.
+    # Daily: new advisories appear without any change to the code, and a long fuzzing run
+    # can find what a short one missed.
     - cron: "23 4 * * *"
     # Weekly, on Mondays: mutation testing.
     - cron: "23 5 * * 1"
@@ -23,7 +24,6 @@ env:
   MISE_TASK_RUN_AUTO_INSTALL: "false"
 
 # The checks that don't need a code change to find something new (tech spec §13.5).
-# Nightly fuzzing joins them once the first fuzz target exists.
 jobs:
   rust-advisories:
     name: Rust advisories (cargo-deny)
@@ -49,7 +49,9 @@ jobs:
       # Licences, bans and sources only change with Cargo.lock, which CI checks on every
       # pull request.
       - name: Check for new advisories
-        run: mise run audit:rust advisories
+        run: |
+          mise run audit:rust advisories
+          mise run audit:fuzz advisories
 
   bun-advisories:
     name: Bun advisories (bun audit)
@@ -70,6 +72,58 @@ jobs:
 
       - name: Check for new advisories
         run: mise run audit:ts
+
+  fuzz:
+    name: Fuzzing
+    if: github.event_name != 'schedule' || github.event.schedule == '23 4 * * *'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    env:
+      # The fuzz task installs cargo-fuzz itself, since no other task uses it.
+      MISE_TASK_RUN_AUTO_INSTALL: "true"
+      # Half an hour per target at night. A pull request that changes this workflow only
+      # needs to see that the job works.
+      FUZZ_SECONDS: ${{ github.event_name == 'schedule' && '1800' || '60' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # None of the tools under [tools] is needed: the task brings its own.
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install: false
+
+      - name: Install the Rust toolchain from rust-toolchain.toml
+        run: rustup toolchain install
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: fuzz -> target
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      # Each run starts from the inputs the previous ones collected, and saves what it
+      # adds, so coverage builds up from night to night. fuzz.yml restores it too.
+      - name: Restore and save the fuzzing corpus
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: fuzz/corpus
+          key: fuzz-corpus-${{ github.run_id }}
+          restore-keys: fuzz-corpus-
+
+      - name: Fuzz each target
+        run: mise run fuzz
+
+      - name: Upload the inputs that failed
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: fuzz-artifacts
+          path: fuzz/artifacts
+          if-no-files-found: ignore
 
   mutants:
     name: Mutation testing (keywright-core)

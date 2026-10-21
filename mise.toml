@@ -43,7 +43,8 @@ depends = ["fmt:*"]
 
 [tasks."fmt:rust"]
 description = "Format Rust code"
-run = "cargo fmt --all"
+# The fuzz targets are a workspace of their own, which `--all` doesn't reach.
+run = ["cargo fmt --all", "cargo fmt --manifest-path fuzz/Cargo.toml"]
 
 [tasks."fmt:ts"]
 description = "Format every file that isn't Rust: TypeScript, CSS, JSON, Markdown, YAML and TOML"
@@ -58,6 +59,7 @@ depends = ["lint:*"]
 description = "Check Rust formatting, run clippy and look for unused dependencies"
 run = [
   "cargo fmt --all --check",
+  "cargo fmt --manifest-path fuzz/Cargo.toml --check",
   "cargo clippy --workspace --all-targets --all-features -- -D warnings",
   "cargo shear",
 ]
@@ -101,6 +103,10 @@ depends = ["audit:*"]
 description = "Check Rust crates against deny.toml: advisories, licences, banned crates and sources"
 run = "cargo deny check"
 
+[tasks."audit:fuzz"]
+description = "Check the fuzz targets' crates against deny.toml, as audit:rust does for the main workspace"
+run = "cargo deny --manifest-path fuzz/Cargo.toml check"
+
 [tasks."audit:ts"]
 description = "Check the packages in bun.lock for known vulnerabilities"
 run = "bun audit"
@@ -123,6 +129,20 @@ run = [
 [tasks.coverage]
 description = "Measure Rust test coverage"
 run = ["rustup component add llvm-tools", "cargo llvm-cov nextest --workspace"]
+
+[tasks.fuzz]
+description = "Fuzz each target in fuzz/ for FUZZ_SECONDS seconds (60 by default)"
+# cargo-fuzz isn't in mise's registry, so mise builds it from source the first time this
+# task runs, as it does cargo-mutants for `mutants` below.
+tools = { "cargo:cargo-fuzz" = "0.13.2" }
+# `--sanitizer none`: AddressSanitizer looks for memory errors, which code without `unsafe`
+# can't have, and it needs a nightly compiler. Without it, fuzzing runs faster, on the
+# pinned toolchain. `--debug-assertions` turns on overflow checks, so an overflow fails too.
+run = """
+for target in $(cargo fuzz list); do
+  cargo fuzz run "$target" --sanitizer none --debug-assertions -- -max_total_time="${FUZZ_SECONDS:-60}"
+done
+"""
 
 [tasks.mutants]
 description = "Mutation-test keywright-core: change its code in small ways, and report changes no test catches"

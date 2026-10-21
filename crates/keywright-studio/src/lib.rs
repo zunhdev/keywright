@@ -4,7 +4,7 @@
 //!
 //! - the `.proto` messages, vendored from `zmk-studio-messages` at a pinned commit, and
 //!   Keywright's own types for them, in [`message`];
-//! - the frame codec;
+//! - the frame codec, in [`frame`];
 //! - a typed async RPC client with request correlation, timeouts and notifications.
 //!
 //! The client runs over a `Transport` trait, which this crate defines.
@@ -21,4 +21,5 @@
 
 #![forbid(unsafe_code)]
 
+pub mod frame;
 pub mod message;

@@ -1,0 +1,5 @@
+# cargo-fuzz's build output, the inputs it collects, its crash reproducers and coverage.
+target
+corpus
+artifacts
+coverage

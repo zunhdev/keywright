@@ -1,0 +1,27 @@
+# Fuzz targets for cargo-fuzz (tech spec §13.2). `mise run fuzz` runs them all.
+#
+# This is a workspace of its own, so building the main workspace never builds libFuzzer.
+
+[package]
+name = "keywright-fuzz"
+version = "0.0.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+keywright-studio = { path = "../crates/keywright-studio" }
+libfuzzer-sys = "0.4.13"
+
+[[bin]]
+name = "frame_decode"
+path = "fuzz_targets/frame_decode.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]
+members = ["."]

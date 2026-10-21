@@ -31,6 +31,7 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
 | `mise run portable` | Builds and tests the crates that must stay portable (core, studio, sim), as CI does on Linux.                                                                                            |
 | `mise run coverage` | Measures Rust test coverage.                                                                                                                                                             |
 | `mise run mutants`  | Mutation-tests `keywright-core`, as CI does weekly. The first run also builds cargo-mutants.                                                                                             |
+| `mise run fuzz`     | Fuzzes each target in `fuzz/` for a minute, as CI does when the fuzzed code changes. Set `FUZZ_SECONDS` to fuzz for longer. The first run also builds cargo-fuzz.                        |
 
 Each task runs its parts for every area, such as `lint:rust` and `lint:ts`, which you can also run on their own. The TypeScript tasks install the Bun packages from `bun.lock` first. `mise tasks` lists them all. CI runs the same tasks, split into jobs (`.github/workflows/ci.yml`). To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
 

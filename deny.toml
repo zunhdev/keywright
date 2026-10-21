@@ -38,7 +38,11 @@ allow = [
 ]
 # This is a policy, not a list of what's in use today, so unused entries are fine.
 unused-allowed-license = "allow"
-exceptions = []
+exceptions = [
+  # libFuzzer, which this crate builds, comes from LLVM under the NCSA licence, a permissive
+  # licence like BSD-3-Clause. Only the fuzz targets use it, and they don't ship.
+  { crate = "libfuzzer-sys", allow = ["NCSA"] },
+]
 
 [bans]
 # Two versions of one crate compile twice and grow the binary. Worth knowing, but often

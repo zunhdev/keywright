@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.8 — for review                                         |
+| **Status**    | Draft v0.9 — for review                                         |
 | **Date**      | 2026-10-21                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -148,7 +148,7 @@ keywright/
 
 - `SOF = 0xAB`, `ESC = 0xAC`, `EOF = 0xAD`. A frame is `SOF payload EOF`. Any payload byte equal to one of these three is preceded by `ESC` (it is not transformed).
 - There is one protobuf message per frame and no length prefix.
-- The decoder is a byte-at-a-time state machine. It enforces a **maximum frame size** (64 KiB) and resynchronises on the next `SOF` after garbage. It is property-tested (round-trip, arbitrary noise) and fuzzed (§14).
+- The decoder is a byte-at-a-time state machine. It enforces a **maximum frame size** (64 KiB) and resynchronises on the next `SOF` after garbage. An unescaped `SOF` inside a frame drops that frame and starts a new one; ZMK's own decoder would also lose the frame that follows. It is property-tested (round-trip, arbitrary noise) and fuzzed (§14).
 - The byte stream is identical on serial and BLE.
 
 ### 5.3 RPC semantics
@@ -477,6 +477,7 @@ app/ui/src/
 | `mise run audit` | `cargo deny check` + `bun audit`                         |
 | `mise run check` | fmt check + lint + test + audits: everything CI requires |
 | `mise run build` | Release build of app + CLI                               |
+| `mise run fuzz`  | Each fuzz target for `FUZZ_SECONDS` (60 by default)      |
 
 Contributors install the toolchain with `mise install` (the Rust toolchain itself comes from `rust-toolchain.toml` via rustup).
 
@@ -490,7 +491,7 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | **cargo-deny**         | Supply-chain policy in `deny.toml`: known vulnerabilities (RustSec advisories), licence allow-list compatible with MIT/Apache-2.0, banned or duplicate crates, crates.io as the only source. It checks the Apple Silicon dependency graph, which is what ships. Yanked versions fail; unmaintained crates fail only as direct dependencies, where we can choose another crate. | Required; advisories also run daily                                    |
 | **cargo-shear**        | Finds unused dependencies                                                                                                                                                                                                                                                                                                                                                      | Required                                                               |
 | **cargo-llvm-cov**     | Code coverage                                                                                                                                                                                                                                                                                                                                                                  | Core crates ≥ 80% lines                                                |
-| **cargo-fuzz**         | Fuzzing of frame decoder, protobuf decode and backup parser                                                                                                                                                                                                                                                                                                                    | Short run on each PR touching those crates; long run nightly           |
+| **cargo-fuzz**         | Fuzzing of frame decoder, protobuf decode and backup parser. Targets live in `fuzz/`, a workspace of their own that cargo-deny also checks. They run on the pinned stable toolchain, without sanitizers: the fuzzed crates have no `unsafe`, so AddressSanitizer would find nothing. Debug assertions stay on, so overflows fail.                                              | Short run on each PR touching those crates; long run nightly           |
 | **cargo-mutants**      | Mutation testing: checks that tests actually catch changed logic                                                                                                                                                                                                                                                                                                               | Weekly on `keywright-core`, report only                                |
 | **Architecture tests** | The `architecture-tests` crate. Its tests read `cargo metadata` and assert the crate dependency rules from §2 and the `unsafe` policy from §4. They run with the other tests.                                                                                                                                                                                                  | Required                                                               |
 
@@ -525,7 +526,8 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | -------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ci.yml`             | PR, push to `main`                 | **rust** (macOS arm64): fmt, clippy, nextest, coverage, deny, shear · **rust-portable** (Ubuntu): core, studio and sim crates build and test, guarding NFR-7 · **ui**: install, oxfmt, oxlint, tsc, knip, bun test, audit, contrast · **app** (macOS arm64): bindings freshness, `tauri build --debug --no-bundle` · **repo**: typos |
 | `lint-workflows.yml` | PR, push                           | actionlint, zizmor, with versions from `mise.toml`                                                                                                                                                                                                                                                                                   |
-| `scheduled.yml`      | Daily / weekly; PRs that change it | Daily: `cargo deny check advisories`, `bun audit` · weekly: cargo-mutants on `keywright-core`, report only, in the job summary · nightly fuzzing, once the first fuzz target exists                                                                                                                                                  |
+| `scheduled.yml`      | Daily / weekly; PRs that change it | Daily: `cargo deny check advisories`, `bun audit`, 30 minutes of fuzzing per target, building on the previous nights' corpus · weekly: cargo-mutants on `keywright-core`, report only, in the job summary                                                                                                                            |
+| `fuzz.yml`           | Changes to the fuzzed code         | One minute per fuzz target, starting from the nightly corpus, on PRs and pushes to `main` that change the fuzzed crates, `fuzz/` or the toolchain. It doesn't run on every PR, so it isn't a required check.                                                                                                                         |
 | `release.yml`        | Tag `v*`                           | §17                                                                                                                                                                                                                                                                                                                                  |
 
 All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The core coverage gate (≥ 80% lines) switches on with the core's first code: on an empty crate, llvm-cov counts 0 of 0 lines as a failure. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
@@ -666,3 +668,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.6     | 2026-10-21 | ADRs 0001–0008, 0010 and 0011 written and linked from §18.                                                                                                                                                                                                             |
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust. |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                             |
+| 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                      |
