@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  # Each job installs only the tools it names in `install_args`. A task that needs
+  # another tool then fails instead of quietly installing it.
+  MISE_TASK_RUN_AUTO_INSTALL: "false"
+
+# Every job runs the same mise tasks as `mise run check` does locally (tech spec §13.5).
+jobs:
+  rust:
+    name: Rust (macOS)
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install_args: github:nextest-rs/nextest github:Boshen/cargo-shear aqua:taiki-e/cargo-llvm-cov
+
+      - name: Install the Rust toolchain from rust-toolchain.toml
+        run: rustup toolchain install
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Check that Cargo.lock is up to date
+        run: cargo fetch --locked
+
+      - name: Lint (rustfmt, clippy, cargo-shear)
+        run: mise run lint:rust
+
+      - name: Test (nextest, doc tests)
+        run: mise run test:rust
+
+      # Report only for now. The 80% line gate for keywright-core arrives with its
+      # first code: on an empty crate, llvm-cov counts 0 of 0 lines as a failure.
+      - name: Coverage
+        run: mise run coverage
+
+  rust-portable:
+    name: Rust portable (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install_args: github:nextest-rs/nextest
+
+      - name: Install the Rust toolchain from rust-toolchain.toml
+        run: rustup toolchain install
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Check that Cargo.lock is up to date
+        run: cargo fetch --locked
+
+      - name: Build and test core, studio and sim (NFR-7)
+        run: mise run portable
+
+  ui:
+    name: TypeScript
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install_args: bun
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Lint (oxfmt, oxlint, tsc, knip)
+        run: mise run lint:ts
+
+      - name: Test (bun test)
+        run: mise run test:ts
+
+  repo:
+    name: Spelling
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          install_args: typos
+
+      - name: Check spelling (typos)
+        run: mise run lint:spelling
