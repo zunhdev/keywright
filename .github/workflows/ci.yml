@@ -46,7 +46,9 @@ jobs:
         run: cargo fetch --locked
 
       - name: Audit crates (cargo-deny)
-        run: mise run audit:rust
+        run: |
+          mise run audit:rust
+          mise run audit:fuzz
 
       - name: Lint (rustfmt, clippy, cargo-shear)
         run: mise run lint:rust
