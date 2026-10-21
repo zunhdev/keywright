@@ -16,3 +16,11 @@
 //! Tech spec §8 describes the design.
 
 #![forbid(unsafe_code)]
+
+pub mod action;
+pub mod behavior;
+pub mod hid;
+pub mod keymap;
+
+#[cfg(test)]
+mod testing;

@@ -29,7 +29,7 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
 | `mise run check`    | Runs `lint`, `test` and `audit`: everything CI requires.                                                                                                                                 |
 | `mise run build`    | Builds the release `keywright` CLI into `target/release/`.                                                                                                                               |
 | `mise run portable` | Builds and tests the crates that must stay portable (core, studio, sim), as CI does on Linux.                                                                                            |
-| `mise run coverage` | Measures Rust test coverage.                                                                                                                                                             |
+| `mise run coverage` | Measures Rust test coverage, and fails if `keywright-core` drops below 80% of lines, as CI does.                                                                                         |
 | `mise run mutants`  | Mutation-tests `keywright-core`, as CI does weekly. The first run also builds cargo-mutants.                                                                                             |
 | `mise run fuzz`     | Fuzzes each target in `fuzz/` for a minute, as CI does when the fuzzed code changes. Set `FUZZ_SECONDS` to fuzz for longer. The first run also builds cargo-fuzz.                        |
 

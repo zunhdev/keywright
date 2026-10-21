@@ -267,6 +267,11 @@ version = "0.1.0"
 [[package]]
 name = "keywright-core"
 version = "0.1.0"
+dependencies = [
+ "proptest",
+ "proptest-derive",
+ "thiserror",
+]
 
 [[package]]
 name = "keywright-device"

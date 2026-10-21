@@ -56,8 +56,7 @@ jobs:
       - name: Test (nextest, doc tests)
         run: mise run test:rust
 
-      # Report only for now. The 80% line gate for keywright-core arrives with its
-      # first code: on an empty crate, llvm-cov counts 0 of 0 lines as a failure.
+      # Reports the whole workspace, and fails if keywright-core drops below 80% of lines.
       - name: Coverage
         run: mise run coverage
 

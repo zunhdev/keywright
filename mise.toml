@@ -127,8 +127,14 @@ run = [
 ]
 
 [tasks.coverage]
-description = "Measure Rust test coverage"
-run = ["rustup component add llvm-tools", "cargo llvm-cov nextest --workspace"]
+description = "Measure Rust test coverage, and fail if keywright-core's drops below 80% of lines"
+# One test run, then two reports: the whole workspace, and the core's gate (tech spec §13.2).
+run = [
+  "rustup component add llvm-tools",
+  "cargo llvm-cov nextest --workspace --no-report",
+  "cargo llvm-cov report",
+  "cargo llvm-cov report --package keywright-core --fail-under-lines 80",
+]
 
 [tasks.fuzz]
 description = "Fuzz each target in fuzz/ for FUZZ_SECONDS seconds (60 by default)"

@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.9 — for review                                         |
+| **Status**    | Draft v0.10 — for review                                        |
 | **Date**      | 2026-10-21                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -257,17 +257,20 @@ The session writes a backup (§9) on the first successful load per session and b
 ```rust
 pub struct Keyboard   { pub identity: DeviceIdentity, pub layout: PhysicalLayout, pub keymap: Keymap, pub behaviors: BehaviorTable }
 pub struct Keymap     { pub layers: Vec<Layer>, pub free_layer_slots: u32 }   // order = priority
-pub struct Layer      { pub id: LayerId, pub name: LayerName, pub bindings: Vec<Binding> } // len == key count
-pub struct Binding    { pub behavior: BehaviorRef, pub param1: u32, pub param2: u32 }
-pub enum   Action     { KeyPress(Shortcut), ModTap{ hold: Mods, tap: Shortcut }, LayerTap{ layer: LayerId, tap: Shortcut },
-                        Momentary(LayerId), ToLayer(LayerId), Toggle(LayerId), StickyLayer(LayerId), StickyMod(Mods),
+pub struct Layer      { pub id: LayerId, pub name: String, pub bindings: Vec<Binding> } // len == key count
+pub struct Binding    { pub behavior: BehaviorId, pub param1: u32, pub param2: u32 }
+pub enum   Action     { KeyPress(Shortcut), ModTap{ hold: Shortcut, tap: Shortcut }, LayerTap{ layer: LayerId, tap: Shortcut },
+                        Momentary(LayerId), ToLayer(LayerId), Toggle(LayerId), StickyLayer(LayerId), StickyKey(Shortcut),
                         Transparent, None, Bluetooth(BtCommand), Output(OutCommand), Lighting(RgbCommand),
-                        CapsWord, KeyRepeat, Unlock, Bootloader, Reset, Other{ name: String, param1: u32, param2: u32 } }
+                        ExternalPower(ExtPowerCommand), CapsWord, KeyRepeat, Unlock, Bootloader, Reset,
+                        Other{ behavior: BehaviorId, param1: u32, param2: u32 } }
 pub struct Shortcut   { pub mods: Mods, pub usage: HidUsage }   // HidUsage = page 0x07 | 0x0C + id
 ```
 
 - **Behavior IDs are per device.** They are stable across firmware updates on one board while its settings survive, but not across boards or settings wipes. `BehaviorTable` maps `id ↔ display name ↔ parameter metadata`.
-- **The action catalog** interprets bindings as `Action`s by matching the behavior's **display name and parameter-metadata fingerprint** against known ZMK behaviors (verified against ZMK `v0.3`). Unknown behaviors become `Action::Other` and still get a generic editor (EDIT-2).
+- **The action catalog** interprets bindings as `Action`s by matching the behavior's **display name and parameter-metadata fingerprint** against known ZMK behaviors (verified against ZMK `v0.3`). The fingerprint is the kinds of value each parameter accepts (constant, range, HID usage, layer ID), whatever the values. Unknown behaviors become `Action::Other` and still get a generic editor (EDIT-2).
+- **The interpretation is lossless.** `Action::from_binding` keeps an interpretation only if `to_binding` gives back the very same binding. Anything else, such as a key press on an unsupported page, stays `Action::Other`, so reading and writing a keymap never changes a key. This is why a mod-tap's hold and a sticky key take a `Shortcut`, not `Mods`: ZMK takes a keycode there, and the same modifiers have several encodings (`LS(LCTRL)`, `LC(LSHIFT)`). The UI still shows a modifier hold as modifiers. `Other` keeps the behavior ID, because display names aren't unique; backups resolve behaviors by name (§9).
+- **External Power** (`&ext_power`) takes a command, but ZMK v0.3 reports no parameters for it, so Studio refuses to assign it. Keywright shows it, but can't offer it.
 - **HID encoding**: `param = mods << 24 | page << 16 | id`. The firmware accepts pages `0x07` and `0x0C` only; the core rejects anything else before sending.
 - **Layer parameters are layer IDs, not indexes**, so reordering layers never breaks layer keys (product R6, resolved).
 
@@ -530,7 +533,7 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | `fuzz.yml`           | Changes to the fuzzed code         | One minute per fuzz target, starting from the nightly corpus, on PRs and pushes to `main` that change the fuzzed crates, `fuzz/` or the toolchain. It doesn't run on every PR, so it isn't a required check.                                                                                                                         |
 | `release.yml`        | Tag `v*`                           | §17                                                                                                                                                                                                                                                                                                                                  |
 
-All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The core coverage gate (≥ 80% lines) switches on with the core's first code: on an empty crate, llvm-cov counts 0 of 0 lines as a failure. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
+All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The rust job's coverage step also gates the core: it fails below 80% of `keywright-core`'s lines. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
 
 ---
 
@@ -669,3 +672,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust. |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                             |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                      |
+| 0.10    | 2026-10-21 | Core model (§8.1): mod-tap holds and sticky keys take a `Shortcut`; `Action` gains `ExternalPower`; `Other` keeps the behavior ID; the interpretation is lossless. The core coverage gate is on (§13.5).                                                               |
