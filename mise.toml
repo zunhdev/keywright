@@ -1,0 +1,84 @@
+# Tools and tasks for working on Keywright (tech spec §13.1).
+#
+# `mise install` installs every tool below at its pinned version, and `mise run <task>`
+# runs the same checks locally as CI. The Rust toolchain itself comes from
+# rust-toolchain.toml, through rustup. Renovate keeps the pins current.
+
+min_version = "2026.10.0"
+
+[settings]
+# Never pick a release younger than 3 days, as with Renovate and Bun (tech spec §16).
+minimum_release_age = "3d"
+
+[tools]
+# JavaScript runtime, package manager, bundler and test runner for the UI.
+bun = "1.4.3"
+# Faster Rust test runner with clearer output.
+"github:nextest-rs/nextest" = { version = "0.9.148", version_prefix = "cargo-nextest-" }
+# Supply-chain policy for Rust crates: advisories, licences, bans, sources.
+cargo-deny = "0.20.2"
+# Finds Rust dependencies that are declared but unused.
+"github:Boshen/cargo-shear" = "1.14.0"
+# Rust code coverage.
+"aqua:taiki-e/cargo-llvm-cov" = "0.9.1"
+# Spell checker for code and docs.
+typos = "1.51.1"
+# GitHub Actions workflow linters: correctness (actionlint, which uses shellcheck for
+# `run:` scripts) and security (zizmor).
+actionlint = "1.7.12"
+shellcheck = "0.11.0"
+zizmor = "1.31.1"
+
+# Each top-level task runs all of its per-area tasks (`lint` runs `lint:*`, and so on),
+# so new areas, such as the UI, plug in by adding a task with the right prefix.
+
+[tasks.fmt]
+description = "Format all code"
+depends = ["fmt:*"]
+
+[tasks."fmt:rust"]
+description = "Format Rust code"
+run = "cargo fmt --all"
+
+[tasks.lint]
+description = "Run every linter and formatting check"
+depends = ["lint:*"]
+
+[tasks."lint:rust"]
+description = "Check Rust formatting, run clippy and look for unused dependencies"
+run = [
+  "cargo fmt --all --check",
+  "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+  "cargo shear",
+]
+
+[tasks."lint:workflows"]
+description = "Check GitHub Actions workflows for mistakes and security problems"
+run = ["actionlint", "zizmor ."]
+
+[tasks."lint:spelling"]
+description = "Check spelling in code and docs"
+run = "typos"
+
+[tasks.test]
+description = "Run all tests"
+depends = ["test:*"]
+
+[tasks."test:rust"]
+description = "Run the Rust tests, including doc examples"
+run = ["cargo nextest run --workspace", "cargo test --workspace --doc"]
+
+[tasks.check]
+description = "Run everything CI requires"
+depends = ["lint", "test"]
+
+[tasks.build]
+description = "Build the release binaries"
+run = "cargo build --release --package keywright-cli"
+
+[tasks.coverage]
+description = "Measure Rust test coverage"
+run = [
+  "rustup component add llvm-tools",
+  "cargo llvm-cov nextest --workspace",
+]
