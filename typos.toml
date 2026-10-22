@@ -5,10 +5,17 @@
 # Check hidden files too, such as the workflows and templates in .github/, which typos
 # skips by default. Git's own folder stays out.
 ignore-hidden = false
-# Lockfiles list other projects' package names, which aren't ours to spell.
-extend-exclude = [".git/", "Cargo.lock", "bun.lock"]
+# Lockfiles list other projects' package names, which aren't ours to spell. Vendored
+# upstream files are copied unchanged, typos and all.
+extend-exclude = [
+  ".git/",
+  "Cargo.lock",
+  "bun.lock",
+  "scripts/key-tables/upstream/chromium/",
+  "scripts/key-tables/upstream/zmk/",
+]
 
 [default.extend-words]
 # Words that typos would "correct" but that are right here, such as names from ZMK or
-# macOS. Map each word to itself, and say where it comes from, for example:
-# darw = "darw" # ZMK's deprecated alias for the down arrow key
+# macOS. Map each word to itself, and say where it comes from.
+darw = "darw" # ZMK's deprecated alias for the down arrow key

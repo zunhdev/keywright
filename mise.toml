@@ -82,6 +82,18 @@ run = ["actionlint", "zizmor ."]
 description = "Check spelling in code and docs"
 run = "typos"
 
+[tasks."lint:key-tables"]
+description = "Check that keywright-core's generated key tables match their generator and sources (needs macOS)"
+run = "bun scripts/generate-key-tables.ts --check"
+
+[tasks.generate]
+description = "Regenerate the checked-in generated code"
+depends = ["generate:*"]
+
+[tasks."generate:key-tables"]
+description = "Regenerate keywright-core's key tables from their pinned upstream sources (needs macOS)"
+run = "bun scripts/generate-key-tables.ts"
+
 [tasks.test]
 description = "Run all tests"
 depends = ["test:*"]

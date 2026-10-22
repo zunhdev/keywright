@@ -1,0 +1,5 @@
+# GitHub collapses generated files in pull request diffs, and leaves generated and
+# vendored files out of the repository's language statistics.
+crates/keywright-core/src/generated/*.rs linguist-generated
+scripts/key-tables/upstream/chromium/** linguist-vendored
+scripts/key-tables/upstream/zmk/** linguist-vendored

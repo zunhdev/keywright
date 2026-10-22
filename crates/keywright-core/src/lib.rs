@@ -19,8 +19,11 @@
 
 pub mod action;
 pub mod behavior;
+mod generated;
 pub mod hid;
 pub mod keymap;
+pub mod keys;
+pub mod mac;
 
 #[cfg(test)]
 mod testing;
