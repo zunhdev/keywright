@@ -3,7 +3,7 @@
 //! This crate holds everything Keywright knows about keymaps as people see them:
 //!
 //! - the keymap model, the behavior table and the action catalog;
-//! - edits, undo and redo history, and the review diff;
+//! - edits, undo and redo history, the review diff, and reconciling with the keyboard;
 //! - lockout guards, Mac compatibility rules and Mac action presets;
 //! - the tables that map HID usages to key names, DOM codes and macOS key codes;
 //! - the `.keywright` backup format and keyboard support packs.
@@ -28,6 +28,7 @@ pub mod hid;
 pub mod keymap;
 pub mod keys;
 pub mod mac;
+pub mod reconcile;
 pub mod support_packs;
 
 #[cfg(test)]

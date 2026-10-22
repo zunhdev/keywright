@@ -12,8 +12,9 @@
 //!  NoDevice ─▶ Probing ─▶ Locked ─(unlocked)─▶ Loading ─▶ Ready ───┤
 //!                 │          ▲                    │ ▲               │
 //!                 │          └── locked again ────┼─┼───────────────┘
-//!                 │                               ▼ │ keep or discard
-//!                 │                         UnsavedChanges
+//!                 │                               ▼ │
+//!                 │               UnsavedChanges (keep or discard), or
+//!                 │               ChangesLost (re-apply or discard)
 //!                 ├─▶ Incompatible (read-only)
 //!                 └─▶ NoLiveEditing / WrongHalf (no answer)
 //! ```
@@ -24,14 +25,22 @@
 //!   keymap. If the keyboard already has unsaved changes from before this session, the
 //!   session asks whether to keep or discard them, because what they changed is unknown.
 //! - **Ready**: changes go through the editor, and the keyboard carries them out one
-//!   request at a time ([`Session::apply`], [`Session::undo`], [`Session::redo`]). A change
-//!   the keyboard refuses is rolled back.
+//!   request at a time ([`Session::apply`], [`Session::undo`], [`Session::redo`],
+//!   [`Session::add_layer`]). A change the keyboard refuses is rolled back. The changes
+//!   being tried are saved ([`Session::save`]) or discarded ([`Session::discard`]) as a
+//!   whole.
 //! - **Locking again** (the keyboard's idle lock, or its output moving to another
 //!   transport) keeps the editor, with its history and the changes being tried, and so does
 //!   losing the connection to the same keyboard. After unlocking, the session reads the
-//!   keymap again. Reconciling it with the editor is KEY-33's.
+//!   keymap again and reconciles it with the editor (tech spec §8.5). If nothing was lost,
+//!   it carries on. If the keyboard restarted and forgot the changes being tried, it waits
+//!   in [`State::ChangesLost`] until they're applied again ([`Session::reapply`]) or
+//!   discarded. If another tool changed the keymap, the editor starts afresh from it, and
+//!   the session says so ([`SessionEvent::ChangedElsewhere`]).
 //! - A request that times out is asked again once. A keyboard that still doesn't answer, or
-//!   doesn't know a request, is **incompatible**.
+//!   doesn't know a request, is **incompatible**. A change that times out may or may not
+//!   have been carried out, and so may a rollback that fails: the session probes again,
+//!   and then brings the keyboard back in step with the editor.
 //!
 //! The session never sends a request just to stop the keyboard locking itself (ADR-0006):
 //! while nobody asks for anything, it only listens.
@@ -106,6 +115,10 @@ pub enum State {
     UnsavedChanges,
     /// The keymap can be changed.
     Ready,
+    /// The keyboard restarted and forgot the changes being tried. They can be applied again
+    /// ([`Session::reapply`]) or discarded ([`Session::discard`]). The editor still has
+    /// them: its review list says what they are.
+    ChangesLost,
     /// The keyboard answers, but not as Keywright expects, so its keymap can't be changed.
     Incompatible(Incompatibility),
     /// A keyboard is there, but doesn't answer: its firmware has no live editing over this
@@ -132,8 +145,14 @@ pub enum Incompatibility {
 pub enum SessionEvent {
     /// The state changed.
     State(State),
-    /// The editor changed: a change was carried out, undone or redone, or rolled back.
+    /// The editor changed: a change was carried out, undone or redone, or rolled back, or
+    /// the changes were saved or discarded.
     Editor,
+    /// Another tool changed the keymap while the session couldn't see it. The editor
+    /// started afresh from what the keyboard holds, with no history.
+    ChangedElsewhere,
+    /// The keyboard says whether it has changes it hasn't saved.
+    Unsaved(bool),
 }
 
 /// What the session knows, at one moment.
@@ -149,8 +168,12 @@ pub struct Snapshot {
     /// The editor. It stays while the keyboard is locked, or the connection is lost.
     pub editor: Option<Editor>,
     /// Whether the editor started from unsaved changes that were there before this
-    /// session, which were kept.
+    /// session, which were kept, or that another tool made.
     pub unsaved_from_before: bool,
+    /// Whether the keyboard last said it has changes it hasn't saved. ZMK v0.3 says so
+    /// after any change, even one undone since, so the editor's review list is what says
+    /// which changes are being tried.
+    pub unsaved: bool,
 }
 
 /// Why the session didn't do what it was asked.
@@ -178,6 +201,10 @@ enum Command {
     KeepUnsavedChanges,
     DiscardUnsavedChanges(oneshot::Sender<Result<(), SessionError>>),
     Change(Change, oneshot::Sender<Result<(), SessionError>>),
+    AddLayer(oneshot::Sender<Result<(), SessionError>>),
+    Save(oneshot::Sender<Result<(), SessionError>>),
+    Discard(oneshot::Sender<Result<(), SessionError>>),
+    Reapply(oneshot::Sender<Result<(), SessionError>>),
     Snapshot(oneshot::Sender<Snapshot>),
 }
 
@@ -280,9 +307,7 @@ impl Session {
     /// Fails if the session isn't waiting for this decision, or the keyboard doesn't
     /// discard them.
     pub async fn discard_unsaved_changes(&self) -> Result<(), SessionError> {
-        let (reply, result) = oneshot::channel();
-        self.send(Command::DiscardUnsavedChanges(reply)).await?;
-        result.await.map_err(|_| SessionError::Stopped)?
+        self.ask(Command::DiscardUnsavedChanges).await
     }
 
     /// Changes the keymap: applies a group of edits, such as the two edits of a
@@ -314,6 +339,47 @@ impl Session {
         self.change(Change::Redo).await
     }
 
+    /// Adds a layer: the keyboard picks the free slot, and the editor records what it
+    /// holds. Undoing removes it again.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the session isn't [`State::Ready`], or the keyboard has no free slot.
+    pub async fn add_layer(&self) -> Result<(), SessionError> {
+        self.ask(Command::AddLayer).await
+    }
+
+    /// Saves the changes being tried. The history stays, so a saved change can be undone.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the session isn't [`State::Ready`], or the keyboard doesn't save.
+    pub async fn save(&self) -> Result<(), SessionError> {
+        self.ask(Command::Save).await
+    }
+
+    /// Discards the changes being tried: the keyboard goes back to its saved keymap, and
+    /// the history goes, because the keyboard no longer holds what it describes. In
+    /// [`State::ChangesLost`], this discards the changes the keyboard forgot.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the session isn't [`State::Ready`] or [`State::ChangesLost`], or the
+    /// keyboard doesn't discard.
+    pub async fn discard(&self) -> Result<(), SessionError> {
+        self.ask(Command::Discard).await
+    }
+
+    /// Applies the changes the keyboard forgot when it restarted again, so it holds what
+    /// the editor shows.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the session isn't [`State::ChangesLost`], or the keyboard stops answering.
+    pub async fn reapply(&self) -> Result<(), SessionError> {
+        self.ask(Command::Reapply).await
+    }
+
     /// What the session knows now.
     ///
     /// # Errors
@@ -326,8 +392,16 @@ impl Session {
     }
 
     async fn change(&self, change: Change) -> Result<(), SessionError> {
+        self.ask(|reply| Command::Change(change, reply)).await
+    }
+
+    /// Sends a command that replies, and waits for the reply.
+    async fn ask(
+        &self,
+        command: impl FnOnce(oneshot::Sender<Result<(), SessionError>>) -> Command,
+    ) -> Result<(), SessionError> {
         let (reply, result) = oneshot::channel();
-        self.send(Command::Change(change, reply)).await?;
+        self.send(command(reply)).await?;
         result.await.map_err(|_| SessionError::Stopped)?
     }
 

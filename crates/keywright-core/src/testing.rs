@@ -1,11 +1,12 @@
 //! Test data shared by the crate's tests: a keyboard's behaviors as ZMK v0.3 describes
-//! them, and Keebart's stock keymap.
+//! them, Keebart's stock keymap, and a model of how ZMK v0.3 keeps a keymap.
 
 pub mod sofle_stock_keymap;
 
 use crate::behavior::{
     Behavior, BehaviorId, BehaviorTable, ParameterSet, ParameterValue, ValueKind,
 };
+use crate::edit::Operation;
 use crate::keymap::{Binding, Keymap, Layer, LayerId};
 
 /// The behaviors of a ZMK v0.3 keyboard with Studio, such as the Sofle Choc Pro BT, with
@@ -161,5 +162,89 @@ fn hid_usage() -> ValueKind {
     ValueKind::HidUsage {
         keyboard_max: 0xFF,
         consumer_max: 0xFFF,
+    }
+}
+
+/// A keyboard as ZMK v0.3 keeps its keymap (`app/src/keymap.c`): a fixed set of slots,
+/// each with a name and bindings, and the order of the slots in use.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ZmkKeymap {
+    /// Each slot's name and bindings, by layer ID.
+    pub slots: Vec<(String, Vec<Binding>)>,
+    /// The IDs of the layers in use, in order.
+    pub order: Vec<LayerId>,
+}
+
+impl ZmkKeymap {
+    /// A keyboard showing `keymap`, whose free slots hold layers of `&none`. The layers
+    /// must use the lowest IDs.
+    pub fn showing(keymap: &Keymap) -> Self {
+        let keys = keymap.layers[0].bindings.len();
+        let used = keymap.layers.len();
+        let total = used + usize::try_from(keymap.free_layer_slots).unwrap();
+        let mut slots = vec![(String::new(), vec![none(); keys]); total];
+        for layer in &keymap.layers {
+            slots[slot(layer.id)] = (layer.name.clone(), layer.bindings.clone());
+        }
+        Self {
+            slots,
+            order: keymap.layers.iter().map(|layer| layer.id).collect(),
+        }
+    }
+
+    /// Carries out an operation, as ZMK v0.3 does when it succeeds.
+    pub fn perform(&mut self, operation: &Operation) {
+        match operation {
+            Operation::SetBinding {
+                layer,
+                position,
+                binding,
+            } => self.slots[slot(*layer)].1[*position] = *binding,
+            Operation::RenameLayer { layer, name } => self.slots[slot(*layer)].0.clone_from(name),
+            Operation::MoveLayer { from, to } => {
+                let id = self.order.remove(*from);
+                self.order.insert(*to, id);
+            }
+            Operation::RemoveLayer { index } => {
+                self.order.remove(*index);
+            }
+            Operation::RestoreLayer { layer, index } => self.order.insert(*index, *layer),
+        }
+    }
+
+    /// `zmk_keymap_add_layer`: the free slot with the lowest ID, as it is.
+    pub fn add_layer(&mut self) -> Option<(usize, Layer)> {
+        let id = (0..self.slots.len())
+            .map(|id| LayerId(u32::try_from(id).unwrap()))
+            .find(|id| !self.order.contains(id))?;
+        self.order.push(id);
+        Some((self.order.len() - 1, self.layer(id)))
+    }
+
+    pub fn layer(&self, id: LayerId) -> Layer {
+        let (name, bindings) = self.slots[slot(id)].clone();
+        Layer { id, name, bindings }
+    }
+
+    /// What `keymap.get_keymap` would answer.
+    pub fn keymap(&self) -> Keymap {
+        Keymap {
+            layers: self.order.iter().map(|id| self.layer(*id)).collect(),
+            free_layer_slots: u32::try_from(self.slots.len() - self.order.len()).unwrap(),
+        }
+    }
+}
+
+/// A layer's slot.
+pub fn slot(id: LayerId) -> usize {
+    usize::try_from(id.0).unwrap()
+}
+
+/// `&none`, as a binding with behavior 0.
+pub fn none() -> Binding {
+    Binding {
+        behavior: BehaviorId(0),
+        param1: 0,
+        param2: 0,
     }
 }
