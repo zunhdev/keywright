@@ -6,7 +6,7 @@ pub mod sofle_stock_keymap;
 use crate::behavior::{
     Behavior, BehaviorId, BehaviorTable, ParameterSet, ParameterValue, ValueKind,
 };
-use crate::keymap::Binding;
+use crate::keymap::{Binding, Keymap, Layer, LayerId};
 
 /// The behaviors of a ZMK v0.3 keyboard with Studio, such as the Sofle Choc Pro BT, with
 /// the parameters each one reports. They are taken from ZMK v0.3.0's behavior drivers. The
@@ -103,6 +103,27 @@ pub fn zmk_v0_3_behaviors() -> Vec<Behavior> {
             parameters,
         })
         .collect()
+}
+
+/// Keebart's stock keymap: layers 0 to 3, in order, with no free layer slot.
+pub fn stock_keymap() -> Keymap {
+    let table = zmk_v0_3_table();
+    let layers = sofle_stock_keymap::LAYERS
+        .iter()
+        .zip(0..)
+        .map(|(&(name, bindings), id)| Layer {
+            id: LayerId(id),
+            name: name.to_owned(),
+            bindings: bindings
+                .iter()
+                .map(|&(behavior, param1, param2)| binding(&table, behavior, param1, param2))
+                .collect(),
+        })
+        .collect();
+    Keymap {
+        layers,
+        free_layer_slots: 0,
+    }
 }
 
 /// A table of [`zmk_v0_3_behaviors`].

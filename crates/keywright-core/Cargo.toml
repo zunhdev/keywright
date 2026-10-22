@@ -12,6 +12,8 @@ publish.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
+# Snapshot tests: review lists are compared with the files in `snapshots/` (tech spec §14.1).
+insta.workspace = true
 proptest.workspace = true
 proptest-derive.workspace = true
 

@@ -19,6 +19,8 @@
 
 pub mod action;
 pub mod behavior;
+pub mod edit;
+pub mod editor;
 mod generated;
 pub mod hid;
 pub mod keymap;

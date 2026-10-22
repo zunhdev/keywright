@@ -13,6 +13,7 @@ publish = false
 # Shared versions for third-party crates. A member opts in with `name.workspace = true`.
 [workspace.dependencies]
 cargo_metadata = "0.23.1"
+insta = { version = "1.49.0", default-features = false }
 proptest = "1.12.0"
 proptest-derive = "0.9.0"
 prost = "0.14.4"
