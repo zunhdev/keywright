@@ -19,6 +19,8 @@ prost = "0.14.4"
 prost-build = "0.14.4"
 protox = "0.10.0"
 thiserror = "2.0.21"
+tokio = "1.53.3"
+tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 
 # Every member inherits these lints with `[lints] workspace = true` (tech spec §13.2).
 # CI runs clippy with `-D warnings`, so warnings fail the build there too.
