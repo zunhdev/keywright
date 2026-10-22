@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.15 — for review                                        |
+| **Status**    | Draft v0.16 — for review                                        |
 | **Date**      | 2026-10-22                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -347,19 +347,19 @@ After re-unlock or reconnect, the session re-reads the keymap and compares:
 format = 1
 created = 2026-10-21T14:03:00Z
 app = "keywright 1.0.0"
-reason = "export" # export | first-connect | before-restore | before-import | before-firmware
+reason = "export"
 
 [keyboard]
 name = "Sofle Choc BT"
 support-pack = "keebart-sofle-choc-pro-bt"
 physical-layout = "Default"
-key-count = 60 # 58 keys + 2 knob presses
+key-count = 60
 
 [[layer]]
 id = 0
 name = "Base"
 bindings = [
-  # left row 1                                                      right row 1
+  # row 1: left, then right
   "kp GRAVE",
   "kp N1",
   "kp N2",
@@ -391,8 +391,33 @@ name = "Navigation"
 bindings = ["bt BT_CLR", "bt BT_SEL 0", "…", "studio_unlock", "…", "other \"Mouse Move\" 0x0 0x0"]
 ```
 
-- **Import** parses the file into a target `Keymap`, resolves names against the connected keyboard's `BehaviorTable`, and produces `edits + unresolved[]`. The unresolved list (missing behavior, too many layers, key-count mismatch) is shown in the Import preview (design §9.2).
-- **Parsing limits**: 1 MiB file size, 64 layers, 512 bindings per layer. The parser is fuzzed.
+- **The header**: `format` (1), `created`, `app`, and `reason`: `export`, `first-connect`, `before-restore`, `before-import` or `before-firmware`. Then `[keyboard]`: `name`, an optional `support-pack`, `physical-layout` and `key-count`. Unknown fields are ignored.
+- **The writer** is Keywright's own, so it controls the layout: one binding per line, and a comment before each row of keys. The rows come from the support pack. `toml` (`parse` and `serde` only) reads the file.
+- **Action text** (`backup::ActionText`): the behavior's ZMK label, then its parameters:
+  - `kp`, `mt`, `lt`, `mo`, `to`, `tog`, `sl`, `sk`, `trans`, `none`, `bt`, `out`, `rgb_ug`, `ext_power`, `caps_word`, `key_repeat`, `studio_unlock`, `bootloader` and `sys_reset`;
+  - keys use ZMK's names (`EXCL`, `C_VOL_UP`); modifiers use ZMK's functions, nested in one order (`LS(LG(N1))`). The reader takes any order, and names with modifiers inside (`LG(EXCL)`);
+  - a key ZMK has no name for is written as its usage (`LG(0x070001)`); commands use ZMK's names (`BT_SEL 0`, `RGB_TOG`); layers use the backup's layer IDs;
+  - a behavior Keywright doesn't know is written `other "Display Name" 0x1 0x0`;
+  - text that doesn't parse is an error for that key alone, never a guess.
+- **Import** (`Backup::import`) resolves behaviors by name against the keyboard's `BehaviorTable`, and returns one group of edits plus `unresolved[]` for the Import preview (design §9.2). Each backup layer becomes, in order of preference:
+  - the keyboard's layer with the same ID;
+  - the free slot with the same ID, which is restored;
+  - another unclaimed layer, in order;
+  - another free slot.
+
+  Layer keys follow their layers. Layers the backup lacks are removed, and the rest are put in its order.
+
+- **Restored slots**: a restored slot may hold anything, so every key and the name of a restored layer is set. Keys that can't be resolved get "same as layer below". A keyboard with neither that nor "does nothing" gets no layers restored.
+- **Unresolved**:
+  - a key-count mismatch, which means another keyboard, so nothing is imported;
+  - more layers than the keyboard has room for; the last ones are left out;
+  - a missing behavior;
+  - a layer key whose layer is left out;
+  - text that can't be read.
+
+  Keys that can't be resolved keep what they do.
+
+- **Parsing limits**: 1 MiB file size, 64 layers, 512 bindings per layer. The fuzz target `backup_parse` reads arbitrary text as a backup and as an action. Whatever reads must write back to text that reads the same. It starts from seeds in `fuzz/seeds/backup_parse/`, such as the stock keymap's file, which `mise run fuzz` adds to the corpus.
 
 ---
 
@@ -696,6 +721,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.16    | 2026-10-22 | Backup format (§9): the header fields and the writer's layout, the action text grammar, how import maps layers and fills restored slots, the kinds of unresolved item, and the `backup_parse` fuzz target with checked-in seeds.                                                                                                                                   |
 | 0.15    | 2026-10-22 | Guards (§8.4): reachability follows ZMK's layer state, with latched and held layers, the default layer (ID 0) and conditional layers; guards report only what a change makes worse; a state cap; `layer_keys` for LAY-4; the compatibility check's matching and fixes.                                                                                             |
 | 0.14    | 2026-10-22 | Editing (§8.3): one group in flight, with rollback of partial failures; edits follow ZMK's layer slots (removed layers keep their slot, `AddLayer` is recorded after the keyboard adds, redo restores rather than adds); the kinds of review row; discarding clears the history.                                                                                   |
 | 0.13    | 2026-10-22 | RPC client (§4, §5.3, §5.4, §6): `Transport` uses native async in traits with a cancel-safe `recv`; `tracing` logs what the client drops; requests whose callers gave up before their turn aren't sent; indices are checked against the keymap the client last saw; the replay fixtures' location and format.                                                      |

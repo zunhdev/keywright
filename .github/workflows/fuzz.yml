@@ -5,6 +5,8 @@ name: Fuzz
 on:
   pull_request:
     paths:
+      - crates/keywright-core/src/backup.rs
+      - crates/keywright-core/src/backup/**
       - crates/keywright-studio/**
       - fuzz/**
       - Cargo.lock
@@ -14,6 +16,8 @@ on:
   push:
     branches: [main]
     paths:
+      - crates/keywright-core/src/backup.rs
+      - crates/keywright-core/src/backup/**
       - crates/keywright-studio/**
       - fuzz/**
       - Cargo.lock
