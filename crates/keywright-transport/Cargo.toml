@@ -8,5 +8,18 @@ license.workspace = true
 repository.workspace = true
 publish.workspace = true
 
+[dependencies]
+# The `Transport` trait this crate implements.
+keywright-studio = { path = "../keywright-studio" }
+# Serial ports: listing them with their USB IDs, opening, reading and writing (tech spec §6.1).
+serialport.workspace = true
+# The reader and writer threads hand bytes over channels; the port watcher polls on a timer.
+tokio = { workspace = true, features = ["rt", "sync", "time"] }
+# Logs what the transport can't report as an error, such as a port list that failed.
+tracing.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
+
 [lints]
 workspace = true
