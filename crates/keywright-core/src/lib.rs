@@ -22,6 +22,7 @@ pub mod behavior;
 pub mod edit;
 pub mod editor;
 mod generated;
+pub mod guard;
 pub mod hid;
 pub mod keymap;
 pub mod keys;

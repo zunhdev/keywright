@@ -154,3 +154,190 @@ fn every_code_maps_both_ways_on_every_keyboard_type() {
         }
     }
 }
+
+mod compatibility {
+    use super::*;
+    use crate::action::Action;
+    use crate::hid::{Mods, Shortcut};
+    use crate::keymap::LayerId;
+    use crate::mac::compat::{self, Rule};
+    use crate::testing::{self, stock_keymap, zmk_v0_3_table};
+
+    const fn command(id: u16) -> Shortcut {
+        Shortcut {
+            mods: Mods::LEFT_COMMAND,
+            usage: key(id),
+        }
+    }
+
+    const fn plain(id: u16) -> Shortcut {
+        Shortcut {
+            mods: Mods::NONE,
+            usage: key(id),
+        }
+    }
+
+    /// The candidates S7 checks first: the keyboard page's own Undo, Cut, Copy and Paste,
+    /// with the ⌘ shortcuts a Mac uses. Until S7 confirms them, they're test data.
+    const EDITING_KEYS: [Rule; 4] = [
+        rule(0x7A, "Undo (Linux style)", 0x1D),
+        rule(0x7B, "Cut (Linux style)", 0x1B),
+        rule(0x7C, "Copy (Linux style)", 0x06),
+        rule(0x7D, "Paste (Linux style)", 0x19),
+    ];
+
+    const fn rule(usage: u16, name: &'static str, replacement: u16) -> Rule {
+        Rule {
+            usage: key(usage),
+            name,
+            reason: "It doesn't do anything on a Mac.",
+            replacement: Some(command(replacement)),
+        }
+    }
+
+    /// The Done-when: the stock raise layer's Undo, Cut, Copy and Paste are flagged, each
+    /// with its ⌘ shortcut as the fix.
+    #[test]
+    fn the_stock_raise_layers_editing_keys_are_flagged() {
+        let findings = compat::check(&stock_keymap(), &zmk_v0_3_table(), &EDITING_KEYS);
+        let found: Vec<_> = findings
+            .iter()
+            .map(|finding| {
+                (
+                    finding.layer,
+                    finding.position,
+                    finding.rule.name,
+                    finding.fix,
+                )
+            })
+            .collect();
+        assert_eq!(
+            found,
+            [
+                (
+                    LayerId(2),
+                    37,
+                    "Undo (Linux style)",
+                    Some(Action::KeyPress(command(0x1D)))
+                ),
+                (
+                    LayerId(2),
+                    38,
+                    "Cut (Linux style)",
+                    Some(Action::KeyPress(command(0x1B)))
+                ),
+                (
+                    LayerId(2),
+                    39,
+                    "Copy (Linux style)",
+                    Some(Action::KeyPress(command(0x06)))
+                ),
+                (
+                    LayerId(2),
+                    40,
+                    "Paste (Linux style)",
+                    Some(Action::KeyPress(command(0x19)))
+                ),
+            ]
+        );
+    }
+
+    #[test]
+    fn the_shipped_rules_wait_for_s7() {
+        assert_eq!(compat::RULES, []);
+        assert_eq!(
+            compat::check(&stock_keymap(), &zmk_v0_3_table(), compat::RULES),
+            []
+        );
+    }
+
+    #[test]
+    fn every_part_of_an_action_that_types_the_key_is_checked() {
+        let table = zmk_v0_3_table();
+        let copy = plain(0x7C);
+        let shifted_copy = Shortcut {
+            mods: Mods::LEFT_SHIFT,
+            ..copy
+        };
+        let escape = plain(0x29);
+        let actions = [
+            // Modifiers don't matter.
+            (
+                Action::KeyPress(shifted_copy),
+                Action::KeyPress(command(0x06)),
+            ),
+            (
+                Action::ModTap {
+                    hold: plain(0xE0),
+                    tap: copy,
+                },
+                Action::ModTap {
+                    hold: plain(0xE0),
+                    tap: command(0x06),
+                },
+            ),
+            (
+                Action::ModTap {
+                    hold: copy,
+                    tap: escape,
+                },
+                Action::ModTap {
+                    hold: command(0x06),
+                    tap: escape,
+                },
+            ),
+            (
+                Action::LayerTap {
+                    layer: LayerId(1),
+                    tap: copy,
+                },
+                Action::LayerTap {
+                    layer: LayerId(1),
+                    tap: command(0x06),
+                },
+            ),
+            (Action::StickyKey(copy), Action::StickyKey(command(0x06))),
+        ];
+        let mut keymap = stock_keymap();
+        for (position, (action, _)) in actions.iter().enumerate() {
+            keymap.layers[0].bindings[position] = action.to_binding(&table).unwrap();
+        }
+        let copy_rule = [EDITING_KEYS[2]];
+        let fixes: Vec<_> = compat::check(&keymap, &table, &copy_rule)
+            .into_iter()
+            .filter(|finding| finding.layer == LayerId(0))
+            .map(|finding| (finding.position, finding.fix))
+            .collect();
+        let expected: Vec<_> = actions
+            .iter()
+            .enumerate()
+            .map(|(position, (_, fix))| (position, Some(*fix)))
+            .collect();
+        assert_eq!(fixes, expected);
+    }
+
+    #[test]
+    fn keys_that_dont_type_the_key_are_left_alone() {
+        let table = zmk_v0_3_table();
+        let mut keymap = stock_keymap();
+        keymap.layers[2].bindings[39] = testing::binding(&table, "Transparent", 0, 0);
+        keymap.layers[2].bindings[40] = testing::binding(&table, "Momentary Layer", 1, 0);
+        let copy_and_paste = [EDITING_KEYS[2], EDITING_KEYS[3]];
+        assert_eq!(compat::check(&keymap, &table, &copy_and_paste), []);
+    }
+
+    #[test]
+    fn a_rule_without_a_replacement_still_flags_the_key() {
+        let unfixable = Rule {
+            replacement: None,
+            ..rule(0x7C, "Copy (Linux style)", 0)
+        };
+        let findings = compat::check(
+            &stock_keymap(),
+            &zmk_v0_3_table(),
+            std::slice::from_ref(&unfixable),
+        );
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].fix, None);
+    }
+}
