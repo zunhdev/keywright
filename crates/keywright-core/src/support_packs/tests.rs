@@ -344,12 +344,15 @@ mod the_sofle_pack {
     #[test]
     fn has_both_illustrations() {
         let illustrations = sofle().illustrations;
+        let top = illustrations.top.unwrap();
         let underside = illustrations.underside.unwrap();
+        let has = |svg: &str, id: &str| svg.contains(&format!("id=\"{id}\""));
         for half in ["left", "right"] {
-            assert!(underside.contains(&format!("id=\"reset-button-{half}\"")));
-            assert!(underside.contains(&format!("id=\"usb-port-{half}\"")));
+            assert!(has(&top, &format!("usb-port-{half}")));
+            assert!(has(&top, &format!("power-switch-{half}")));
+            assert!(has(&underside, &format!("reset-button-{half}")));
+            assert!(has(&underside, &format!("usb-port-{half}")));
         }
-        assert!(illustrations.top.unwrap().contains("class=\"knob\""));
     }
 
     #[test]

@@ -158,10 +158,11 @@ pub struct FirmwareUpdate {
 /// Drawings of a keyboard, as SVG images.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Illustrations {
-    /// The keyboard from above.
+    /// The keyboard from above. Its USB ports and power switches have the IDs
+    /// `usb-port-left`, `power-switch-left` and so on, to highlight them.
     pub top: Option<String>,
-    /// The keyboard from below, with the reset buttons and USB ports. Its elements have the
-    /// IDs `reset-button-left`, `usb-port-left` and so on, to highlight them.
+    /// The keyboard from below, with the reset buttons and USB ports, whose IDs are
+    /// `reset-button-left`, `usb-port-left` and so on.
     pub underside: Option<String>,
 }
 

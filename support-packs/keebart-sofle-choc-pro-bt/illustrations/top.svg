@@ -1,15 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 1740 646" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 1740 650" role="img" aria-labelledby="title desc">
   <title id="title">Keebart Sofle Choc Pro BT, from above</title>
-  <desc id="desc">Both halves of the keyboard, with their keys and the two knobs.</desc>
+  <desc id="desc">Both halves of the keyboard, with their keys, knobs and displays. Each half has its USB port on the top edge above the display, and its power switch on the inner edge.</desc>
   <style>
     path, rect, circle { fill: none; stroke: currentColor; stroke-linejoin: round; }
     .case { stroke-width: 4; }
     .key, .knob circle { stroke-width: 3; }
     .knob-ring { stroke-width: 2; stroke-dasharray: 6 6; }
-    .usb-port, .reset-button { stroke-width: 3; }
+    .display, .usb-port, .power-switch, .reset-button { stroke-width: 3; }
   </style>
   <g id="left-half">
-    <path class="case" d="M-30 37 L-29 29 L-26 22 L-21 16 L-15 11 L-8 8 L200 -18 L300 -30 L400 -30 L700 -6 L708 -5 L715 -2 L721 3 L726 9 L729 16 L730 24 L742 428 L741 436 L738 443 L677 580 L672 586 L666 591 L658 594 L651 595 L175 567 L167 566 L160 563 L-15 463 L-21 458 L-26 452 L-29 445 L-30 437 Z"/>
+    <path class="case" d="M-15 22 L185 22 L185 -3 L285 -3 L285 -15 L415 -15 L415 -3 L515 -3 L515 9 L715 9 L731 420 L658 585 L160 552 L-15 452 Z"/>
+    <rect class="usb-port" id="usb-port-left" x="625" y="0" width="50" height="18" rx="8"/>
+    <rect class="power-switch" id="power-switch-left" x="724.4" y="232" width="10" height="36" rx="3"/>
+    <rect class="display" id="display-left" x="618" y="70" width="64" height="170" rx="6"/>
     <rect class="key" x="6" y="43" width="88" height="88" rx="10"/>
     <rect class="key" x="106" y="43" width="88" height="88" rx="10"/>
     <rect class="key" x="206" y="18" width="88" height="88" rx="10"/>
@@ -45,7 +48,10 @@
     <rect class="key" x="606" y="389" width="88" height="138" rx="10" transform="rotate(24 600 433)"/>
   </g>
   <g id="right-half" transform="translate(160 0)">
-    <path class="case" d="M758 428 L770 24 L771 16 L774 9 L779 3 L785 -2 L792 -5 L800 -6 L1100 -30 L1200 -30 L1300 -18 L1508 8 L1515 11 L1521 16 L1526 22 L1529 29 L1530 37 L1530 437 L1529 445 L1526 452 L1521 458 L1515 463 L1340 563 L1333 566 L1325 567 L849 595 L842 594 L834 591 L828 586 L823 580 L762 443 L759 436 Z"/>
+    <path class="case" d="M1515 22 L1315 22 L1315 -3 L1215 -3 L1215 -15 L1085 -15 L1085 -3 L985 -3 L985 9 L785 9 L769 420 L842 585 L1340 552 L1515 452 Z"/>
+    <rect class="usb-port" id="usb-port-right" x="825" y="0" width="50" height="18" rx="8"/>
+    <rect class="power-switch" id="power-switch-right" x="765.6" y="232" width="10" height="36" rx="3"/>
+    <rect class="display" id="display-right" x="818" y="70" width="64" height="170" rx="6"/>
     <rect class="key" x="906" y="30" width="88" height="88" rx="10"/>
     <rect class="key" x="1006" y="18" width="88" height="88" rx="10"/>
     <rect class="key" x="1106" y="6" width="88" height="88" rx="10"/>

@@ -63,7 +63,7 @@ The test plays the stock keymap the way ZMK does, and checks that each hint does
 
 Both are optional, and the app shows them as images:
 
-- `top.svg`: the keyboard from above;
+- `top.svg`: the keyboard from above, with elements whose IDs are `usb-port-left`, `power-switch-left` and so on, which the app highlights to show where to plug in or switch on;
 - `underside.svg`: the keyboard from below, mirrored, with elements whose IDs are `reset-button-left`, `usb-port-left`, `reset-button-right` and `usb-port-right`, which the firmware update highlights.
 
 Draw with `currentColor`, so they work in light and dark mode. They can't contain scripts.
