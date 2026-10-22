@@ -5,11 +5,12 @@
 //! - the `.proto` messages, vendored from `zmk-studio-messages` at a pinned commit, and
 //!   Keywright's own types for them, in [`message`];
 //! - the frame codec, in [`frame`];
-//! - a typed async RPC client with request correlation, timeouts and notifications.
+//! - a typed async RPC client with request correlation, timeouts and notifications, in
+//!   [`client`].
 //!
-//! The client runs over a `Transport` trait, which this crate defines.
-//! `keywright-transport` implements it for USB and Bluetooth, and `keywright-sim` for an
-//! in-memory keyboard.
+//! The client runs over the [`Transport`](transport::Transport) trait, which this crate
+//! defines. `keywright-transport` implements it for USB and Bluetooth, and `keywright-sim`
+//! for an in-memory keyboard.
 //!
 //! The crate knows the protocol, but not keymaps as people see them. `keywright-core`
 //! interprets bindings as actions, and `keywright-device` combines the two.
@@ -21,5 +22,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod client;
 pub mod frame;
 pub mod message;
+pub mod transport;

@@ -11,6 +11,10 @@ publish.workspace = true
 [dependencies]
 prost.workspace = true
 thiserror.workspace = true
+# The client's I/O task: channels, timers and `select!` (tech spec §5.3).
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
+# Logs what the client drops: bytes outside frames, undecodable messages, unknown replies.
+tracing.workspace = true
 
 # build.rs generates the message types from the vendored .proto files (tech spec §5.1).
 [build-dependencies]
@@ -20,6 +24,8 @@ protox.workspace = true
 [dev-dependencies]
 proptest.workspace = true
 proptest-derive.workspace = true
+# `test-util` lets tests pause the clock and skip ahead to a timeout.
+tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
 
 [lints]
 workspace = true
