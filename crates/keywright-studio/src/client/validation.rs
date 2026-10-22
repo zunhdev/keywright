@@ -1,9 +1,17 @@
 //! Checks requests before they're sent (tech spec §5.3).
 //!
-//! The keyboard answers most bad requests with an error, but not all. A layer name too
-//! long for the firmware's buffer fails to decode, and ZMK v0.3 then sends no response at
-//! all, so the request would only time out. The client refuses such requests up front, and
-//! out-of-range layers and keys with them.
+//! The keyboard answers most bad requests with an error, but not all. ZMK v0.3 sends no
+//! response at all to a request it can't receive, so the request would only time out. It
+//! can't receive (spike S1):
+//!
+//! - a layer name too long for its buffer, which fails to decode;
+//! - a frame longer than its 30-byte receive buffer, which loses bytes. A rename is the
+//!   only request that long, so layer names are limited to [`MAX_NAME_LEN`] bytes;
+//! - a layer name with a byte that the frame escapes in it, which its read loop gets
+//!   wrong every time. Such bytes appear in the UTF-8 of some characters, such as `«`
+//!   and `Э`.
+//!
+//! The client refuses such requests up front, and out-of-range layers and keys with them.
 //!
 //! [`KeymapShape`] learns the keymap's shape from the responses the client relays: each
 //! layer's ID and number of keys, the name limit, and the number of physical layouts. It
@@ -11,20 +19,38 @@
 //! changes, it forgets the keymap, and checks only what needs no keymap until the next one
 //! arrives.
 
+use crate::frame;
 use crate::message::{
     CoreResponse, Keymap, KeymapRequest, KeymapResponse, Layer, LayerId, Request, Response,
 };
+
+/// The longest layer name, in bytes of UTF-8, whose rename fits a 30-byte frame: 12 bytes
+/// of frame, and 18 of name.
+pub const MAX_NAME_LEN: usize = 18;
 
 /// A request the client refused to send, because the keyboard would reject it or choke
 /// on it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum InvalidRequest {
-    /// The layer name doesn't fit the firmware's buffer. Counted in bytes of UTF-8.
+    /// The layer name is too long for the firmware's buffer, or for a frame it can
+    /// receive. Counted in bytes of UTF-8.
     #[error("a layer name can be at most {max} bytes long, and this one has {length}")]
     LayerNameTooLong {
         /// The name's length.
         length: usize,
-        /// The most the firmware takes.
+        /// The most the keyboard takes.
+        max: usize,
+    },
+    /// The layer name has a character whose UTF-8 has a byte that the frame escapes,
+    /// which ZMK v0.3 can't receive in a name.
+    #[error("ZMK v0.3 can't receive `{0}` in a layer name")]
+    LayerNameCharacter(char),
+    /// The request's frame is longer than ZMK v0.3's 30-byte receive buffer.
+    #[error("the request takes {length} bytes, and the keyboard receives at most {max}")]
+    FrameTooLong {
+        /// The frame's length.
+        length: usize,
+        /// The most the keyboard receives.
         max: usize,
     },
     /// No layer in the keymap has this ID.
@@ -93,8 +119,9 @@ impl KeymapShape {
             KeymapRequest::SetLayerProps { layer_id, name } => {
                 if let Some(keymap) = &self.keymap {
                     keymap.keys(*layer_id)?;
-                    keymap.check_name(name)?;
                 }
+                let buffer = self.keymap.as_ref().map(|keymap| keymap.name_buffer);
+                check_name(name, buffer)?;
             }
             KeymapRequest::MoveLayer {
                 start_index,
@@ -226,16 +253,31 @@ impl Layers {
             .map(|(_, keys)| *keys)
             .ok_or(InvalidRequest::UnknownLayer(id))
     }
+}
 
-    fn check_name(&self, name: &str) -> Result<(), InvalidRequest> {
-        if self.name_buffer > 0 && name.len() >= self.name_buffer {
-            return Err(InvalidRequest::LayerNameTooLong {
-                length: name.len(),
-                max: self.name_buffer - 1,
-            });
-        }
-        Ok(())
+/// Checks a layer name against what the keyboard can receive, and against the size of its
+/// name buffer, with room for C's terminating NUL, once the client knows it.
+fn check_name(name: &str, buffer: Option<usize>) -> Result<(), InvalidRequest> {
+    if let Some(character) = name.chars().find(|character| {
+        let mut bytes = [0; 4];
+        character
+            .encode_utf8(&mut bytes)
+            .bytes()
+            .any(frame::is_escaped)
+    }) {
+        return Err(InvalidRequest::LayerNameCharacter(character));
     }
+    let max = match buffer {
+        Some(buffer) if buffer > 0 => (buffer - 1).min(MAX_NAME_LEN),
+        _ => MAX_NAME_LEN,
+    };
+    if name.len() > max {
+        return Err(InvalidRequest::LayerNameTooLong {
+            length: name.len(),
+            max,
+        });
+    }
+    Ok(())
 }
 
 /// An index or count from the protocol, as a `usize`. On a 16-bit target, one too large

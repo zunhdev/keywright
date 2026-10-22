@@ -66,10 +66,19 @@ impl Keyboard {
             let chunk = within(self.from_client.recv())
                 .await
                 .expect("the client hung up");
-            if let Some(Ok(payload)) = self.decoder.decode(&chunk).into_iter().next() {
+            // Lone `EOF`s after a timeout come out as skipped bytes.
+            let payload = self.decoder.decode(&chunk).into_iter().find_map(Result::ok);
+            if let Some(payload) = payload {
                 return ClientMessage::decode(&payload).expect("the client sent garbage");
             }
         }
+    }
+
+    /// Waits for the next chunk of bytes the client sends, as it is.
+    async fn next_chunk(&mut self) -> Vec<u8> {
+        within(self.from_client.recv())
+            .await
+            .expect("the client hung up")
     }
 
     /// Expects the client's next request to be `expected`, and answers it.
@@ -201,7 +210,7 @@ mod requests {
 
     #[tokio::test(start_paused = true)]
     async fn request_ids_count_up_and_wrap_around() {
-        let (client, mut keyboard) = connect_at(u32::MAX - 1);
+        let (client, mut keyboard) = connect_at(126);
         let keyboard = tokio::spawn(async move {
             let mut ids = Vec::new();
             for _ in 0..3 {
@@ -214,7 +223,8 @@ mod requests {
         for _ in 0..3 {
             assert_eq!(client.get_lock_state().await.unwrap(), LockState::Locked);
         }
-        assert_eq!(keyboard.await.unwrap(), [u32::MAX - 1, u32::MAX, 0]);
+        // At most 127, so the ID takes one byte (spike S1).
+        assert_eq!(keyboard.await.unwrap(), [126, 127, 0]);
     }
 
     /// The Done-when: no request is sent while another is in flight, and the queue is FIFO.
@@ -491,9 +501,10 @@ mod timeouts {
         let start = Instant::now();
         let keyboard = tokio::spawn(async move {
             let ignored = keyboard.next_request().await;
-            // No answer: the next request only comes once the first has timed out.
+            // No answer: the next request only comes once the first has timed out, and
+            // the lone `EOF` after it has had time to arrive on its own.
             let request = keyboard.next_request().await;
-            assert_eq!(Instant::now() - start, REQUEST_TIMEOUT);
+            assert_eq!(Instant::now() - start, REQUEST_TIMEOUT + RESYNC_PAUSE);
             assert_eq!(request.request_id, ignored.request_id + 1);
             keyboard.respond(request.request_id, lock_state(LockState::Locked));
         });
@@ -581,6 +592,81 @@ mod timeouts {
         ));
         assert_eq!(Instant::now() - start, REQUEST_TIMEOUT);
         assert_eq!(client.kind(), TransportKind::Usb);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_lone_eof_follows_a_timeout_so_the_next_frame_starts_clean() {
+        let (client, mut keyboard) = connect();
+        let task = tokio::spawn(async move {
+            let request = keyboard.next_chunk().await;
+            let after = keyboard.next_chunk().await;
+            let next = keyboard.next_request().await;
+            keyboard.respond(next.request_id, lock_state(LockState::Unlocked));
+            (request, after)
+        });
+        assert!(matches!(
+            client.get_lock_state().await,
+            Err(RpcError::Timeout(_))
+        ));
+        assert_eq!(client.get_lock_state().await.unwrap(), LockState::Unlocked);
+        let (request, after) = task.await.unwrap();
+        assert_eq!(request.first(), Some(&0xAB), "a frame");
+        assert_eq!(after, [frame::RESYNC]);
+    }
+
+    /// The retry's name starts the name's length further along ZMK's 30-byte ring buffer,
+    /// past the end the first one ran over (spike S1).
+    #[tokio::test(start_paused = true)]
+    async fn a_rename_that_times_out_is_sent_again_further_along_the_buffer() {
+        let (client, mut keyboard) = connect();
+        let task = tokio::spawn(async move {
+            let first = keyboard.next_chunk().await;
+            let filler = keyboard.next_chunk().await;
+            let retry = keyboard.next_request().await;
+            let renamed = Response::Keymap(KeymapResponse::SetLayerProps(Ok(())));
+            keyboard.respond(retry.request_id, renamed);
+            (first.len(), filler, retry)
+        });
+        client
+            .set_layer_props(LayerId(1), "Numbers".to_owned())
+            .await
+            .unwrap();
+        let (first, filler, retry) = task.await.unwrap();
+        assert!(filler.iter().all(|byte| *byte == frame::RESYNC));
+        assert_eq!((first + filler.len()) % MAX_FRAME_LEN, "Numbers".len());
+        assert_eq!(retry.request_id, 1);
+        assert_eq!(
+            retry.request,
+            Request::Keymap(KeymapRequest::SetLayerProps {
+                layer_id: LayerId(1),
+                name: "Numbers".to_owned(),
+            })
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_rename_is_sent_four_times_at_most() {
+        let (client, mut keyboard) = connect();
+        let task = tokio::spawn(async move {
+            let mut ids = Vec::new();
+            for _ in 0..4 {
+                ids.push(keyboard.next_request().await.request_id);
+            }
+            (ids, keyboard)
+        });
+        let start = Instant::now();
+        assert!(matches!(
+            client.set_layer_props(LayerId(1), "Nav".to_owned()).await,
+            Err(RpcError::Timeout(REQUEST_TIMEOUT))
+        ));
+        assert_eq!(
+            Instant::now() - start,
+            REQUEST_TIMEOUT * 4 + RESYNC_PAUSE * 3
+        );
+        let (ids, mut keyboard) = task.await.unwrap();
+        assert_eq!(ids, [0, 1, 2, 3]);
+        assert_eq!(keyboard.next_chunk().await, [frame::RESYNC]);
+        keyboard.assert_quiet();
     }
 
     #[tokio::test(start_paused = true)]
@@ -960,10 +1046,11 @@ mod validation {
                 InvalidRequest::KeyPositionOutOfRange(-1),
             ),
             (
-                client.set_layer_props(LayerId(0), "x".repeat(20)).await,
+                // The firmware stores 19 bytes, but a rename has to fit 30 (spike S1).
+                client.set_layer_props(LayerId(0), "x".repeat(19)).await,
                 InvalidRequest::LayerNameTooLong {
-                    length: 20,
-                    max: 19,
+                    length: 19,
+                    max: 18,
                 },
             ),
             (
@@ -971,8 +1058,13 @@ mod validation {
                 client.set_layer_props(LayerId(0), "ä".repeat(10)).await,
                 InvalidRequest::LayerNameTooLong {
                     length: 20,
-                    max: 19,
+                    max: 18,
                 },
+            ),
+            (
+                // `Э` is D0 AD in UTF-8, and AD is escaped.
+                client.set_layer_props(LayerId(0), "Эхо".to_owned()).await,
+                InvalidRequest::LayerNameCharacter('Э'),
             ),
             (
                 client.set_layer_props(LayerId(9), "Nav".to_owned()).await,
@@ -1042,12 +1134,38 @@ mod validation {
             .await
             .unwrap();
         client
-            .set_layer_props(LayerId(0), "x".repeat(19))
+            .set_layer_props(LayerId(0), "x".repeat(18))
             .await
             .unwrap();
         // A restored layer can go after the last one.
         client.restore_layer(LayerId(5), 2).await.unwrap();
         assert_eq!(task.await.unwrap().len(), 3);
+    }
+
+    /// The Done-when: no frame over 30 bytes goes out. A rename is the only request that
+    /// long, and its name is checked first, but a layer ID with an escaped byte still
+    /// makes one too long.
+    #[tokio::test(start_paused = true)]
+    async fn a_frame_too_long_for_the_keyboard_is_refused_unsent() {
+        let (client, mut keyboard) = connect();
+        let rename = KeymapRequest::SetLayerProps {
+            layer_id: LayerId(0xABAB),
+            name: "x".repeat(18),
+        };
+        let message = ClientMessage {
+            request_id: 0,
+            request: Request::Keymap(rename.clone()),
+        };
+        let length = frame::encode(&message.encode()).len();
+        assert_eq!(length, 31);
+        assert!(matches!(
+            client.request(Request::Keymap(rename)).await,
+            Err(RpcError::Invalid(InvalidRequest::FrameTooLong {
+                length: 31,
+                max: MAX_FRAME_LEN
+            }))
+        ));
+        keyboard.assert_quiet();
     }
 
     #[tokio::test(start_paused = true)]
@@ -1067,9 +1185,20 @@ mod validation {
             (
                 InvalidRequest::LayerNameTooLong {
                     length: 21,
-                    max: 19,
+                    max: 18,
                 },
-                "a layer name can be at most 19 bytes long, and this one has 21",
+                "a layer name can be at most 18 bytes long, and this one has 21",
+            ),
+            (
+                InvalidRequest::LayerNameCharacter('«'),
+                "ZMK v0.3 can't receive `«` in a layer name",
+            ),
+            (
+                InvalidRequest::FrameTooLong {
+                    length: 31,
+                    max: 30,
+                },
+                "the request takes 31 bytes, and the keyboard receives at most 30",
             ),
             (
                 InvalidRequest::UnknownLayer(LayerId(4)),
@@ -1135,16 +1264,19 @@ mod validation {
         #[test]
         fn nothing_is_checked_against_a_keymap_the_client_hasnt_seen() {
             let shape = KeymapShape::default();
+            let rename = |length| KeymapRequest::SetLayerProps {
+                layer_id: LayerId(7),
+                name: "x".repeat(length),
+            };
             assert_eq!(check(&shape, remove(40)), Ok(()));
+            assert_eq!(check(&shape, rename(18)), Ok(()));
+            // What the keyboard can receive doesn't depend on its keymap.
             assert_eq!(
-                check(
-                    &shape,
-                    KeymapRequest::SetLayerProps {
-                        layer_id: LayerId(7),
-                        name: "x".repeat(100),
-                    }
-                ),
-                Ok(())
+                check(&shape, rename(19)),
+                Err(InvalidRequest::LayerNameTooLong {
+                    length: 19,
+                    max: 18
+                })
             );
             assert_eq!(
                 check(&shape, KeymapRequest::SetActivePhysicalLayout { index: 9 }),
@@ -1300,7 +1432,7 @@ mod validation {
         }
 
         #[test]
-        fn a_firmware_that_reports_no_name_limit_gets_any_name() {
+        fn a_firmware_that_reports_no_name_limit_gets_names_that_fit_a_frame() {
             let mut shape = KeymapShape::default();
             let mut unlimited = keymap();
             unlimited.max_layer_name_length = 0;
@@ -1309,11 +1441,18 @@ mod validation {
                 KeymapRequest::GetKeymap,
                 KeymapResponse::GetKeymap(unlimited),
             );
-            let rename = KeymapRequest::SetLayerProps {
+            let rename = |length| KeymapRequest::SetLayerProps {
                 layer_id: LayerId(0),
-                name: "x".repeat(100),
+                name: "x".repeat(length),
             };
-            assert_eq!(check(&shape, rename), Ok(()));
+            assert_eq!(check(&shape, rename(18)), Ok(()));
+            assert_eq!(
+                check(&shape, rename(19)),
+                Err(InvalidRequest::LayerNameTooLong {
+                    length: 19,
+                    max: 18
+                })
+            );
         }
     }
 }

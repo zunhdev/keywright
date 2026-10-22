@@ -221,16 +221,59 @@ mod requests {
     }
 
     #[tokio::test(start_paused = true)]
-    async fn the_client_refuses_names_too_long_for_the_keyboard() {
+    async fn the_client_refuses_names_the_keyboard_cant_receive() {
         let (_keyboard, client) = unlocked();
         within(client.get_keymap()).await.unwrap();
         assert!(matches!(
-            within(client.set_layer_props(LayerId(1), "N".repeat(20))).await,
+            within(client.set_layer_props(LayerId(1), "N".repeat(19))).await,
             Err(RpcError::Invalid(InvalidRequest::LayerNameTooLong {
-                length: 20,
-                max: 19
+                length: 19,
+                max: 18
             })),
         ));
+        assert!(matches!(
+            within(client.set_layer_props(LayerId(1), "Эхо".to_owned())).await,
+            Err(RpcError::Invalid(InvalidRequest::LayerNameCharacter('Э'))),
+        ));
+    }
+
+    /// The Done-when: ZMK v0.3 loses a name that runs past the end of its ring buffer,
+    /// and the client's retries get every length through, wherever the names land.
+    #[tokio::test(start_paused = true)]
+    async fn renames_of_every_length_up_to_18_bytes_get_through() {
+        let (_keyboard, client) = unlocked();
+        within(client.get_keymap()).await.unwrap();
+        let start = Instant::now();
+        for length in 1..=18 {
+            for round in 0..30_u8 {
+                let name: String = (0..length)
+                    .map(|i| char::from(b'a' + (i + round) % 26))
+                    .collect();
+                within(client.set_layer_props(LayerId(1), name.clone()))
+                    .await
+                    .unwrap();
+                let keymap = within(client.get_keymap()).await.unwrap();
+                assert_eq!(keymap.layers[1].name, name);
+            }
+        }
+        // Some renames timed out and were retried: the bug was there to work around.
+        assert!(start.elapsed() >= REQUEST_TIMEOUT);
+    }
+
+    /// The keyboard loses the end of a request, and with it the `EOF`. The lone `EOF` the
+    /// client sends after the timeout ends that frame, so the next request gets through.
+    #[tokio::test(start_paused = true)]
+    async fn a_request_that_lost_its_end_doesnt_take_the_next_with_it() {
+        let (keyboard, client) = sofle();
+        keyboard.drop_received(1);
+        assert!(matches!(
+            within(client.get_lock_state()).await,
+            Err(RpcError::Timeout(REQUEST_TIMEOUT)),
+        ));
+        assert_eq!(
+            within(client.get_lock_state()).await.unwrap(),
+            LockState::Locked
+        );
     }
 
     #[tokio::test(start_paused = true)]
@@ -467,29 +510,88 @@ mod connections {
         ));
     }
 
-    /// The client refuses to send such a name, so this test sends it directly.
+    /// Sends a frame, and returns the ID of the response that comes back first, if any
+    /// comes within a second.
+    async fn answered(transport: &mut impl Transport, bytes: &[u8]) -> Option<u32> {
+        transport.send(bytes).await.unwrap();
+        let mut decoder = FrameDecoder::new();
+        let deadline = Instant::now() + Duration::from_secs(1);
+        loop {
+            let chunk = tokio::time::timeout_at(deadline, transport.recv())
+                .await
+                .ok()?
+                .unwrap();
+            for payload in decoder.decode(&chunk) {
+                if let DeviceMessage::Response { request_id, .. } =
+                    DeviceMessage::decode(&payload.unwrap()).unwrap()
+                {
+                    return Some(request_id);
+                }
+            }
+        }
+    }
+
+    fn rename(request_id: u32, name: &str) -> Vec<u8> {
+        let rename = KeymapRequest::SetLayerProps {
+            layer_id: LayerId(1),
+            name: name.to_owned(),
+        };
+        request(request_id, Request::Keymap(rename))
+    }
+
+    fn lock_state(request_id: u32) -> Vec<u8> {
+        request(request_id, Request::Core(CoreRequest::GetLockState))
+    }
+
+    /// ZMK v0.3's receive buffer holds 30 bytes; the rest of a write is lost, the frame's
+    /// `EOF` with it. The client refuses such frames, so these tests send them directly.
     #[tokio::test(start_paused = true)]
-    async fn a_name_too_long_to_decode_goes_unanswered() {
+    async fn a_frame_over_30_bytes_takes_the_next_with_it_unless_an_eof_follows() {
         let keyboard = Simulator::sofle().unwrap();
         keyboard.press_unlock_key();
         let mut transport = keyboard.connect();
-        let rename = KeymapRequest::SetLayerProps {
-            layer_id: LayerId(1),
-            name: "N".repeat(20),
-        };
-        transport
-            .send(&request(5, Request::Keymap(rename)))
-            .await
-            .unwrap();
-        transport
-            .send(&request(6, Request::Core(CoreRequest::GetLockState)))
-            .await
-            .unwrap();
-        let (message, _) = read_message(&mut transport).await;
-        assert!(matches!(
-            message,
-            DeviceMessage::Response { request_id: 6, .. }
-        ));
+        // With a two-byte request ID, the write loses the name's last byte and the `EOF`.
+        let long = rename(200, &"N".repeat(19));
+        assert_eq!(long.len(), 32);
+
+        assert_eq!(answered(&mut transport, &long).await, None);
+        assert_eq!(answered(&mut transport, &lock_state(6)).await, None);
+        assert_eq!(answered(&mut transport, &lock_state(7)).await, Some(7));
+
+        assert_eq!(answered(&mut transport, &long).await, None);
+        assert_eq!(answered(&mut transport, &[frame::RESYNC]).await, None);
+        assert_eq!(answered(&mut transport, &lock_state(8)).await, Some(8));
+    }
+
+    /// The name is read in one claim on the 30-byte ring: if it runs past the ring's end,
+    /// the request is lost. A fresh keyboard's ring starts at 0, and lone `EOF`s outside
+    /// a frame move it along.
+    #[tokio::test(start_paused = true)]
+    async fn a_name_that_runs_past_the_end_of_the_ring_is_lost() {
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let mut transport = keyboard.connect();
+        // A 22-byte frame whose name starts 11 bytes in: ring places 11 to 20.
+        let frame = rename(1, "nnnnnnnnnn");
+        assert_eq!(frame.len(), 22);
+        assert_eq!(answered(&mut transport, &frame).await, Some(1));
+        // The ring is at 22: 8 more bytes bring it back to 0. Then 12 more put the name at
+        // places 23 to 32, past the end.
+        assert_eq!(answered(&mut transport, &[frame::RESYNC; 20]).await, None);
+        assert_eq!(
+            answered(&mut transport, &rename(2, "nnnnnnnnnn")).await,
+            None
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_name_with_an_escaped_byte_is_always_lost() {
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let mut transport = keyboard.connect();
+        // `Э` is D0 AD in UTF-8, and AD is escaped.
+        assert_eq!(answered(&mut transport, &rename(1, "Э")).await, None);
+        assert_eq!(answered(&mut transport, &rename(2, "Ж")).await, Some(2));
     }
 
     #[tokio::test(start_paused = true)]

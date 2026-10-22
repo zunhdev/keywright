@@ -8,7 +8,19 @@
 use std::time::Duration;
 
 use keywright_studio::client::Client;
+use keywright_studio::message::{CoreNotification, LayerId, LockState, Notification};
 use keywright_transport::usb::{self, PortEvent, UsbTransport};
+
+/// A client for the port that answers: the half connected to the computer.
+async fn keyboard() -> Client {
+    for port in usb::ports().unwrap() {
+        let client = Client::new(UsbTransport::open(&port).unwrap());
+        if client.probe().await.is_ok() {
+            return client;
+        }
+    }
+    panic!("no keyboard answered: plug its left half in by USB");
+}
 
 #[tokio::test]
 #[ignore = "needs a ZMK keyboard on USB: run `mise run hardware`"]
@@ -58,4 +70,37 @@ async fn the_watcher_reports_the_keyboards_plugged_in() {
         connected.push(port);
     }
     assert_eq!(connected, expected);
+}
+
+/// ZMK v0.3 loses names that run past the end of its 30-byte ring buffer (spike S1); the
+/// client's retries get every length through. Needs the keyboard unlocked: the test waits
+/// five minutes for its unlock key. It puts layer 1's name back at the end.
+#[tokio::test]
+#[ignore = "needs a ZMK keyboard on USB: run `mise run hardware`"]
+async fn renames_of_every_length_get_through() {
+    let client = keyboard().await;
+    let mut notifications = client.notifications();
+    if client.get_lock_state().await.unwrap() == LockState::Locked {
+        println!("press the keyboard's unlock key");
+        let unlocked = Notification::Core(CoreNotification::LockStateChanged(LockState::Unlocked));
+        tokio::time::timeout(Duration::from_secs(300), async {
+            while notifications.recv().await.unwrap() != unlocked {}
+        })
+        .await
+        .expect("the keyboard wasn't unlocked within five minutes");
+    }
+    let original = client.get_keymap().await.unwrap().layers[1].name.clone();
+    for length in 1..=18 {
+        for round in 0..5_u8 {
+            let name: String = (0..length)
+                .map(|i| char::from(b'a' + (i + round) % 26))
+                .collect();
+            client
+                .set_layer_props(LayerId(1), name.clone())
+                .await
+                .unwrap();
+            assert_eq!(client.get_keymap().await.unwrap().layers[1].name, name);
+        }
+    }
+    client.set_layer_props(LayerId(1), original).await.unwrap();
 }

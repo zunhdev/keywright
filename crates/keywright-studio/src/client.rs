@@ -6,11 +6,17 @@
 //! keyboard has answered the previous one, or its timeout has passed. ZMK v0.3 corrupts
 //! requests that arrive back to back, and its receive buffer holds 30 bytes.
 //!
-//! - Each request gets the next `request_id`, a `u32` that wraps around. A response with
-//!   any other ID, such as a late answer to a request that timed out, is logged and
-//!   dropped.
+//! - Each request gets the next `request_id`, from 0 to 127 and then 0 again, so the ID
+//!   takes at most one byte. A response with any other ID, such as a late answer to a
+//!   request that timed out, is logged and dropped.
 //! - Every request has a timeout: [`REQUEST_TIMEOUT`], or [`PROBE_TIMEOUT`] for
 //!   [`Client::probe`]. ZMK drops requests it can't decode without answering.
+//! - **ZMK v0.3's receive bugs** (spike S1). Its receive buffer holds 30 bytes, so the
+//!   client sends no frame longer than [`MAX_FRAME_LEN`]. A frame that lost bytes would
+//!   take the next request with it, so after a timeout the client sends a lone `EOF`,
+//!   which ends it, and pauses before the next frame. A layer name read across the end of the ring buffer is corrupted, so
+//!   the client retries a rename that timed out up to three times, each time after filler
+//!   bytes that move the name to another part of the buffer.
 //! - Notifications go to every receiver from [`Client::notifications`].
 //! - An error the keyboard reports for any request (`meta.simple_error`) becomes
 //!   [`RpcError::Keyboard`]. One that only a certain request has, such as running out of
@@ -34,10 +40,10 @@ use std::sync::{Arc, OnceLock};
 use std::time::Duration;
 
 use tokio::sync::{broadcast, mpsc, oneshot};
-use tokio::time::{Instant, sleep_until, timeout_at};
+use tokio::time::{Instant, sleep, sleep_until, timeout_at};
 
-pub use self::validation::InvalidRequest;
 use self::validation::KeymapShape;
+pub use self::validation::{InvalidRequest, MAX_NAME_LEN};
 use crate::frame::{self, FrameDecoder};
 use crate::message::{
     AddLayerError, AddedLayer, BehaviorDetails, BehaviorId, BehaviorsRequest, BehaviorsResponse,
@@ -55,6 +61,27 @@ pub const REQUEST_TIMEOUT: Duration = Duration::from_secs(2);
 /// answers quickly. A silent one may be the half that isn't connected to the computer, or
 /// have no live editing (tech spec §5.4).
 pub const PROBE_TIMEOUT: Duration = Duration::from_secs(1);
+
+/// The longest frame ZMK v0.3 receives intact. Its receive buffer
+/// (`CONFIG_ZMK_STUDIO_RPC_RX_BUF_SIZE`) holds 30 bytes, and the rest of a longer frame is
+/// lost (spike S1). The buffer is a ring of this many bytes.
+pub const MAX_FRAME_LEN: usize = 30;
+
+/// The highest request ID. IDs count up to it and start again from 0, so an ID takes at
+/// most one byte, and a rename to [`MAX_NAME_LEN`] bytes still fits a frame.
+const MAX_REQUEST_ID: u32 = 127;
+
+/// How many times the client sends a rename before giving up: once, and three retries.
+const RENAME_ATTEMPTS: usize = 4;
+
+/// How long sending the lone `EOF` after a timeout may take.
+const RESYNC_TIMEOUT: Duration = Duration::from_secs(1);
+
+/// How long the client waits after the lone `EOF` and any filler, before the next frame.
+/// The computer can pack writes that follow each other closely into one USB packet, and
+/// together they would overflow ZMK v0.3's 30-byte buffer. The keyboard takes the bytes
+/// well within this time (spike S1).
+const RESYNC_PAUSE: Duration = Duration::from_millis(10);
 
 /// How many requests can wait in the queue before sending one more waits for room.
 const QUEUE_CAPACITY: usize = 32;
@@ -612,35 +639,78 @@ impl<T: Transport> Connection<T> {
             return Ok(());
         }
 
-        let request_id = self.next_request_id;
-        self.next_request_id = request_id.wrapping_add(1);
-        let message = ClientMessage {
-            request_id,
+        let attempts = if is_rename(&request) {
+            RENAME_ATTEMPTS
+        } else {
+            1
+        };
+        let mut message = ClientMessage {
+            request_id: self.next_request_id,
             request,
         };
-        let frame = frame::encode(&message.encode());
-        // The caller may stop waiting now, but the request is on its way, so the task still
-        // waits for its response before sending the next one.
-        let answer = match self
-            .exchange(request_id, &frame, Instant::now() + timeout)
-            .await
-        {
-            Ok(Some(response)) => {
-                self.shape.update(&message.request, &response);
-                match response {
-                    Response::Error(condition) => Err(RpcError::Keyboard(condition)),
-                    response => Ok(response),
+        let mut answer = Err(RpcError::Timeout(timeout));
+        for attempt in 1..=attempts {
+            message.request_id = self.next_request_id;
+            let frame = frame::encode(&message.encode());
+            if frame.len() > MAX_FRAME_LEN {
+                answer = Err(InvalidRequest::FrameTooLong {
+                    length: frame.len(),
+                    max: MAX_FRAME_LEN,
+                }
+                .into());
+                break;
+            }
+            self.next_request_id = next_request_id(message.request_id);
+            // The caller may stop waiting now, but the request is on its way, so the task
+            // still waits for its response before sending the next one.
+            let exchanged = self
+                .exchange(message.request_id, &frame, Instant::now() + timeout)
+                .await;
+            match exchanged {
+                Ok(Some(response)) => {
+                    self.shape.update(&message.request, &response);
+                    answer = match response {
+                        Response::Error(condition) => Err(RpcError::Keyboard(condition)),
+                        response => Ok(response),
+                    };
+                    break;
+                }
+                Ok(None) if attempt < attempts => {
+                    let filler = realignment(&message.request, frame.len());
+                    if let Err(error) = self.resync(1 + filler).await {
+                        let error = Arc::new(error);
+                        let _ = reply.send(Err(RpcError::Disconnected(Arc::clone(&error))));
+                        return Err(error);
+                    }
+                }
+                Ok(None) => {
+                    // The caller learns of the timeout first; the `EOF` follows.
+                    let _ = reply.send(answer);
+                    return self.resync(1).await.map_err(Arc::new);
+                }
+                Err(error) => {
+                    let error = Arc::new(error);
+                    let _ = reply.send(Err(RpcError::Disconnected(Arc::clone(&error))));
+                    return Err(error);
                 }
             }
-            Ok(None) => Err(RpcError::Timeout(timeout)),
-            Err(error) => {
-                let error = Arc::new(error);
-                let _ = reply.send(Err(RpcError::Disconnected(Arc::clone(&error))));
-                return Err(error);
-            }
-        };
+        }
         let _ = reply.send(answer);
         Ok(())
+    }
+
+    /// Sends `count` lone `EOF`s after a request that timed out. The first ends whatever
+    /// frame the keyboard is still reading; the others move the next frame along its ring
+    /// buffer. Then waits, so the next frame doesn't share a USB packet with them. A
+    /// keyboard that doesn't take them in time will fail the next request.
+    async fn resync(&mut self, count: usize) -> Result<(), TransportError> {
+        let bytes = vec![frame::RESYNC; count];
+        let sent = match tokio::time::timeout(RESYNC_TIMEOUT, self.transport.send(&bytes)).await {
+            Ok(sent) => sent,
+            Err(_) => Ok(()),
+        };
+        sleep(RESYNC_PAUSE).await;
+        sent
     }
 
     /// Sends a request's frame, and waits until `deadline` for the response with its ID.
@@ -698,4 +768,33 @@ impl<T: Transport> Connection<T> {
         }
         found
     }
+}
+
+/// The ID after `id`: up to [`MAX_REQUEST_ID`], then 0 again.
+fn next_request_id(id: u32) -> u32 {
+    if id >= MAX_REQUEST_ID { 0 } else { id + 1 }
+}
+
+/// Whether a request renames a layer, which ZMK v0.3 may fail to receive (spike S1).
+fn is_rename(request: &Request) -> bool {
+    matches!(
+        request,
+        Request::Keymap(KeymapRequest::SetLayerProps { name, .. }) if !name.is_empty()
+    )
+}
+
+/// How many filler bytes, besides the lone `EOF`, move a rename that timed out so its name
+/// no longer runs past the end of ZMK v0.3's ring buffer.
+///
+/// The name, `L` bytes, ends the frame, just before its `EOF`. It failed because it ran
+/// past the end of the ring. The frame, the `EOF` and the filler all go into the ring
+/// before the retry, so the retry's name starts that many bytes further along. Making that
+/// `L` bytes, modulo the ring, moves the name past the end it ran over: one retry is
+/// enough for names of up to 15 bytes, and two for longer ones.
+fn realignment(request: &Request, frame_len: usize) -> usize {
+    let Request::Keymap(KeymapRequest::SetLayerProps { name, .. }) = request else {
+        return 0;
+    };
+    // (L − frame − 1) modulo the ring, kept positive: a frame is at most one ring long.
+    (name.len() + 2 * MAX_FRAME_LEN - frame_len - 1) % MAX_FRAME_LEN
 }

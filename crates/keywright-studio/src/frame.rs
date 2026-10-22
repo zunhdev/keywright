@@ -24,13 +24,24 @@ const EOF: u8 = 0xAD;
 /// kilobytes.
 pub const MAX_PAYLOAD_LEN: usize = 64 * 1024;
 
+/// A lone end of frame, outside any frame. It ends whatever frame the keyboard is still
+/// reading, such as one that lost bytes, and a keyboard between frames ignores it. The
+/// client sends one after a request times out (spike S1).
+pub const RESYNC: u8 = EOF;
+
+/// Whether a payload byte is escaped in a frame: `SOF`, `ESC` and `EOF` are.
+#[must_use]
+pub const fn is_escaped(byte: u8) -> bool {
+    matches!(byte, SOF | ESC | EOF)
+}
+
 /// Wraps a payload in a frame, escaping its special bytes.
 #[must_use]
 pub fn encode(payload: &[u8]) -> Vec<u8> {
     let mut frame = Vec::with_capacity(payload.len() + 2);
     frame.push(SOF);
     for &byte in payload {
-        if matches!(byte, SOF | ESC | EOF) {
+        if is_escaped(byte) {
             frame.push(ESC);
         }
         frame.push(byte);
