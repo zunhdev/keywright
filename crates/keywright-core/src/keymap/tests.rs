@@ -1,28 +1,13 @@
 //! Finding layers by ID, whatever their order.
 
 use super::*;
-use crate::testing::{binding, sofle_stock_keymap, zmk_v0_3_table};
+use crate::testing::stock_keymap;
 
 /// Keebart's stock keymap, with its layers in reverse order: index and ID now differ.
 fn reversed_stock_keymap() -> Keymap {
-    let table = zmk_v0_3_table();
-    let mut layers: Vec<Layer> = sofle_stock_keymap::LAYERS
-        .iter()
-        .zip(0..)
-        .map(|(&(name, bindings), id)| Layer {
-            id: LayerId(id),
-            name: name.to_owned(),
-            bindings: bindings
-                .iter()
-                .map(|&(behavior, param1, param2)| binding(&table, behavior, param1, param2))
-                .collect(),
-        })
-        .collect();
-    layers.reverse();
-    Keymap {
-        layers,
-        free_layer_slots: 0,
-    }
+    let mut keymap = stock_keymap();
+    keymap.layers.reverse();
+    keymap
 }
 
 #[test]

@@ -1,0 +1,8 @@
+---
+source: crates/keywright-core/src/editor/tests.rs
+expression: review(&editor)
+---
+default · key 1: kp N1 → kp EXCL
+default · key 24: kp TAB → mt LCTRL ESC
+raise · key 39: kp K_COPY → kp mods 0x08 + C
+raise · key 40: kp K_PASTE → kp mods 0x08 + V

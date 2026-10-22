@@ -1,0 +1,9 @@
+---
+source: crates/keywright-core/src/editor/tests.rs
+expression: review(&editor)
+---
+layers reordered: default, Numbers, raise → default, raise, Numbers
+Numbers: renamed from "lower" to "Numbers"
+Numbers · key 5: kp F5 → kp A
+layer 4: added
+adjust: removed
