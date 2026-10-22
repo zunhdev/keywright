@@ -5,12 +5,14 @@
 //!
 //! - **The idle lock.** Like ZMK, the keyboard locks [`IDLE_LOCK_TIMEOUT`] after the last
 //!   request it handled, or the unlock key press, and says so.
-//! - **The byte stream.** Requests are read from frames, and requests that don't decode
-//!   get no answer. What the keyboard sends arrives in chunks of up to [`CHUNK_LEN`] bytes,
-//!   like USB packets, so frames span chunks.
+//! - **The byte stream.** Requests are read as ZMK v0.3 reads them, with its 30-byte
+//!   receive buffer and the bugs spike S1 found (module `receiver`), and requests that
+//!   don't decode get no answer. What the keyboard sends arrives in chunks of up to
+//!   [`CHUNK_LEN`] bytes, like USB packets, so frames span chunks.
 //! - **Faults**, for testing how Keywright copes:
 //!   - latency before everything the keyboard sends ([`Simulator::set_latency`]);
 //!   - responses that never arrive ([`Simulator::drop_responses`]);
+//!   - requests that arrive without their end ([`Simulator::drop_received`]);
 //!   - bytes that aren't messages ([`Simulator::inject_garbage`]);
 //!   - the keyboard's output moving to another transport, which locks it and leaves this
 //!     connection unanswered ([`Simulator::switch_transport`]);
@@ -21,16 +23,19 @@
 //! The handle's methods take effect in the order they're called, before any request the
 //! connection sends afterwards. The task runs while the handle or a connection exists.
 
+mod receiver;
+
 use std::future;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
-use keywright_studio::frame::{self, FrameDecoder};
-use keywright_studio::message::{ClientMessage, DeviceMessage};
+use keywright_studio::frame;
+use keywright_studio::message::DeviceMessage;
 use keywright_studio::transport::{Transport, TransportError, TransportKind};
 use tokio::sync::{mpsc, oneshot};
 use tokio::time::{Instant, sleep, sleep_until};
 
+use self::receiver::Receiver;
 use crate::firmware::{Firmware, FirmwareError};
 use crate::keyboard::{IDLE_LOCK_TIMEOUT, Keyboard};
 
@@ -66,6 +71,7 @@ enum Event {
     Restart,
     SetLatency(Duration),
     DropResponses(usize),
+    DropReceived(usize),
     InjectGarbage(Vec<u8>),
     SwitchTransport {
         away: bool,
@@ -141,6 +147,13 @@ impl Simulator {
         self.send(Event::DropResponses(count));
     }
 
+    /// Loses the last `count` bytes of the next write the keyboard receives, as when its
+    /// receive buffer overflows. A frame that loses its end takes the next frame with it,
+    /// unless a lone `EOF` comes first.
+    pub fn drop_received(&self, count: usize) {
+        self.send(Event::DropReceived(count));
+    }
+
     /// Sends bytes that aren't a message before the next thing the keyboard sends.
     pub fn inject_garbage(&self, bytes: Vec<u8>) {
         self.send(Event::InjectGarbage(bytes));
@@ -204,11 +217,15 @@ impl Transport for InMemoryTransport {
 /// The keyboard's task: the keyboard, its connection and the faults.
 struct Device {
     keyboard: Keyboard,
+    /// What the keyboard has received. It belongs to the keyboard, not to a connection,
+    /// so it lasts until the keyboard restarts.
+    receiver: Receiver,
     connection: Option<Connection>,
     /// When the keyboard locks itself, if nothing happens before.
     lock_at: Option<Instant>,
     latency: Duration,
     responses_to_drop: usize,
+    received_to_drop: usize,
     garbage: Vec<u8>,
     transport_away: bool,
     wrong_half: bool,
@@ -217,17 +234,18 @@ struct Device {
 struct Connection {
     id: u64,
     to_client: mpsc::UnboundedSender<Vec<u8>>,
-    decoder: FrameDecoder,
 }
 
 impl Device {
     fn new(keyboard: Keyboard) -> Self {
         Self {
             keyboard,
+            receiver: Receiver::new(),
             connection: None,
             lock_at: None,
             latency: Duration::ZERO,
             responses_to_drop: 0,
+            received_to_drop: 0,
             garbage: Vec::new(),
             transport_away: false,
             wrong_half: false,
@@ -261,7 +279,6 @@ impl Device {
                 self.connection = Some(Connection {
                     id: connection,
                     to_client,
-                    decoder: FrameDecoder::new(),
                 });
             }
             Event::Bytes { connection, bytes } => self.read(connection, &bytes).await,
@@ -272,11 +289,13 @@ impl Device {
             }
             Event::Restart => {
                 self.keyboard.restart();
+                self.receiver = Receiver::new();
                 self.lock_at = None;
                 self.connection = None;
             }
             Event::SetLatency(latency) => self.latency = latency,
             Event::DropResponses(count) => self.responses_to_drop = count,
+            Event::DropReceived(count) => self.received_to_drop = count,
             Event::InjectGarbage(bytes) => self.garbage.extend(bytes),
             Event::SwitchTransport { away } => {
                 if away {
@@ -297,19 +316,16 @@ impl Device {
         if self.transport_away || self.wrong_half {
             return;
         }
-        let Some(current) = self
+        if self
             .connection
-            .as_mut()
-            .filter(|current| current.id == connection)
-        else {
+            .as_ref()
+            .is_none_or(|current| current.id != connection)
+        {
             return;
-        };
-        let requests: Vec<_> = current
-            .decoder
-            .decode(bytes)
-            .into_iter()
-            .filter_map(|payload| ClientMessage::decode(&payload.ok()?).ok())
-            .collect();
+        }
+        let kept = bytes.len().saturating_sub(self.received_to_drop);
+        self.received_to_drop = 0;
+        let requests = self.receiver.receive(&bytes[..kept], Instant::now());
         for request in requests {
             let Some(mut messages) = self.keyboard.handle(&request) else {
                 continue;
@@ -339,6 +355,7 @@ impl Device {
         if messages.is_empty() && self.garbage.is_empty() {
             return;
         }
+        self.receiver.answered();
         let mut bytes = std::mem::take(&mut self.garbage);
         for message in &messages {
             bytes.extend(frame::encode(&message.encode()));

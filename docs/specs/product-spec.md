@@ -2,8 +2,8 @@
 
 |             |                                                           |
 | ----------- | --------------------------------------------------------- |
-| **Status**  | Draft v0.3 — for review                                   |
-| **Date**    | 2026-10-21                                                |
+| **Status**  | Draft v0.4 — for review                                   |
+| **Date**    | 2026-10-23                                                |
 | **Owner**   | zunh                                                      |
 | **Scope**   | v1.0: Keebart Sofle Choc Pro BT, macOS on Apple Silicon   |
 | **Related** | [Design spec](design-spec.md) · [Tech spec](tech-spec.md) |
@@ -283,7 +283,7 @@ IDs are stable so the design and tech specs can refer to them.
 
 | ID    | Pri    | Requirement                                                                                                                                                                                                          |
 | ----- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| LAY-1 | Must   | Rename layers, up to 19 characters (a firmware limit). Names appear in the app and on the keyboard's display.                                                                                                        |
+| LAY-1 | Must   | Rename layers, up to 18 bytes: 18 letters in English, fewer in other scripts. ZMK v0.3 can't receive a few letters, such as í, ë and Э (spike S1). Names appear in the app and on the keyboard's display.            |
 | LAY-2 | Must   | Reorder layers. After reordering, every layer key still points at the same layer it did before.                                                                                                                      |
 | LAY-3 | Must   | Add and remove layers within the firmware's limit. The limit is always visible ("4 of 4 layers used"), with a plain explanation of why it exists and what would raise it (stock Sofle firmware has no spare layers). |
 | LAY-4 | Must   | Show how each layer is reached: the keys that activate it, plus firmware-defined combinations the support pack knows about (stock: Adjust = Lower + Raise), labelled _built into the firmware_.                      |
@@ -488,3 +488,4 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 | 0.1     | 2026-10-20 | First draft                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 0.2     | 2026-10-21 | Apple Silicon only (Intel and Universal binaries dropped). v1 distribution changed to build from source plus unsigned GitHub Release binaries; signed Homebrew builds moved to v1.x. Risks and open questions renumbered.                                                                                                                                                                                                          |
 | 0.3     | 2026-10-21 | Aligned with the design and tech specs. The UI is Keywright's own design language rather than an imitation of Apple's, and the stack is Tauri + React + Bun. CON-3 and SAF-1 now reflect the firmware's single editing connection and its auto-lock. MAC-8 becomes a Globe helper. Layer names are limited to 19 characters. The battery and Globe limitations are documented. R3, R4 and R6 are resolved, and Q4 and Q5 answered. |
+| 0.4     | 2026-10-23 | LAY-1: layer names up to 18 bytes rather than 19 characters; ZMK v0.3 can't receive a few letters (spike S1, KEY-95).                                                                                                                                                                                                                                                                                                              |

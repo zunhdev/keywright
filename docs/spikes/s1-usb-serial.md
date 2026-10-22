@@ -77,7 +77,7 @@ How likely a rename is to get through depends on where it lands in the ring buff
 ### Decisions
 
 - **No pacing.** Each frame goes out in a **single write**. Pacing makes renames fail more often, not less.
-- **No frame over 30 bytes.** Every request Keywright sends fits, except renames. To keep request IDs to one byte, they count from 1 to 127. A layer name can then be at most **18 bytes** over USB, rather than the 19 the firmware stores.
+- **No frame over 30 bytes.** Every request Keywright sends fits, except renames. To keep request IDs to one byte, they count from 0 to 127. A layer name can then be at most **18 bytes** over USB, rather than the 19 the firmware stores.
 - **After a timeout, send a lone `EOF`**, so the next request starts on a clean decoder.
 - **Retry renames.** A rename is safe to repeat. After a timeout, the client sends filler bytes, so the retry lands elsewhere in the ring buffer, and tries again, up to a few times.
 
@@ -97,3 +97,21 @@ How likely a rename is to get through depends on where it lands in the ring buff
 - **Behaviors.** The firmware has 22 behaviors. ZMK numbers them from 1, in the order of the behaviors' device names: Bootloader is 1, Key Press 3, Studio Unlock 22. They include `enc_key_press`, the knobs' `&inc_dec_kp`, which has no metadata. The simulator now has the same list.
 - **The physical layout** is exactly the support pack's `layout.toml`.
 - **The stock keymap** is exactly the support pack's `stock-keymap.toml`, once the settings were reset. Before the reset, the base layer had seven of the owner's changes.
+
+## Follow-up: the client's workarounds (KEY-95)
+
+KEY-95 made the client work around the receive bugs, and checked the result on the same keyboard.
+
+- **Escaped bytes.** `rpc_read_cb` doesn't count an escape byte towards a read, so a string with an escaped byte needs a second pass, which almost always runs into the `EOF`. On the keyboard, 10 raw renames each gave:
+
+  | Name | UTF-8      | Got through |
+  | ---- | ---------- | ----------- |
+  | `Э`  | `D0 AD`    | 0/10        |
+  | `ЭЭ` | `D0 AD` ×2 | 1/10        |
+  | `Ж`  | `D0 96`    | 10/10       |
+
+  The client refuses names with such characters. A character is one when its UTF-8 has a byte from `AB` to `AD`, as about 1 in 20 accented Latin, Greek and Cyrillic characters does, and 1 in 11 Chinese, Japanese or Korean ones. Among them are `í`, `ë`, `ì`, `«`, and Cyrillic `Ы`, `Ь` and `Э`.
+
+- **Where a name fails.** The harness renamed to `lower` from 12 of the 30 positions along the ring, moving it with filler first, 90 times. The renames from one position failed every time (7/7); from the 11 others, every one got through. The model puts 4 failing frame starts next to each other, where the 5-byte name crosses the ring's end: the failing one and 3 the run never hit.
+- **Writes that share a packet.** At first the client sent the filler and the retried frame 1 ms apart. The computer could pack them into one USB packet, and 18 bytes of filler plus a 19-byte frame overflowed the buffer: all three retries of two 7-byte names failed. The client now waits 10 ms after the `EOF` and filler. The simulator treats writes at the same moment, with nothing from the keyboard in between, as one packet, and its 18-length rename test fails without the pause.
+- **Result.** The hardware test `renames_of_every_length_get_through` (`mise run hardware`) renames a layer to every length from 1 to 18 bytes, five times each. All 90 got through, in 53 s: at 2 s per timeout, about 25 needed a retry.
