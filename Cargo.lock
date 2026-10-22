@@ -298,6 +298,12 @@ version = "0.1.0"
 [[package]]
 name = "keywright-sim"
 version = "0.1.0"
+dependencies = [
+ "keywright-core",
+ "keywright-studio",
+ "thiserror",
+ "tokio",
+]
 
 [[package]]
 name = "keywright-studio"
