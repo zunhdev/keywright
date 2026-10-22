@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.20 — for review                                        |
+| **Status**    | Draft v0.21 — for review                                        |
 | **Date**      | 2026-10-22                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -239,19 +239,26 @@ The session is a **single tokio task (actor)** that owns the RPC client and the 
 ### 7.1 States
 
 ```
-          ┌──────────── transport lost / switched ──────────────┐
+          ┌──────────── connection lost ─────────────────────────┐
           ▼                                                      │
- NoDevice ─▶ Probing ─▶ Locked ─(unlock notification)─▶ Loading ─▶ Ready
-                │          ▲                                     │
-                │          └────── idle re-lock / switch ────────┘
+ NoDevice ─▶ Probing ─▶ Locked ─(unlocked)─▶ Loading ─▶ Ready ───┤
+                │          ▲                    │ ▲               │
+                │          └── locked again ────┼─┼───────────────┘
+                │                               ▼ │ keep or discard
+                │                         UnsavedChanges
                 ├─▶ Incompatible (read-only)
-                └─▶ NoLiveEditing / WrongHalf (explanations)
+                └─▶ NoLiveEditing / WrongHalf (no answer)
 ```
 
-- **Locked**: the session knows the device name and the behaviors list only. The UI draws the support pack's stored layout for the unlock sheet (design §7).
-- **Loading**: fetch the physical layouts, keymap and behavior details, then call `check_unsaved_changes`. If the device _already_ has unsaved changes from before this session, the user is asked to keep or discard them, because their baseline is unknown.
-- **Ready**: edits flow (§8.3).
-- **Re-lock** (idle timeout, transport switch): the session keeps the `Editor`, including its history and expected state. After unlock, it re-reads the keymap and reconciles (§8.5).
+`Session` is a handle to the task. It sends `Command`s over an mpsc channel, reports the current `State` on a watch channel, and `SessionEvent`s (a new state, an editor change) on a broadcast channel. `connect` takes a `Connection`: the RPC client, and the `Peer`, which is what the transport knows about the keyboard's end, such as a USB port's product string. Choosing the transport is §6.3's (KEY-54).
+
+- **Probing** follows §5.4: `get_device_info` with the 1 s probe timeout, then `get_lock_state` and `list_all_behaviors`. The device name suggests a support pack. A keyboard that doesn't answer is **WrongHalf** if its USB product string is `Generic CDC`, as for the Sofle's right half (spike S1, refined by S4), and **NoLiveEditing** otherwise.
+- **Locked**: the session knows the device name, the behaviors list and the pack only. The UI draws the support pack's stored layout for the unlock sheet (design §7).
+- **Loading**: fetch the behavior details, the physical layouts and the keymap, and build the core's `Keyboard`. The layout has to match the pack's too. Then call `check_unsaved_changes`. If the device _already_ has unsaved changes from before this session, the state is **UnsavedChanges** until the user keeps them (the editor starts from them) or discards them, because their baseline is unknown.
+- **Ready**: edits flow (§8.3). `apply`, `undo` and `redo` run the editor's operations one request at a time. If one fails, the editor rolls back, and the keyboard undoes the operations it performed. A change refused as locked moves to **Locked**. A change that times out makes the session probe again, because the keyboard may have moved to another transport.
+- **Requests that time out** while probing or loading are asked once more. A keyboard that still doesn't answer, answers oddly, or answers `RpcNotFound` is **Incompatible**, naming the request.
+- **Re-lock** (idle timeout, transport switch): the session keeps the `Editor`, including its history and expected state. It also keeps them when the connection is lost, for a reconnect to the same keyboard (same name and serial number). After unlock, it re-reads the keymap. Reconciling the two (§8.5) is KEY-33's, with save, discard and adding layers.
+- The session never sends a request just to reset the idle timer (ADR-0006). A test against the simulator checks that an idle session sends nothing for an hour.
 
 ### 7.2 Automatic backups (SAF-4)
 
@@ -758,6 +765,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.21    | 2026-10-23 | Device session (§7.1): `Session`, `Connection` and `Peer`; the `UnsavedChanges` state; WrongHalf by USB product string; requests retried once; changes applied, undone and redone with rollback; a timed-out change probes again; the editor kept across re-locks and reconnects.                                                                                  |
 | 0.20    | 2026-10-23 | USB transport (§4, §6.1): `UsbTransport` with a reader and a writer thread, one write per frame with a timeout, no flush, unsent bytes discarded on close; `/dev/cu.*` only, opened exclusively; plugging in and unplugging noticed by listing the ports every second; `serialport` is MPL-2.0, allowed by an exception in `deny.toml`.                            |
 | 0.19    | 2026-10-23 | Spike S1 (§3, §5.3, §6.1, §14.2, §15): one write per frame of at most 30 bytes and no pacing; request IDs from 1 to 127; a lone `EOF` after a timeout; renames retried; layer names up to 18 bytes; the USB port identity of each half; closing the port doesn't lock; the simulator's behaviors as captured; spike reports in `docs/spikes/`.                     |
 | 0.18    | 2026-10-22 | Simulated keyboard (§14.2): `Firmware`, `Keyboard` and `Simulator`; behaviors come from ZMK v0.3, not the support pack; the ZMK v0.3 quirks the simulator reproduces; replies in USB-sized chunks; the fault-injection API; the client's tests against the simulator live in `keywright-sim`.                                                                      |
