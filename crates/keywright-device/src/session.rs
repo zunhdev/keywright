@@ -44,14 +44,27 @@
 //!
 //! The session never sends a request just to stop the keyboard locking itself (ADR-0006):
 //! while nobody asks for anything, it only listens.
+//!
+//! **Automatic backups** (tech spec §7.2, SAF-4): a session started
+//! [`with_backups`](Session::with_backups) backs up each keyboard's keymap the first time it
+//! reads it, and before every destructive command: [`Session::import`], and the firmware
+//! assistant's [`Session::back_up`]. A destructive command whose backup fails changes
+//! nothing.
 
 mod actor;
 
+use std::io;
+use std::path::PathBuf;
+use std::sync::Arc;
+
+use keywright_core::backup::Reason;
 use keywright_core::edit::Edit;
 use keywright_core::editor::{Editor, EditorError};
 use keywright_core::keymap::{DeviceIdentity, Keyboard};
 use keywright_studio::client::{Client, RpcError};
 use tokio::sync::{broadcast, mpsc, oneshot, watch};
+
+use crate::backups::Backups;
 
 /// How many commands can wait for the session before sending one more waits for room.
 const COMMAND_CAPACITY: usize = 16;
@@ -153,6 +166,11 @@ pub enum SessionEvent {
     ChangedElsewhere,
     /// The keyboard says whether it has changes it hasn't saved.
     Unsaved(bool),
+    /// The session backed up the keymap, to this file.
+    BackedUp(PathBuf),
+    /// The session couldn't back up the keymap when it first read it, and says why. It
+    /// tries again the next time it reads it.
+    BackupFailed(String),
 }
 
 /// What the session knows, at one moment.
@@ -188,6 +206,9 @@ pub enum SessionError {
     /// The keyboard didn't carry out the change, so the session rolled it back.
     #[error(transparent)]
     Keyboard(#[from] RpcError),
+    /// The keymap couldn't be backed up, so a destructive command changed nothing.
+    #[error("couldn't back up the keymap: {0}")]
+    Backup(Arc<io::Error>),
     /// The session has stopped.
     #[error("the session has stopped")]
     Stopped,
@@ -205,6 +226,11 @@ enum Command {
     Save(oneshot::Sender<Result<(), SessionError>>),
     Discard(oneshot::Sender<Result<(), SessionError>>),
     Reapply(oneshot::Sender<Result<(), SessionError>>),
+    Import(Vec<Edit>, oneshot::Sender<Result<(), SessionError>>),
+    BackUp(
+        Reason,
+        oneshot::Sender<Result<Option<PathBuf>, SessionError>>,
+    ),
     Snapshot(oneshot::Sender<Snapshot>),
 }
 
@@ -216,17 +242,34 @@ enum Change {
 }
 
 impl Session {
-    /// Starts a session with no keyboard, in a task on the current Tokio runtime.
+    /// Starts a session with no keyboard, and no automatic backups, in a task on the
+    /// current Tokio runtime. Demo mode and tests use it.
     ///
     /// # Panics
     ///
     /// Panics if called outside a Tokio runtime.
     #[must_use]
     pub fn start() -> Self {
+        Self::spawn(None)
+    }
+
+    /// Starts a session with no keyboard, which keeps automatic backups in `backups`, in a
+    /// task on the current Tokio runtime.
+    ///
+    /// # Panics
+    ///
+    /// Panics if called outside a Tokio runtime.
+    #[must_use]
+    pub fn with_backups(backups: Backups) -> Self {
+        Self::spawn(Some(backups))
+    }
+
+    fn spawn(backups: Option<Backups>) -> Self {
         let (commands, receiver) = mpsc::channel(COMMAND_CAPACITY);
         let (state_sender, state) = watch::channel(State::NoDevice);
         let (events, _) = broadcast::channel(EVENT_CAPACITY);
-        tokio::spawn(actor::Actor::new(receiver, state_sender, events.clone()).run());
+        let actor = actor::Actor::new(receiver, state_sender, events.clone(), backups);
+        tokio::spawn(actor.run());
         Self {
             commands,
             state,
@@ -378,6 +421,33 @@ impl Session {
     /// Fails if the session isn't [`State::ChangesLost`], or the keyboard stops answering.
     pub async fn reapply(&self) -> Result<(), SessionError> {
         self.ask(Command::Reapply).await
+    }
+
+    /// Imports a backup over the keymap: applies [`Import::edits`] as one change, which
+    /// can be undone, after backing up the keymap (SAF-3).
+    ///
+    /// [`Import::edits`]: keywright_core::backup::Import::edits
+    ///
+    /// # Errors
+    ///
+    /// As for [`apply`](Self::apply), and fails without changing anything if the keymap
+    /// can't be backed up.
+    pub async fn import(&self, edits: Vec<Edit>) -> Result<(), SessionError> {
+        self.ask(|reply| Command::Import(edits, reply)).await
+    }
+
+    /// Backs up the keymap now, as the firmware assistant does before an update
+    /// ([`Reason::BeforeFirmware`]). Returns the file, or `None` if the session keeps no
+    /// backups.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the session isn't [`State::Ready`], `reason` is [`Reason::Export`], which
+    /// isn't an automatic backup, or the file can't be written.
+    pub async fn back_up(&self, reason: Reason) -> Result<Option<PathBuf>, SessionError> {
+        let (reply, result) = oneshot::channel();
+        self.send(Command::BackUp(reason, reply)).await?;
+        result.await.map_err(|_| SessionError::Stopped)?
     }
 
     /// What the session knows now.

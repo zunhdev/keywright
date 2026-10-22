@@ -1,7 +1,11 @@
 //! The session's task: the state machine that [`Session`](super::Session) drives.
 
 use std::future::{self, Future};
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::SystemTime;
 
+use keywright_core::backup::{Backup, KeyboardInfo, Reason};
 use keywright_core::edit::{Edit, Operation};
 use keywright_core::editor::Editor;
 use keywright_core::keymap::{DeviceIdentity, Keyboard, Keymap};
@@ -18,11 +22,15 @@ use tokio::sync::{broadcast, mpsc, oneshot, watch};
 use super::{
     Change, Command, Connection, Incompatibility, Peer, SessionError, SessionEvent, Snapshot, State,
 };
+use crate::backups::{self, Backups};
 use crate::convert;
 
 /// The USB product string of the half of a split keyboard that doesn't serve Studio, as
 /// spike S1 found it on the Sofle. Spike S4 checks it on other boards.
 const OTHER_HALF_PRODUCT: &str = "Generic CDC";
+
+/// What makes the backups, as the files say.
+const APP: &str = concat!("keywright ", env!("CARGO_PKG_VERSION"));
 
 /// How many rounds of operations bringing the keyboard in step with the editor may take.
 /// Two are enough, unless the keyboard refuses something ([`reconcile::operations`]).
@@ -35,6 +43,9 @@ pub(super) struct Actor {
     events: broadcast::Sender<SessionEvent>,
     link: Option<Link>,
     known: Option<Known>,
+    backups: Option<Backups>,
+    /// The keyboards whose keymap the session has backed up since it first read it.
+    backed_up: Vec<DeviceIdentity>,
 }
 
 /// The connection the session has.
@@ -96,6 +107,7 @@ impl Actor {
         commands: mpsc::Receiver<Command>,
         state: watch::Sender<State>,
         events: broadcast::Sender<SessionEvent>,
+        backups: Option<Backups>,
     ) -> Self {
         Self {
             commands,
@@ -103,6 +115,8 @@ impl Actor {
             events,
             link: None,
             known: None,
+            backups,
+            backed_up: Vec::new(),
         }
     }
 
@@ -166,6 +180,17 @@ impl Actor {
             Command::Reapply(reply) => {
                 let result = self.reapply().await;
                 self.reply(reply, result).await;
+            }
+            Command::Import(edits, reply) => {
+                let result = self.import(edits).await;
+                self.reply(reply, result).await;
+            }
+            Command::BackUp(reason, reply) => {
+                let result = match self.ready() {
+                    Ok(_) => self.back_up(reason),
+                    Err(error) => Err(error),
+                };
+                let _ = reply.send(result);
             }
             Command::Snapshot(reply) => {
                 let _ = reply.send(self.snapshot());
@@ -309,6 +334,16 @@ impl Actor {
             .filter(|pack| pack.matches_layout(&keyboard.layout));
         let keymap = keyboard.keymap.clone();
         known.keyboard = Some(keyboard);
+        let device = known.device.clone();
+        if self.backups.is_some() && !self.backed_up.contains(&device) {
+            // A backup that fails says so, and doesn't stop the session.
+            if self.write_backup(Reason::FirstConnect, &keymap).is_ok() {
+                self.backed_up.push(device);
+            }
+        }
+        let Some(known) = &mut self.known else {
+            return;
+        };
         if known.editor.is_some() {
             // Locked again, or reconnected: the editor stays, with its history.
             return self.reconcile(keymap, unsaved).await;
@@ -560,6 +595,70 @@ impl Actor {
         }
         self.set(State::Ready);
         Ok(())
+    }
+
+    /// Imports a backup's edits, after backing up the keymap.
+    async fn import(&mut self, edits: Vec<Edit>) -> Result<(), SessionError> {
+        self.ready()?;
+        self.back_up(Reason::BeforeImport)?;
+        self.change(Change::Apply(edits)).await
+    }
+
+    /// Backs up the keymap the editor shows, which the keyboard holds. Returns `None` if
+    /// the session keeps no backups.
+    fn back_up(&mut self, reason: Reason) -> Result<Option<PathBuf>, SessionError> {
+        if self.backups.is_none() {
+            return Ok(None);
+        }
+        let Some(Known {
+            editor: Some(editor),
+            ..
+        }) = &self.known
+        else {
+            return Err(SessionError::NotReady);
+        };
+        let keymap = editor.current().clone();
+        self.write_backup(reason, &keymap).map(Some)
+    }
+
+    /// Writes a backup of `keymap` into the backups folder, and says so.
+    fn write_backup(&self, reason: Reason, keymap: &Keymap) -> Result<PathBuf, SessionError> {
+        let (Some(backups), Some(known)) = (&self.backups, &self.known) else {
+            return Err(SessionError::NotReady);
+        };
+        let Some(keyboard) = &known.keyboard else {
+            return Err(SessionError::NotReady);
+        };
+        let written = backups::created(SystemTime::now())
+            .ok_or_else(|| std::io::Error::other("the clock is past the year 9999"))
+            .and_then(|created| {
+                let backup = Backup::export(
+                    keymap,
+                    &keyboard.behaviors,
+                    KeyboardInfo {
+                        name: keyboard.identity.name.clone(),
+                        support_pack: known.pack.map(|pack| pack.id.clone()),
+                        physical_layout: keyboard.layout.name.clone(),
+                    },
+                    created,
+                    APP.to_owned(),
+                    reason,
+                );
+                let rows = known.pack.map_or(&[][..], |pack| &pack.rows);
+                backups.write(&backup, rows)
+            });
+        match written {
+            Ok(path) => {
+                let _ = self.events.send(SessionEvent::BackedUp(path.clone()));
+                Ok(path)
+            }
+            Err(error) => {
+                let _ = self
+                    .events
+                    .send(SessionEvent::BackupFailed(error.to_string()));
+                Err(SessionError::Backup(Arc::new(error)))
+            }
+        }
     }
 
     /// Applies the changes the keyboard forgot when it restarted again.
