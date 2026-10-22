@@ -226,7 +226,7 @@ mod the_sofle_pack {
         let pack = sofle();
         assert_eq!(pack.id, SOFLE);
         assert_eq!(pack.name, "Keebart Sofle Choc Pro BT");
-        assert_eq!(pack.device_names, ["Sofle Choc BT"]);
+        assert_eq!(pack.device_names, ["Sofle Choc BT", "Sofle Choc Pro"]);
         assert_eq!(pack.sources[0].name, "Keebart/zmk-config");
         assert_eq!(pack.sources[0].license, "MIT");
     }
@@ -359,6 +359,8 @@ mod the_sofle_pack {
     fn is_found_by_the_name_the_keyboard_reports() {
         let pack = sofle();
         assert!(pack.matches_name("Sofle Choc BT"));
+        // What keyboards shipped before 2026-08-29 report.
+        assert!(pack.matches_name("Sofle Choc Pro"));
         assert!(!pack.matches_name("sofle choc bt"));
         assert!(!pack.matches_name("Corne Choc BT"));
         assert!(
@@ -515,7 +517,7 @@ mod loading {
 
     #[test]
     fn device_names_must_be_names_zmk_can_report() {
-        let device_names = "device-names = [\"Sofle Choc BT\"]";
+        let device_names = "device-names = [\"Sofle Choc BT\", \"Sofle Choc Pro\"]";
         assert_eq!(
             error(&changed(PACK, device_names, "device-names = []")),
             PackError::NoDeviceNames,

@@ -98,7 +98,7 @@ mod requests {
             within(client.get_lock_state()).await.unwrap(),
             LockState::Locked
         );
-        assert_eq!(within(client.list_all_behaviors()).await.unwrap().len(), 21);
+        assert_eq!(within(client.list_all_behaviors()).await.unwrap().len(), 22);
         assert!(matches!(
             within(client.get_keymap()).await,
             Err(RpcError::Keyboard(ErrorCondition::UnlockRequired)),

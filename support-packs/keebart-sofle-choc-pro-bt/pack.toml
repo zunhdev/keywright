@@ -9,8 +9,10 @@ name = "Keebart Sofle Choc Pro BT"
 
 # How Keywright recognises the keyboard. First by the name its firmware reports, before it's
 # unlocked. Then, once it's unlocked, by its physical layout, which must match layout.toml.
+# Keebart's firmware called the board "Sofle Choc Pro" until 2026-08-29, so keyboards
+# shipped before then report that name (spike S1).
 [match]
-device-names = ["Sofle Choc BT"]
+device-names = ["Sofle Choc BT", "Sofle Choc Pro"]
 
 # Where the pack's data comes from. Keywright shows these credits, because the stock keymap
 # ships inside it.
