@@ -1,0 +1,44 @@
+# What Keywright tells people about the keyboard that the keyboard can't say itself (tech
+# spec §10, DEV-2). Keys are key positions, as in layout.toml, and layers are the stock
+# keymap's layer IDs. The stock keymap must agree with every hint: the pack's validation
+# test checks it.
+
+# The half to plug the cable into: the only one that talks to the computer (CON-5).
+usb-half = "left"
+
+# How to unlock the keyboard with the stock keymap (SAF-1): hold Raise, then tap B.
+[unlock]
+hold = [56]
+tap = 41
+
+# How to pick a Bluetooth slot with the stock keymap: hold Raise, then tap 1 to 5 for slots
+# 1 to 5.
+[bluetooth]
+hold = [56]
+slots = [1, 2, 3, 4, 5]
+
+# Layers the firmware turns on by itself, which the keyboard doesn't report (LAY-4): Adjust
+# while Lower and Raise are both on.
+[[conditional-layer]]
+if-layers = [1, 2]
+then-layer = 3
+
+# The knobs, in the order of the keymap's `sensor-bindings`: left, then right (VIEW-4).
+# Pressing one is a key, which can be changed. Turning one sends `turn`'s keys, as the
+# keymap's `&inc_dec_kp` lists them, which Keywright can't change yet.
+[[knob]]
+position = 42
+turn = ["C_VOL_DN", "C_VOL_UP"]
+
+[[knob]]
+position = 43
+turn = ["C_PREV", "C_NEXT"]
+
+# Updating the firmware (FW-1).
+[firmware]
+# The drive a half shows up as in update mode.
+volume = "KEEBART"
+# The halves, in the order Keebart's instructions flash them.
+halves = ["right", "left"]
+# How to put a half into update mode.
+update-mode = "Double-press the reset button next to the USB port, with a SIM tool."

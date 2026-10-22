@@ -1,0 +1,101 @@
+# The keyboard's physical layout: where each key is (tech spec §10, design §7).
+#
+# The keyboard reports its layout only once it's unlocked, so Keywright draws this copy on
+# the unlock sheet. Once unlocked, the layout the keyboard reports must match this one, key
+# for key, to confirm the keyboard is the one this pack describes.
+#
+# From `default_layout` in `boards/arm/sofle_choc_pro/sofle_choc_pro-layouts.dtsi`, in
+# Keebart/zmk-config at the revision pack.toml names. Lengths are in hundredths of a key
+# unit and angles in hundredths of a degree, as ZMK writes them. A key is 100 wide and 100
+# high unless it says otherwise, and its rotation is clockwise, around (rotation-x,
+# rotation-y).
+
+name = "Default Layout"
+
+# The rows, top to bottom. Their keys are in key-position order, and backups write each
+# label as a comment before the row.
+
+[[row]]
+label = "row 1: left, then right"
+keys = [
+  { x = 0, y = 37 },
+  { x = 100, y = 37 },
+  { x = 200, y = 12 },
+  { x = 300, y = 0 },
+  { x = 400, y = 12 },
+  { x = 500, y = 24 },
+  { x = 900, y = 24 },
+  { x = 1000, y = 12 },
+  { x = 1100, y = 0 },
+  { x = 1200, y = 12 },
+  { x = 1300, y = 37 },
+  { x = 1400, y = 37 },
+]
+
+[[row]]
+label = "row 2"
+keys = [
+  { x = 0, y = 137 },
+  { x = 100, y = 137 },
+  { x = 200, y = 112 },
+  { x = 300, y = 100 },
+  { x = 400, y = 112 },
+  { x = 500, y = 124 },
+  { x = 900, y = 124 },
+  { x = 1000, y = 112 },
+  { x = 1100, y = 100 },
+  { x = 1200, y = 112 },
+  { x = 1300, y = 137 },
+  { x = 1400, y = 137 },
+]
+
+[[row]]
+label = "row 3"
+keys = [
+  { x = 0, y = 237 },
+  { x = 100, y = 237 },
+  { x = 200, y = 212 },
+  { x = 300, y = 200 },
+  { x = 400, y = 212 },
+  { x = 500, y = 224 },
+  { x = 900, y = 224 },
+  { x = 1000, y = 212 },
+  { x = 1100, y = 200 },
+  { x = 1200, y = 212 },
+  { x = 1300, y = 237 },
+  { x = 1400, y = 237 },
+]
+
+[[row]]
+label = "row 4, with the knob presses in the middle"
+keys = [
+  { x = 0, y = 337 },
+  { x = 100, y = 337 },
+  { x = 200, y = 312 },
+  { x = 300, y = 300 },
+  { x = 400, y = 312 },
+  { x = 500, y = 324 },
+  { x = 600, y = 274 },
+  { x = 800, y = 274 },
+  { x = 900, y = 324 },
+  { x = 1000, y = 312 },
+  { x = 1100, y = 300 },
+  { x = 1200, y = 312 },
+  { x = 1300, y = 337 },
+  { x = 1400, y = 337 },
+]
+
+[[row]]
+label = "thumbs"
+keys = [
+  { x = 175, y = 437 },
+  { x = 275, y = 412 },
+  { x = 375, y = 412 },
+  { x = 490, y = 412, rotation = 1200, rotation-x = 490, rotation-y = 412 },
+  { x = 600, y = 383, height = 150, rotation = 2400, rotation-x = 600, rotation-y = 433 },
+  { x = 800, y = 383, height = 150, rotation = -2400, rotation-x = 900, rotation-y = 433 },
+  { x = 910, y = 412, rotation = -1200, rotation-x = 1010, rotation-y = 412 },
+  { x = 1025, y = 412 },
+  { x = 1125, y = 412 },
+  { x = 1225, y = 437 },
+]

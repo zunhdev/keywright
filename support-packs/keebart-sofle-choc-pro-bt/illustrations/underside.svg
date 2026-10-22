@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 1740 650" role="img" aria-labelledby="title desc">
+  <title id="title">Keebart Sofle Choc Pro BT, from below</title>
+  <desc id="desc">Both halves seen from below, so the left half is on the right. Each has its reset button next to its USB port.</desc>
+  <style>
+    path, rect, circle { fill: none; stroke: currentColor; stroke-linejoin: round; }
+    .case { stroke-width: 4; }
+    .key, .knob circle { stroke-width: 3; }
+    .knob-ring { stroke-width: 2; stroke-dasharray: 6 6; }
+    .display, .usb-port, .power-switch, .reset-button { stroke-width: 3; }
+  </style>
+  <g transform="translate(1660 0) scale(-1 1)">
+    <g id="left-half">
+      <path class="case" d="M-15 22 L185 22 L185 -3 L285 -3 L285 -15 L415 -15 L415 -3 L515 -3 L515 9 L715 9 L731 420 L658 585 L160 552 L-15 452 Z"/>
+      <rect class="usb-port" id="usb-port-left" x="625" y="0" width="50" height="18" rx="8"/>
+      <rect class="power-switch" id="power-switch-left" x="724.4" y="232" width="10" height="36" rx="3"/>
+      <circle class="reset-button" id="reset-button-left" cx="595" cy="40" r="12"/>
+    </g>
+    <g id="right-half" transform="translate(160 0)">
+      <path class="case" d="M1515 22 L1315 22 L1315 -3 L1215 -3 L1215 -15 L1085 -15 L1085 -3 L985 -3 L985 9 L785 9 L769 420 L842 585 L1340 552 L1515 452 Z"/>
+      <rect class="usb-port" id="usb-port-right" x="825" y="0" width="50" height="18" rx="8"/>
+      <rect class="power-switch" id="power-switch-right" x="765.6" y="232" width="10" height="36" rx="3"/>
+      <circle class="reset-button" id="reset-button-right" cx="905" cy="40" r="12"/>
+    </g>
+  </g>
+</svg>

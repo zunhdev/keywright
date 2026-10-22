@@ -65,6 +65,10 @@ Paused until main development is finished ([KEY-94](https://linear.app/zunhdev/i
 
 The paused jobs still run when you run their workflow by hand (_Actions › Run workflow_, or `gh workflow run ci.yml --ref <branch>`). Setting the repository variable `FULL_CI` to `true` turns them back on for every run. The required check _Rust (macOS)_ passes when its job is skipped.
 
+## Adding a keyboard
+
+What Keywright knows about a keyboard model, beyond what the keyboard reports, is in its support pack: a directory of data files in [`support-packs/`](support-packs/). Adding one needs no code. See [How to add a keyboard support pack](docs/contributing/support-packs.md).
+
 ## GitHub Actions workflows
 
 Workflows must:

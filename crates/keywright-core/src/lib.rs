@@ -28,6 +28,7 @@ pub mod hid;
 pub mod keymap;
 pub mod keys;
 pub mod mac;
+pub mod support_packs;
 
 #[cfg(test)]
 mod testing;

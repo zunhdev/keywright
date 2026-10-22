@@ -1,0 +1,24 @@
+# Keywright keyboard support pack (tech spec §10, DEV-2).
+# How to write one: docs/contributing/support-packs.md
+
+format = 1
+# The pack's ID: its directory name. Backups name it in `support-pack`.
+id = "keebart-sofle-choc-pro-bt"
+# The keyboard's name, as people know it.
+name = "Keebart Sofle Choc Pro BT"
+
+# How Keywright recognises the keyboard. First by the name its firmware reports, before it's
+# unlocked. Then, once it's unlocked, by its physical layout, which must match layout.toml.
+[match]
+device-names = ["Sofle Choc BT"]
+
+# Where the pack's data comes from. Keywright shows these credits, because the stock keymap
+# ships inside it.
+[[source]]
+name = "Keebart/zmk-config"
+url = "https://github.com/Keebart/zmk-config"
+revision = "98c5a1181ff7db1f480f684f714126922d55b8f0"
+# stock-keymap.toml is `config/sofle_choc_pro.keymap`, which upstream/ holds unchanged.
+# The repository has no licence file, but the keymap's header says MIT.
+license = "MIT"
+copyright = "Copyright (c) 2020 The ZMK Contributors"
