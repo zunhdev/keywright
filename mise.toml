@@ -156,9 +156,14 @@ tools = { "cargo:cargo-fuzz" = "0.13.2" }
 # `--sanitizer none`: AddressSanitizer looks for memory errors, which code without `unsafe`
 # can't have, and it needs a nightly compiler. Without it, fuzzing runs faster, on the
 # pinned toolchain. `--debug-assertions` turns on overflow checks, so an overflow fails too.
+# Each target starts from its corpus, which CI caches between runs, and from the inputs
+# checked in under fuzz/seeds/, such as a whole backup file, which the fuzzer would take a
+# long time to come up with on its own.
 run = """
 for target in $(cargo fuzz list); do
-  cargo fuzz run "$target" --sanitizer none --debug-assertions -- -max_total_time="${FUZZ_SECONDS:-60}"
+  mkdir -p "fuzz/corpus/$target" "fuzz/seeds/$target"
+  cargo fuzz run "$target" "fuzz/corpus/$target" "fuzz/seeds/$target" \
+    --sanitizer none --debug-assertions -- -max_total_time="${FUZZ_SECONDS:-60}"
 done
 """
 

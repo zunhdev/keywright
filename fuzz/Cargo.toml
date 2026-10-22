@@ -13,8 +13,16 @@ publish = false
 cargo-fuzz = true
 
 [dependencies]
+keywright-core = { path = "../crates/keywright-core" }
 keywright-studio = { path = "../crates/keywright-studio" }
 libfuzzer-sys = "0.4.13"
+
+[[bin]]
+name = "backup_parse"
+path = "fuzz_targets/backup_parse.rs"
+test = false
+doc = false
+bench = false
 
 [[bin]]
 name = "frame_decode"

@@ -18,6 +18,7 @@
 #![forbid(unsafe_code)]
 
 pub mod action;
+pub mod backup;
 pub mod behavior;
 pub mod edit;
 pub mod editor;

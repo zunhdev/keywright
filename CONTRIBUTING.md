@@ -32,7 +32,7 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
 | `mise run portable` | Builds and tests the crates that must stay portable (core, studio, sim), as CI does on Linux.                                                                                                                                |
 | `mise run coverage` | Measures Rust test coverage, and fails if `keywright-core` drops below 80% of lines, as CI does.                                                                                                                             |
 | `mise run mutants`  | Mutation-tests `keywright-core`, as CI does weekly. The first run also builds cargo-mutants.                                                                                                                                 |
-| `mise run fuzz`     | Fuzzes each target in `fuzz/` for a minute, as CI does when the fuzzed code changes. Set `FUZZ_SECONDS` to fuzz for longer. The first run also builds cargo-fuzz.                                                            |
+| `mise run fuzz`     | Fuzzes each target in `fuzz/` for a minute, as CI does when the fuzzed code changes, starting from the inputs in `fuzz/seeds/`. Set `FUZZ_SECONDS` to fuzz for longer. The first run also builds cargo-fuzz.                 |
 
 Each task runs its parts for every area, such as `lint:rust` and `lint:ts`, which you can also run on their own. The TypeScript tasks install the Bun packages from `bun.lock` first. `mise tasks` lists them all. CI runs the same tasks, split into jobs (`.github/workflows/ci.yml`). To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
 
@@ -45,7 +45,7 @@ If [typos](https://github.com/crate-ci/typos) flags a word that is spelled corre
 1. Create a branch from `main`, e.g. `fix/reconnect-after-sleep` or `docs/unlock-guide`.
 2. **Sign your commits**: unsigned commits can't be merged. See GitHub's guide to [signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
 3. Open a pull request and fill in the template. Keep each PR focused on one change.
-4. Before you open the pull request, run `mise run check` and `mise run coverage`, plus `mise run fuzz` if you changed `keywright-studio` or `fuzz/`. CI doesn't run all of these for now (see [Paused CI checks](#paused-ci-checks)). All checks must pass, and all review conversations must be resolved.
+4. Before you open the pull request, run `mise run check` and `mise run coverage`, plus `mise run fuzz` if you changed `keywright-studio`, the backup format (`keywright-core`'s `backup` module) or `fuzz/`. CI doesn't run all of these for now (see [Paused CI checks](#paused-ci-checks)). All checks must pass, and all review conversations must be resolved.
 5. PRs are **squash-merged**. The PR title becomes the commit title on `main`, so write it in the imperative mood ("Add Bluetooth reconnect", not "Added…"). The PR description becomes the commit body.
 
 History on `main` is linear, and force-pushes to it are blocked. Merged branches are deleted automatically.
