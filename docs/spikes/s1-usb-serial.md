@@ -110,7 +110,7 @@ KEY-95 made the client work around the receive bugs, and checked the result on t
   | `ЭЭ` | `D0 AD` ×2 | 1/10        |
   | `Ж`  | `D0 96`    | 10/10       |
 
-  The client refuses names with such characters.
+  The client refuses names with such characters. A character is one when its UTF-8 has a byte from `AB` to `AD`, as about 1 in 20 accented Latin, Greek and Cyrillic characters does, and 1 in 11 Chinese, Japanese or Korean ones. Among them are `í`, `ë`, `ì`, `«`, and Cyrillic `Ы`, `Ь` and `Э`.
 
 - **Where a name fails.** The harness renamed to `lower` from 12 of the 30 positions along the ring, moving it with filler first, 90 times. The renames from one position failed every time (7/7); from the 11 others, every one got through. The model puts 4 failing frame starts next to each other, where the 5-byte name crosses the ring's end: the failing one and 3 the run never hit.
 - **Writes that share a packet.** At first the client sent the filler and the retried frame 1 ms apart. The computer could pack them into one USB packet, and 18 bytes of filler plus a 19-byte frame overflowed the buffer: all three retries of two 7-byte names failed. The client now waits 10 ms after the `EOF` and filler. The simulator treats writes at the same moment, with nothing from the keyboard in between, as one packet, and its 18-length rename test fails without the pause.
