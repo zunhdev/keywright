@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.16 — for review                                        |
+| **Status**    | Draft v0.17 — for review                                        |
 | **Date**      | 2026-10-22                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -427,16 +427,30 @@ A support pack is a directory of data files embedded into the binary at build ti
 
 ```
 support-packs/keebart-sofle-choc-pro-bt/
-├── pack.toml          # ids, display name, match rules, licence/attribution of sources
-├── layout.toml        # physical layout copy (for the locked/unlock state, design §7)
-├── stock-keymap.toml  # Keebart's stock keymap in backup format (CHG-4, restore stock per key)
-├── hints.toml         # unlock keys, conditional layers (Adjust = Lower + Raise), knob functions,
-│                      # which half to plug in, BT slot keys, flashing steps, UF2 volume name "KEEBART"
-└── illustrations/     # SVGs: top view outline, underside with reset button
+├── pack.toml          # ID, display name, device names to match, credits for the sources
+├── layout.toml        # physical layout in rows (unlock sheet, design §7; row comments in backups)
+├── stock-keymap.toml  # Keebart's stock keymap as a backup (CHG-4, restore stock)
+├── hints.toml         # USB half, unlock keys (hold Raise, tap B), Bluetooth slot keys, conditional
+│                      # layers (Adjust = Lower + Raise), knobs, firmware update (volume "KEEBART")
+├── illustrations/     # optional SVGs: top.svg, underside.svg (reset buttons and USB ports by ID)
+└── upstream/          # the stock keymap's source, unchanged, with its licence; read by tests only
 ```
 
-- Stock keymap and layout are derived from [Keebart/zmk-config](https://github.com/Keebart/zmk-config) (MIT), with attribution in `pack.toml`.
-- A contributor guide (_How to add a keyboard support pack_) and a validation test (`cargo test -p keywright-core support_packs`) make adding a model a data-only PR.
+- **Embedding.** `keywright-core`'s build script lists each directory in `support-packs/` and embeds its files with `include_str!`, except hidden files and `upstream/`. `support_packs::embedded()` loads them once. A pack that fails to load is left out, so its keyboard is treated as unknown, and the validation test makes sure none fails.
+- **Matching.** A pack is offered for a keyboard whose reported name is in its `device-names`. After unlock, the layout the keyboard reports must equal `layout.toml` key for key: position, size and rotation, whatever the layout's name. That is the fingerprint. Packs that share a device name, such as a 5- and a 6-column Corne, must differ in layout, which the test checks.
+- **Loading checks** (`support_packs::PackError`):
+  - every file is present and known, and its fields too: unlike backups, packs refuse unknown fields, so a typo fails;
+  - `format` is 1, the ID is the directory's name, and device names have 1 to 16 characters, ZMK's limit;
+  - the layout has keys, at most 512, with no empty row, and each key has an area;
+  - the stock keymap is a backup for this pack, layout and key count, and every binding reads;
+  - hints refer to keys and layers that exist;
+  - with the stock keymap, the unlock keys reach `studio_unlock` and each Bluetooth slot's keys select it, following ZMK's layer state as in §8.4, conditional layers included;
+  - illustrations are SVG images without scripts.
+- **The validation test** (`cargo test -p keywright-core support_packs`) loads every pack, and checks two more things against the files:
+  - the stock keymap file is exactly what the backup writer writes, with the pack's rows;
+  - it matches `upstream/*.keymap` key by key, compared as actions, so `ASTRK` matches `STAR`. The conditional layers and the knobs' `sensor-bindings` must match too. A small reader in the tests handles the devicetree that keymaps use.
+- **Sources.** The Sofle's stock keymap is `config/sofle_choc_pro.keymap` from [Keebart/zmk-config](https://github.com/Keebart/zmk-config), vendored in `upstream/`. Its header says MIT, © The ZMK Contributors; the repository has no licence file. The layout is copied from `sofle_choc_pro-layouts.dtsi`, the data the keyboard reports over Studio. That file has no licence notice, so it isn't vendored. `pack.toml` credits the source, and the app shows the credits.
+- **Contributors** follow [How to add a keyboard support pack](../contributing/support-packs.md): adding a model is a data-only PR.
 
 ---
 
@@ -721,6 +735,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.17    | 2026-10-22 | Support packs (§10): the pack's files and their fields; the build script embeds every pack; matching by device name, then by layout key for key; what loading checks, including the hints against the stock keymap; the validation test against the vendored upstream keymap; the contributor guide.                                                               |
 | 0.16    | 2026-10-22 | Backup format (§9): the header fields and the writer's layout, the action text grammar, how import maps layers and fills restored slots, the kinds of unresolved item, and the `backup_parse` fuzz target with checked-in seeds.                                                                                                                                   |
 | 0.15    | 2026-10-22 | Guards (§8.4): reachability follows ZMK's layer state, with latched and held layers, the default layer (ID 0) and conditional layers; guards report only what a change makes worse; a state cap; `layer_keys` for LAY-4; the compatibility check's matching and fixes.                                                                                             |
 | 0.14    | 2026-10-22 | Editing (§8.3): one group in flight, with rollback of partial failures; edits follow ZMK's layer slots (removed layers keep their slot, `AddLayer` is recorded after the keyboard adds, redo restores rather than adds); the kinds of review row; discarding clears the history.                                                                                   |

@@ -13,6 +13,7 @@ extend-exclude = [
   "bun.lock",
   "scripts/key-tables/upstream/chromium/",
   "scripts/key-tables/upstream/zmk/",
+  "support-packs/*/upstream/",
 ]
 
 [default.extend-words]
