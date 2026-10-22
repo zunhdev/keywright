@@ -13,9 +13,11 @@
 
 #![forbid(unsafe_code)]
 
+pub mod backups;
 mod convert;
 pub mod session;
 
+pub use self::backups::Backups;
 pub use self::session::{
     Connection, Incompatibility, Peer, Session, SessionError, SessionEvent, Snapshot, State,
 };

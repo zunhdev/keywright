@@ -5,7 +5,8 @@
 //! - key labels for the current input source, and events when it changes;
 //! - detection of UF2 firmware volumes;
 //! - the login item;
-//! - the window's "edited" dot.
+//! - the window's "edited" dot;
+//! - where Keywright keeps its files, such as automatic backups (`paths`).
 //!
 //! All platform-specific code lives here, behind `cfg(target_os)`, so the rest of Keywright
 //! stays portable (NFR-7).
@@ -14,3 +15,5 @@
 //! allow it explicitly. Every `unsafe` block needs a `// SAFETY:` comment.
 //!
 //! Tech spec §11 describes the design.
+
+pub mod paths;

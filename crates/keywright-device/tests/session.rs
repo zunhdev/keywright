@@ -15,11 +15,14 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
+use keywright_core::backup::{Backup, Reason};
 use keywright_core::behavior::BehaviorKind;
 use keywright_core::edit::Edit;
 use keywright_core::keymap::{Binding, LayerId};
+use keywright_core::support_packs;
 use keywright_device::{
-    Connection, Incompatibility, Peer, Session, SessionError, SessionEvent, Snapshot, State,
+    Backups, Connection, Incompatibility, Peer, Session, SessionError, SessionEvent, Snapshot,
+    State,
 };
 use keywright_sim::firmware::SOFLE;
 use keywright_sim::{Firmware, InMemoryTransport, Keyboard, Simulator};
@@ -1311,5 +1314,245 @@ mod keyboards_that_dont_answer {
         });
         connect(&session, transport, Peer::Simulated).await;
         wait_until(&session, |state| *state == State::NoDevice).await;
+    }
+}
+
+/// Tech spec §7.2: a backup of each keyboard's keymap the first time the session reads it,
+/// and before every destructive command.
+mod automatic_backups {
+    use std::path::PathBuf;
+
+    use super::*;
+
+    /// A backups folder for one test, deleted afterwards.
+    struct Folder(PathBuf);
+
+    impl Folder {
+        fn new() -> Self {
+            static NEXT: AtomicUsize = AtomicUsize::new(0);
+            let name = format!(
+                "keywright-session-backups-{}-{}",
+                std::process::id(),
+                NEXT.fetch_add(1, Ordering::Relaxed)
+            );
+            let path = std::env::temp_dir().join(name);
+            let _ = std::fs::remove_dir_all(&path);
+            Self(path)
+        }
+
+        fn backups(&self) -> Backups {
+            Backups::new(&self.0, Backups::DEFAULT_KEEP)
+        }
+
+        /// The backups in the folder, newest first, read back.
+        fn read(&self) -> Vec<Backup> {
+            self.backups()
+                .list()
+                .unwrap()
+                .iter()
+                .map(|path| Backup::parse(&std::fs::read_to_string(path).unwrap()).unwrap())
+                .collect()
+        }
+    }
+
+    impl Drop for Folder {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+            let _ = std::fs::remove_file(&self.0);
+        }
+    }
+
+    fn reasons(backups: &[Backup]) -> Vec<Reason> {
+        backups.iter().map(|backup| backup.reason).collect()
+    }
+
+    /// A session keeping backups in `folder`, on an unlocked Sofle.
+    async fn ready_with_backups(folder: &Folder) -> (Session, Simulator) {
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let session = Session::with_backups(folder.backups());
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        ready(&session).await;
+        (session, keyboard)
+    }
+
+    /// The edits that import the Sofle's stock keymap over the session's.
+    async fn stock_import(session: &Session) -> Vec<Edit> {
+        let snapshot = snapshot(session).await;
+        let pack = support_packs::embedded()
+            .iter()
+            .find(|pack| pack.id == SOFLE)
+            .unwrap();
+        let keyboard = snapshot.keyboard.unwrap();
+        let import = pack
+            .stock_keymap
+            .import(snapshot.editor.unwrap().current(), &keyboard.behaviors);
+        assert_eq!(import.unresolved, []);
+        import.edits
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn each_keyboard_is_backed_up_the_first_time_its_keymap_is_read() {
+        let folder = Folder::new();
+        let keyboard = Simulator::sofle().unwrap();
+        let session = Session::with_backups(folder.backups());
+        let mut events = session.subscribe();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        wait_until(&session, is_locked).await;
+        // Locked, it can't share its keymap.
+        assert_eq!(folder.read(), []);
+
+        keyboard.press_unlock_key();
+        ready(&session).await;
+        let SessionEvent::BackedUp(path) = event(&mut events, |event| {
+            matches!(event, SessionEvent::BackedUp(_))
+        })
+        .await
+        else {
+            unreachable!()
+        };
+        assert!(path.starts_with(&folder.0));
+        let backups = folder.read();
+        assert_eq!(reasons(&backups), [Reason::FirstConnect]);
+        let first = &backups[0];
+        assert_eq!(first.keyboard.name, "Sofle Choc BT");
+        assert_eq!(first.keyboard.support_pack.as_deref(), Some(SOFLE));
+        assert!(first.app.starts_with("keywright "));
+        // It holds the keymap as read: importing it changes nothing.
+        let loaded = snapshot(&session).await;
+        let behaviors = loaded.keyboard.unwrap().behaviors;
+        let import = first.import(loaded.editor.unwrap().current(), &behaviors);
+        assert_eq!(import.edits, []);
+
+        // Reading it again, after a reconnect, doesn't back it up again. A snapshot waits
+        // for the session to finish connecting.
+        session.disconnect().await.unwrap();
+        reconnect(&session, &keyboard).await;
+        assert_eq!(snapshot(&session).await.state, State::Ready);
+        assert_eq!(folder.read().len(), 1);
+
+        // Another keyboard is backed up too, and the first isn't again when it comes back.
+        let mut firmware = Firmware::sofle().unwrap();
+        firmware.device_info.serial_number = vec![1, 2, 3, 4];
+        let other = Simulator::start(Keyboard::new(firmware));
+        other.press_unlock_key();
+        connect(&session, other.connect(), Peer::Simulated).await;
+        assert_eq!(snapshot(&session).await.state, State::Ready);
+        assert_eq!(folder.read().len(), 2);
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        assert_eq!(snapshot(&session).await.state, State::Ready);
+        assert_eq!(folder.read().len(), 2);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn an_import_backs_up_the_keymap_first_and_can_be_undone() {
+        let folder = Folder::new();
+        let (session, keyboard) = ready_with_backups(&folder).await;
+        let stock = keyboard_key(&keyboard, 3).await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+
+        let edits = stock_import(&session).await;
+        assert_ne!(edits, []);
+        session.import(edits).await.unwrap();
+        assert_eq!(keyboard_key(&keyboard, 3).await, stock);
+
+        // The backup holds the keymap from before the import, change being tried included.
+        let backups = folder.read();
+        assert_eq!(
+            reasons(&backups),
+            [Reason::BeforeImport, Reason::FirstConnect]
+        );
+        assert_eq!(backups[0].layers[1].bindings[3], "kp A");
+
+        session.undo().await.unwrap();
+        assert_eq!(keyboard_key(&keyboard, 3).await.param1, KEY_A);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn the_firmware_assistant_backs_up_before_an_update() {
+        let folder = Folder::new();
+        let (session, _keyboard) = ready_with_backups(&folder).await;
+        let path = session
+            .back_up(Reason::BeforeFirmware)
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(
+            path.to_string_lossy()
+                .ends_with("-before-firmware-2.keywright")
+        );
+        assert_eq!(
+            reasons(&folder.read()),
+            [Reason::BeforeFirmware, Reason::FirstConnect]
+        );
+        // An export goes wherever the person puts it, not in the backups folder.
+        assert!(matches!(
+            session.back_up(Reason::Export).await,
+            Err(SessionError::Backup(_))
+        ));
+
+        session.disconnect().await.unwrap();
+        assert!(matches!(
+            session.back_up(Reason::BeforeFirmware).await,
+            Err(SessionError::NotReady)
+        ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn the_folder_keeps_what_the_settings_say() {
+        let folder = Folder::new();
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let session = Session::with_backups(Backups::new(&folder.0, 5));
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        ready(&session).await;
+        for _ in 0..7 {
+            session.back_up(Reason::BeforeFirmware).await.unwrap();
+        }
+        let backups = folder.read();
+        assert_eq!(backups.len(), 5);
+        assert_eq!(reasons(&backups), [Reason::BeforeFirmware; 5]);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_destructive_command_whose_backup_fails_changes_nothing() {
+        let folder = Folder::new();
+        // A file where the folder should be.
+        std::fs::write(&folder.0, "").unwrap();
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let session = Session::with_backups(folder.backups());
+        let mut events = session.subscribe();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        // The first backup fails, and says so, but the keymap can still be edited.
+        ready(&session).await;
+        event(&mut events, |event| {
+            matches!(event, SessionEvent::BackupFailed(_))
+        })
+        .await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+
+        let edits = stock_import(&session).await;
+        assert!(matches!(
+            session.import(edits).await,
+            Err(SessionError::Backup(_))
+        ));
+        assert_eq!(keyboard_key(&keyboard, 3).await.param1, KEY_A);
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(editor.changes().len(), 1);
+        assert!(matches!(
+            session.back_up(Reason::BeforeFirmware).await,
+            Err(SessionError::Backup(_))
+        ));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_session_without_backups_imports_all_the_same() {
+        let (session, keyboard) = ready_session().await;
+        let stock = keyboard_key(&keyboard, 3).await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+        session.import(stock_import(&session).await).await.unwrap();
+        assert_eq!(keyboard_key(&keyboard, 3).await, stock);
+        assert_eq!(session.back_up(Reason::BeforeFirmware).await.unwrap(), None);
     }
 }
