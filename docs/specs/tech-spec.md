@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.11 — for review                                        |
+| **Status**    | Draft v0.12 — for review                                        |
 | **Date**      | 2026-10-22                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -541,6 +541,8 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 
 All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The rust job's coverage step also gates the core: it fails below 80% of `keywright-core`'s lines. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
 
+**Paused during main development (KEY-93; KEY-94 re-enables them before v1.0).** To save Actions minutes, the expensive jobs only run when the repository variable `FULL_CI` is `true`, or when their workflow is run by hand: the **rust** job in `ci.yml` (a skipped job still satisfies its required check), `fuzz.yml`, and the nightly fuzzing and weekly mutation testing in `scheduled.yml`. CodeQL default setup is turned off. Contributors run `mise run check` and `mise run coverage` locally before opening a pull request, plus `mise run fuzz` when the fuzzed code changes. Pull requests still run the **rust-portable**, **ui** and **repo** jobs and `lint-workflows.yml`, and the daily advisory checks still run.
+
 ---
 
 ## 14. Testing strategy
@@ -678,5 +680,6 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.12    | 2026-10-22 | CI (§13.5): the macOS rust job, fuzzing, mutation testing and CodeQL are paused during main development behind the `FULL_CI` variable, and run locally instead (KEY-93, until KEY-94).                                                                                                                                                                             |
 | 0.11    | 2026-10-22 | Key tables (§8.2): sources vendored and hash-pinned, with ZMK's `keys.h` for names (ZMK's documentation data is CC-BY-NC-SA, so it isn't used); `Events.h` read from the SDK for the cross-check; categories, preferred ZMK names and the ISO swap hand-written in the core; `mise run generate` and the drift check (§13.1, §13.5); knip names `rustfmt` (§13.3). |
 | 0.10    | 2026-10-21 | Core model (§8.1): mod-tap holds and sticky keys take a `Shortcut`; `Action` gains `ExternalPower`; `Other` keeps the behavior ID; the interpretation is lossless. The core coverage gate is on (§13.5).                                                                                                                                                           |
