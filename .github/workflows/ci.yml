@@ -33,7 +33,8 @@ jobs:
       - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           minimum_release_age: 3d
-          install_args: github:nextest-rs/nextest github:Boshen/cargo-shear aqua:taiki-e/cargo-llvm-cov cargo-deny
+          # Bun runs the key table generator's drift check.
+          install_args: github:nextest-rs/nextest github:Boshen/cargo-shear aqua:taiki-e/cargo-llvm-cov cargo-deny bun
 
       - name: Install the Rust toolchain from rust-toolchain.toml
         run: rustup toolchain install
@@ -52,6 +53,11 @@ jobs:
 
       - name: Lint (rustfmt, clippy, cargo-shear)
         run: mise run lint:rust
+
+      # Regenerates keywright-core's key tables and fails if they differ from the committed
+      # ones. It runs here because it needs macOS, for the SDK's Events.h, and rustfmt.
+      - name: Check the generated key tables
+        run: mise run lint:key-tables
 
       - name: Test (nextest, doc tests)
         run: mise run test:rust

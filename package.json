@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "app/ui"
+      "app/ui",
+      "scripts"
     ]
   },
   "type": "module",
