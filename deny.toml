@@ -42,6 +42,11 @@ exceptions = [
   # libFuzzer, which this crate builds, comes from LLVM under the NCSA licence, a permissive
   # licence like BSD-3-Clause. Only the fuzz targets use it, and they don't ship.
   { crate = "libfuzzer-sys", allow = ["NCSA"] },
+  # serialport, the USB transport's serial port library (tech spec §6.1), is MPL-2.0. That
+  # licence is copyleft per file: it covers serialport's own files, not Keywright's. We use
+  # them unchanged, and their source stays available on crates.io and in Cargo.lock, so
+  # Keywright can still be MIT OR Apache-2.0. Its credits must list serialport.
+  { crate = "serialport", allow = ["MPL-2.0"] },
 ]
 
 [bans]

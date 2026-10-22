@@ -107,6 +107,11 @@ description = "Run the TypeScript tests"
 depends = ["deps:ts"]
 run = "bun run --filter '*' test"
 
+[tasks.hardware]
+description = "Run the tests that need a ZMK keyboard: plug its left half in by USB first"
+# Ignored by `test`, so CI and machines without a keyboard skip them.
+run = "cargo nextest run --workspace --run-ignored only"
+
 [tasks.audit]
 description = "Check dependencies for known vulnerabilities, and Rust crates for licence and source problems"
 depends = ["audit:*"]
