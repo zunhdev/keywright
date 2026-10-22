@@ -6,11 +6,12 @@
 # skips by default. Git's own folder stays out.
 ignore-hidden = false
 # Lockfiles list other projects' package names, which aren't ours to spell. Vendored
-# upstream files are copied unchanged, typos and all.
+# upstream files are copied unchanged, typos and all. Recorded sessions are hex dumps.
 extend-exclude = [
   ".git/",
   "Cargo.lock",
   "bun.lock",
+  "crates/keywright-studio/fixtures/*.txt",
   "scripts/key-tables/upstream/chromium/",
   "scripts/key-tables/upstream/zmk/",
   "support-packs/*/upstream/",

@@ -254,13 +254,14 @@ fn core_table(behaviors: &[FirmwareBehavior]) -> BehaviorTable {
     }))
 }
 
-/// The behaviors of a ZMK v0.3 keyboard with Studio and underglow, such as the Sofle Choc
-/// Pro BT, with the parameters each one reports, from ZMK v0.3.0's behavior drivers.
+/// The behaviors of a ZMK v0.3 keyboard with Studio, underglow and knobs, such as the
+/// Sofle Choc Pro BT, with the parameters each one reports.
 ///
-/// A Studio build has every standard behavior, used in the keymap or not. ZMK numbers them
-/// from 1 the first time it starts and keeps the numbers in its settings; the order here is
-/// made up, so the IDs are too. The list includes two behaviors Keywright doesn't know, Key
-/// Toggle and Grave/Escape.
+/// A Studio build has every standard behavior, used in the keymap or not, plus the knobs'
+/// `enc_key_press` when the keymap uses it. ZMK numbers them from 1 the first time it
+/// starts, and keeps the numbers in its settings. The order here, and so the IDs, are a
+/// real Sofle's, captured in spike S1 (`keywright-studio/fixtures/`). The list includes
+/// three behaviors Keywright doesn't know: Grave/Escape, Key Toggle and `enc_key_press`.
 #[must_use]
 pub fn zmk_v0_3_behaviors() -> Vec<FirmwareBehavior> {
     let key = || value("Key", hid_usage());
@@ -273,18 +274,29 @@ pub fn zmk_v0_3_behaviors() -> Vec<FirmwareBehavior> {
     };
 
     let behaviors = [
+        ("Bootloader", vec![]),
+        ("Caps Word", vec![]),
         ("Key Press", vec![set(vec![key()], vec![])]),
-        // A hold-tap reports the first parameter of the behaviors it holds and taps.
-        ("Mod-Tap", vec![set(vec![key()], vec![key()])]),
-        ("Layer-Tap", vec![set(vec![layer()], vec![key()])]),
+        ("Grave/Escape", vec![]),
+        ("Key Repeat", vec![]),
+        ("Key Toggle", vec![set(vec![key()], vec![])]),
         ("Momentary Layer", vec![set(vec![layer()], vec![])]),
+        // A hold-tap reports the first parameter of the behaviors it holds and taps.
+        ("Layer-Tap", vec![set(vec![layer()], vec![key()])]),
+        ("Mod-Tap", vec![set(vec![key()], vec![key()])]),
+        (
+            "Output Selection",
+            vec![set(
+                named(&[("Toggle Outputs", 0), ("USB Output", 1), ("BLE Output", 2)]),
+                vec![],
+            )],
+        ),
+        // Sticky Key and Sticky Layer report the parameters of `&kp` and `&mo`.
+        ("Sticky Key", vec![set(vec![key()], vec![])]),
+        ("Sticky Layer", vec![set(vec![layer()], vec![])]),
+        ("Reset", vec![]),
         ("To Layer", vec![set(vec![layer()], vec![])]),
         ("Toggle Layer", vec![set(vec![layer()], vec![])]),
-        // Sticky Layer and Sticky Key report the parameters of `&mo` and `&kp`.
-        ("Sticky Layer", vec![set(vec![layer()], vec![])]),
-        ("Sticky Key", vec![set(vec![key()], vec![])]),
-        ("Transparent", vec![]),
-        ("None", vec![]),
         (
             "Bluetooth",
             vec![
@@ -304,13 +316,9 @@ pub fn zmk_v0_3_behaviors() -> Vec<FirmwareBehavior> {
                 ),
             ],
         ),
-        (
-            "Output Selection",
-            vec![set(
-                named(&[("Toggle Outputs", 0), ("USB Output", 1), ("BLE Output", 2)]),
-                vec![],
-            )],
-        ),
+        // External Power takes a command, but ZMK v0.3 reports no parameters for it.
+        ("External Power", vec![]),
+        ("None", vec![]),
         (
             "Underglow",
             vec![set(
@@ -332,22 +340,18 @@ pub fn zmk_v0_3_behaviors() -> Vec<FirmwareBehavior> {
                 vec![],
             )],
         ),
-        // External Power takes a command, but ZMK v0.3 reports no parameters for it.
-        ("External Power", vec![]),
-        ("Caps Word", vec![]),
-        ("Key Repeat", vec![]),
+        // The knobs' `&inc_dec_kp`, which has no display name, and no metadata either.
+        ("enc_key_press", vec![]),
+        ("Transparent", vec![]),
         ("Studio Unlock", vec![]),
-        ("Bootloader", vec![]),
-        ("Reset", vec![]),
-        ("Key Toggle", vec![set(vec![key()], vec![])]),
-        ("Grave/Escape", vec![]),
     ];
 
     behaviors
         .into_iter()
         .zip(1..)
         .map(|((name, metadata), id)| FirmwareBehavior {
-            has_metadata: name != "External Power",
+            // ZMK refuses every binding of a behavior without metadata.
+            has_metadata: !matches!(name, "External Power" | "enc_key_press"),
             details: BehaviorDetails {
                 id: BehaviorId(id),
                 display_name: name.to_owned(),

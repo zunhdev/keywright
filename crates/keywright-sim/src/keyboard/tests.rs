@@ -226,7 +226,7 @@ mod device_and_behaviors {
         let Response::Behaviors(BehaviorsResponse::ListAllBehaviors(ids)) = response else {
             panic!("{response:?}");
         };
-        assert_eq!(ids.len(), 21);
+        assert_eq!(ids.len(), 22);
         for id in ids {
             let request = BehaviorsRequest::GetBehaviorDetails { behavior_id: id };
             let (_, response) = ask(&mut keyboard, Request::Behaviors(request));
@@ -252,7 +252,7 @@ mod device_and_behaviors {
         else {
             panic!("ID 0x10001 should be ID 1");
         };
-        assert_eq!(details_of_1.display_name, "Key Press");
+        assert_eq!(details_of_1.display_name, "Bootloader");
         assert_eq!(
             details(&mut keyboard, 99),
             Response::Error(ErrorCondition::Generic)
@@ -779,13 +779,13 @@ mod firmware {
     }
 
     #[test]
-    fn only_external_power_has_no_metadata() {
+    fn only_external_power_and_the_knobs_have_no_metadata() {
         let without: Vec<_> = zmk_v0_3_behaviors()
             .into_iter()
             .filter(|behavior| !behavior.has_metadata)
             .map(|behavior| behavior.details.display_name)
             .collect();
-        assert_eq!(without, ["External Power"]);
+        assert_eq!(without, ["External Power", "enc_key_press"]);
     }
 
     #[test]

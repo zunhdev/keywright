@@ -2,7 +2,12 @@
 
 Each `.txt` file here is one session between a client and a keyboard. The client's replay test (`src/client/tests/replay.rs`) plays every file back through `Client`. It checks that every frame the keyboard sent still decodes, that the client sends the recorded requests, and that it returns the recorded responses (tech spec §5.4). A change in the firmware's messages then fails `mise run test`.
 
-Only `scripted-unlock-and-edit.txt` is here so far, and it isn't a capture: Keywright's own encoder wrote it. Spike S1 (KEY-8) adds captures from Keebart's stock firmware for the Sofle Choc Pro BT (ZMK v0.3.0). Every firmware version Keywright supports should have at least one capture.
+| File                                  | What it is                                                                                                                                                                                                                                                                                           |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sofle-usb-unlock-reset-and-edit.txt` | **Captured** in spike S1 (KEY-8) from a Keebart Sofle Choc Pro BT with its shipped firmware (a ZMK v0.3-era build from late 2025), over USB: probe, unlock, every behavior, a settings reset, the stock keymap and physical layout, an edit and a discard. `keywright-sim` checks itself against it. |
+| `scripted-unlock-and-edit.txt`        | **Scripted**: Keywright's own encoder wrote it. It covers what the capture doesn't, such as replies split into 64-byte chunks and a save.                                                                                                                                                            |
+
+Every firmware version Keywright supports should have at least one capture.
 
 ## Format
 
@@ -20,4 +25,4 @@ Only `scripted-unlock-and-edit.txt` is here so far, and it isn't a capture: Keyw
 
 ## Capturing
 
-Record the raw bytes on both sides of the serial port or the GATT characteristic, keeping the keyboard's chunks as they arrived. Then write them in the format above. Use a client that sends one request at a time, with IDs that count up by one, such as `keywright-studio` itself or a throwaway harness. Before committing a capture, remove anything personal, such as layer names. The serial number can stay: it only identifies the microcontroller.
+Record the raw bytes on both sides of the serial port or the GATT characteristic, keeping the keyboard's chunks as they arrived. Send each request in a single write: ZMK v0.3 loses requests that arrive in pieces or are longer than 30 bytes (tech spec §5.3). Then write them in the format above. Use a client that sends one request at a time, with IDs that count up by one, such as `keywright-studio` itself or a throwaway harness. Before committing a capture, remove anything personal, such as layer names. The serial number can stay: it only identifies the microcontroller.
