@@ -12,3 +12,10 @@
 //! Tech spec §7 describes the design.
 
 #![forbid(unsafe_code)]
+
+mod convert;
+pub mod session;
+
+pub use self::session::{
+    Connection, Incompatibility, Peer, Session, SessionError, SessionEvent, Snapshot, State,
+};

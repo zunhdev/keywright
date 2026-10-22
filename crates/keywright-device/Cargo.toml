@@ -8,5 +8,20 @@ license.workspace = true
 repository.workspace = true
 publish.workspace = true
 
+[dependencies]
+# The keymap model, the editor and support packs.
+keywright-core = { path = "../keywright-core" }
+# The RPC client and its messages.
+keywright-studio = { path = "../keywright-studio" }
+thiserror.workspace = true
+# The session's task, and its channels.
+tokio = { workspace = true, features = ["macros", "rt", "sync"] }
+
+[dev-dependencies]
+# Tests run the session against the simulated keyboard (tech spec §14.1).
+keywright-sim = { path = "../keywright-sim" }
+# `test-util` lets tests pause the clock, and skip through timeouts and the idle lock.
+tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
+
 [lints]
 workspace = true

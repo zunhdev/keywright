@@ -322,6 +322,13 @@ dependencies = [
 [[package]]
 name = "keywright-device"
 version = "0.1.0"
+dependencies = [
+ "keywright-core",
+ "keywright-sim",
+ "keywright-studio",
+ "thiserror",
+ "tokio",
+]
 
 [[package]]
 name = "keywright-platform"
