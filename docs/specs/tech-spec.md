@@ -2,8 +2,8 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.22 — for review                                        |
-| **Date**      | 2026-10-22                                                      |
+| **Status**    | Draft v0.23 — for review                                        |
+| **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
 
@@ -244,8 +244,9 @@ The session is a **single tokio task (actor)** that owns the RPC client and the 
  NoDevice ─▶ Probing ─▶ Locked ─(unlocked)─▶ Loading ─▶ Ready ───┤
                 │          ▲                    │ ▲               │
                 │          └── locked again ────┼─┼───────────────┘
-                │                               ▼ │ keep or discard
-                │                         UnsavedChanges
+                │                               ▼ │
+                │               UnsavedChanges (keep or discard), or
+                │               ChangesLost (re-apply or discard)
                 ├─▶ Incompatible (read-only)
                 └─▶ NoLiveEditing / WrongHalf (no answer)
 ```
@@ -255,9 +256,11 @@ The session is a **single tokio task (actor)** that owns the RPC client and the 
 - **Probing** follows §5.4: `get_device_info` with the 1 s probe timeout, then `get_lock_state` and `list_all_behaviors`. The device name suggests a support pack. A keyboard that doesn't answer is **WrongHalf** if its USB product string is `Generic CDC`, as for the Sofle's right half (spike S1, refined by S4), and **NoLiveEditing** otherwise.
 - **Locked**: the session knows the device name, the behaviors list and the pack only. The UI draws the support pack's stored layout for the unlock sheet (design §7).
 - **Loading**: fetch the behavior details, the physical layouts and the keymap, and build the core's `Keyboard`. The layout has to match the pack's too. Then call `check_unsaved_changes`. If the device _already_ has unsaved changes from before this session, the state is **UnsavedChanges** until the user keeps them (the editor starts from them) or discards them, because their baseline is unknown.
-- **Ready**: edits flow (§8.3). `apply`, `undo` and `redo` run the editor's operations one request at a time. If one fails, the editor rolls back, and the keyboard undoes the operations it performed. A change refused as locked moves to **Locked**. A change that times out makes the session probe again, because the keyboard may have moved to another transport.
+- **Ready**: edits flow (§8.3). `apply`, `undo` and `redo` run the editor's operations one request at a time. If one fails, the editor rolls back, and the keyboard undoes the operations it performed. A change refused as locked moves to **Locked**. A change that times out makes the session probe again, because the keyboard may have moved to another transport. `add_layer` asks the keyboard to add one, and records what it reports as `AddLayer`.
+- **Saving and discarding**: `save` sends `save_changes`, and the editor's current keymap becomes its baseline. `discard` sends `discard_changes` and reads the keymap again. ZMK v0.3 doesn't undo a rename the settings don't hold when it discards, so the session renames such layers back and discards once more, which leaves nothing counted as changed. The session tracks `unsaved_changes_status_changed` in its snapshot. ZMK v0.3 sends it after any change, even one undone since, so the review list (§8.3) is what says which changes are being tried.
+- **Out of step**: a change that timed out may have been carried out all the same, and a rollback can fail. The session then probes again, and reconciling brings the keyboard back to the editor's keymap (§8.5), rather than taking what it holds as changed elsewhere.
 - **Requests that time out** while probing or loading are asked once more. A keyboard that still doesn't answer, answers oddly, or answers `RpcNotFound` is **Incompatible**, naming the request.
-- **Re-lock** (idle timeout, transport switch): the session keeps the `Editor`, including its history and expected state. It also keeps them when the connection is lost, for a reconnect to the same keyboard (same name and serial number). After unlock, it re-reads the keymap. Reconciling the two (§8.5) is KEY-33's, with save, discard and adding layers.
+- **Re-lock** (idle timeout, transport switch): the session keeps the `Editor`, including its history and expected state. It also keeps them when the connection is lost, for a reconnect to the same keyboard (same name and serial number). After unlock, it re-reads the keymap and reconciles the two (§8.5). A keyboard that restarted and forgot the changes being tried leaves the session in **ChangesLost** until the user re-applies or discards them.
 - The session never sends a request just to reset the idle timer (ADR-0006). A test against the simulator checks that an idle session sends nothing for an hour.
 
 ### 7.2 Automatic backups (SAF-4)
@@ -341,13 +344,18 @@ The first three tables are generated by a Bun script, `scripts/generate-key-tabl
 
 ### 8.5 Reconciliation (SAF-6)
 
-After re-unlock or reconnect, the session re-reads the keymap and compares:
+After re-unlock or reconnect, the session re-reads the keymap and `check_unsaved_changes`, and compares (`reconcile::compare` in the core):
 
-| Device                            | Expected   | Interpretation                                 | Action                                                                                                   |
-| --------------------------------- | ---------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| = current                         | —          | Nothing lost                                   | Continue                                                                                                 |
-| = baseline, and `unsaved = false` | ≠ baseline | Keyboard restarted and lost the trying changes | Offer **Re-apply** (diff as edits) or **Discard**                                                        |
-| Other                             | —          | Changed elsewhere (another tool)               | Adopt the device state as the new baseline, keep history up to this point read-only, and inform the user |
+| Device                            | Expected   | Interpretation                                 | Action                                                                                    |
+| --------------------------------- | ---------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| = current                         | —          | Nothing lost                                   | Continue                                                                                  |
+| = baseline, and `unsaved = false` | ≠ baseline | Keyboard restarted and lost the trying changes | Offer **Re-apply** or **Discard**                                                         |
+| Other                             | —          | Changed elsewhere (another tool)               | Adopt the device state as the new baseline, start the history afresh, and inform the user |
+
+- **Re-apply** brings the keyboard from what it holds to the editor's current keymap: `reconcile::operations` removes, restores and moves layers, then sets the names and keys that differ. A restored slot holds what only the keyboard knows, so the session reads the keymap again and runs a second round. The editor keeps its history.
+- **Changed elsewhere** drops the history, as discarding does: the keyboard no longer holds what it describes. Nothing reads a history that can't be undone, so none is kept. If the keyboard still reports unsaved changes, the snapshot says they came from before.
+- **Out of step** (§7.1): if the session's own request may have been carried out, a keyboard that holds something else is brought back to the editor's keymap the same way. If it refuses, or still differs after two rounds, the session adopts what it holds, as changed elsewhere.
+- `check_unsaved_changes` doesn't count renamed layers in ZMK v0.3, so "nothing unsaved" can't tell that a rename is saved. A keyboard that holds the editor's current keymap lost nothing, whatever it reports.
 
 ---
 
@@ -766,6 +774,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.23    | 2026-10-23 | Session (§7.1, §8.5, KEY-33): save, discard (with renames put back) and adding layers; **ChangesLost** with re-apply or discard; changed elsewhere starts the history afresh; out-of-step changes are brought back to the editor's keymap.                                                                                                                         |
 | 0.22    | 2026-10-23 | RPC rules (§5.3, KEY-95): request IDs from 0 to 127; frames over 30 bytes refused; a lone `EOF` and a 10 ms pause after a timeout; renames retried with filler that moves the name along the ring; names with escaped bytes refused; the simulator reproduces the receive bugs.                                                                                    |
 | 0.21    | 2026-10-23 | Device session (§7.1): `Session`, `Connection` and `Peer`; the `UnsavedChanges` state; WrongHalf by USB product string; requests retried once; changes applied, undone and redone with rollback; a timed-out change probes again; the editor kept across re-locks and reconnects.                                                                                  |
 | 0.20    | 2026-10-23 | USB transport (§4, §6.1): `UsbTransport` with a reader and a writer thread, one write per frame with a timeout, no flush, unsent bytes discarded on close; `/dev/cu.*` only, opened exclusively; plugging in and unplugging noticed by listing the ports every second; `serialport` is MPL-2.0, allowed by an exception in `deny.toml`.                            |

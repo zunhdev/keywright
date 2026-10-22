@@ -2,16 +2,18 @@
 
 use std::future::{self, Future};
 
-use keywright_core::edit::Operation;
+use keywright_core::edit::{Edit, Operation};
 use keywright_core::editor::Editor;
 use keywright_core::keymap::{DeviceIdentity, Keyboard, Keymap};
+use keywright_core::reconcile::{self, Reconciliation};
 use keywright_core::support_packs::{self, SupportPack};
 use keywright_studio::client::{Client, RpcError};
 use keywright_studio::message::{
-    BehaviorId, CoreNotification, ErrorCondition, LayerId, LockState, Notification,
+    BehaviorId, CoreNotification, ErrorCondition, KeymapNotification, LayerId, LockState,
+    Notification,
 };
 use tokio::sync::broadcast::error::RecvError;
-use tokio::sync::{broadcast, mpsc, watch};
+use tokio::sync::{broadcast, mpsc, oneshot, watch};
 
 use super::{
     Change, Command, Connection, Incompatibility, Peer, SessionError, SessionEvent, Snapshot, State,
@@ -21,6 +23,10 @@ use crate::convert;
 /// The USB product string of the half of a split keyboard that doesn't serve Studio, as
 /// spike S1 found it on the Sofle. Spike S4 checks it on other boards.
 const OTHER_HALF_PRODUCT: &str = "Generic CDC";
+
+/// How many rounds of operations bringing the keyboard in step with the editor may take.
+/// Two are enough, unless the keyboard refuses something ([`reconcile::operations`]).
+const RESYNC_ROUNDS: usize = 2;
 
 /// The task's state.
 pub(super) struct Actor {
@@ -50,9 +56,28 @@ struct Known {
     unsaved_from_before: bool,
     /// The keymap read while the user decides about unsaved changes from before.
     undecided: Option<Keymap>,
+    /// Whether the keyboard last said it has unsaved changes.
+    unsaved: bool,
+    /// Whether the keyboard may hold something other than what the editor shows, because
+    /// a request that changes the keymap timed out, or a rollback failed. Reconciling then
+    /// brings the keyboard back in step, rather than taking what it holds as changed
+    /// elsewhere.
+    out_of_step: bool,
+}
+
+impl Known {
+    /// Starts the editor afresh from what the keyboard holds, with no history.
+    fn start_afresh(&mut self, keymap: Keymap) {
+        if let Some(keyboard) = &mut self.keyboard {
+            keyboard.keymap = keymap.clone();
+        }
+        self.editor = Some(Editor::new(keymap));
+        self.out_of_step = false;
+    }
 }
 
 /// A request that went wrong.
+#[derive(Clone)]
 struct Failure {
     request: &'static str,
     error: RpcError,
@@ -124,13 +149,23 @@ impl Actor {
             }
             Command::Change(change, reply) => {
                 let result = self.change(change).await;
-                let timed_out = matches!(result, Err(SessionError::Keyboard(RpcError::Timeout(_))));
-                let _ = reply.send(result);
-                // The keyboard may have moved to another transport: find out what it does
-                // now.
-                if timed_out {
-                    self.probe().await;
-                }
+                self.reply(reply, result).await;
+            }
+            Command::AddLayer(reply) => {
+                let result = self.add_layer().await;
+                self.reply(reply, result).await;
+            }
+            Command::Save(reply) => {
+                let result = self.save().await;
+                self.reply(reply, result).await;
+            }
+            Command::Discard(reply) => {
+                let result = self.discard().await;
+                self.reply(reply, result).await;
+            }
+            Command::Reapply(reply) => {
+                let result = self.reapply().await;
+                self.reply(reply, result).await;
             }
             Command::Snapshot(reply) => {
                 let _ = reply.send(self.snapshot());
@@ -138,18 +173,38 @@ impl Actor {
         }
     }
 
+    /// Replies to a command that went to the keyboard. If the keyboard didn't answer in
+    /// time, it may have moved to another transport, or the session may be out of step
+    /// with it: the session finds out what it does now.
+    async fn reply(
+        &mut self,
+        reply: oneshot::Sender<Result<(), SessionError>>,
+        result: Result<(), SessionError>,
+    ) {
+        let timed_out = matches!(result, Err(SessionError::Keyboard(RpcError::Timeout(_))));
+        let _ = reply.send(result);
+        let out_of_step = self.known.as_ref().is_some_and(|known| known.out_of_step);
+        if timed_out || (out_of_step && *self.state.borrow() == State::Ready) {
+            self.probe().await;
+        }
+    }
+
     async fn notification(&mut self, notification: Notification) {
-        // The keymap's notifications are KEY-33's.
-        let Notification::Core(CoreNotification::LockStateChanged(lock)) = notification else {
-            return;
-        };
-        let state = self.state.borrow().clone();
-        match (lock, state) {
-            (LockState::Unlocked, State::Locked { .. }) => self.load().await,
-            (LockState::Locked, State::Loading | State::UnsavedChanges | State::Ready) => {
-                self.locked();
+        match notification {
+            Notification::Core(CoreNotification::LockStateChanged(lock)) => {
+                let state = self.state.borrow().clone();
+                match (lock, state) {
+                    (LockState::Unlocked, State::Locked { .. }) => self.load().await,
+                    (
+                        LockState::Locked,
+                        State::Loading | State::UnsavedChanges | State::Ready | State::ChangesLost,
+                    ) => self.locked(),
+                    _ => {}
+                }
             }
-            _ => {}
+            Notification::Keymap(KeymapNotification::UnsavedChangesStatusChanged {
+                unsaved_changes,
+            }) => self.set_unsaved(unsaved_changes),
         }
     }
 
@@ -202,6 +257,8 @@ impl Actor {
                     editor: None,
                     unsaved_from_before: false,
                     undecided: None,
+                    unsaved: false,
+                    out_of_step: false,
                 });
             }
         }
@@ -228,13 +285,15 @@ impl Actor {
             }
             let layouts = ask("get_physical_layouts", || client.get_physical_layouts()).await?;
             let keymap = ask("get_keymap", || client.get_keymap()).await?;
-            Ok((details, layouts, keymap))
+            let unsaved = ask("check_unsaved_changes", || client.check_unsaved_changes()).await?;
+            Ok((details, layouts, keymap, unsaved))
         };
-        let (details, layouts, keymap) = match answers.await {
+        let (details, layouts, keymap, unsaved) = match answers.await {
             Ok(answers) => answers,
             Err(failure) => return self.failed(failure),
         };
 
+        self.set_unsaved(unsaved);
         let Some(known) = &mut self.known else {
             return;
         };
@@ -252,20 +311,44 @@ impl Actor {
         known.keyboard = Some(keyboard);
         if known.editor.is_some() {
             // Locked again, or reconnected: the editor stays, with its history.
-            // Reconciling it with the keymap just read is KEY-33's.
-            return self.set(State::Ready);
+            return self.reconcile(keymap, unsaved).await;
         }
+        if unsaved {
+            known.undecided = Some(keymap);
+            self.set(State::UnsavedChanges);
+        } else {
+            known.editor = Some(Editor::new(keymap));
+            self.set(State::Ready);
+        }
+    }
 
-        match ask("check_unsaved_changes", || client.check_unsaved_changes()).await {
-            Ok(true) => {
-                known.undecided = Some(keymap);
-                self.set(State::UnsavedChanges);
-            }
-            Ok(false) => {
-                known.editor = Some(Editor::new(keymap));
+    /// Compares the keymap just read with the editor's, after the keyboard locked itself or
+    /// the connection dropped (tech spec §8.5).
+    async fn reconcile(&mut self, keymap: Keymap, unsaved: bool) {
+        let Some(Known {
+            editor: Some(editor),
+            out_of_step,
+            ..
+        }) = &mut self.known
+        else {
+            return;
+        };
+        match reconcile::compare(editor, &keymap, unsaved) {
+            Reconciliation::NothingLost => {
+                *out_of_step = false;
                 self.set(State::Ready);
             }
-            Err(failure) => self.failed(failure),
+            Reconciliation::ChangesLost => self.set(State::ChangesLost),
+            // Most likely the session's own requests, whose answers it didn't get.
+            Reconciliation::ChangedElsewhere if *out_of_step => {
+                if let Err(failure) = self.resync().await {
+                    self.failed(failure);
+                }
+            }
+            Reconciliation::ChangedElsewhere => {
+                self.adopt(keymap);
+                self.set(State::Ready);
+            }
         }
     }
 
@@ -296,6 +379,7 @@ impl Actor {
         };
         match answer.await {
             Ok(keymap) => {
+                self.set_unsaved(false);
                 if let Some(known) = &mut self.known {
                     let keymap = convert::keymap(&keymap);
                     if let Some(keyboard) = &mut known.keyboard {
@@ -319,20 +403,10 @@ impl Actor {
     /// operations in order. If one fails, the editor rolls back, and the keyboard undoes
     /// the operations it performed.
     async fn change(&mut self, change: Change) -> Result<(), SessionError> {
-        if *self.state.borrow() != State::Ready {
-            return Err(SessionError::NotReady);
-        }
-        let (
-            Some(link),
-            Some(Known {
-                editor: Some(editor),
-                ..
-            }),
-        ) = (&self.link, &mut self.known)
-        else {
+        let (client, known) = self.ready()?;
+        let Some(editor) = &mut known.editor else {
             return Err(SessionError::NotReady);
         };
-        let client = link.client.clone();
         let operations = match change {
             Change::Apply(edits) => editor.apply(edits),
             Change::Undo => editor.undo(),
@@ -351,20 +425,248 @@ impl Actor {
             let _ = self.events.send(SessionEvent::Editor);
             return Ok(());
         };
+        // A request that timed out may have been carried out all the same.
+        let mut in_step = !matches!(error, RpcError::Timeout(_));
         for operation in editor.fail(performed) {
-            // If undoing fails too, the keyboard and the editor differ until KEY-33's
-            // reconciliation.
             if perform(&client, &operation).await.is_err() {
+                in_step = false;
                 break;
             }
         }
+        known.out_of_step |= !in_step;
         let _ = self.events.send(SessionEvent::Editor);
-        match &error {
-            RpcError::Disconnected(_) => self.lost(),
-            RpcError::Keyboard(ErrorCondition::UnlockRequired) => self.locked(),
-            _ => {}
+        self.interrupted(&error);
+        Err(SessionError::Keyboard(error))
+    }
+
+    /// Has the keyboard add a layer, and records it.
+    async fn add_layer(&mut self) -> Result<(), SessionError> {
+        let (client, known) = self.ready()?;
+        let Some(editor) = &mut known.editor else {
+            return Err(SessionError::NotReady);
+        };
+        match client.add_layer().await {
+            Ok(added) => {
+                let edit = Edit::AddLayer {
+                    index: usize::try_from(added.index).unwrap_or(usize::MAX),
+                    layer: convert::layer(&added.layer),
+                };
+                if let Err(error) = editor.apply(vec![edit]) {
+                    // The keyboard holds something other than what the editor shows.
+                    known.out_of_step = true;
+                    return Err(error.into());
+                }
+                let _ = self.events.send(SessionEvent::Editor);
+                Ok(())
+            }
+            Err(error) => {
+                // The keyboard may have added it.
+                known.out_of_step |= matches!(error, RpcError::Timeout(_));
+                self.interrupted(&error);
+                Err(SessionError::Keyboard(error))
+            }
+        }
+    }
+
+    /// Saves the changes being tried.
+    async fn save(&mut self) -> Result<(), SessionError> {
+        let (client, _) = self.ready()?;
+        // Saving twice saves nothing more, so a save that times out is asked again.
+        if let Err(Failure { error, .. }) = ask("save_changes", || client.save_changes()).await {
+            self.interrupted(&error);
+            return Err(SessionError::Keyboard(error));
+        }
+        let Some(known) = &mut self.known else {
+            return Err(SessionError::NotReady);
+        };
+        if let Some(editor) = &mut known.editor {
+            editor.saved()?;
+        }
+        known.unsaved_from_before = false;
+        self.set_unsaved(false);
+        let _ = self.events.send(SessionEvent::Editor);
+        Ok(())
+    }
+
+    /// Discards the changes being tried, or the changes the keyboard forgot.
+    ///
+    /// ZMK v0.3 doesn't undo a rename the settings don't hold when it discards, so the
+    /// session names those layers back, and discards again, which leaves nothing counted
+    /// as changed.
+    async fn discard(&mut self) -> Result<(), SessionError> {
+        if !matches!(*self.state.borrow(), State::Ready | State::ChangesLost) {
+            return Err(SessionError::NotReady);
+        }
+        let (
+            Some(link),
+            Some(Known {
+                editor: Some(editor),
+                ..
+            }),
+        ) = (&self.link, &self.known)
+        else {
+            return Err(SessionError::NotReady);
+        };
+        let client = link.client.clone();
+        let saved = editor.baseline().clone();
+        let answer = async {
+            let client = &client;
+            let read = || async move {
+                ask("discard_changes", || client.discard_changes()).await?;
+                let keymap = ask("get_keymap", || client.get_keymap()).await?;
+                Ok::<_, Failure>(convert::keymap(&keymap))
+            };
+            let keymap = read().await?;
+            let renames: Vec<Operation> = reconcile::operations(&keymap, &saved)
+                .into_iter()
+                .filter(|operation| matches!(operation, Operation::RenameLayer { .. }))
+                .collect();
+            if renames.is_empty() {
+                return Ok(keymap);
+            }
+            for operation in &renames {
+                perform(client, operation).await.map_err(|error| Failure {
+                    request: "set_layer_props",
+                    error,
+                })?;
+            }
+            read().await
+        };
+        let keymap = match answer.await {
+            Ok(keymap) => keymap,
+            Err(failure) => {
+                let error = failure.error.clone();
+                if !matches!(error, RpcError::Timeout(_)) {
+                    self.failed(failure);
+                }
+                return Err(SessionError::Keyboard(error));
+            }
+        };
+
+        self.set_unsaved(false);
+        let Some(known) = &mut self.known else {
+            return Err(SessionError::NotReady);
+        };
+        let from_before = std::mem::take(&mut known.unsaved_from_before);
+        if known.editor.as_ref().map(Editor::baseline) == Some(&keymap) || from_before {
+            // The history goes, as the keyboard no longer holds what it describes. Changes
+            // kept from before are discarded too, so the editor starts from the keymap as
+            // saved.
+            known.start_afresh(keymap);
+            let _ = self.events.send(SessionEvent::Editor);
+        } else {
+            // The keyboard's saved keymap isn't what the session thought.
+            self.adopt(keymap);
+        }
+        self.set(State::Ready);
+        Ok(())
+    }
+
+    /// Applies the changes the keyboard forgot when it restarted again.
+    async fn reapply(&mut self) -> Result<(), SessionError> {
+        if *self.state.borrow() != State::ChangesLost {
+            return Err(SessionError::NotReady);
+        }
+        let Err(failure) = self.resync().await else {
+            return Ok(());
+        };
+        let error = failure.error.clone();
+        if !matches!(error, RpcError::Timeout(_)) {
+            self.failed(failure);
         }
         Err(SessionError::Keyboard(error))
+    }
+
+    /// Brings the keyboard in step with the editor: carries out the operations that turn
+    /// what it holds into what the editor shows, reading the keymap again after each
+    /// round. Then the session is ready.
+    ///
+    /// If the keyboard refuses something, and so still holds something else after the last
+    /// round, the session takes what it holds as changed elsewhere. Fails if the keyboard
+    /// stops answering or goes away, and stays out of step until reconciling again.
+    async fn resync(&mut self) -> Result<(), Failure> {
+        let Some(link) = &self.link else {
+            return Ok(());
+        };
+        let client = link.client.clone();
+        if let Some(known) = &mut self.known {
+            known.out_of_step = true;
+        }
+        let mut round = 0;
+        let mut changed = false;
+        let keymap = loop {
+            let keymap = ask("get_keymap", || client.get_keymap()).await?;
+            let keymap = convert::keymap(&keymap);
+            let Some(Known {
+                editor: Some(editor),
+                ..
+            }) = &self.known
+            else {
+                return Ok(());
+            };
+            let operations = reconcile::operations(&keymap, editor.current());
+            if operations.is_empty() || round == RESYNC_ROUNDS {
+                break keymap;
+            }
+            round += 1;
+            for operation in &operations {
+                match perform(&client, operation).await {
+                    Ok(()) => changed = true,
+                    Err(error) if interrupts(&error) => {
+                        return Err(Failure {
+                            request: request(operation),
+                            error,
+                        });
+                    }
+                    // Refused. Names and keys go by layer ID, so the rest still apply.
+                    Err(_) if !moves_layers(operation) => {}
+                    // Layers go by index, so the round ends, and the next one finds out
+                    // what's left.
+                    Err(_) => break,
+                }
+            }
+        };
+
+        // ZMK says so after any change, but its notifications are read after the command.
+        if changed {
+            self.set_unsaved(true);
+        }
+        let Some(known) = &mut self.known else {
+            return Ok(());
+        };
+        if known.editor.as_ref().map(Editor::current) == Some(&keymap) {
+            known.out_of_step = false;
+            if let Some(keyboard) = &mut known.keyboard {
+                keyboard.keymap = keymap;
+            }
+        } else {
+            self.adopt(keymap);
+        }
+        self.set(State::Ready);
+        Ok(())
+    }
+
+    /// Takes what the keyboard holds as the saved keymap, because another tool changed it,
+    /// and says so. The history goes: the keyboard no longer holds what it describes.
+    fn adopt(&mut self, keymap: Keymap) {
+        let Some(known) = &mut self.known else {
+            return;
+        };
+        known.start_afresh(keymap);
+        known.unsaved_from_before = known.unsaved;
+        let _ = self.events.send(SessionEvent::ChangedElsewhere);
+        let _ = self.events.send(SessionEvent::Editor);
+    }
+
+    /// The client, and what the session knows, if the keymap can be changed.
+    fn ready(&mut self) -> Result<(Client, &mut Known), SessionError> {
+        if *self.state.borrow() != State::Ready {
+            return Err(SessionError::NotReady);
+        }
+        match (&self.link, &mut self.known) {
+            (Some(link), Some(known)) if known.editor.is_some() => Ok((link.client.clone(), known)),
+            _ => Err(SessionError::NotReady),
+        }
     }
 
     fn snapshot(&self) -> Snapshot {
@@ -375,6 +677,18 @@ impl Actor {
             pack: known.and_then(|known| known.pack.map(|pack| pack.id.clone())),
             editor: known.and_then(|known| known.editor.clone()),
             unsaved_from_before: known.is_some_and(|known| known.unsaved_from_before),
+            unsaved: known.is_some_and(|known| known.unsaved),
+        }
+    }
+
+    /// Follows a request that went wrong while the keymap could be changed: a keyboard
+    /// that went away or locked itself takes the session with it. A timeout is the
+    /// caller's to follow up.
+    fn interrupted(&mut self, error: &RpcError) {
+        match error {
+            RpcError::Disconnected(_) => self.lost(),
+            RpcError::Keyboard(ErrorCondition::UnlockRequired) => self.locked(),
+            _ => {}
         }
     }
 
@@ -420,6 +734,16 @@ impl Actor {
         // Nobody may be listening.
         let _ = self.events.send(SessionEvent::State(state));
     }
+
+    fn set_unsaved(&mut self, unsaved: bool) {
+        let Some(known) = &mut self.known else {
+            return;
+        };
+        if known.unsaved != unsaved {
+            known.unsaved = unsaved;
+            let _ = self.events.send(SessionEvent::Unsaved(unsaved));
+        }
+    }
 }
 
 /// Waits for the connection's next notification, or forever without a connection.
@@ -445,6 +769,17 @@ fn silent(peer: &Peer) -> State {
     }
 }
 
+/// Whether an error stops the session talking to the keyboard, rather than the keyboard
+/// refusing one request.
+fn interrupts(error: &RpcError) -> bool {
+    matches!(
+        error,
+        RpcError::Disconnected(_)
+            | RpcError::Timeout(_)
+            | RpcError::Keyboard(ErrorCondition::UnlockRequired | ErrorCondition::RpcNotFound)
+    )
+}
+
 /// Asks the keyboard, and asks once more if it doesn't answer in time.
 async fn ask<T, F, R>(request: &'static str, call: F) -> Result<T, Failure>
 where
@@ -456,6 +791,27 @@ where
         answer => answer,
     };
     answer.map_err(|error| Failure { request, error })
+}
+
+/// Whether an operation adds, removes or moves a layer, which moves others along.
+fn moves_layers(operation: &Operation) -> bool {
+    matches!(
+        operation,
+        Operation::MoveLayer { .. }
+            | Operation::RemoveLayer { .. }
+            | Operation::RestoreLayer { .. }
+    )
+}
+
+/// The request that carries out an operation, as the protocol names it.
+fn request(operation: &Operation) -> &'static str {
+    match operation {
+        Operation::SetBinding { .. } => "set_layer_binding",
+        Operation::RenameLayer { .. } => "set_layer_props",
+        Operation::MoveLayer { .. } => "move_layer",
+        Operation::RemoveLayer { .. } => "remove_layer",
+        Operation::RestoreLayer { .. } => "restore_layer",
+    }
 }
 
 /// Has the keyboard carry out one operation.

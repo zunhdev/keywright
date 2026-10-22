@@ -22,14 +22,15 @@ use keywright_device::{
     Connection, Incompatibility, Peer, Session, SessionError, SessionEvent, Snapshot, State,
 };
 use keywright_sim::firmware::SOFLE;
-use keywright_sim::{Firmware, Keyboard, Simulator};
+use keywright_sim::{Firmware, InMemoryTransport, Keyboard, Simulator};
 use keywright_studio::client::{Client, RpcError};
 use keywright_studio::frame::{self, FrameDecoder};
 use keywright_studio::message::{
-    self as wire, ClientMessage, CoreRequest, DeviceMessage, ErrorCondition, KeymapRequest,
-    Request, Response, SetLayerBindingError,
+    self as wire, AddLayerError, ClientMessage, CoreRequest, DeviceMessage, ErrorCondition,
+    KeymapRequest, KeymapResponse, Request, Response, SaveChangesError, SetLayerBindingError,
 };
 use keywright_studio::transport::{Transport, TransportError, TransportKind};
+use tokio::sync::broadcast;
 
 /// Waits for `future`, or fails the test after two hours, which the paused clock skips to
 /// once nothing else can happen.
@@ -95,6 +96,65 @@ const KEY_A: u32 = 0x0007_0004;
 /// What the simulated keyboard has on layer 1, key 3.
 async fn keyboard_key(keyboard: &Simulator, position: usize) -> wire::Binding {
     keyboard.keyboard().await.unwrap().keymap().layers[1].bindings[position]
+}
+
+/// A keymap as the keyboard reports it, to compare with what the simulator holds.
+fn wire_keymap(keymap: &keywright_core::keymap::Keymap) -> wire::Keymap {
+    wire::Keymap {
+        layers: keymap
+            .layers
+            .iter()
+            .map(|layer| wire::Layer {
+                id: wire::LayerId(layer.id.0),
+                name: layer.name.clone(),
+                bindings: layer
+                    .bindings
+                    .iter()
+                    .map(|binding| wire::Binding {
+                        behavior_id: wire::BehaviorId(binding.behavior.0),
+                        param1: binding.param1,
+                        param2: binding.param2,
+                    })
+                    .collect(),
+            })
+            .collect(),
+        available_layers: keymap.free_layer_slots,
+        max_layer_name_length: 20,
+    }
+}
+
+/// What the simulated keyboard holds.
+async fn keyboard_keymap(keyboard: &Simulator) -> wire::Keymap {
+    keyboard.keyboard().await.unwrap().keymap()
+}
+
+/// Waits for an event that `wanted` accepts.
+async fn event(
+    events: &mut broadcast::Receiver<SessionEvent>,
+    mut wanted: impl FnMut(&SessionEvent) -> bool,
+) -> SessionEvent {
+    within(async {
+        loop {
+            let event = events.recv().await.unwrap();
+            if wanted(&event) {
+                return event;
+            }
+        }
+    })
+    .await
+}
+
+/// Reconnects to a keyboard after it restarted or the session disconnected, so the session
+/// reads the keymap again. A restarted keyboard is locked, so this unlocks it.
+async fn reconnect(session: &Session, keyboard: &Simulator) {
+    connect(session, keyboard.connect(), Peer::Simulated).await;
+    let state = wait_until(session, |state| {
+        !matches!(state, State::NoDevice | State::Probing | State::Loading)
+    })
+    .await;
+    if is_locked(&state) {
+        keyboard.press_unlock_key();
+    }
 }
 
 /// A transport that counts the requests the client sends.
@@ -353,6 +413,33 @@ mod unsaved_changes_from_before {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn kept_ones_are_discarded_with_the_changes_tried_since() {
+        let keyboard = changed_before().await;
+        let session = Session::start();
+        let mut events = session.subscribe();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        wait_until(&session, |state| *state == State::UnsavedChanges).await;
+        session.keep_unsaved_changes().await.unwrap();
+        ready(&session).await;
+        set_key(&session, 4, KEY_A).await.unwrap();
+
+        session.discard().await.unwrap();
+        let snapshot = snapshot(&session).await;
+        assert!(!snapshot.unsaved_from_before);
+        let editor = snapshot.editor.unwrap();
+        assert_eq!(
+            wire_keymap(editor.baseline()),
+            keyboard_keymap(&keyboard).await
+        );
+        assert_ne!(keyboard_key(&keyboard, 3).await.param1, KEY_A);
+        assert_ne!(keyboard_key(&keyboard, 4).await.param1, KEY_A);
+        // An ordinary discard: nothing changed elsewhere.
+        while let Ok(event) = events.try_recv() {
+            assert_ne!(event, SessionEvent::ChangedElsewhere);
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn the_decision_is_only_taken_when_asked() {
         let (session, _keyboard) = ready_session().await;
         assert!(matches!(
@@ -474,35 +561,7 @@ mod changes {
             .await
             .unwrap();
         assert_eq!(ids(&on_keyboard().await), [0, 1, 2, 3]);
-        assert_eq!(
-            on_keyboard().await,
-            keyboard_keymap_as_editor(&current().await)
-        );
-    }
-
-    /// The keyboard's keymap, as the editor's keymap says it should be.
-    fn keyboard_keymap_as_editor(keymap: &keywright_core::keymap::Keymap) -> wire::Keymap {
-        wire::Keymap {
-            layers: keymap
-                .layers
-                .iter()
-                .map(|layer| wire::Layer {
-                    id: wire::LayerId(layer.id.0),
-                    name: layer.name.clone(),
-                    bindings: layer
-                        .bindings
-                        .iter()
-                        .map(|binding| wire::Binding {
-                            behavior_id: wire::BehaviorId(binding.behavior.0),
-                            param1: binding.param1,
-                            param2: binding.param2,
-                        })
-                        .collect(),
-                })
-                .collect(),
-            available_layers: keymap.free_layer_slots,
-            max_layer_name_length: 20,
-        }
+        assert_eq!(on_keyboard().await, wire_keymap(&current().await));
     }
 
     #[tokio::test(start_paused = true)]
@@ -554,6 +613,518 @@ mod changes {
     }
 }
 
+mod saving_and_discarding {
+    use super::*;
+
+    #[tokio::test(start_paused = true)]
+    async fn saved_changes_survive_a_restart_and_stay_in_the_history() {
+        let (session, keyboard) = ready_session().await;
+        let mut events = session.subscribe();
+        set_key(&session, 3, KEY_A).await.unwrap();
+        event(&mut events, |event| *event == SessionEvent::Unsaved(true)).await;
+        assert!(snapshot(&session).await.unsaved);
+
+        session.save().await.unwrap();
+        let snapshot_after = snapshot(&session).await;
+        assert!(!snapshot_after.unsaved);
+        let editor = snapshot_after.editor.unwrap();
+        assert!(editor.changes().is_empty() && editor.can_undo());
+        assert!(!keyboard.keyboard().await.unwrap().has_unsaved_changes());
+
+        keyboard.restart();
+        wait_until(&session, |state| *state == State::NoDevice).await;
+        reconnect(&session, &keyboard).await;
+        ready(&session).await;
+        assert_eq!(keyboard_key(&keyboard, 3).await.param1, KEY_A);
+        // A saved change can still be undone, and is then tried again.
+        session.undo().await.unwrap();
+        assert_eq!(snapshot(&session).await.editor.unwrap().changes().len(), 1);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_save_the_keyboard_refuses_keeps_the_changes_being_tried() {
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let session = Session::start();
+        let transport = Intercepting::new(keyboard.connect(), |request| match request {
+            Request::Keymap(KeymapRequest::SaveChanges) => Action::Answer(Response::Keymap(
+                KeymapResponse::SaveChanges(Err(SaveChangesError::NoSpace)),
+            )),
+            _ => Action::Forward,
+        });
+        connect(&session, transport, Peer::Simulated).await;
+        ready(&session).await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+
+        assert!(matches!(
+            session.save().await,
+            Err(SessionError::Keyboard(RpcError::SaveChanges(
+                SaveChangesError::NoSpace
+            )))
+        ));
+        assert_eq!(session.state(), State::Ready);
+        assert_eq!(snapshot(&session).await.editor.unwrap().changes().len(), 1);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn discarding_puts_back_the_saved_keymap_names_included() {
+        let (session, keyboard) = ready_session().await;
+        let saved = keyboard_keymap(&keyboard).await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+        session
+            .apply(vec![Edit::RenameLayer {
+                layer: LayerId(1),
+                before: "lower".to_owned(),
+                after: "Numbers".to_owned(),
+            }])
+            .await
+            .unwrap();
+
+        session.discard().await.unwrap();
+        // ZMK v0.3's discard alone would leave the layer called "Numbers".
+        assert_eq!(keyboard_keymap(&keyboard).await, saved);
+        assert!(!keyboard.keyboard().await.unwrap().has_unsaved_changes());
+        let snapshot = snapshot(&session).await;
+        assert!(!snapshot.unsaved);
+        let editor = snapshot.editor.unwrap();
+        assert_eq!(wire_keymap(editor.current()), saved);
+        assert!(!editor.can_undo() && editor.changes().is_empty());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn saving_discarding_and_reapplying_wait_for_their_state() {
+        let session = Session::start();
+        assert!(matches!(session.save().await, Err(SessionError::NotReady)));
+        assert!(matches!(
+            session.discard().await,
+            Err(SessionError::NotReady)
+        ));
+        assert!(matches!(
+            session.add_layer().await,
+            Err(SessionError::NotReady)
+        ));
+
+        let (session, _keyboard) = ready_session().await;
+        assert!(matches!(
+            session.reapply().await,
+            Err(SessionError::NotReady)
+        ));
+    }
+}
+
+mod adding_layers {
+    use super::*;
+
+    #[tokio::test(start_paused = true)]
+    async fn a_layer_is_added_in_a_free_slot_and_undone() {
+        let firmware = Firmware::sofle().unwrap().with_reserved_layers(2);
+        let keyboard = Simulator::start(Keyboard::new(firmware));
+        keyboard.press_unlock_key();
+        let session = Session::start();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        ready(&session).await;
+
+        session.add_layer().await.unwrap();
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(editor.current().layers.len(), 5);
+        assert_eq!(editor.current().layers[4].id, LayerId(4));
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(editor.current())
+        );
+
+        session.undo().await.unwrap();
+        assert_eq!(keyboard_keymap(&keyboard).await.layers.len(), 4);
+        // Redoing restores the same slot.
+        session.redo().await.unwrap();
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(editor.current())
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_keyboard_without_a_free_slot_adds_nothing() {
+        let (session, keyboard) = ready_session().await;
+        assert!(matches!(
+            session.add_layer().await,
+            Err(SessionError::Keyboard(RpcError::AddLayer(
+                AddLayerError::NoSpace
+            )))
+        ));
+        assert_eq!(keyboard_keymap(&keyboard).await.layers.len(), 4);
+        assert!(!snapshot(&session).await.editor.unwrap().can_undo());
+    }
+}
+
+/// Tech spec §8.5: after the keyboard locks itself or the connection drops, the session
+/// compares the keymap it reads with the editor's.
+mod reconciling {
+    use super::*;
+
+    #[tokio::test(start_paused = true)]
+    async fn a_reconnect_that_lost_nothing_carries_on() {
+        let (session, keyboard) = ready_session().await;
+        let mut events = session.subscribe();
+        set_key(&session, 3, KEY_A).await.unwrap();
+        session.disconnect().await.unwrap();
+        reconnect(&session, &keyboard).await;
+        ready(&session).await;
+
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert!(editor.can_undo());
+        assert_eq!(editor.changes().len(), 1);
+        while let Ok(event) = events.try_recv() {
+            assert_ne!(event, SessionEvent::ChangedElsewhere);
+        }
+    }
+
+    /// Every kind of change, on a Sofle with a spare layer slot: the review list as the
+    /// editor has it, and the keymap as the keyboard holds it.
+    async fn every_kind_of_change() -> (Session, Simulator) {
+        let firmware = Firmware::sofle().unwrap().with_reserved_layers(1);
+        let keyboard = Simulator::start(Keyboard::new(firmware));
+        keyboard.press_unlock_key();
+        let session = Session::start();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        ready(&session).await;
+
+        set_key(&session, 3, KEY_A).await.unwrap();
+        session
+            .apply(vec![Edit::RenameLayer {
+                layer: LayerId(2),
+                before: "raise".to_owned(),
+                after: "Symbols".to_owned(),
+            }])
+            .await
+            .unwrap();
+        session.add_layer().await.unwrap();
+        // A key on the added layer: after a restart, its slot holds what it held before,
+        // which only reading it again shows.
+        let added = snapshot(&session).await.editor.unwrap().current().layers[4].clone();
+        let key_a = Binding {
+            behavior: snapshot(&session)
+                .await
+                .keyboard
+                .unwrap()
+                .behaviors
+                .find(BehaviorKind::KeyPress)
+                .unwrap(),
+            param1: KEY_A,
+            param2: 0,
+        };
+        session
+            .apply(vec![Edit::SetBinding {
+                layer: added.id,
+                position: 0,
+                before: added.bindings[0],
+                after: key_a,
+            }])
+            .await
+            .unwrap();
+        session
+            .apply(vec![Edit::MoveLayer { from: 4, to: 1 }])
+            .await
+            .unwrap();
+        let adjust = snapshot(&session).await.editor.unwrap().current().layers[4].clone();
+        assert_eq!(adjust.id, LayerId(3));
+        session
+            .apply(vec![Edit::RemoveLayer {
+                index: 4,
+                layer: adjust,
+            }])
+            .await
+            .unwrap();
+        (session, keyboard)
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn changes_a_restart_forgot_can_be_applied_again() {
+        let (session, keyboard) = every_kind_of_change().await;
+        let tried = snapshot(&session).await.editor.unwrap();
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(tried.current())
+        );
+
+        keyboard.restart();
+        wait_until(&session, |state| *state == State::NoDevice).await;
+        reconnect(&session, &keyboard).await;
+        wait_until(&session, |state| *state == State::ChangesLost).await;
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(tried.baseline())
+        );
+        // The card counts what was forgot: the review list.
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(editor.changes(), tried.changes());
+        assert!(matches!(
+            set_key(&session, 5, KEY_A).await,
+            Err(SessionError::NotReady)
+        ));
+
+        session.reapply().await.unwrap();
+        assert_eq!(session.state(), State::Ready);
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(tried.current())
+        );
+        assert!(keyboard.keyboard().await.unwrap().has_unsaved_changes());
+
+        // The history is whole: undoing all of it brings back the saved keymap.
+        while snapshot(&session).await.editor.unwrap().can_undo() {
+            session.undo().await.unwrap();
+        }
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(tried.baseline())
+        );
+    }
+
+    /// Restarts the keyboard, which forgets the changes being tried, and reconnects over
+    /// the transport `wrap` makes of a new connection. Waits for the session to find the
+    /// changes lost.
+    async fn restart_and_reconnect<T: Transport + 'static>(
+        session: &Session,
+        keyboard: &Simulator,
+        wrap: impl FnOnce(InMemoryTransport) -> T,
+    ) {
+        keyboard.restart();
+        wait_until(session, |state| *state == State::NoDevice).await;
+        connect(session, wrap(keyboard.connect()), Peer::Simulated).await;
+        wait_until(session, is_locked).await;
+        keyboard.press_unlock_key();
+        wait_until(session, |state| *state == State::ChangesLost).await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_reapply_cut_short_is_finished_once_the_keyboard_answers() {
+        let (session, keyboard) = every_kind_of_change().await;
+        let tried = snapshot(&session).await.editor.unwrap();
+        let mut events = session.subscribe();
+        // The layer to restore never arrives, after the one to remove has gone.
+        let mut restores = 0;
+        let intercept = move |request: &Request| match request {
+            Request::Keymap(KeymapRequest::RestoreLayer { .. }) => {
+                restores += 1;
+                if restores == 1 {
+                    Action::Swallow
+                } else {
+                    Action::Forward
+                }
+            }
+            _ => Action::Forward,
+        };
+        restart_and_reconnect(&session, &keyboard, |inner| {
+            Intercepting::new(inner, intercept)
+        })
+        .await;
+
+        assert!(matches!(
+            session.reapply().await,
+            Err(SessionError::Keyboard(RpcError::Timeout(_)))
+        ));
+        // The session probes again, and finishes the job.
+        ready(&session).await;
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(tried.current())
+        );
+        assert!(snapshot(&session).await.editor.unwrap().can_undo());
+        while let Ok(event) = events.try_recv() {
+            assert_ne!(event, SessionEvent::ChangedElsewhere);
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_reapply_the_keyboard_refuses_ends_with_what_it_holds() {
+        let (session, keyboard) = every_kind_of_change().await;
+        let mut events = session.subscribe();
+        // Layer 1's key comes before layer 2's name, and is refused.
+        let intercept = |request: &Request| match request {
+            Request::Keymap(KeymapRequest::SetLayerBinding {
+                layer_id: wire::LayerId(1),
+                ..
+            }) => Action::Answer(Response::Keymap(KeymapResponse::SetLayerBinding(Err(
+                SetLayerBindingError::InvalidLocation,
+            )))),
+            _ => Action::Forward,
+        };
+        restart_and_reconnect(&session, &keyboard, |inner| {
+            Intercepting::new(inner, intercept)
+        })
+        .await;
+
+        session.reapply().await.unwrap();
+        assert_eq!(session.state(), State::Ready);
+        event(&mut events, |event| {
+            *event == SessionEvent::ChangedElsewhere
+        })
+        .await;
+        let snapshot = snapshot(&session).await;
+        let editor = snapshot.editor.unwrap();
+        assert_eq!(
+            wire_keymap(editor.current()),
+            keyboard_keymap(&keyboard).await
+        );
+        // Everything but the refused key was applied again, and is unsaved.
+        let held = keyboard_keymap(&keyboard).await;
+        let layer = |id| held.layers.iter().find(|layer| layer.id.0 == id).unwrap();
+        assert_ne!(layer(1).bindings[3].param1, KEY_A);
+        assert_eq!(layer(2).name, "Symbols");
+        assert_eq!(layer(4).bindings[0].param1, KEY_A);
+        assert!(snapshot.unsaved_from_before);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn changes_a_restart_forgot_can_be_discarded() {
+        let (session, keyboard) = every_kind_of_change().await;
+        let saved = snapshot(&session).await.editor.unwrap().baseline().clone();
+        keyboard.restart();
+        wait_until(&session, |state| *state == State::NoDevice).await;
+        reconnect(&session, &keyboard).await;
+        wait_until(&session, |state| *state == State::ChangesLost).await;
+
+        session.discard().await.unwrap();
+        assert_eq!(session.state(), State::Ready);
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(*editor.current(), saved);
+        assert!(!editor.can_undo());
+        assert_eq!(keyboard_keymap(&keyboard).await, wire_keymap(&saved));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_keymap_changed_elsewhere_becomes_the_saved_one() {
+        for saved_elsewhere in [true, false] {
+            let (session, keyboard) = ready_session().await;
+            let mut events = session.subscribe();
+            set_key(&session, 3, KEY_A).await.unwrap();
+            session.disconnect().await.unwrap();
+
+            // Another tool changes another key.
+            let other = Client::new(keyboard.connect());
+            let binding = wire::Binding {
+                behavior_id: wire::BehaviorId(3),
+                param1: KEY_A,
+                param2: 0,
+            };
+            other
+                .set_layer_binding(wire::LayerId(1), 5, binding)
+                .await
+                .unwrap();
+            if saved_elsewhere {
+                other.save_changes().await.unwrap();
+            }
+            drop(other);
+
+            reconnect(&session, &keyboard).await;
+            ready(&session).await;
+            event(&mut events, |event| {
+                *event == SessionEvent::ChangedElsewhere
+            })
+            .await;
+            let snapshot = snapshot(&session).await;
+            let editor = snapshot.editor.unwrap();
+            assert_eq!(
+                wire_keymap(editor.baseline()),
+                keyboard_keymap(&keyboard).await
+            );
+            assert!(editor.changes().is_empty() && !editor.can_undo());
+            assert_eq!(snapshot.unsaved_from_before, !saved_elsewhere);
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_change_whose_answer_was_lost_is_put_back_in_step() {
+        let (session, keyboard) = ready_session().await;
+        let mut events = session.subscribe();
+        let original = keyboard_key(&keyboard, 3).await;
+
+        // The keyboard carries out the change, but its answer never arrives.
+        keyboard.drop_responses(1);
+        assert!(matches!(
+            within(set_key(&session, 3, KEY_A)).await,
+            Err(SessionError::Keyboard(RpcError::Timeout(_)))
+        ));
+        ready(&session).await;
+        assert_eq!(keyboard_key(&keyboard, 3).await, original);
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(
+            keyboard_keymap(&keyboard).await,
+            wire_keymap(editor.current())
+        );
+        while let Ok(event) = events.try_recv() {
+            assert_ne!(event, SessionEvent::ChangedElsewhere);
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_rollback_the_keyboard_refuses_is_put_back_in_step() {
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let session = Session::start();
+        // The second request for key 3, the rollback, is refused without reaching the
+        // keyboard.
+        let mut key_3 = 0;
+        let transport = Intercepting::new(keyboard.connect(), move |request| match request {
+            Request::Keymap(KeymapRequest::SetLayerBinding {
+                key_position: 3, ..
+            }) => {
+                key_3 += 1;
+                if key_3 == 2 {
+                    Action::Answer(Response::Keymap(KeymapResponse::SetLayerBinding(Err(
+                        SetLayerBindingError::InvalidLocation,
+                    ))))
+                } else {
+                    Action::Forward
+                }
+            }
+            _ => Action::Forward,
+        });
+        connect(&session, transport, Peer::Simulated).await;
+        ready(&session).await;
+        let original = snapshot(&session).await.editor.unwrap().current().clone();
+        let key_press = snapshot(&session)
+            .await
+            .keyboard
+            .unwrap()
+            .behaviors
+            .find(BehaviorKind::KeyPress)
+            .unwrap();
+        let key = |param1| Binding {
+            behavior: key_press,
+            param1,
+            param2: 0,
+        };
+
+        // Key 4's usage 0 is refused, and so is putting key 3 back.
+        let result = session
+            .apply(vec![
+                Edit::SetBinding {
+                    layer: LayerId(1),
+                    position: 3,
+                    before: original.layers[1].bindings[3],
+                    after: key(KEY_A),
+                },
+                Edit::SetBinding {
+                    layer: LayerId(1),
+                    position: 4,
+                    before: original.layers[1].bindings[4],
+                    after: key(0x0007_0000),
+                },
+            ])
+            .await;
+        assert!(result.is_err());
+        ready(&session).await;
+        assert_eq!(keyboard_keymap(&keyboard).await, wire_keymap(&original));
+        assert_eq!(
+            *snapshot(&session).await.editor.unwrap().current(),
+            original
+        );
+    }
+}
+
 mod locking_again {
     use super::*;
 
@@ -601,10 +1172,8 @@ mod locking_again {
         wait_until(&session, |state| *state == State::NoDevice).await;
         assert!(snapshot(&session).await.editor.unwrap().can_undo());
 
-        connect(&session, keyboard.connect(), Peer::Simulated).await;
-        wait_until(&session, is_locked).await;
-        keyboard.press_unlock_key();
-        ready(&session).await;
+        reconnect(&session, &keyboard).await;
+        wait_until(&session, |state| *state == State::ChangesLost).await;
         assert!(snapshot(&session).await.editor.unwrap().can_undo());
 
         // Another keyboard starts afresh.

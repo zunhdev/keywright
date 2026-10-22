@@ -48,20 +48,21 @@ fn parameter_value(value: &wire::ParameterValue) -> core::ParameterValue {
 /// The keymap, as the core models it.
 pub(crate) fn keymap(keymap: &wire::Keymap) -> Keymap {
     Keymap {
-        layers: keymap
-            .layers
-            .iter()
-            .map(|layer| keymap::Layer {
-                id: keymap::LayerId(layer.id.0),
-                name: layer.name.clone(),
-                bindings: layer
-                    .bindings
-                    .iter()
-                    .map(|binding| core_binding(*binding))
-                    .collect(),
-            })
-            .collect(),
+        layers: keymap.layers.iter().map(layer).collect(),
         free_layer_slots: keymap.available_layers,
+    }
+}
+
+/// A layer, as the core models it.
+pub(crate) fn layer(layer: &wire::Layer) -> keymap::Layer {
+    keymap::Layer {
+        id: keymap::LayerId(layer.id.0),
+        name: layer.name.clone(),
+        bindings: layer
+            .bindings
+            .iter()
+            .map(|binding| core_binding(*binding))
+            .collect(),
     }
 }
 

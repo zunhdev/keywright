@@ -12,89 +12,10 @@ use crate::behavior::{BehaviorId, BehaviorTable};
 use crate::edit::tests::{binding, name};
 use crate::hid::Shortcut;
 use crate::keys::zmk;
-use crate::testing::{self, stock_keymap, zmk_v0_3_table};
-
-/// A keyboard as ZMK v0.3 keeps its keymap (`app/src/keymap.c`): a fixed set of slots,
-/// each with a name and bindings, and the order of the slots in use.
-#[derive(Debug, Clone)]
-struct Keyboard {
-    slots: Vec<(String, Vec<Binding>)>,
-    order: Vec<LayerId>,
-}
-
-impl Keyboard {
-    /// A keyboard showing `keymap`, whose free slots hold layers of `&none`. The layers
-    /// must use the lowest IDs.
-    fn showing(keymap: &Keymap) -> Self {
-        let keys = keymap.layers[0].bindings.len();
-        let used = keymap.layers.len();
-        let total = used + usize::try_from(keymap.free_layer_slots).unwrap();
-        let mut slots = vec![(String::new(), vec![none(); keys]); total];
-        for layer in &keymap.layers {
-            slots[slot(layer.id)] = (layer.name.clone(), layer.bindings.clone());
-        }
-        Self {
-            slots,
-            order: keymap.layers.iter().map(|layer| layer.id).collect(),
-        }
-    }
-
-    fn perform(&mut self, operation: &Operation) {
-        match operation {
-            Operation::SetBinding {
-                layer,
-                position,
-                binding,
-            } => self.slots[slot(*layer)].1[*position] = *binding,
-            Operation::RenameLayer { layer, name } => self.slots[slot(*layer)].0.clone_from(name),
-            Operation::MoveLayer { from, to } => {
-                let id = self.order.remove(*from);
-                self.order.insert(*to, id);
-            }
-            Operation::RemoveLayer { index } => {
-                self.order.remove(*index);
-            }
-            Operation::RestoreLayer { layer, index } => self.order.insert(*index, *layer),
-        }
-    }
-
-    /// `zmk_keymap_add_layer`: the free slot with the lowest ID, as it is.
-    fn add_layer(&mut self) -> Option<(usize, Layer)> {
-        let id = (0..self.slots.len())
-            .map(|id| LayerId(u32::try_from(id).unwrap()))
-            .find(|id| !self.order.contains(id))?;
-        self.order.push(id);
-        Some((self.order.len() - 1, self.layer(id)))
-    }
-
-    fn layer(&self, id: LayerId) -> Layer {
-        let (name, bindings) = self.slots[slot(id)].clone();
-        Layer { id, name, bindings }
-    }
-
-    /// What `keymap.get_keymap` would answer.
-    fn keymap(&self) -> Keymap {
-        Keymap {
-            layers: self.order.iter().map(|id| self.layer(*id)).collect(),
-            free_layer_slots: u32::try_from(self.slots.len() - self.order.len()).unwrap(),
-        }
-    }
-}
-
-fn slot(id: LayerId) -> usize {
-    usize::try_from(id.0).unwrap()
-}
-
-fn none() -> Binding {
-    Binding {
-        behavior: BehaviorId(0),
-        param1: 0,
-        param2: 0,
-    }
-}
+use crate::testing::{self, ZmkKeymap, stock_keymap, zmk_v0_3_table};
 
 /// Carries out an editor's operations on the keyboard, and confirms them.
-fn perform(editor: &mut Editor, keyboard: &mut Keyboard, operations: &[Operation]) {
+fn perform(editor: &mut Editor, keyboard: &mut ZmkKeymap, operations: &[Operation]) {
     for operation in operations {
         keyboard.perform(operation);
     }
@@ -102,7 +23,7 @@ fn perform(editor: &mut Editor, keyboard: &mut Keyboard, operations: &[Operation
 }
 
 /// Records a layer the keyboard adds, if it has a free slot.
-fn add_layer(editor: &mut Editor, keyboard: &mut Keyboard) {
+fn add_layer(editor: &mut Editor, keyboard: &mut ZmkKeymap) {
     if let Some((index, layer)) = keyboard.add_layer() {
         let operations = editor.apply(vec![Edit::AddLayer { index, layer }]).unwrap();
         assert_eq!(operations, []);
@@ -201,7 +122,7 @@ proptest! {
             .prop_flat_map(|(layers, keys, free)| keymap_with(layers, keys, free)),
         steps in prop::collection::vec(step(), 1..40),
     ) {
-        let mut keyboard = Keyboard::showing(&keymap);
+        let mut keyboard = ZmkKeymap::showing(&keymap);
         let mut saved = keyboard.clone();
         let mut editor = Editor::new(keymap);
 
@@ -637,7 +558,7 @@ fn reverting_a_row_is_a_change_that_can_be_undone() {
 
 #[test]
 fn a_removed_layer_is_restored_as_its_slot_holds_it() {
-    let mut keyboard = Keyboard::showing(&stock_keymap());
+    let mut keyboard = ZmkKeymap::showing(&stock_keymap());
     let mut editor = Editor::new(stock_keymap());
 
     // Change a key on adjust, then remove adjust: its slot keeps the changed key.
@@ -667,7 +588,7 @@ fn a_removed_layer_is_restored_as_its_slot_holds_it() {
 fn an_added_layer_is_redone_by_restoring_it() {
     let mut keymap = stock_keymap();
     keymap.free_layer_slots = 1;
-    let mut keyboard = Keyboard::showing(&keymap);
+    let mut keyboard = ZmkKeymap::showing(&keymap);
     let mut editor = Editor::new(keymap);
 
     add_layer(&mut editor, &mut keyboard);
@@ -692,7 +613,7 @@ fn an_added_layer_is_redone_by_restoring_it() {
 fn layer_changes_are_reverted_from_the_review_list() {
     let mut keymap = stock_keymap();
     keymap.free_layer_slots = 1;
-    let mut keyboard = Keyboard::showing(&keymap);
+    let mut keyboard = ZmkKeymap::showing(&keymap);
     let mut editor = Editor::new(keymap.clone());
 
     for edits in [
@@ -723,7 +644,7 @@ fn layer_changes_are_reverted_from_the_review_list() {
 fn reordering_back_leaves_added_layers_where_they_are() {
     let mut keymap = stock_keymap();
     keymap.free_layer_slots = 1;
-    let mut keyboard = Keyboard::showing(&keymap);
+    let mut keyboard = ZmkKeymap::showing(&keymap);
     let mut editor = Editor::new(keymap);
     add_layer(&mut editor, &mut keyboard);
     // Layer 4, added at the end, moves to the front, then layer 3 to second place.
@@ -783,7 +704,7 @@ fn review_of_key_changes() {
 fn review_of_layer_changes() {
     let mut keymap = stock_keymap();
     keymap.free_layer_slots = 1;
-    let mut keyboard = Keyboard::showing(&keymap);
+    let mut keyboard = ZmkKeymap::showing(&keymap);
     let mut editor = Editor::new(keymap);
 
     // The new layer takes the free slot, 4. Removing adjust first would have freed slot 3,
