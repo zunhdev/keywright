@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.17 — for review                                        |
+| **Status**    | Draft v0.18 — for review                                        |
 | **Date**      | 2026-10-22                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -617,10 +617,23 @@ There is no automated end-to-end test of the packaged app in v1: Tauri's WebDriv
 
 ### 14.2 Simulated keyboard (`keywright-sim`)
 
-- It implements the server side of every RPC Keywright uses, with **ZMK v0.3 semantics**: secured vs unsecured RPCs, the `UNLOCK_REQUIRED` error, lock/unlock and its notification, the 10-minute idle re-lock, layer IDs vs indexes, reserved slots, `remove`/`restore` preserving data, unsaved-changes tracking, save/discard, `reset_settings`, the 19-character name limit (silent drop), and physical layouts.
-- It loads its initial state from a support pack (the Sofle stock keymap and behaviors), so tests and demo mode see a realistic board.
-- **Fault injection**: latency, dropped responses, garbage bytes, transport switch, restart (loses unsaved changes), wrong half (silent).
-- It runs in-process through an `InMemoryTransport`, which demo mode (DEV-6) uses too.
+It plays the keyboard's side of every RPC Keywright uses, with **ZMK v0.3 semantics**, in three parts:
+
+- **`Firmware`**: what the keyboard was built with. `Firmware::sofle()` takes the stock keymap, the physical layout and the device name from the Sofle's support pack (§10), and the behaviors from ZMK v0.3: a Studio build has every standard behavior, numbered from 1, with the parameters its driver reports. `with_reserved_layers(n)` adds reserved slots, up to ZMK's 32 layers. Keebart's stock firmware has none.
+- **`Keyboard`**: the request handlers of ZMK v0.3 (`app/src/studio/`, `app/src/keymap.c`) as a state machine without I/O or a clock. It follows the firmware as written, quirks included, so Keywright is tested against what real keyboards do:
+  - secured and unsecured RPCs, `UNLOCK_REQUIRED`, `lock` answered with `RPC_NOT_FOUND`, and lock and unlock notifications;
+  - the layer order as ZMK's array of slot IDs: removing keeps a slot's data, adding takes the free slot with the lowest ID, and restoring checks neither for duplicates nor for room;
+  - "unsaved changes: yes" after every change, even one that changes nothing, and "no" after save or discard. `check_unsaved_changes` ignores renamed layers, and discarding doesn't undo a rename the settings don't hold;
+  - `reset_settings` restores stock bindings and order, but keeps names, and what counts as changed, until a restart;
+  - binding parameters checked against the behavior's metadata. In v0.3, a layer parameter is checked against the key count, and External Power, which has no metadata, takes no binding;
+  - request fields narrowed as ZMK's C code narrows them (layer IDs, indexes and key positions to 8 bits, behavior IDs to 16), and no response to a layer name of 20 bytes or more, which ZMK can't decode;
+  - one physical layout, from the support pack.
+- **`Simulator`**: runs a `Keyboard` in a Tokio task, and hands out `InMemoryTransport`s, which demo mode (DEV-6) uses too. It adds:
+  - the 10-minute idle re-lock, counted from the last request or unlock;
+  - framing, with replies in chunks of up to 64 bytes, like USB packets;
+  - **fault injection**: latency, dropped responses, garbage bytes, a transport switch (the keyboard locks and stops answering this connection), a restart (the connection drops and unsaved changes are lost), and the wrong half (no answers at all).
+
+`keywright-sim/tests/client.rs` runs `keywright-studio`'s client against the simulator. It covers every typed request, reads the stock keymap back through `keywright-core`, and has a test for each fault. The client's own unit tests keep their scripted keyboard, for exact bytes and timing. They couldn't use the simulator anyway: a dev-dependency on it would build a second copy of `keywright-studio`, whose types wouldn't match.
 
 ---
 
@@ -735,6 +748,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.18    | 2026-10-22 | Simulated keyboard (§14.2): `Firmware`, `Keyboard` and `Simulator`; behaviors come from ZMK v0.3, not the support pack; the ZMK v0.3 quirks the simulator reproduces; replies in USB-sized chunks; the fault-injection API; the client's tests against the simulator live in `keywright-sim`.                                                                      |
 | 0.17    | 2026-10-22 | Support packs (§10): the pack's files and their fields; the build script embeds every pack; matching by device name, then by layout key for key; what loading checks, including the hints against the stock keymap; the validation test against the vendored upstream keymap; the contributor guide.                                                               |
 | 0.16    | 2026-10-22 | Backup format (§9): the header fields and the writer's layout, the action text grammar, how import maps layers and fills restored slots, the kinds of unresolved item, and the `backup_parse` fuzz target with checked-in seeds.                                                                                                                                   |
 | 0.15    | 2026-10-22 | Guards (§8.4): reachability follows ZMK's layer state, with latched and held layers, the default layer (ID 0) and conditional layers; guards report only what a change makes worse; a state cap; `layer_keys` for LAY-4; the compatibility check's matching and fixes.                                                                                             |

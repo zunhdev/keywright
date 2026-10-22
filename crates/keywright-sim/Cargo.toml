@@ -8,5 +8,18 @@ license.workspace = true
 repository.workspace = true
 publish.workspace = true
 
+[dependencies]
+# The support pack's stock keymap, and turning its action text into bindings.
+keywright-core = { path = "../keywright-core" }
+# The messages, the framing and the `Transport` trait: the keyboard's side of the protocol.
+keywright-studio = { path = "../keywright-studio" }
+thiserror.workspace = true
+# The keyboard's task: channels and timers, for the idle lock and latency.
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
+
+[dev-dependencies]
+# `test-util` lets tests pause the clock and skip ahead, through the idle lock's ten minutes.
+tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
+
 [lints]
 workspace = true
