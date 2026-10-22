@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Runs every job, including the paused ones, for the branch you pick.
+  workflow_dispatch:
 
 permissions: {}
 
@@ -21,6 +23,11 @@ env:
 jobs:
   rust:
     name: Rust (macOS)
+    # Paused while main development is under way, to save CI minutes (KEY-94): run
+    # `mise run check` and `mise run coverage` locally before opening a pull request. It
+    # runs when the repository variable FULL_CI is true, or when the workflow is run by
+    # hand. A skipped job still satisfies the required check.
+    if: vars.FULL_CI == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: macos-26
     timeout-minutes: 30
     permissions:
