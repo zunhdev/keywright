@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.3 — for review                                                        |
+| **Status**    | Draft v0.4 — for review                                                        |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -225,18 +225,18 @@ From top to bottom:
 
 ### 5.4 Action editors
 
-| Action                                 | Editor                                                                                                                                                                                                                                       |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Key or shortcut**                    | A key field with Record. Four modifier toggles ⌃ ⌥ ⇧ ⌘. A key popup that is searchable and grouped (Letters, Numbers, Symbols, Navigation, Editing, Function keys, Numpad, International). _Details_ disclosure: left/right modifier choice. |
-| **Mac actions**                        | A list of presets with icon, name and one-line effect. Presets that rely on a default macOS shortcut say so in their subtitle ("Uses ⌃⌘Q, the default Lock Screen shortcut"). Globe shows its limitation note (MAC-8).                       |
-| **Media & system**                     | List: play/pause, next, previous, volume up/down/mute, brightness up/down.                                                                                                                                                                   |
-| **Tap & hold**                         | Two slots: **When tapped** (a key-or-shortcut editor) and **When held**, with a segmented control _Modifier / Layer_ and then a modifier popup or layer picker. Plus the note "How long counts as a hold is set in the keyboard's firmware." |
-| **Layers**                             | A segmented control _Hold for / Switch to / Toggle / Next key only_, then a layer picker (colour + name). The lockout guard appears inline before the change is applied.                                                                     |
-| **Bluetooth & connection**             | Choose device 1–5, next/previous device, clear this device's pairing (destructive style), output to USB / Bluetooth / toggle.                                                                                                                |
-| **Lighting**                           | On/off/toggle, brightness ±, colour (hue) ±, saturation ±, next/previous effect.                                                                                                                                                             |
-| **Special**                            | Caps Word, Repeat last key, Sticky modifier (with a modifier popup), Unlock editing (shield icon), Update mode (destructive style plus a confirmation), Restart keyboard.                                                                    |
-| **Same as layer below / Does nothing** | No editor, just an explanation and a small diagram.                                                                                                                                                                                          |
-| **Other actions**                      | Firmware display name, plus generic fields built from the parameter metadata: number ranges as steppers, named constants as a popup, key usages as a key picker, layer IDs as a layer picker.                                                |
+| Action                                 | Editor                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Key or shortcut**                    | A key field with Record. Four modifier toggles ⌃ ⌥ ⇧ ⌘. A key popup that is searchable and grouped (Letters, Numbers, Symbols, Navigation, Editing, Function keys, Numpad, International). _Details_ disclosure: left/right modifier choice.                                                                                                                                                                                                                                     |
+| **Mac actions**                        | A list of presets with icon, name and one-line effect. Presets that rely on a default macOS shortcut say so in their subtitle ("Uses ⌃⌘Q, the default Lock Screen shortcut"). **Globe** opens the Globe helper (MAC-8): "macOS only takes the Globe key from Apple keyboards, so Keywright makes this key act as Globe on this Mac." _Use This Key as Globe_ sets it up for the selected key. A note says it works while Keywright is running, with an _Open at login_ checkbox. |
+| **Media & system**                     | List: play/pause, next, previous, volume up/down/mute, brightness up/down.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Tap & hold**                         | Two slots: **When tapped** (a key-or-shortcut editor) and **When held**, with a segmented control _Modifier / Layer_ and then a modifier popup or layer picker. Plus the note "How long counts as a hold is set in the keyboard's firmware."                                                                                                                                                                                                                                     |
+| **Layers**                             | A segmented control _Hold for / Switch to / Toggle / Next key only_, then a layer picker (colour + name). The lockout guard appears inline before the change is applied.                                                                                                                                                                                                                                                                                                         |
+| **Bluetooth & connection**             | Choose device 1–5, next/previous device, clear this device's pairing (destructive style), output to USB / Bluetooth / toggle.                                                                                                                                                                                                                                                                                                                                                    |
+| **Lighting**                           | On/off/toggle, brightness ±, colour (hue) ±, saturation ±, next/previous effect.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Special**                            | Caps Word, Repeat last key, Sticky modifier (with a modifier popup), Unlock editing (shield icon), Update mode (destructive style plus a confirmation), Restart keyboard.                                                                                                                                                                                                                                                                                                        |
+| **Same as layer below / Does nothing** | No editor, just an explanation and a small diagram.                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Other actions**                      | Firmware display name, plus generic fields built from the parameter metadata: number ranges as steppers, named constants as a popup, key usages as a key picker, layer IDs as a layer picker.                                                                                                                                                                                                                                                                                    |
 
 ### 5.5 Lockout guard (SAF-2)
 
@@ -267,7 +267,7 @@ If a change would remove the last _Unlock editing_ key, strand a layer, or trap 
 - **After saving.** A toast reads "Saved to keyboard ✓". The badges clear, and the window's edited dot clears.
 - **Discard all.** A destructive confirmation: "Discard 3 changes? Your keyboard goes back to how it was when you last saved."
 - **Undo after save.** Undoing a saved change makes it _trying_ again, and the badge and count come back.
-- **Quit or disconnect with trying changes** (SAF-5). A dialog offers _Save_, _Discard_ or _Cancel_, and explains that the keyboard forgets unsaved changes when it restarts.
+- **Quit or disconnect with trying changes** (SAF-5). A dialog offers _Save_, _Discard_ or _Cancel_, and explains that the keyboard forgets unsaved changes when it restarts or goes to sleep.
 
 ---
 
@@ -296,7 +296,7 @@ The first run shows once, on first connect. Every step has _Skip_, and Help › 
 1. **Connect.** The "No keyboard" state, with friendlier copy: "Welcome to Keywright."
 2. **Unlock.** The unlock sheet, with one extra line: "You'll do this whenever you start editing."
 3. **Mac check** (MAC-7). "We found 4 keys that don't work on a Mac" lists each key → its fix. The buttons are _Fix all_ (applied as trying changes) and _Not now_.
-4. **Try it.** A coach mark points at the Tab-position key: "Click a key, then press any shortcut to put it there." After the first change, a second coach mark points at Save: "Changes work right away. Save to keep them after your keyboard restarts."
+4. **Try it.** A coach mark points at the Tab-position key: "Click a key, then press any shortcut to put it there." After the first change, a second coach mark points at Save: "Changes work right away. Save to keep them when your keyboard restarts or sleeps."
 5. **Menu bar** (BAR-1, resolves product Q4). A sheet reads: "Show your keyboard's battery in the menu bar?" with a pre-checked box. If it stays on, closing the window keeps Keywright in the menu bar; if off, closing the window quits the app. It also states: "Your keyboard reports the left half's battery over Bluetooth only."
 
 macOS's Bluetooth permission is requested **in context**: the first time the user chooses _Use Bluetooth_, or when a paired keyboard is detected over USB and the user enables Bluetooth editing. It is preceded by a one-line explanation (CON-6).
@@ -331,12 +331,12 @@ A dedicated window with a step indicator: **Prepare → Back up → one half →
 
 ### 9.4 Settings window
 
-| Tab          | Contents                                                                                                |
-| ------------ | ------------------------------------------------------------------------------------------------------- |
-| **General**  | Show in menu bar · Open at login · Appearance (System / Light / Dark) · Show ZMK names                  |
-| **Keyboard** | Secondary label input source (MAC-6) · Bluetooth permission status with a _Open System Settings_ button |
-| **Backups**  | Number of automatic backups kept (default 20, minimum 5) · _Show backups folder_                        |
-| **Advanced** | _Copy diagnostics_ (NFR-4) · _Reset first-time setup_                                                   |
+| Tab          | Contents                                                                                                                                     |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **General**  | Show in menu bar · Open at login · Appearance (System / Light / Dark) · Show ZMK names                                                       |
+| **Keyboard** | Secondary label input source (MAC-6) · Bluetooth permission status with a _Open System Settings_ button · Globe key (MAC-8), with _Turn Off_ |
+| **Backups**  | Number of automatic backups kept (default 20, minimum 5) · _Show backups folder_                                                             |
+| **Advanced** | _Copy diagnostics_ (NFR-4) · _Reset first-time setup_                                                                                        |
 
 ### 9.5 Menu bar item (BAR-*)
 
@@ -514,5 +514,6 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | Version | Date       | Changes                                                                                                                                                                                                             |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0.1     | 2026-10-21 | First draft                                                                                                                                                                                                         |
-| 0.3     | 2026-10-24 | Firmware Update assistant (§9.3): the halves in the support pack's order, the macOS prompts explained beforehand, the drive checked against the step's half, success confirmed when the half comes back (spike S6). |
 | 0.2     | 2026-10-24 | Wrong half (§7): when the left half answers over Bluetooth, Keywright edits there and says the cable is in the right half (spike S4).                                                                               |
+| 0.3     | 2026-10-24 | Firmware Update assistant (§9.3): the halves in the support pack's order, the macOS prompts explained beforehand, the drive checked against the step's half, success confirmed when the half comes back (spike S6). |
+| 0.4     | 2026-10-24 | Spike outcomes (KEY-19): the Globe helper makes a chosen key act as Globe (§5.4, §9.4; spike S7); the keyboard forgets unsaved changes when it sleeps, too (§6, §8; spike S5).                                      |
