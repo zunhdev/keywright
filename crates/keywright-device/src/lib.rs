@@ -16,6 +16,7 @@
 pub mod backups;
 mod convert;
 pub mod session;
+pub mod usb;
 
 pub use self::backups::Backups;
 pub use self::session::{

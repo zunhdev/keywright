@@ -24,6 +24,7 @@ use super::{ActionText, Backup, BackupLayer, TextError};
 use crate::action::Action;
 use crate::behavior::{BehaviorKind, BehaviorTable};
 use crate::edit::Edit;
+use crate::editor::{Editor, EditorError};
 use crate::keymap::{Binding, Keymap, Layer, LayerId};
 
 /// The result of an import.
@@ -33,6 +34,25 @@ pub struct Import {
     pub edits: Vec<Edit>,
     /// Everything that can't be applied. A key that can't be resolved keeps what it does.
     pub unresolved: Vec<Unresolved>,
+}
+
+impl Import {
+    /// An editor for `keymap` with the import applied, as the Import preview shows it
+    /// (design §9.2). Its review list ([`Editor::changes`]) is what the import changes: its
+    /// baseline is `keymap`, and its current keymap is the backup's, as far as the keyboard
+    /// can take it. The command line's `diff` and `restore` show the same rows.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the edits don't fit `keymap`, which happens only for another keymap than
+    /// the one the import was worked out for.
+    pub fn preview(&self, keymap: &Keymap) -> Result<Editor, EditorError> {
+        let mut editor = Editor::new(keymap.clone());
+        // A preview has no keyboard to carry the operations out: they're taken as done.
+        let _operations = editor.apply(self.edits.clone())?;
+        editor.confirm();
+        Ok(editor)
+    }
 }
 
 /// Something in a backup that the keyboard can't take. Layers are the backup's.

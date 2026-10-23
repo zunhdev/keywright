@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.24 — for review                                        |
+| **Status**    | Draft v0.25 — for review                                        |
 | **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -79,7 +79,7 @@ Version numbers are the current releases as of the date above. Exact pins live i
 - `keywright-studio` knows the protocol but not keymaps as users see them.
 - `keywright-transport` implements the `Transport` trait that `keywright-studio` defines. The protocol client and the simulator therefore never pull in serial or Bluetooth libraries, and stay portable.
 - `keywright-device` is the only crate that combines the core and the protocol. The exception is the simulator, which plays the keyboard's side and loads its state from a support pack.
-- `keywright-app` and `keywright-cli` are thin. Commands map 1:1 to device or core APIs and contain no business logic.
+- `keywright-app` and `keywright-cli` are thin. Commands map 1:1 to device or core APIs and contain no business logic. Like the app, the CLI takes the backups folder from `keywright-platform`, and has the simulated keyboard, for its tests.
 - Platform-specific code lives only in `keywright-platform` (behind `cfg(target_os)`) and in the app shell.
 
 ---
@@ -128,9 +128,18 @@ keywright/
 | `keywright-transport` | lib        | `UsbTransport` (USB CDC ACM), `BleTransport` (GATT), device discovery, BLE Battery Service                                                                                | `serialport` (MPL-2.0, allowed in `deny.toml`), `bluest` _or_ `btleplug` (§15 S2), `tokio`, `tracing`                                                          |
 | `keywright-device`    | lib        | The session actor: transport selection, connection and lock state machine, keymap load, applying edits, save/discard, resync, automatic backups, battery polling          | everything above                                                                                                                                               |
 | `keywright-platform`  | lib        | `Platform` traits plus the macOS implementation: input-source key labels, input-source change events, UF2 volume detection, login item, window "edited" dot, app folders  | `objc2`, `objc2-foundation`, `objc2-app-kit`, `objc2-disk-arbitration`, `objc2-service-management`; a minimal hand-written Carbon FFI for TIS/`UCKeyTranslate` |
-| `keywright-cli`       | bin        | `keywright` command line (CLI-*)                                                                                                                                          | `clap`, `serde_json`, `anyhow`                                                                                                                                 |
+| `keywright-cli`       | bin        | `keywright` command line (CLI-*)                                                                                                                                          | `clap`, `serde_json`, `tokio`; `trycmd` (dev)                                                                                                                  |
 | `keywright-app`       | bin        | Tauri shell: commands, events, menus, tray, windows                                                                                                                       | `tauri`, `tauri-specta`, Tauri plugins (§12.1)                                                                                                                 |
 | `architecture-tests`  | tests only | Workspace policy tests: the dependency rules (§2) and the `unsafe` policy below. Ships nothing.                                                                           | `cargo_metadata` (dev)                                                                                                                                         |
+
+**The CLI** (CLI-1 to CLI-5) has `status`, `backup [file]`, `restore <file>` and `diff <file>`; `flash` comes with the firmware assistant.
+
+- **Keyboards**: until transport selection (§6.3), it connects a session to every ZMK USB port (`keywright_device::usb`). A command that needs the keymap refuses when several keyboards can be edited.
+- **Unlocking**: `status` only looks. The others wait for the keyboard to be unlocked, up to `--unlock-timeout` (120 s), and say which keys unlock it, named from the support pack's stock keymap (`SupportPack::key_name`): "hold the raise key, then tap the B key".
+- **Comparing**: `diff` and `restore` show the rows of the backup's import preview (`Import::preview`, §9), grouped by layer, keyboard first. Actions are written as backup action text (`kp LG(C)`) until the core has the key sentences of design §5.2.
+- **Restoring** asks first, or needs `--yes` when standard input isn't a terminal (CLI-4); `--dry-run` changes nothing. It backs up into the app's folder (§7.2), imports the backup as one change and saves it. The read-only commands keep no automatic backups, so scripts that poll `status` can't push real backups out.
+- **Output**: results go to standard output, as text or with `--json`, and messages for people to standard error. Exit codes: 0 done, 1 `diff` found differences or the answer was no, 2 usage (including a missing `--yes`), 3 no keyboard that can be edited, 4 stayed locked, 5 the keyboard failed or is incompatible, 6 a file problem. `keywright --help` lists them.
+- **Testing**: `KEYWRIGHT_SIMULATOR` swaps USB for a simulated Sofle (locked and unlocked when asked, unlocked, never unlocked, the right half alone, or none), and `KEYWRIGHT_BACKUPS_DIR` moves the backups folder (§14.1).
 
 `unsafe` is forbidden in every crate except `keywright-platform`. Each crate root says `#![forbid(unsafe_code)]`, and `architecture-tests` checks that none is missing. Cargo can't relax one inherited lint per crate, so the workspace sets `unsafe_code = "deny"`. That level applies in `keywright-platform`, with an `allow` scoped to the `ffi` modules. Every `unsafe` block carries a `// SAFETY:` comment (enforced by `clippy::undocumented_unsafe_blocks`).
 
@@ -251,7 +260,7 @@ The session is a **single tokio task (actor)** that owns the RPC client and the 
                 └─▶ NoLiveEditing / WrongHalf (no answer)
 ```
 
-`Session` is a handle to the task. It sends `Command`s over an mpsc channel, reports the current `State` on a watch channel, and `SessionEvent`s (a new state, an editor change) on a broadcast channel. `connect` takes a `Connection`: the RPC client, and the `Peer`, which is what the transport knows about the keyboard's end, such as a USB port's product string. Choosing the transport is §6.3's (KEY-54).
+`Session` is a handle to the task. It sends `Command`s over an mpsc channel, reports the current `State` on a watch channel, and `SessionEvent`s (a new state, an editor change) on a broadcast channel. `connect` takes a `Connection`: the RPC client, and the `Peer`, which is what the transport knows about the keyboard's end, such as a USB port's product string. Choosing the transport is §6.3's (KEY-54). Until then, `keywright_device::usb` lists the keyboards' USB ports, and `Connection::usb` opens one; `Connection::new` takes any transport, such as the simulator's. `Snapshot::backup` makes a backup of the keymap the keyboard holds, for exports.
 
 - **Probing** follows §5.4: `get_device_info` with the 1 s probe timeout, then `get_lock_state` and `list_all_behaviors`. The device name suggests a support pack. A keyboard that doesn't answer is **WrongHalf** if its USB product string is `Generic CDC`, as for the Sofle's right half (spike S1, refined by S4), and **NoLiveEditing** otherwise.
 - **Locked**: the session knows the device name, the behaviors list and the pack only. The UI draws the support pack's stored layout for the unlock sheet (design §7).
@@ -271,7 +280,7 @@ The session writes a backup (§9) on the first successful load per session and b
 - **Names** are in UTC, like `created`, so they sort in the order the backups were made. Backups made in the same second are numbered (`-2`, `-3`). A backup is written to a hidden file and renamed, so it appears whole or not at all.
 - **Pruning** keeps the newest backups after each write. It only deletes files the folder could have named, so anything else there stays.
 - **First load**: once per keyboard per session, of the keymap as read, unsaved changes from before included. If it fails, the session says so (`SessionEvent::BackupFailed`), keeps going, and tries again at the next load.
-- **Destructive commands** back up the keymap the editor shows first, and change nothing if that fails (`SessionError::Backup`). `Session::import` applies a backup's edits as one change that can be undone. The firmware assistant calls `Session::back_up(Reason::BeforeFirmware)` before an update. Restoring stock settings (KEY-52) goes the same way.
+- **Destructive commands** back up the keymap the editor shows first, and change nothing if that fails (`SessionError::Backup`). `Session::import` applies a backup's edits as one change that can be undone. The firmware assistant calls `Session::back_up(Reason::BeforeFirmware)` before an update. Restoring stock settings (KEY-52) goes the same way. So does the CLI's `restore`, while its read-only commands keep no backups.
 
 ---
 
@@ -428,7 +437,7 @@ bindings = ["bt BT_CLR", "bt BT_SEL 0", "…", "studio_unlock", "…", "other \"
   - a key ZMK has no name for is written as its usage (`LG(0x070001)`); commands use ZMK's names (`BT_SEL 0`, `RGB_TOG`); layers use the backup's layer IDs;
   - a behavior Keywright doesn't know is written `other "Display Name" 0x1 0x0`;
   - text that doesn't parse is an error for that key alone, never a guess.
-- **Import** (`Backup::import`) resolves behaviors by name against the keyboard's `BehaviorTable`, and returns one group of edits plus `unresolved[]` for the Import preview (design §9.2). Each backup layer becomes, in order of preference:
+- **Import** (`Backup::import`) resolves behaviors by name against the keyboard's `BehaviorTable`, and returns one group of edits plus `unresolved[]` for the Import preview (design §9.2). `Import::preview` applies the edits to an editor of the keyboard's keymap, whose review list (§8.3) is the preview's rows. Each backup layer becomes, in order of preference:
   - the keyboard's layer with the same ID;
   - the free slot with the same ID, which is restored;
   - another unclaimed layer, in order;
@@ -638,7 +647,7 @@ All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Eac
 | Core unit                | Model, catalog, edits/inverses, diff, guards, compat rules, label tables, backup round-trip                                                                            | nextest, **proptest** (e.g. "applying any edit then its inverse yields the original"), **insta** snapshots (backup files, review lists) |
 | Protocol                 | Framing, correlation, timeouts, error mapping, replayed firmware fixtures                                                                                              | nextest, proptest, cargo-fuzz                                                                                                           |
 | Device session           | Full flows against the **simulated keyboard**: probe → lock → unlock → load → edit → save; re-lock; transport switch; restart with lost changes; incompatible firmware | nextest + `keywright-sim` with fault injection                                                                                          |
-| CLI                      | Commands, JSON output and exit codes against the simulator                                                                                                             | `trycmd` snapshot tests                                                                                                                 |
+| CLI                      | Commands, JSON output and exit codes against the simulator, in each scenario `KEYWRIGHT_SIMULATOR` names                                                               | `trycmd` snapshot tests: Markdown cases in `tests/cmd/<scenario>/`                                                                      |
 | UI                       | Components and feature flows with mocked IPC (`@tauri-apps/api/mocks`); accessibility (axe); keyboard navigation                                                       | bun test, happy-dom, Testing Library                                                                                                    |
 | Manual release checklist | Newcomer task (product §11), VoiceOver walkthrough, USB + Bluetooth matrix, presets on each macOS version, firmware update on real hardware                            | Checklist in `docs/contributing/release-checklist.md`                                                                                   |
 
@@ -780,6 +789,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.25    | 2026-10-23 | The CLI (§2, §4, §7, §7.2, §9, §14.1, KEY-35): `status`, `backup`, `restore` and `diff`; it may depend on `keywright-platform` and `keywright-sim`; `keywright_device::usb`, `Connection::new` and `Snapshot::backup`; `Import::preview`; exit codes; only `restore` keeps automatic backups; `anyhow` dropped for typed failures.                                 |
 | 0.24    | 2026-10-23 | Automatic backups (§7.2, KEY-34): the folder comes from the platform crate; names in UTC, numbered within a second; atomic writes; pruning only touches backups; a failed first backup doesn't stop the session, a failed backup stops a destructive command; `Session::import` and `back_up`.                                                                     |
 | 0.23    | 2026-10-23 | Session (§7.1, §8.5, KEY-33): save, discard (with renames put back) and adding layers; **ChangesLost** with re-apply or discard; changed elsewhere starts the history afresh; out-of-step changes are brought back to the editor's keymap.                                                                                                                         |
 | 0.22    | 2026-10-23 | RPC rules (§5.3, KEY-95): request IDs from 0 to 127; frames over 30 bytes refused; a lone `EOF` and a 10 ms pause after a timeout; renames retried with filler that moves the name along the ring; names with escaped bytes refused; the simulator reproduces the receive bugs.                                                                                    |

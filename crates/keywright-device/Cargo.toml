@@ -13,6 +13,8 @@ publish.workspace = true
 keywright-core = { path = "../keywright-core" }
 # The RPC client and its messages.
 keywright-studio = { path = "../keywright-studio" }
+# The USB serial transport, and finding keyboards' ports.
+keywright-transport = { path = "../keywright-transport" }
 thiserror.workspace = true
 # The session's task, and its channels.
 tokio = { workspace = true, features = ["macros", "rt", "sync"] }

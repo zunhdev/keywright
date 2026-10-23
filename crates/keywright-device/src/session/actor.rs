@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use keywright_core::backup::{Backup, KeyboardInfo, Reason};
+use keywright_core::backup::Reason;
 use keywright_core::edit::{Edit, Operation};
 use keywright_core::editor::Editor;
 use keywright_core::keymap::{DeviceIdentity, Keyboard, Keymap};
@@ -28,9 +28,6 @@ use crate::convert;
 /// The USB product string of the half of a split keyboard that doesn't serve Studio, as
 /// spike S1 found it on the Sofle. Spike S4 checks it on other boards.
 const OTHER_HALF_PRODUCT: &str = "Generic CDC";
-
-/// What makes the backups, as the files say.
-const APP: &str = concat!("keywright ", env!("CARGO_PKG_VERSION"));
 
 /// How many rounds of operations bringing the keyboard in step with the editor may take.
 /// Two are enough, unless the keyboard refuses something ([`reconcile::operations`]).
@@ -632,18 +629,8 @@ impl Actor {
         let written = backups::created(SystemTime::now())
             .ok_or_else(|| std::io::Error::other("the clock is past the year 9999"))
             .and_then(|created| {
-                let backup = Backup::export(
-                    keymap,
-                    &keyboard.behaviors,
-                    KeyboardInfo {
-                        name: keyboard.identity.name.clone(),
-                        support_pack: known.pack.map(|pack| pack.id.clone()),
-                        physical_layout: keyboard.layout.name.clone(),
-                    },
-                    created,
-                    APP.to_owned(),
-                    reason,
-                );
+                let pack = known.pack.map(|pack| pack.id.clone());
+                let backup = backups::of(keyboard, keymap, pack, created, reason);
                 let rows = known.pack.map_or(&[][..], |pack| &pack.rows);
                 backups.write(&backup, rows)
             });

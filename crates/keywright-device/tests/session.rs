@@ -44,8 +44,8 @@ async fn within<T>(future: impl Future<Output = T>) -> T {
 }
 
 async fn connect(session: &Session, transport: impl Transport, peer: Peer) {
-    let client = Client::new(transport);
-    session.connect(Connection { client, peer }).await.unwrap();
+    let connection = Connection::new(transport, peer);
+    session.connect(connection).await.unwrap();
 }
 
 async fn wait_until(session: &Session, wanted: impl FnMut(&State) -> bool) -> State {
@@ -1554,5 +1554,71 @@ mod automatic_backups {
         session.import(stock_import(&session).await).await.unwrap();
         assert_eq!(keyboard_key(&keyboard, 3).await, stock);
         assert_eq!(session.back_up(Reason::BeforeFirmware).await.unwrap(), None);
+    }
+}
+
+mod exporting {
+    use keywright_core::backup::Datetime;
+
+    use super::*;
+
+    fn created() -> Datetime {
+        "2026-10-23T14:03:00Z".parse().unwrap()
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_snapshot_backs_up_the_keymap_the_keyboard_holds() {
+        let (session, _keyboard) = ready_session().await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+
+        let snapshot = snapshot(&session).await;
+        let pack = snapshot.support_pack().unwrap();
+        assert_eq!(pack.id, SOFLE);
+        let backup = snapshot.backup(created(), Reason::Export).unwrap();
+        assert_eq!(backup.created, created());
+        assert_eq!(backup.reason, Reason::Export);
+        assert_eq!(backup.keyboard.name, "Sofle Choc BT");
+        assert_eq!(backup.keyboard.support_pack.as_deref(), Some(SOFLE));
+        assert!(backup.app.starts_with("keywright "));
+        // The change being tried is in it, as it is on the keyboard.
+        assert_eq!(backup.layers[1].bindings[3], "kp A");
+        let mut stock = pack.stock_keymap.clone();
+        stock.layers[1].bindings[3] = "kp A".to_owned();
+        assert_eq!(backup.layers, stock.layers);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn unsaved_changes_from_before_are_backed_up_while_undecided() {
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let before = Client::new(keyboard.connect());
+        let mut binding = keyboard_key(&keyboard, 3).await;
+        binding.param1 = KEY_A;
+        before
+            .set_layer_binding(wire::LayerId(1), 3, binding)
+            .await
+            .unwrap();
+        let session = Session::start();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        wait_until(&session, |state| *state == State::UnsavedChanges).await;
+
+        let backup = snapshot(&session)
+            .await
+            .backup(created(), Reason::Export)
+            .unwrap();
+        assert_eq!(backup.layers[1].bindings[3], "kp A");
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_locked_keyboard_has_a_pack_but_no_backup_yet() {
+        let keyboard = Simulator::sofle().unwrap();
+        let session = Session::start();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        wait_until(&session, is_locked).await;
+
+        let snapshot = snapshot(&session).await;
+        // The name suggests the pack before the layout can confirm it.
+        assert_eq!(snapshot.support_pack().unwrap().id, SOFLE);
+        assert!(snapshot.backup(created(), Reason::Export).is_none());
     }
 }
