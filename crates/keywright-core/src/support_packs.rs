@@ -37,6 +37,7 @@ use crate::backup::{self, ActionText, Backup, BackupError, Row, TextError};
 use crate::guard::ConditionalLayer;
 use crate::hid::Shortcut;
 use crate::keymap::{LayerId, PhysicalKey, PhysicalLayout};
+use crate::keys::zmk;
 
 /// The format version of the pack files this module reads.
 pub const FORMAT: u32 = 1;
@@ -393,6 +394,24 @@ impl SupportPack {
     #[must_use]
     pub fn matches_layout(&self, layout: &PhysicalLayout) -> bool {
         layout.keys == self.layout.keys
+    }
+
+    /// What the key at `position` is called, from what it does on the stock keymap's base
+    /// layer: a layer key by its layer's name, such as `raise`, and a key that types by
+    /// ZMK's name for it, such as `B`. Instructions name keys this way: "hold the raise
+    /// key, then tap the B key". `None` for a key that does anything else.
+    #[must_use]
+    pub fn key_name(&self, position: usize) -> Option<String> {
+        let layers = &self.stock_keymap.layers;
+        let text = layers.first()?.bindings.get(position)?;
+        match ActionText::parse(text).ok()? {
+            ActionText::Known(Action::KeyPress(key)) => zmk::name(key).map(str::to_owned),
+            ActionText::Known(Action::Momentary(layer)) => layers
+                .iter()
+                .find(|stock| stock.id == layer)
+                .map(|stock| stock.name.clone()),
+            _ => None,
+        }
     }
 }
 

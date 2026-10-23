@@ -12,5 +12,26 @@ publish.workspace = true
 name = "keywright"
 path = "src/main.rs"
 
+[dependencies]
+# Parsing the command line.
+clap.workspace = true
+# The keymap model, backups and support packs.
+keywright-core = { path = "../keywright-core" }
+# The device session, which talks to the keyboard.
+keywright-device = { path = "../keywright-device" }
+# Where the app keeps automatic backups, which `restore` makes too.
+keywright-platform = { path = "../keywright-platform" }
+# The simulated keyboard, for the CLI's tests (`KEYWRIGHT_SIMULATOR`).
+keywright-sim = { path = "../keywright-sim" }
+# `--json` output.
+serde.workspace = true
+serde_json.workspace = true
+# The session runs on Tokio; the CLI waits on it with timeouts.
+tokio = { workspace = true, features = ["macros", "rt", "time"] }
+
+[dev-dependencies]
+# Snapshot tests of whole commands: arguments, output and exit codes (tech spec §14.1).
+trycmd.workspace = true
+
 [lints]
 workspace = true

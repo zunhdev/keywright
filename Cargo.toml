@@ -13,10 +13,13 @@ publish = false
 # Shared versions for third-party crates. A member opts in with `name.workspace = true`.
 [workspace.dependencies]
 cargo_metadata = "0.23.1"
+# The CLI's command-line parsing, with `derive` for declaring it as types.
+clap = { version = "4.6.7", features = ["derive"] }
 insta = { version = "1.49.0", default-features = false }
 proptest = "1.12.0"
 proptest-derive = "0.9.0"
 serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
 serialport = "4.10.1"
 prost = "0.14.4"
 prost-build = "0.14.4"
@@ -26,6 +29,7 @@ thiserror = "2.0.21"
 toml = { version = "1.1.8", default-features = false, features = ["parse", "serde", "std"] }
 tokio = "1.53.3"
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
+trycmd = "1.2.1"
 
 # Every member inherits these lints with `[lints] workspace = true` (tech spec §13.2).
 # CI runs clippy with `-D warnings`, so warnings fail the build there too.

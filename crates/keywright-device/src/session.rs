@@ -57,14 +57,16 @@ use std::io;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use keywright_core::backup::Reason;
+use keywright_core::backup::{Backup, Datetime, Reason};
 use keywright_core::edit::Edit;
 use keywright_core::editor::{Editor, EditorError};
 use keywright_core::keymap::{DeviceIdentity, Keyboard};
+use keywright_core::support_packs::{self, SupportPack};
 use keywright_studio::client::{Client, RpcError};
+use keywright_studio::transport::Transport;
 use tokio::sync::{broadcast, mpsc, oneshot, watch};
 
-use crate::backups::Backups;
+use crate::backups::{self, Backups};
 
 /// How many commands can wait for the session before sending one more waits for room.
 const COMMAND_CAPACITY: usize = 16;
@@ -88,6 +90,22 @@ pub struct Connection {
     pub client: Client,
     /// The other end, which explains a keyboard that doesn't answer.
     pub peer: Peer,
+}
+
+impl Connection {
+    /// A connection over `transport`, such as a simulated keyboard's, in a task on the
+    /// current Tokio runtime. [`Connection::usb`] opens one over USB.
+    ///
+    /// # Panics
+    ///
+    /// Panics if called outside a Tokio runtime.
+    #[must_use]
+    pub fn new(transport: impl Transport, peer: Peer) -> Self {
+        Self {
+            client: Client::new(transport),
+            peer,
+        }
+    }
 }
 
 /// What a transport knows about the keyboard's end of a connection.
@@ -192,6 +210,35 @@ pub struct Snapshot {
     /// after any change, even one undone since, so the editor's review list is what says
     /// which changes are being tried.
     pub unsaved: bool,
+}
+
+impl Snapshot {
+    /// The support pack for the keyboard.
+    #[must_use]
+    pub fn support_pack(&self) -> Option<&'static SupportPack> {
+        let id = self.pack.as_deref()?;
+        support_packs::embedded().iter().find(|pack| pack.id == id)
+    }
+
+    /// A backup of the keymap the keyboard holds now, made at `created` for `reason`, as
+    /// an export is. `None` until the keymap has been read. While the session waits to hear
+    /// whether to keep unsaved changes from before, the keyboard holds them, so the backup
+    /// does too.
+    #[must_use]
+    pub fn backup(&self, created: Datetime, reason: Reason) -> Option<Backup> {
+        let keyboard = self.keyboard.as_ref()?;
+        let keymap = self
+            .editor
+            .as_ref()
+            .map_or(&keyboard.keymap, Editor::current);
+        Some(backups::of(
+            keyboard,
+            keymap,
+            self.pack.clone(),
+            created,
+            reason,
+        ))
+    }
 }
 
 /// Why the session didn't do what it was asked.

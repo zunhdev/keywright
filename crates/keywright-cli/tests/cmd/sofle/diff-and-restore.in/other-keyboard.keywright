@@ -1,0 +1,18 @@
+# Keywright keymap backup. https://github.com/zunhdev/keywright
+format = 1
+created = 2026-10-23T14:03:00Z
+app = "keywright 0.1.0"
+reason = "export"
+
+[keyboard]
+name = "Macropad"
+physical-layout = "Default"
+key-count = 2
+
+[[layer]]
+id = 0
+name = "default"
+bindings = [
+  "kp A",
+  "kp B",
+]

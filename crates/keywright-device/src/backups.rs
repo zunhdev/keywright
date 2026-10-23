@@ -18,10 +18,14 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use keywright_core::backup::{Backup, Datetime, Reason, Row};
+use keywright_core::backup::{Backup, Datetime, KeyboardInfo, Reason, Row};
+use keywright_core::keymap::{Keyboard, Keymap};
 
 /// The extension of a backup file.
 const EXTENSION: &str = "keywright";
+
+/// What makes the backups, as the files say.
+const APP: &str = concat!("keywright ", env!("CARGO_PKG_VERSION"));
 
 /// The reasons the session backs up for. An exported keymap goes wherever the person puts
 /// it, never in this folder.
@@ -148,6 +152,28 @@ impl Backups {
             let _ = fs::remove_file(path);
         }
     }
+}
+
+/// A backup of `keymap`, which `keyboard` holds, with the support pack for it by ID.
+pub(crate) fn of(
+    keyboard: &Keyboard,
+    keymap: &Keymap,
+    support_pack: Option<String>,
+    created: Datetime,
+    reason: Reason,
+) -> Backup {
+    Backup::export(
+        keymap,
+        &keyboard.behaviors,
+        KeyboardInfo {
+            name: keyboard.identity.name.clone(),
+            support_pack,
+            physical_layout: keyboard.layout.name.clone(),
+        },
+        created,
+        APP.to_owned(),
+        reason,
+    )
 }
 
 /// When a backup is made: `now`, to the second, in UTC. `None` past the year 9999, which

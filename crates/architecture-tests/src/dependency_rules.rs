@@ -19,7 +19,9 @@ use crate::workspace::{
 /// - `keywright-device` is the one crate that combines the core and the protocol.
 ///   `keywright-sim` uses both too, because it plays the keyboard's side of the protocol
 ///   and loads its state from a support pack.
-/// - The CLI is thin: it reaches the keyboard only through the device session.
+/// - The CLI is thin: it reaches the keyboard only through the device session. It takes
+///   the backups folder from `keywright-platform`, and has the simulated keyboard for its
+///   tests, as the app's demo mode will.
 const ALLOWED_WORKSPACE_DEPENDENCIES: &[(&str, &[&str])] = &[
     ("keywright-core", &[]),
     ("keywright-studio", &[]),
@@ -30,7 +32,15 @@ const ALLOWED_WORKSPACE_DEPENDENCIES: &[(&str, &[&str])] = &[
         &["keywright-core", "keywright-studio", "keywright-transport"],
     ),
     ("keywright-platform", &[]),
-    ("keywright-cli", &["keywright-core", "keywright-device"]),
+    (
+        "keywright-cli",
+        &[
+            "keywright-core",
+            "keywright-device",
+            "keywright-platform",
+            "keywright-sim",
+        ],
+    ),
     ("architecture-tests", &[]),
 ];
 

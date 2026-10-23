@@ -466,6 +466,7 @@ mod action_text {
 
 mod importing {
     use super::*;
+    use crate::editor::Change;
 
     fn import(backup: &Backup, keymap: &Keymap) -> Import {
         backup.import(keymap, &zmk_v0_3_table())
@@ -747,6 +748,55 @@ mod importing {
                 .iter()
                 .any(|edit| matches!(edit, Edit::RestoreLayer { .. }))
         );
+    }
+
+    #[test]
+    fn the_preview_lists_what_the_import_changes() {
+        let mut keymap = stock_keymap();
+        keymap.layers[0].bindings[0] = kp(0x0007_0004);
+        keymap.layers[1].name = "Numbers".to_owned();
+        keymap.layers.remove(3);
+        keymap.free_layer_slots = 1;
+
+        let preview = import(&stock_backup(), &keymap).preview(&keymap).unwrap();
+        assert_eq!(preview.baseline(), &keymap);
+        assert_eq!(preview.current().layers, stock_keymap().layers);
+        let stock = stock_keymap();
+        assert_eq!(
+            preview.changes(),
+            [
+                Change::Binding {
+                    layer: LayerId(0),
+                    position: 0,
+                    before: kp(0x0007_0004),
+                    after: stock.layers[0].bindings[0],
+                },
+                Change::LayerRenamed {
+                    layer: LayerId(1),
+                    before: "Numbers".to_owned(),
+                    after: stock.layers[1].name.clone(),
+                },
+                Change::LayerAdded { layer: LayerId(3) },
+            ]
+        );
+    }
+
+    #[test]
+    fn the_preview_of_the_keymap_itself_lists_nothing() {
+        let preview = import(&stock_backup(), &stock_keymap())
+            .preview(&stock_keymap())
+            .unwrap();
+        assert_eq!(preview.changes(), []);
+    }
+
+    #[test]
+    fn the_preview_refuses_another_keymap() {
+        let mut keymap = stock_keymap();
+        keymap.layers[1].name = "Numbers".to_owned();
+        let import = import(&stock_backup(), &keymap);
+        let mut other = stock_keymap();
+        other.layers.truncate(1);
+        assert!(import.preview(&other).is_err());
     }
 }
 

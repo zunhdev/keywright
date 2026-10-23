@@ -386,6 +386,20 @@ mod the_sofle_pack {
         layout.keys.pop();
         assert!(!pack.matches_layout(&layout), "a key is missing");
     }
+    #[test]
+    fn names_keys_by_what_they_do_on_the_base_layer() {
+        let pack = sofle();
+        // The unlock keys: hold Raise, tap B.
+        assert_eq!(pack.key_name(56).as_deref(), Some("raise"));
+        assert_eq!(pack.key_name(41).as_deref(), Some("B"));
+        assert_eq!(
+            pack.key_name(42).as_deref(),
+            Some("C_MUTE"),
+            "the left knob"
+        );
+        assert_eq!(pack.key_name(53).as_deref(), Some("lower"));
+        assert_eq!(pack.key_name(60), None, "there are 60 keys");
+    }
 }
 
 /// What following the stock keymap's keys gives, which the hints are checked with.
