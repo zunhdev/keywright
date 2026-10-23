@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.28 — for review                                        |
+| **Status**    | Draft v0.29 — for review                                        |
 | **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -222,7 +222,10 @@ Spike S2 checked these on the Sofle (`docs/spikes/s2-bluetooth.md`).
 - **The receive bug** of §5.3 applies here too: ZMK v0.3 puts Bluetooth writes into the same 30-byte ring, and reads them the same way, so renames are retried as over USB. Its Bluetooth handler waits for room rather than dropping bytes.
 - **Connection loss**: when the keyboard goes away, the indication stream ends with an error, which closes the transport. Closing Keywright's own connection leaves macOS's in place, and the keyboard stays unlocked.
 - The link is already bonded and encrypted by macOS, which the firmware requires.
-- **Battery** (BAR-2) comes from the standard Battery Service `0x180F` / `0x2A19` on the same peripheral. It is read every 60 s while the window is open and every 5 min in the background. Stock firmware exposes only the left half's level; a second BAS characteristic described as "Peripheral 0" is shown as the right half when present.
+- **Battery** (BAR-2) comes from the standard Battery Service `0x180F` / `0x2A19` on the same peripheral, which apps can read while macOS holds the keyboard; macOS itself doesn't show it. Spike S3 checked this on the Sofle (`docs/spikes/s3-battery.md`):
+  - Keywright **subscribes to the level's notifications** and reads it on connecting, when the menu bar menu or the window opens, and after the Mac wakes. **It doesn't poll**: ZMK measures the battery every 60 s only while the keyboard is in use, and updates the level only when the percentage changes, so a poll learns nothing a notification hasn't. A read takes about 30 ms and 0.3 ms of the Mac's CPU.
+  - The level can be read whenever the keyboard is connected over Bluetooth, even while Studio runs over USB. It reads 99% while charging.
+  - Stock firmware exposes only the left half's level: one Battery Service, with no description. Firmware with ZMK's battery proxy (`CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_PROXY`) adds a second Battery Service, with a level for each peripheral, described "Peripheral 0" and so on; Keywright shows the first as the right half.
 - **Library**: `bluest` (ADR-0009), which the official ZMK Studio app uses on macOS too. `btleplug` 0.13 passed the same tests, and stays the fallback behind `BleTransport`.
 
 ### 6.3 Transport selection (CON-3, CON-5)
@@ -697,7 +700,7 @@ It plays the keyboard's side of every RPC Keywright uses, with **ZMK v0.3 semant
 | S8  | TCC persistence across updates: ad-hoc signature vs a stable self-signed identity, for Bluetooth, Removable Volumes and the login item                                                                                   | Product R5, §17 |
 | S9  | `SMAppService` with an unsigned, quarantined vs non-quarantined app                                                                                                                                                      | BAR-5           |
 
-The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53). S5 is done: §7.1's states hold; a switch shows only as silence, and the session also asks for the lock state while locked (§6.3, §7.1, KEY-97). S7 is done: the presets and rules are verified on macOS 27, and 15 and 26 wait for KEY-98 (§8.2); Globe needs `hidutil`, since Modifier Keys' Globe doesn't work for the Sofle.
+The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53). S3 is done: subscribe to the battery level rather than poll it, left half only on stock firmware (§6.2). S5 is done: §7.1's states hold; a switch shows only as silence, and the session also asks for the lock state while locked (§6.3, §7.1, KEY-97). S7 is done: the presets and rules are verified on macOS 27, and 15 and 26 wait for KEY-98 (§8.2); Globe needs `hidutil`, since Modifier Keys' Globe doesn't work for the Sofle.
 
 ---
 
@@ -796,6 +799,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.29    | 2026-10-24 | Spike S3 (§6.2, §15, KEY-10): the battery level is read over Bluetooth, also while editing over USB; Keywright subscribes to its notifications instead of polling; stock firmware reports the left half only.                                                                                                                                                      |
 | 0.28    | 2026-10-24 | Spike S7 (§8.2, §8.4, §15, KEY-14): the Mac presets and compatibility rules, verified on macOS 27; presets are offered only on the versions they were verified on, and KEY-98 verifies 15 and 26; Globe works through `hidutil`, not Modifier Keys.                                                                                                                |
 | 0.27    | 2026-10-23 | Spike S5 (§6.3, §7.1, §14.2, §15, KEY-12): any request puts the idle lock off; switches between USB and Bluetooth, and to a Bluetooth slot with no connection, lock the keyboard and leave the old connection quiet; changes being tried survive every lock; sleep is a restart; the session asks for the lock state while locked (KEY-97).                        |
 | 0.26    | 2026-10-23 | Spike S2 (§4, §5.3, §6.2, §15, §18, §19, KEY-9): `bluest` (ADR-0009); one acknowledged write per frame; 27-byte indications about 33 ms apart, so Bluetooth timeouts count from the last bytes received; the receive bug applies over Bluetooth; a lost connection ends the indication stream.                                                                     |
