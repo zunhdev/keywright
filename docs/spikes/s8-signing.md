@@ -41,9 +41,9 @@ A self-signed build was zipped with `ditto`, marked as downloaded (`com.apple.qu
 
 - **Gatekeeper refused it** (`spctl --assess`: rejected): it isn't notarized, whatever the signature. It opened after _System Settings › Privacy & Security › Open Anyway_.
 - **It ran translocated**, from a random folder under `/private/var/folders/…/AppTranslocation/`, and launch arguments were lost. Its **grants still applied**: translocation doesn't change the signature.
-- **Moved into /Applications** with `mv`, it opened without asking again: its quarantine flag changed from `0083` to `00c3`, which records the approval. It still ran translocated, from a new random folder, since only moving an app with Finder lifts translocation, as Apple documents; that wasn't tested here. Its grants applied.
+- **Moved into /Applications** with `mv`, it opened without asking again: its quarantine flag changed from `0083` to `00c3`, which records the approval. It still ran translocated, from a new random folder, since only moving an app with Finder lifts translocation, as spike S9 confirmed (`docs/spikes/s9-login-item.md`). Its grants applied.
 - **The next version**, downloaded and moved over it, **was blocked again** and needed _Open Anyway_ once more, then ran translocated too. Its grants still applied.
-- **A login item registered while translocated** points into a folder that disappears; spike S9 ([KEY-16](https://linear.app/zunhdev/issue/KEY-16)) looks at that.
+- **A login item registered while translocated** might have pointed into a folder that disappears. Spike S9 found that it doesn't: macOS records the app's real place.
 
 ## Recommendation
 
@@ -52,6 +52,6 @@ A self-signed build was zipped with `ditto`, marked as downloaded (`com.apple.qu
 - People grant Bluetooth and removable-drive access once, not after every update, and the login item stays either way.
 - It costs the project a certificate, made once: its private key is a repository secret, and the release job imports it into a temporary keychain and trusts it for code signing there. Losing or replacing the key makes every user grant once more.
 - It isn't Apple's signature: Gatekeeper still blocks every new download until _Open Anyway_, or until the quarantine attribute is removed, until the signed and notarized Homebrew builds of v1.x (product Q1). The build provenance attestations (tech spec §17) are what let people check where a release came from.
-- The install guide says to **move the app into /Applications with Finder** before opening it the first time, so that it isn't translocated (Apple's documented behaviour, not tested here), or to remove the quarantine attribute (`xattr -dr com.apple.quarantine`), which lifts both translocation and _Open Anyway_.
+- The install guide says to **move the app into /Applications with Finder** before opening it the first time, so that it isn't translocated (confirmed in spike S9), or to remove the quarantine attribute (`xattr -dr com.apple.quarantine`), which lifts both translocation and _Open Anyway_.
 
 The release notes template ([`docs/contributing/release-notes-template.md`](../contributing/release-notes-template.md)) tells people about _Open Anyway_ after each update, and that their permissions stay.
