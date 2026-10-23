@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.2 — for review                                                        |
+| **Status**    | Draft v0.3 — for review                                                        |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -319,12 +319,13 @@ The same layout as Review. It adds a **"Can't apply"** section, each item with a
 
 ### 9.3 Firmware Update assistant (FW-*)
 
-A dedicated window with a step indicator: **Prepare → Back up → Left half → Right half → Done**.
+A dedicated window with a step indicator: **Prepare → Back up → one half → the other half → Done**, the halves in the order the support pack gives (right, then left, for the Sofle).
 
+- _Prepare_ says what macOS will show: "Allow accessory to connect?" the first time each half is in update mode (allow it), and "Disk Not Ejected Properly" after each copy, which is expected.
 - Each half step has an illustration of the underside, with the reset button next to the USB port highlighted, and the text: "Double-press the reset button with a SIM tool."
-- It detects the `KEEBART` drive and shows a progress bar.
+- It detects the `KEEBART` drive, checks it's the half the step is for, and shows a progress bar.
 - A permanent notice, "Don't unplug during the update", is shown while copying.
-- It confirms success when the drive disappears.
+- It confirms success when the half comes back running its new firmware, not just when the drive disappears.
 - A file mismatch ("This file looks like it's for the **right** half") blocks with _Choose another file_ / _Use anyway_.
 - _Settings reset_ (FW-4) is a variant path with its own extra steps: reset file on both halves → normal firmware → re-pair.
 
@@ -510,7 +511,8 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 
 ## 15. Revision history
 
-| Version | Date       | Changes                                                                                                                               |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.1     | 2026-10-21 | First draft                                                                                                                           |
-| 0.2     | 2026-10-24 | Wrong half (§7): when the left half answers over Bluetooth, Keywright edits there and says the cable is in the right half (spike S4). |
+| Version | Date       | Changes                                                                                                                                                                                                             |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.1     | 2026-10-21 | First draft                                                                                                                                                                                                         |
+| 0.3     | 2026-10-24 | Firmware Update assistant (§9.3): the halves in the support pack's order, the macOS prompts explained beforehand, the drive checked against the step's half, success confirmed when the half comes back (spike S6). |
+| 0.2     | 2026-10-24 | Wrong half (§7): when the left half answers over Bluetooth, Keywright edits there and says the cable is in the right half (spike S4).                                                                               |
