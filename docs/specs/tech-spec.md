@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.29 — for review                                        |
+| **Status**    | Draft v0.30 — for review                                        |
 | **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -206,7 +206,7 @@ The trait lives in `keywright-studio`, next to the RPC client that uses it. This
 Spike S1 checked these on the Sofle (`docs/spikes/s1-usb-serial.md`).
 
 - Enumerate ports with `serialport::available_ports()` and keep USB ports with **VID `0x1D50` / PID `0x615E`** (ZMK defaults). Their manufacturer is `ZMK Project`, and the product string is the board's name, such as `Sofle Choc Pro`. Ports are matched by USB serial number, which equals the uppercase hex of `get_device_info.serial_number`.
-- **The right half has a port too**, with the same VID and PID, product `Generic CDC` and its own serial number. It never answers, so the probe tells the halves apart (§6.3).
+- **The right half has a port too**, with the same VID and PID and its own serial number. Its USB device is called `Generic CDC`, but `serialport` reports no product for it, since it reads the interface. It never answers, and it has **no keyboard (HID) interface**, which tells the halves apart without a probe (§6.3, spike S4).
 - Open the matching `/dev/cu.usbmodem*` port, never its `/dev/tty.*` twin, which waits for a carrier. Its name follows the USB socket. It is opened exclusively, so no other program can use it at the same time.
 - **Reads run on a thread of their own**, which hands each chunk to `recv` over a channel. **Writes run on a second thread**, which writes each frame in one write, without pacing (§5.3), with a 500 ms timeout. Writes are never flushed: on a serial port, a flush waits with no timeout until the keyboard has taken every byte. Dropping the transport discards unsent bytes, so closing the port never waits for a keyboard that has stopped reading. A probe takes about 1 ms, or about 7 ms when it includes opening the port.
 - **Plugging in and unplugging** are noticed by listing the ports every second (`usb::watch`). `serialport` has no notifications, and IOKit's would belong in `keywright-platform`. An unplugged port also fails its reads, which closes the transport.
@@ -233,17 +233,22 @@ Spike S2 checked these on the Sofle (`docs/spikes/s2-bluetooth.md`).
 The firmware serves Studio **only on the transport that matches its current output endpoint**, and **locks on every switch**. Selection is therefore by probing, not by preference:
 
 ```
-matching USB port present ──▶ probe USB (1 s)
+ZMK USB port without a keyboard interface ──▶ the half that doesn't talk to the computer: not probed
+ZMK USB port with one ──▶ probe USB (1 s)
         │ responds ─────────────────────────────▶ use USB
         │ no response
         ▼
 paired BLE peripheral with Studio service ──▶ probe BLE (1 s)
-        │ responds ──▶ use BLE; if a USB port was present → "typing over Bluetooth" info (design §7)
+        │ responds ──▶ use BLE; if a USB port was present, say why it isn't used:
+        │              "typing over Bluetooth", or the cable is in the other half (design §7)
         │ no response / none
         ▼
-USB port present but silent  ──▶ "this looks like the right half" / "no live editing"   (§15 S4 refines)
-nothing found                ──▶ "No keyboard" state
+only a port without a keyboard interface ──▶ WrongHalf: "this looks like the right half"
+a silent port with one                   ──▶ NoLiveEditing
+nothing found                            ──▶ "No keyboard" state
 ```
+
+**Telling the halves apart** (spike S4, `docs/spikes/s4-right-half.md`): the half of a split keyboard that talks to the computer types over the same cable, so its USB device always has a keyboard (HID) interface. The other half's has only the serial interfaces. Reading interfaces needs the USB device, which `serialport` doesn't expose, so the transport reads them with `nusb`, matched to the port by USB serial number (KEY-99). The support pack's `usb-half` hint names the half to plug in.
 
 The session re-runs selection on USB plug/unplug, on BLE connect/disconnect events, and after any transport error.
 
@@ -272,7 +277,7 @@ The session is a **single tokio task (actor)** that owns the RPC client and the 
 
 `Session` is a handle to the task. It sends `Command`s over an mpsc channel, reports the current `State` on a watch channel, and `SessionEvent`s (a new state, an editor change) on a broadcast channel. `connect` takes a `Connection`: the RPC client, and the `Peer`, which is what the transport knows about the keyboard's end, such as a USB port's product string. Choosing the transport is §6.3's (KEY-54). Until then, `keywright_device::usb` lists the keyboards' USB ports, and `Connection::usb` opens one; `Connection::new` takes any transport, such as the simulator's. `Snapshot::backup` makes a backup of the keymap the keyboard holds, for exports.
 
-- **Probing** follows §5.4: `get_device_info` with the 1 s probe timeout, then `get_lock_state` and `list_all_behaviors`. The device name suggests a support pack. A keyboard that doesn't answer is **WrongHalf** if its USB product string is `Generic CDC`, as for the Sofle's right half (spike S1, refined by S4), and **NoLiveEditing** otherwise.
+- **Probing** follows §5.4: `get_device_info` with the 1 s probe timeout, then `get_lock_state` and `list_all_behaviors`. The device name suggests a support pack. A port whose USB device has no keyboard interface is **WrongHalf**, and a keyboard that has one but doesn't answer is **NoLiveEditing** (§6.3, spike S4). Until KEY-99, the session goes by the USB product string `Generic CDC`, which `serialport` doesn't report.
 - **Locked**: the session knows the device name, the behaviors list and the pack only. The UI draws the support pack's stored layout for the unlock sheet (design §7). The unlock notification moves the session on. Spike S5 saw one lost out of eight, so while locked, the session also asks for the lock state every 2 s (KEY-97). That can't keep a locked keyboard unlocked, so it isn't a keep-alive.
 - **Loading**: fetch the behavior details, the physical layouts and the keymap, and build the core's `Keyboard`. The layout has to match the pack's too. Then call `check_unsaved_changes`. If the device _already_ has unsaved changes from before this session, the state is **UnsavedChanges** until the user keeps them (the editor starts from them) or discards them, because their baseline is unknown.
 - **Ready**: edits flow (§8.3). `apply`, `undo` and `redo` run the editor's operations one request at a time. If one fails, the editor rolls back, and the keyboard undoes the operations it performed. A change refused as locked moves to **Locked**. A change that times out makes the session probe again, because the keyboard may have moved to another transport. `add_layer` asks the keyboard to add one, and records what it reports as `AddLayer`.
@@ -700,7 +705,7 @@ It plays the keyboard's side of every RPC Keywright uses, with **ZMK v0.3 semant
 | S8  | TCC persistence across updates: ad-hoc signature vs a stable self-signed identity, for Bluetooth, Removable Volumes and the login item                                                                                   | Product R5, §17 |
 | S9  | `SMAppService` with an unsigned, quarantined vs non-quarantined app                                                                                                                                                      | BAR-5           |
 
-The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53). S3 is done: subscribe to the battery level rather than poll it, left half only on stock firmware (§6.2). S5 is done: §7.1's states hold; a switch shows only as silence, and the session also asks for the lock state while locked (§6.3, §7.1, KEY-97). S7 is done: the presets and rules are verified on macOS 27, and 15 and 26 wait for KEY-98 (§8.2); Globe needs `hidutil`, since Modifier Keys' Globe doesn't work for the Sofle.
+The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53). S3 is done: subscribe to the battery level rather than poll it, left half only on stock firmware (§6.2). S4 is done: a port without a keyboard interface is the half that doesn't talk to the computer (§6.3, KEY-99). S5 is done: §7.1's states hold; a switch shows only as silence, and the session also asks for the lock state while locked (§6.3, §7.1, KEY-97). S7 is done: the presets and rules are verified on macOS 27, and 15 and 26 wait for KEY-98 (§8.2); Globe needs `hidutil`, since Modifier Keys' Globe doesn't work for the Sofle.
 
 ---
 
@@ -799,6 +804,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.30    | 2026-10-24 | Spike S4 (§6.1, §6.3, §7.1, §15, KEY-11): the halves are told apart by the keyboard interface of their USB device, which `nusb` reads, not by the product string, which `serialport` misses; the selection flow skips a port without one (KEY-99).                                                                                                                 |
 | 0.29    | 2026-10-24 | Spike S3 (§6.2, §15, KEY-10): the battery level is read over Bluetooth, also while editing over USB; Keywright subscribes to its notifications instead of polling; stock firmware reports the left half only.                                                                                                                                                      |
 | 0.28    | 2026-10-24 | Spike S7 (§8.2, §8.4, §15, KEY-14): the Mac presets and compatibility rules, verified on macOS 27; presets are offered only on the versions they were verified on, and KEY-98 verifies 15 and 26; Globe works through `hidutil`, not Modifier Keys.                                                                                                                |
 | 0.27    | 2026-10-23 | Spike S5 (§6.3, §7.1, §14.2, §15, KEY-12): any request puts the idle lock off; switches between USB and Bluetooth, and to a Bluetooth slot with no connection, lock the keyboard and leave the old connection quiet; changes being tried survive every lock; sleep is a restart; the session asks for the lock state while locked (KEY-97).                        |
