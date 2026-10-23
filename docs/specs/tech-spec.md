@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.26 — for review                                        |
+| **Status**    | Draft v0.27 — for review                                        |
 | **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -244,6 +244,8 @@ nothing found                ──▶ "No keyboard" state
 
 The session re-runs selection on USB plug/unplug, on BLE connect/disconnect events, and after any transport error.
 
+Spike S5 confirmed this on the Sofle (`docs/spikes/s5-locking.md`). Plugging the cable in, unplugging it, and an output key (`&out`) each move Studio and lock the keyboard, and so does moving to a Bluetooth slot with no connection. **The old connection just goes quiet**: no notification says the keyboard locked, and the new one is locked from its first request. An output key or a slot change gives the computer no event, so the session finds out at its next request, which times out (§7.1). It doesn't poll to find out sooner, since any request puts off the idle lock (ADR-0006).
+
 ---
 
 ## 7. Device session (`keywright-device`)
@@ -268,13 +270,13 @@ The session is a **single tokio task (actor)** that owns the RPC client and the 
 `Session` is a handle to the task. It sends `Command`s over an mpsc channel, reports the current `State` on a watch channel, and `SessionEvent`s (a new state, an editor change) on a broadcast channel. `connect` takes a `Connection`: the RPC client, and the `Peer`, which is what the transport knows about the keyboard's end, such as a USB port's product string. Choosing the transport is §6.3's (KEY-54). Until then, `keywright_device::usb` lists the keyboards' USB ports, and `Connection::usb` opens one; `Connection::new` takes any transport, such as the simulator's. `Snapshot::backup` makes a backup of the keymap the keyboard holds, for exports.
 
 - **Probing** follows §5.4: `get_device_info` with the 1 s probe timeout, then `get_lock_state` and `list_all_behaviors`. The device name suggests a support pack. A keyboard that doesn't answer is **WrongHalf** if its USB product string is `Generic CDC`, as for the Sofle's right half (spike S1, refined by S4), and **NoLiveEditing** otherwise.
-- **Locked**: the session knows the device name, the behaviors list and the pack only. The UI draws the support pack's stored layout for the unlock sheet (design §7).
+- **Locked**: the session knows the device name, the behaviors list and the pack only. The UI draws the support pack's stored layout for the unlock sheet (design §7). The unlock notification moves the session on. Spike S5 saw one lost out of eight, so while locked, the session also asks for the lock state every 2 s (KEY-97). That can't keep a locked keyboard unlocked, so it isn't a keep-alive.
 - **Loading**: fetch the behavior details, the physical layouts and the keymap, and build the core's `Keyboard`. The layout has to match the pack's too. Then call `check_unsaved_changes`. If the device _already_ has unsaved changes from before this session, the state is **UnsavedChanges** until the user keeps them (the editor starts from them) or discards them, because their baseline is unknown.
 - **Ready**: edits flow (§8.3). `apply`, `undo` and `redo` run the editor's operations one request at a time. If one fails, the editor rolls back, and the keyboard undoes the operations it performed. A change refused as locked moves to **Locked**. A change that times out makes the session probe again, because the keyboard may have moved to another transport. `add_layer` asks the keyboard to add one, and records what it reports as `AddLayer`.
 - **Saving and discarding**: `save` sends `save_changes`, and the editor's current keymap becomes its baseline. `discard` sends `discard_changes` and reads the keymap again. ZMK v0.3 doesn't undo a rename the settings don't hold when it discards, so the session renames such layers back and discards once more, which leaves nothing counted as changed. The session tracks `unsaved_changes_status_changed` in its snapshot. ZMK v0.3 sends it after any change, even one undone since, so the review list (§8.3) is what says which changes are being tried.
 - **Out of step**: a change that timed out may have been carried out all the same, and a rollback can fail. The session then probes again, and reconciling brings the keyboard back to the editor's keymap (§8.5), rather than taking what it holds as changed elsewhere.
 - **Requests that time out** while probing or loading are asked once more. A keyboard that still doesn't answer, answers oddly, or answers `RpcNotFound` is **Incompatible**, naming the request.
-- **Re-lock** (idle timeout, transport switch): the session keeps the `Editor`, including its history and expected state. It also keeps them when the connection is lost, for a reconnect to the same keyboard (same name and serial number). After unlock, it re-reads the keymap and reconciles the two (§8.5). A keyboard that restarted and forgot the changes being tried leaves the session in **ChangesLost** until the user re-applies or discards them.
+- **Re-lock**: the idle lock comes about 10 minutes after the last request of any kind (612 s on the Sofle), and a switch between USB and Bluetooth, or to a Bluetooth slot with no connection, locks too (spike S5). The keyboard keeps the changes being tried through every lock. The session keeps the `Editor`, including its history and expected state. It also keeps them when the connection is lost, for a reconnect to the same keyboard (same name and serial number). After unlock, it re-reads the keymap and reconciles the two (§8.5). A keyboard that restarted and forgot the changes being tried leaves the session in **ChangesLost**. On battery, waking from sleep is a restart too: the Sofle's firmware sleeps after 15 minutes to an hour without a key press. The session stays in **ChangesLost** until the user re-applies or discards them.
 - The session never sends a request just to reset the idle timer (ADR-0006). A test against the simulator checks that an idle session sends nothing for an hour.
 
 ### 7.2 Automatic backups (SAF-4)
@@ -672,7 +674,7 @@ It plays the keyboard's side of every RPC Keywright uses, with **ZMK v0.3 semant
   - request fields narrowed as ZMK's C code narrows them (layer IDs, indexes and key positions to 8 bits, behavior IDs to 16), and no response to a layer name of 20 bytes or more, which ZMK can't decode;
   - one physical layout, from the support pack.
 - **`Simulator`**: runs a `Keyboard` in a Tokio task, and hands out `InMemoryTransport`s, which demo mode (DEV-6) uses too. It adds:
-  - the 10-minute idle re-lock, counted from the last request or unlock;
+  - the 10-minute idle re-lock, counted from the last request of any kind or the unlock, as spike S5 found on the Sofle;
   - ZMK v0.3's receive path, as spike S1 found it: the 30-byte ring buffer, which writes arriving together share; ZMK's framing, which loses the frame after one that lost its `EOF`; and the read bug that loses a name running past the end of the ring, or with an escaped byte;
   - framing, with replies in chunks of up to 64 bytes, like USB packets;
   - **fault injection**: latency, dropped responses, garbage bytes, a transport switch (the keyboard locks and stops answering this connection), a restart (the connection drops and unsaved changes are lost), and the wrong half (no answers at all).
@@ -695,7 +697,7 @@ It plays the keyboard's side of every RPC Keywright uses, with **ZMK v0.3 semant
 | S8  | TCC persistence across updates: ad-hoc signature vs a stable self-signed identity, for Bluetooth, Removable Volumes and the login item                                                                                   | Product R5, §17 |
 | S9  | `SMAppService` with an unsigned, quarantined vs non-quarantined app                                                                                                                                                      | BAR-5           |
 
-The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53).
+The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53). S5 is done: §7.1's states hold; a switch shows only as silence, and the session also asks for the lock state while locked (§6.3, §7.1, KEY-97).
 
 ---
 
@@ -794,6 +796,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.27    | 2026-10-23 | Spike S5 (§6.3, §7.1, §14.2, §15, KEY-12): any request puts the idle lock off; switches between USB and Bluetooth, and to a Bluetooth slot with no connection, lock the keyboard and leave the old connection quiet; changes being tried survive every lock; sleep is a restart; the session asks for the lock state while locked (KEY-97).                        |
 | 0.26    | 2026-10-23 | Spike S2 (§4, §5.3, §6.2, §15, §18, §19, KEY-9): `bluest` (ADR-0009); one acknowledged write per frame; 27-byte indications about 33 ms apart, so Bluetooth timeouts count from the last bytes received; the receive bug applies over Bluetooth; a lost connection ends the indication stream.                                                                     |
 | 0.25    | 2026-10-23 | The CLI (§2, §4, §7, §7.2, §9, §14.1, KEY-35): `status`, `backup`, `restore` and `diff`; it may depend on `keywright-platform` and `keywright-sim`; `keywright_device::usb`, `Connection::new` and `Snapshot::backup`; `Import::preview`; exit codes; only `restore` keeps automatic backups; `anyhow` dropped for typed failures.                                 |
 | 0.24    | 2026-10-23 | Automatic backups (§7.2, KEY-34): the folder comes from the platform crate; names in UTC, numbered within a second; atomic writes; pruning only touches backups; a failed first backup doesn't stop the session, a failed backup stops a destructive command; `Session::import` and `back_up`.                                                                     |
