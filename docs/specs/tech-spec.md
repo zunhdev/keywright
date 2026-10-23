@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.31 — for review                                        |
+| **Status**    | Draft v0.32 — for review                                        |
 | **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -705,7 +705,7 @@ It plays the keyboard's side of every RPC Keywright uses, with **ZMK v0.3 semant
 | S8  | TCC persistence across updates: ad-hoc signature vs a stable self-signed identity, for Bluetooth, Removable Volumes and the login item                                                                                   | Product R5, §17 |
 | S9  | `SMAppService` with an unsigned, quarantined vs non-quarantined app                                                                                                                                                      | BAR-5           |
 
-The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53). S3 is done: subscribe to the battery level rather than poll it, left half only on stock firmware (§6.2). S4 is done: a port without a keyboard interface is the half that doesn't talk to the computer (§6.3, KEY-99). S5 is done: §7.1's states hold; a switch shows only as silence, and the session also asks for the lock state while locked (§6.3, §7.1, KEY-97). S6 is done: a real update of both halves; the drive's USB serial number says which half it is, and a copy that ends in `EIO` and the half coming back is a success (§11.3). S7 is done: the presets and rules are verified on macOS 27, and 15 and 26 wait for KEY-98 (§8.2); Globe needs `hidutil`, since Modifier Keys' Globe doesn't work for the Sofle.
+The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client works around ZMK v0.3's receive bugs (§5.3, §6.1, KEY-95). S2 is done: `bluest` (ADR-0009), and over Bluetooth, timeouts count from the last bytes received (§6.2, KEY-53). S3 is done: subscribe to the battery level rather than poll it, left half only on stock firmware (§6.2). S4 is done: a port without a keyboard interface is the half that doesn't talk to the computer (§6.3, KEY-99). S5 is done: §7.1's states hold; a switch shows only as silence, and the session also asks for the lock state while locked (§6.3, §7.1, KEY-97). S6 is done: a real update of both halves; the drive's USB serial number says which half it is, and a copy that ends in `EIO` and the half coming back is a success (§11.3). S7 is done: the presets and rules are verified on macOS 27, and 15 and 26 wait for KEY-98 (§8.2); Globe needs `hidutil`, since Modifier Keys' Globe doesn't work for the Sofle. S8 is done: release builds are signed with a stable self-signed certificate, which keeps permissions across updates (§17).
 
 ---
 
@@ -729,14 +729,14 @@ The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client w
 `release.yml` runs on a `v*` tag, on a macOS arm64 runner:
 
 1. `mise run check` (the full gate).
-2. `tauri build --bundles app` with `signingIdentity: "-"`, which **ad-hoc signs** the whole bundle (arm64 requires a signature).
+2. `tauri build --bundles app`, **signed with Keywright's self-signed certificate** (`signingIdentity`), which the job imports from repository secrets into a temporary keychain and trusts for code signing there. Spike S8 found that this keeps people's Bluetooth and removable-drive permissions across updates, where an ad-hoc signature (`"-"`), whose designated requirement is the build's own hash, loses them every time; the login item survives either way (`docs/spikes/s8-signing.md`). Losing or replacing the certificate costs every user one more grant.
 3. Zip with `ditto -c -k --keepParent Keywright.app` (preserves bundle metadata).
 4. Build the CLI: `cargo build --release -p keywright-cli` → `keywright-<version>-aarch64-apple-darwin.tar.gz`.
 5. Write `SHA256SUMS`.
 6. **Build provenance attestations** (`actions/attest-build-provenance`), so users can verify artifacts with `gh attestation verify`. This partly compensates for the missing signature.
-7. Create a draft GitHub Release with notes. The maintainer reviews it and publishes.
+7. Create a draft GitHub Release from the release notes template (`docs/contributing/release-notes-template.md`). The maintainer reviews it and publishes.
 
-The install docs cover moving the app to /Applications before first launch (which avoids App Translocation), _System Settings › Privacy & Security › Open Anyway_, and the `xattr -dr com.apple.quarantine` alternative. Building from source is `mise install && mise run build`.
+The install docs cover moving the app to /Applications with Finder before first launch (which avoids App Translocation), _System Settings › Privacy & Security › Open Anyway_, and the `xattr -dr com.apple.quarantine` alternative. The certificate isn't Apple's, so Gatekeeper blocks every new version until _Open Anyway_: the release notes say so each time. Building from source is `mise install && mise run build`.
 
 ---
 
@@ -804,6 +804,7 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.7     | 2026-10-21 | Supply-chain gates added (§13.1–§13.5): `deny.toml` policy, `mise run audit` in `check` and CI, `typos.toml` (hidden files checked), and `scheduled.yml` with daily advisories and weekly mutation testing. CodeQL now covers Actions, JavaScript/TypeScript and Rust.                                                                                             |
 | 0.8     | 2026-10-21 | ZMK Studio messages vendored and generated (§4): `prost-build` joins `protox` as a build dependency of `keywright-studio`.                                                                                                                                                                                                                                         |
 | 0.9     | 2026-10-21 | Frame codec and fuzzing (§5.2, §13.1, §13.2, §13.5): a `SOF` inside a frame restarts the decoder; `mise run fuzz` runs on the stable toolchain without sanitizers; `fuzz.yml` runs it per PR, `scheduled.yml` nightly; cargo-deny checks `fuzz/`.                                                                                                                  |
+| 0.32    | 2026-10-24 | Spike S8 (§15, §17, KEY-15): releases are signed with a stable self-signed certificate instead of ad-hoc, which keeps Bluetooth and removable-drive permissions across updates; the release notes template.                                                                                                                                                        |
 | 0.31    | 2026-10-24 | Spike S6 (§11.3, §15, KEY-13): which half is in update mode comes from the drive's USB serial number; a copy succeeds when the last write fails with `EIO`, the drive disappears and the half comes back; the macOS prompts the assistant warns about.                                                                                                             |
 | 0.30    | 2026-10-24 | Spike S4 (§6.1, §6.3, §7.1, §15, KEY-11): the halves are told apart by the keyboard interface of their USB device, which `nusb` reads, not by the product string, which `serialport` misses; the selection flow skips a port without one (KEY-99).                                                                                                                 |
 | 0.29    | 2026-10-24 | Spike S3 (§6.2, §15, KEY-10): the battery level is read over Bluetooth, also while editing over USB; Keywright subscribes to its notifications instead of polling; stock firmware reports the left half only.                                                                                                                                                      |
