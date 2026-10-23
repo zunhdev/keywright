@@ -91,5 +91,5 @@ So the Globe helper (MAC-8, [KEY-64](https://linear.app/zunhdev/issue/KEY-64)) c
 
 - **Presets** (`mac::presets::PRESETS`): 24, each with the versions it was verified on, now macOS 27. The action picker offers a preset only on a version it was verified on (`presets::offered`). Verifying on every supported version moves from a test to the release checklist (KEY-98).
 - **Rules** (`mac::compat::RULES`): the 12 keys above, each with its reason and replacement.
-- **Globe:** `hidutil`, as above, rather than Modifier Keys. The owner decides how the helper presents it (KEY-64).
+- **Globe:** `hidutil`, as above, rather than Modifier Keys. The owner chose that Keywright sets the mapping itself, whenever the keyboard connects (tech spec §11.3, KEY-64).
 - **Not checked:** the same keys over Bluetooth, which sends the same HID usages; and Switch Input Source (KEY-98).
