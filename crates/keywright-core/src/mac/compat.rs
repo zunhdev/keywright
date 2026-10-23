@@ -1,12 +1,15 @@
 //! Mac compatibility rules (MAC-7): keys that do nothing or misbehave on a Mac, such as the
 //! keyboard page's own Copy key, each with a Mac replacement to offer.
 //!
-//! Spike S7 (KEY-14) finds out what each candidate does on macOS and fills in [`RULES`],
-//! which is empty until then. [`check`] runs rules over a keymap (tech spec §8.4).
+//! Spike S7 (KEY-14) pressed each candidate on the Sofle, on macOS 27, and none of the keys
+//! in [`RULES`] did anything (`docs/spikes/s7-mac-actions.md`). The release checklist checks
+//! them on every supported version (KEY-98). [`check`] runs rules over a keymap (tech spec
+//! §8.4).
 
+use super::{consumer, key};
 use crate::action::Action;
 use crate::behavior::BehaviorTable;
-use crate::hid::{HidUsage, Shortcut};
+use crate::hid::{HidUsage, Mods, Shortcut};
 use crate::keymap::{Keymap, LayerId};
 
 /// A key that doesn't work as people expect on a Mac.
@@ -23,7 +26,77 @@ pub struct Rule {
 }
 
 /// Every rule, by key.
-pub const RULES: &[Rule] = &[];
+pub const RULES: &[Rule] = &[
+    nothing(0x7A, "Undo (Linux style)", command(0x1D)),
+    nothing(0x7B, "Cut (Linux style)", command(0x1B)),
+    nothing(0x7C, "Copy (Linux style)", command(0x06)),
+    nothing(0x7D, "Paste (Linux style)", command(0x19)),
+    nothing(0x79, "Redo (Linux style)", shift_command(0x1D)),
+    nothing(0x7E, "Find (Linux style)", command(0x09)),
+    nothing(0x75, "Help (Linux style)", shift_command(0x38)),
+    Rule {
+        usage: key(0x65),
+        name: "Menu key (Windows style)",
+        reason: "Macs open menus with a Control-click, not a key, so it does nothing.",
+        replacement: None,
+    },
+    Rule {
+        usage: key(0x49),
+        name: "Insert (Windows style)",
+        reason: "Macs have no Insert key, so it does nothing.",
+        replacement: None,
+    },
+    Rule {
+        usage: key(0x46),
+        name: "Print Screen (Windows style)",
+        reason: "It doesn't take a screenshot on a Mac.",
+        replacement: Some(shift_command(0x20)),
+    },
+    Rule {
+        usage: consumer(0x19E),
+        name: "Lock (Windows style)",
+        reason: "It doesn't lock a Mac.",
+        replacement: Some(Shortcut {
+            mods: Mods::from_bits(Mods::LEFT_CONTROL.bits() | Mods::LEFT_COMMAND.bits()),
+            usage: key(0x14),
+        }),
+    },
+    Rule {
+        usage: consumer(0x1AE),
+        name: "Keyboard layout (Windows style)",
+        reason: "It doesn't switch input sources on a Mac.",
+        replacement: Some(Shortcut {
+            mods: Mods::LEFT_CONTROL,
+            usage: key(0x2C),
+        }),
+    },
+];
+
+/// A key that does nothing on a Mac, with the shortcut that does what it means.
+const fn nothing(id: u16, name: &'static str, replacement: Shortcut) -> Rule {
+    Rule {
+        usage: key(id),
+        name,
+        reason: "It doesn't do anything on a Mac.",
+        replacement: Some(replacement),
+    }
+}
+
+/// ⌘ and a key.
+const fn command(id: u16) -> Shortcut {
+    Shortcut {
+        mods: Mods::LEFT_COMMAND,
+        usage: key(id),
+    }
+}
+
+/// ⇧⌘ and a key.
+const fn shift_command(id: u16) -> Shortcut {
+    Shortcut {
+        mods: Mods::from_bits(Mods::LEFT_SHIFT.bits() | Mods::LEFT_COMMAND.bits()),
+        usage: key(id),
+    }
+}
 
 /// A key whose action uses a key that a rule is about.
 #[derive(Debug, Clone, PartialEq, Eq)]

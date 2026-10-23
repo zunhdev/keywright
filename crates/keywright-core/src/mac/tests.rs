@@ -105,19 +105,72 @@ fn keys_macos_has_no_code_for_have_none() {
     assert_eq!(VirtualKeyCode(0x3F).usage(KeyboardType::Ansi), None);
 }
 
-// The preset and rule tables stay empty until spike S7 (KEY-14). These tests are the rules
-// its data must follow.
+// Spike S7 (KEY-14) filled in the preset and rule tables. These tests are the rules their
+// data must follow.
 
 #[test]
-fn every_preset_is_verified_on_every_supported_version() {
+fn every_preset_is_verified_on_a_supported_version_and_only_offered_there() {
     for preset in presets::PRESETS {
-        for version in presets::SUPPORTED_VERSIONS {
+        assert!(
+            !preset.verified_on.is_empty(),
+            "{} is unverified",
+            preset.name
+        );
+        for version in preset.verified_on {
             assert!(
-                preset.verified_on.contains(&version),
+                presets::SUPPORTED_VERSIONS.contains(version),
                 "{} on {version:?}",
                 preset.name
             );
         }
+    }
+    for version in presets::SUPPORTED_VERSIONS {
+        let offered: Vec<_> = presets::offered(version)
+            .map(|preset| preset.name)
+            .collect();
+        let verified: Vec<_> = (presets::PRESETS.iter())
+            .filter(|preset| preset.verified_on.contains(&version))
+            .map(|preset| preset.name)
+            .collect();
+        assert_eq!(offered, verified, "{version:?}");
+    }
+    assert_eq!(presets::offered(presets::MacOsVersion(14)).count(), 0);
+}
+
+#[test]
+fn presets_have_names_of_their_own_and_bind_a_key_once() {
+    let mut names = std::collections::HashSet::new();
+    let mut shortcuts = std::collections::HashSet::new();
+    for preset in presets::PRESETS {
+        assert!(
+            names.insert(preset.name),
+            "two presets are called {}",
+            preset.name
+        );
+        assert!(
+            shortcuts.insert(preset.shortcut),
+            "{} binds a key twice",
+            preset.name
+        );
+    }
+}
+
+/// A preset's key goes on the keyboard as a key press, and reads back as the same action.
+#[test]
+fn every_preset_binds_a_key_press_the_keyboard_takes() {
+    use crate::action::Action;
+    use crate::testing::zmk_v0_3_table;
+
+    let table = zmk_v0_3_table();
+    for preset in presets::PRESETS {
+        let action = Action::KeyPress(preset.shortcut);
+        let binding = action.to_binding(&table).unwrap();
+        assert_eq!(
+            Action::from_binding(binding, &table),
+            action,
+            "{}",
+            preset.name
+        );
     }
 }
 
@@ -242,13 +295,48 @@ mod compatibility {
         );
     }
 
+    /// The stock Sofle's raise layer has Windows and Linux editing keys, which the shipped
+    /// rules flag.
     #[test]
-    fn the_shipped_rules_wait_for_s7() {
-        assert_eq!(compat::RULES, []);
+    fn the_shipped_rules_flag_the_stock_raise_layers_editing_keys() {
+        let findings = compat::check(&stock_keymap(), &zmk_v0_3_table(), compat::RULES);
+        let found: Vec<_> = findings
+            .iter()
+            .map(|finding| (finding.layer, finding.position, finding.rule.name))
+            .collect();
         assert_eq!(
-            compat::check(&stock_keymap(), &zmk_v0_3_table(), compat::RULES),
-            []
+            found,
+            [
+                (LayerId(2), 13, "Insert (Windows style)"),
+                (LayerId(2), 14, "Print Screen (Windows style)"),
+                (LayerId(2), 15, "Menu key (Windows style)"),
+                (LayerId(2), 37, "Undo (Linux style)"),
+                (LayerId(2), 38, "Cut (Linux style)"),
+                (LayerId(2), 39, "Copy (Linux style)"),
+                (LayerId(2), 40, "Paste (Linux style)"),
+            ]
         );
+        // Keys without a Mac equivalent are flagged, with nothing to offer.
+        assert_eq!(findings[0].fix, None);
+        assert_eq!(findings[6].fix, Some(Action::KeyPress(command(0x19))));
+    }
+
+    /// Every replacement is a key the keyboard takes.
+    #[test]
+    fn every_replacement_binds_a_key_press_the_keyboard_takes() {
+        let table = zmk_v0_3_table();
+        for rule in compat::RULES {
+            if let Some(replacement) = rule.replacement {
+                let action = Action::KeyPress(replacement);
+                let binding = action.to_binding(&table).unwrap();
+                assert_eq!(
+                    Action::from_binding(binding, &table),
+                    action,
+                    "{}",
+                    rule.name
+                );
+            }
+        }
     }
 
     #[test]

@@ -56,17 +56,27 @@ impl VirtualKeyCode {
     }
 }
 
+/// A key on the keyboard page, such as `0x04` for A.
+const fn key(id: u16) -> HidUsage {
+    HidUsage {
+        page: UsagePage::Keyboard,
+        id,
+    }
+}
+
+/// A control on the consumer page, such as `0xE9` for volume up.
+const fn consumer(id: u16) -> HidUsage {
+    HidUsage {
+        page: UsagePage::Consumer,
+        id,
+    }
+}
+
 /// The left of the two keys that macOS swaps on ISO keyboards: `` ` `` left of 1.
-const GRAVE: HidUsage = HidUsage {
-    page: UsagePage::Keyboard,
-    id: 0x35,
-};
+const GRAVE: HidUsage = key(0x35);
 
 /// The right of the two keys: Non-US `\`, right of left Shift.
-const NON_US_BACKSLASH: HidUsage = HidUsage {
-    page: UsagePage::Keyboard,
-    id: 0x64,
-};
+const NON_US_BACKSLASH: HidUsage = key(0x64);
 
 /// The usage whose ANSI code a key has on a keyboard of this type.
 ///
