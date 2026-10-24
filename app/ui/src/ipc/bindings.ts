@@ -16,10 +16,20 @@ export const commands = {
 	 *  Fails if the session has stopped.
 	 */
 	sessionState: () => typedError<SessionStatus, AppError>(__TAURI_INVOKE("session_state")),
+	/**
+	 *  Enables or disables a menu item, and renames it if `label` is given, such as View's
+	 *  "Show Layers" once the layers are hidden.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the menu bar refuses the change.
+	 */
+	menuSet: (item: MenuItem, enabled: boolean, label: string | null) => typedError<null, AppError>(__TAURI_INVOKE("menu_set", { item, enabled, label })),
 };
 
 /** Events */
 export const events = {
+	menuItem: makeEvent<MenuItemChosen>("menu://item"),
 	sessionState: makeEvent<SessionStateChanged>("session://state"),
 };
 
@@ -44,7 +54,18 @@ export type AppError =
 /**  The keymap couldn't be backed up, so a destructive command changed nothing. */
 { code: "backup-failed" } | 
 /**  The session has stopped, so the app has to be restarted. */
-{ code: "session-stopped" };
+{ code: "session-stopped" } | 
+/**  The menu bar didn't take a change to one of its items. */
+{ code: "menu-failed" };
+
+/**
+ *  One of Keywright's own menu items. In TypeScript, its kebab-case name, such as
+ *  `"toggle-layers"`, which is also its ID in the menu.
+ */
+export type MenuItem = "settings" | "import" | "export" | "backups" | "update-firmware" | "undo" | "redo" | "copy-action" | "paste-action" | "select-all-keys" | "find" | "save" | "review-changes" | "discard-changes" | "record-shortcut" | "same-as-layer-below" | "does-nothing" | "restore-stock-key" | "restore-stock-settings" | "toggle-layers" | "toggle-inspector" | "layer-1" | "layer-2" | "layer-3" | "layer-4" | "layer-5" | "layer-6" | "layer-7" | "layer-8" | "layer-9" | "zoom-in" | "zoom-out" | "actual-size" | "help" | "keyboard-shortcuts" | "first-time-setup" | "report-issue";
+
+/**  `menu://item`: someone chose one of Keywright's own menu items. */
+export type MenuItemChosen = MenuItem;
 
 /**  Why a keyboard is incompatible. */
 export type Problem = 
@@ -94,7 +115,10 @@ request: string } |
 /**  `session://state`: the session's status changed. */
 export type SessionStateChanged = SessionStatus;
 
-/**  The session's status: its state, and the keyboard it's connected to. */
+/**
+ *  The session's status: its state, the keyboard it's connected to and how, and how
+ *  many changes are being tried.
+ */
 export type SessionStatus = {
 	/**  What the session is doing. */
 	state: SessionState,
@@ -102,7 +126,20 @@ export type SessionStatus = {
 	keyboard: string | null,
 	/**  The ID of the keyboard's support pack, if Keywright has one for it. */
 	pack: string | null,
+	/**  How the session reaches the keyboard, once it knows. */
+	transport: Transport | null,
+	/**  How many changes are being tried and not saved: the rows of the review list. */
+	changes: number,
 };
+
+/**  How the session reaches the keyboard. */
+export type Transport = 
+/**  A USB cable. */
+"usb" | 
+/**  Bluetooth. */
+"bluetooth" | 
+/**  A simulated keyboard, in the same process. */
+"simulated";
 
 /* Tauri Specta runtime */
 async function typedError<T, E>(result: Promise<T>): Promise<{ status: "ok"; data: T } | { status: "error"; error: E }> {

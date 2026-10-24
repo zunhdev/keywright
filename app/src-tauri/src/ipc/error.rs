@@ -27,6 +27,8 @@ pub enum AppError {
     BackupFailed,
     /// The session has stopped, so the app has to be restarted.
     SessionStopped,
+    /// The menu bar didn't take a change to one of its items.
+    MenuFailed,
 }
 
 impl From<SessionError> for AppError {

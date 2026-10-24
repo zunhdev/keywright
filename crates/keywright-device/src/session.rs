@@ -210,6 +210,8 @@ pub struct Snapshot {
     /// after any change, even one undone since, so the editor's review list is what says
     /// which changes are being tried.
     pub unsaved: bool,
+    /// The other end of the connection, such as USB, or `None` without one.
+    pub peer: Option<Peer>,
 }
 
 impl Snapshot {

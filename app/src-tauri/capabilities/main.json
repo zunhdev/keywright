@@ -1,12 +1,15 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main-window",
-  "description": "What the main window's UI may use: following the session's events and asking for its state, and opening System Settings and Keywright's docs. Each feature adds the commands and events it uses.",
+  "description": "What the main window's UI may use: following the session and the menus, enabling and renaming its menu items, dragging the window by its toolbar, and opening System Settings and Keywright's docs. Each feature adds the commands and events it uses.",
   "windows": ["main"],
   "permissions": [
     "core:event:allow-listen",
     "core:event:allow-unlisten",
     "allow-session-state",
+    "allow-menu-set",
+    "core:window:allow-start-dragging",
+    "core:window:allow-internal-toggle-maximize",
     {
       "identifier": "opener:allow-open-url",
       "allow": [

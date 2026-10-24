@@ -16,11 +16,22 @@ cargo_metadata = "0.23.1"
 # The CLI's command-line parsing, with `derive` for declaring it as types.
 clap = { version = "4.6.7", features = ["derive"] }
 insta = { version = "1.49.0", default-features = false }
+# AppKit, for the macOS integration in keywright-platform (tech spec §11), at the versions
+# Tauri uses: objc2 calls Objective-C, and objc2-app-kit has the AppKit classes.
+objc2 = "0.6.5"
+objc2-app-kit = { version = "0.3.2", default-features = false, features = [
+  "std",
+  "NSResponder",
+  "NSView",
+  "NSWindow",
+] }
 # The menu library Tauri uses, for the app's tests of its menu shortcuts. Keep it at the
 # version in Cargo.lock that `tauri` depends on.
 muda = { version = "0.20.0", default-features = false }
 proptest = "1.12.0"
 proptest-derive = "0.9.0"
+# Native window handles, which Tauri's windows give keywright-platform.
+raw-window-handle = { version = "0.6.2", features = ["std"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
 # Typed IPC between the app and its UI (ADR-0010): TypeScript bindings generated from the

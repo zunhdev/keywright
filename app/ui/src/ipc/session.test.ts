@@ -11,6 +11,8 @@ const locked: SessionStatus = {
   state: { kind: "locked" },
   keyboard: "Sofle Choc BT",
   pack: "keebart-sofle-choc-pro-bt",
+  transport: "usb",
+  changes: 0,
 };
 const ready: SessionStatus = { ...locked, state: { kind: "ready" } };
 

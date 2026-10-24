@@ -1,0 +1,28 @@
+/* The toolbar holds the window's traffic lights on the left (tauri.conf.json). */
+.toolbar {
+  grid-area: toolbar;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-3) 0 80px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-window);
+  user-select: none;
+
+  & > [role="toolbar"] {
+    flex: 1;
+  }
+}
+
+.title {
+  margin: 0;
+  overflow: hidden;
+  font: var(--type-title);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search {
+  flex: 1;
+  align-self: stretch;
+}

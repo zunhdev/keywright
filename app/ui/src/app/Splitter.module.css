@@ -1,0 +1,16 @@
+.splitter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+
+  &[data-panel="layers"] {
+    right: -4px;
+  }
+
+  &[data-panel="inspector"] {
+    left: -4px;
+  }
+}

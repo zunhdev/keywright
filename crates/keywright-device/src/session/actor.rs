@@ -764,6 +764,7 @@ impl Actor {
             editor: known.and_then(|known| known.editor.clone()),
             unsaved_from_before: known.is_some_and(|known| known.unsaved_from_before),
             unsaved: known.is_some_and(|known| known.unsaved),
+            peer: self.link.as_ref().map(|link| link.peer.clone()),
         }
     }
 

@@ -16,4 +16,7 @@
 //!
 //! Tech spec §11 describes the design.
 
+#[cfg(target_os = "macos")]
+mod ffi;
 pub mod paths;
+pub mod window;
