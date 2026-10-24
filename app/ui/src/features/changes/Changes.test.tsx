@@ -101,6 +101,33 @@ describe("the review sheet", () => {
     await expectNoAxeViolations(sheet);
   });
 
+  test("fits its content, and a long change gives its whole text in a tooltip", async () => {
+    const place = "Right half, thumb row, key 5";
+    const long: ReviewRow = {
+      key: { kind: "key", layer: 0, position: 20 },
+      layer: 0,
+      layerName: "default",
+      place,
+      before: "Tap for ⌃⌥⇧⌘Space, hold for lower",
+      after: "Tap for Mission Control, hold for ⌃⌥⇧⌘ and lower",
+      sentence: "Tap for Mission Control, hold for ⌃⌥⇧⌘ and the lower layer.",
+    };
+    rustSide([long]);
+    drawSheets(1);
+    act(() => {
+      useStore.setState({ review: true });
+    });
+    const sheet = await screen.findByRole("dialog", { name: "Review changes" });
+    // As wide as its content, within the window; the columns end long texts in an ellipsis.
+    expect(sheet.closest<HTMLElement>("[data-size]")?.dataset["size"]).toBe("fit");
+    expect((await within(sheet).findByText(long.before)).title).toBe(long.before);
+    expect(within(sheet).getByText(long.after).title).toBe(long.sentence ?? "");
+    expect(within(sheet).getByText(place).title).toBe(place);
+    for (const name of ["Discard All…", "Cancel", "Save to Keyboard"]) {
+      expect(within(sheet).getByRole("button", { name })).toBeDefined();
+    }
+  });
+
   test("saves to the keyboard, closes, and says so", async () => {
     const calls = rustSide();
     drawSheets();

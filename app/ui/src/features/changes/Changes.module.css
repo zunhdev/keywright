@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  width: min(640px, 80vw);
 }
 
 .count {
@@ -16,21 +15,36 @@
   color: var(--text-secondary);
 }
 
+/*
+ * Where, how it was, →, how it is, Revert: one grid for every group, so the columns line
+ * up, each as wide as its content up to a limit. How it is takes what's left, which puts
+ * Revert at the right edge. The rows scroll when there are many.
+ */
 .groups {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  display: grid;
+  grid-template-columns:
+    minmax(0, max-content) minmax(0, max-content) max-content minmax(0, 1fr)
+    max-content;
+  column-gap: var(--space-2);
+  row-gap: var(--space-3);
   max-height: 50vh;
   overflow: auto;
 }
 
+.group,
+.rows,
+.row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
+
 .group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  row-gap: var(--space-1);
 }
 
 .layer {
+  grid-column: 1 / -1;
   margin: 0;
   font: var(--type-body-strong);
 }
@@ -41,28 +55,29 @@
   list-style: none;
 }
 
-/* Where, how it was, →, how it is, Revert. */
 .row {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--space-2);
   padding: var(--space-1) 0 var(--space-1) var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
 }
 
-.what {
+/* A long text ends in an ellipsis rather than widening the sheet. */
+.what,
+.before,
+.after {
   overflow: hidden;
-  color: var(--text-secondary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.before {
-  overflow: hidden;
+.what {
+  max-width: 16em;
   color: var(--text-secondary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.before {
+  max-width: 14em;
+  color: var(--text-secondary);
 }
 
 .arrow {
@@ -70,16 +85,19 @@
 }
 
 .after {
-  overflow: hidden;
+  max-width: 14em;
   font: var(--type-body-strong);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
+/* The buttons always show whole. */
 .footer {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+
+  & > :not(.spacer) {
+    flex: none;
+  }
 }
 
 .spacer {
