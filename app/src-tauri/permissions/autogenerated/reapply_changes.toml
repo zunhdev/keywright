@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-reapply-changes"
+description = "Enables the reapply_changes command without any pre-configured scope."
+commands.allow = ["reapply_changes"]
+
+[[permission]]
+identifier = "deny-reapply-changes"
+description = "Denies the reapply_changes command without any pre-configured scope."
+commands.deny = ["reapply_changes"]

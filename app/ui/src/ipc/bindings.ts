@@ -183,6 +183,63 @@ character: string } | null>("layer_name_problem", { name }),
 	 *  layer.
 	 */
 	addLayer: () => typedError<null, AppError>(__TAURI_INVOKE("add_layer")),
+	/**
+	 *  What Keywright knows about a keyboard from its support pack: the one with ID `pack`, or
+	 *  with none, the keyboard Keywright knows best, to show while none is connected. `null`
+	 *  for a keyboard without a pack, which gets generic words.
+	 */
+	keyboardGuide: (pack: string | null) => __TAURI_INVOKE<{
+	/**  The keyboard's name, as people know it, such as `Keebart Sofle Choc Pro BT`. */
+	name: string,
+	/**  Its keys, as the stock firmware lays them out. */
+	keys: PhysicalKey[],
+	/**  The half the cable goes into, the only one that talks to the computer (CON-5). */
+	usbHalf: HalfName,
+	/**  How to unlock it with the stock keymap (SAF-1): hold these keys, then tap the last. */
+	unlock: GuideStep[],
+	/**  The key to hold, with the number keys, to pick a Bluetooth slot. */
+	bluetoothHold: string | null,
+} | null>("keyboard_guide", { pack }),
+	/**
+	 *  Tries the keyboard again, after it stopped answering (CON-4, design §7).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the session has stopped.
+	 */
+	sessionRetry: () => typedError<null, AppError>(__TAURI_INVOKE("session_retry")),
+	/**
+	 *  Keeps the changes the keyboard had before Keywright connected, to edit on from them.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there are none now, or the session has stopped.
+	 */
+	keepUnsavedChanges: () => typedError<null, AppError>(__TAURI_INVOKE("keep_unsaved_changes")),
+	/**
+	 *  Discards the changes the keyboard had before Keywright connected, after backing them up.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there are none now, the backup fails, or the keyboard doesn't discard them.
+	 */
+	discardUnsavedChanges: () => typedError<null, AppError>(__TAURI_INVOKE("discard_unsaved_changes")),
+	/**
+	 *  Applies the changes a restart lost again (SAF-6).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there are none now, or the keyboard doesn't carry them out.
+	 */
+	reapplyChanges: () => typedError<null, AppError>(__TAURI_INVOKE("reapply_changes")),
+	/**
+	 *  Discards the changes being tried, such as those a restart lost (SAF-6).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keymap can't be changed now, or the keyboard doesn't discard them.
+	 */
+	discardChanges: () => typedError<null, AppError>(__TAURI_INVOKE("discard_changes")),
 };
 
 /** Events */
@@ -393,6 +450,25 @@ export type Group =
 /**  Everything else. */
 "other";
 
+/**  One key to press, in order (design §7: "① Hold Raise ② Tap B"). */
+export type GuideStep = {
+	/**  The key, by key position. */
+	position: number,
+	/**  Whether it's held while the next is pressed, rather than tapped. */
+	hold: boolean,
+	/**  What it's called, from the stock keymap, such as `raise` or `B`. */
+	name: string,
+	/**  Where it is, such as `Right half, row 5, key 2`. */
+	place: string,
+};
+
+/**  A half of a split keyboard. */
+export type HalfName = 
+/**  The left half. */
+"left" | 
+/**  The right half. */
+"right";
+
 /**  What holding a tap-and-hold key does. */
 export type Hold = 
 /**  Holds a modifier or a key, such as `⌃`. */
@@ -446,6 +522,23 @@ export type KeyEntry = {
 	name: string,
 	/**  Its group. */
 	group: Group,
+};
+
+/**
+ *  What Keywright knows about a keyboard from its support pack, to show before the keyboard
+ *  can say anything itself (design §7).
+ */
+export type KeyboardGuide = {
+	/**  The keyboard's name, as people know it, such as `Keebart Sofle Choc Pro BT`. */
+	name: string,
+	/**  Its keys, as the stock firmware lays them out. */
+	keys: PhysicalKey[],
+	/**  The half the cable goes into, the only one that talks to the computer (CON-5). */
+	usbHalf: HalfName,
+	/**  How to unlock it with the stock keymap (SAF-1): hold these keys, then tap the last. */
+	unlock: GuideStep[],
+	/**  The key to hold, with the number keys, to pick a Bluetooth slot. */
+	bluetoothHold: string | null,
 };
 
 /**

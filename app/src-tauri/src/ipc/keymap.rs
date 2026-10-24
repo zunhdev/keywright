@@ -11,8 +11,9 @@ use std::collections::HashSet;
 use keywright_core::action as core;
 use keywright_core::editor::{Change, Editor};
 use keywright_core::keycap;
-use keywright_core::keymap::LayerId;
+use keywright_core::keymap::{LayerId, PhysicalLayout};
 use keywright_core::mac::compat;
+use keywright_core::support_packs::SupportPack;
 use keywright_device::{MAX_NAME_LEN, Snapshot};
 use serde::Serialize;
 use specta::Type;
@@ -213,10 +214,7 @@ impl Keymap {
                 .map(|finding| (finding.layer, finding.position))
                 .collect();
 
-        let place = |position: usize| {
-            pack.and_then(|pack| pack.key_place(position))
-                .unwrap_or_else(|| format!("Key {}", position.saturating_add(1)))
-        };
+        let place = |position: usize| key_place(pack, position);
 
         let described = keycap::describe(keymap, &keyboard.behaviors, conditional_layers);
         let reach = keycap::reach(keymap, &keyboard.behaviors, conditional_layers);
@@ -258,22 +256,7 @@ impl Keymap {
             .collect();
 
         Some(Self {
-            keys: keyboard
-                .layout
-                .keys
-                .iter()
-                .enumerate()
-                .map(|(index, key)| PhysicalKey {
-                    x: key.x,
-                    y: key.y,
-                    width: key.width,
-                    height: key.height,
-                    rotation: key.rotation,
-                    rotation_x: key.rotation_x,
-                    rotation_y: key.rotation_y,
-                    place: place(index),
-                })
-                .collect(),
+            keys: physical_keys(&keyboard.layout, pack),
             knobs: pack.map_or_else(Vec::new, |pack| {
                 pack.hints
                     .knobs
@@ -292,6 +275,34 @@ impl Keymap {
             kinds: kinds(&keyboard.behaviors),
         })
     }
+}
+
+/// A layout's keys, each with where it is in words: from the support pack, or by number.
+pub(super) fn physical_keys(
+    layout: &PhysicalLayout,
+    pack: Option<&SupportPack>,
+) -> Vec<PhysicalKey> {
+    layout
+        .keys
+        .iter()
+        .enumerate()
+        .map(|(index, key)| PhysicalKey {
+            x: key.x,
+            y: key.y,
+            width: key.width,
+            height: key.height,
+            rotation: key.rotation,
+            rotation_x: key.rotation_x,
+            rotation_y: key.rotation_y,
+            place: key_place(pack, index),
+        })
+        .collect()
+}
+
+/// Where a key is, in words: from the support pack, or `Key 12` without one.
+fn key_place(pack: Option<&SupportPack>, position: usize) -> String {
+    pack.and_then(|pack| pack.key_place(position))
+        .unwrap_or_else(|| format!("Key {}", position.saturating_add(1)))
 }
 
 /// What's being tried: the keys that do something else than when saved, and the layers

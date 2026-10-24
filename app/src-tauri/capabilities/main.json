@@ -27,6 +27,12 @@
     "allow-move-layer",
     "allow-remove-layer",
     "allow-add-layer",
+    "allow-keyboard-guide",
+    "allow-session-retry",
+    "allow-keep-unsaved-changes",
+    "allow-discard-unsaved-changes",
+    "allow-reapply-changes",
+    "allow-discard-changes",
     "core:window:allow-start-dragging",
     "core:window:allow-internal-toggle-maximize",
     {

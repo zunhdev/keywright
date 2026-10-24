@@ -4,13 +4,16 @@
  */
 import { shownLayer, useStore } from "../app/store.ts";
 import { Segment, SegmentedControl } from "../design-system/SegmentedControl.tsx";
+import { NoKeyboard } from "../features/connection/NoKeyboard.tsx";
+import { StateCard } from "../features/connection/StateCard.tsx";
+import { UnlockSteps } from "../features/connection/UnlockSheet.tsx";
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { Keycap, type KeycapProps, type KeycapState } from "../features/keyboard-canvas/Keycap.tsx";
 import { LayersPane } from "../features/layers/LayersPane.tsx";
 import { KeySearch } from "../features/search/KeySearch.tsx";
-import type { Key, Keycap as KeycapData } from "../ipc/bindings.ts";
-import { domCodes, keyCatalog, macActions, sofleKeymap } from "../test/sofle.ts";
+import type { Key, Keycap as KeycapData, SessionStatus } from "../ipc/bindings.ts";
+import { domCodes, keyCatalog, macActions, sofleGuide, sofleKeymap } from "../test/sofle.ts";
 
 import styles from "./Gallery.module.css";
 
@@ -139,19 +142,47 @@ export function Sofle() {
   );
 }
 
-// The gallery shows the Sofle as if it were connected and unlocked.
+/**
+ * The window before the keyboard can be edited (design §7): with no keyboard, the steps to
+ * unlock it, and a card for changes a restart lost.
+ */
+export function Connection() {
+  return (
+    <section className={styles.section}>
+      <h2>Connection</h2>
+      <div className={styles.states}>
+        <div className={styles.state}>
+          <NoKeyboard />
+        </div>
+        <div className={styles.unlock}>
+          <UnlockSteps guide={sofleGuide} />
+        </div>
+        <div className={styles.state}>
+          <StateCard session={{ ...gallerySession, state: { kind: "changes-lost" }, changes: 3 }} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** The Sofle, connected and unlocked. */
+const gallerySession: SessionStatus = {
+  state: { kind: "ready" },
+  keyboard: "Sofle Choc BT",
+  pack: "keebart-sofle-choc-pro-bt",
+  transport: "simulated",
+  changes: 0,
+  canUndo: false,
+  canRedo: false,
+};
+
+// The gallery shows the Sofle as if it were connected and unlocked, and knows its guide,
+// as the Rust side would tell it.
 useStore.setState({
-  session: {
-    state: { kind: "ready" },
-    keyboard: "Sofle Choc BT",
-    pack: "keebart-sofle-choc-pro-bt",
-    transport: "simulated",
-    changes: 0,
-    canUndo: false,
-    canRedo: false,
-  },
+  session: gallerySession,
   keymap: sofleKeymap,
   keyCatalog,
   domCodes,
   macActions,
+  guides: { "": sofleGuide, "keebart-sofle-choc-pro-bt": sofleGuide },
 });

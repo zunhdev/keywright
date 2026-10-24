@@ -1,0 +1,227 @@
+/* The window before the keyboard can be edited (design §7). */
+
+/* No keyboard, connecting, or reading the keymap: in the middle of the canvas. */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  overflow: auto;
+}
+
+.title {
+  margin: 0;
+  font: var(--type-display);
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.card {
+  box-sizing: border-box;
+  width: 280px;
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--bg-panel);
+
+  & p {
+    margin: var(--space-2) 0 0;
+    color: var(--text-secondary);
+  }
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font: var(--type-body-strong);
+}
+
+/* A keyboard in outline: an illustration, a skeleton, or the unlock keys. */
+.board {
+  position: relative;
+  flex: none;
+}
+
+.key {
+  position: absolute;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-key);
+  border-radius: 4px;
+  background: var(--bg-panel);
+
+  &[data-marked] {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .board[data-skeleton] & {
+    border-color: transparent;
+    background: var(--border-subtle);
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+}
+
+/* The step a key is: ①, ②. */
+.mark {
+  color: var(--accent-contrast);
+  font: var(--type-body-strong);
+}
+
+@keyframes shimmer {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board[data-skeleton] .key {
+    animation: none;
+  }
+}
+
+/* Reading the keymap, when it takes a while. */
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 240px;
+}
+
+.progressText {
+  color: var(--text-secondary);
+}
+
+.progressBar {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--accent-subtle);
+}
+
+.progressFill {
+  position: absolute;
+  inset-block: 0;
+  width: 40%;
+  background: var(--accent);
+  animation: indeterminate 1.4s ease-in-out infinite;
+}
+
+@keyframes indeterminate {
+  from {
+    left: -40%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressFill {
+    left: 0;
+    width: 100%;
+    animation: none;
+  }
+}
+
+/* The unlock sheet: the board, the steps, and why. */
+.unlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 480px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+}
+
+.number {
+  color: var(--accent);
+  font: var(--type-title);
+}
+
+.description {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.why {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* The keyboard locked itself: a banner across the top of the canvas. */
+.banner {
+  position: absolute;
+  inset-inline: var(--space-4);
+  top: var(--space-4);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-overlay);
+}
+
+/* What happened, and what to do: over the canvas, in the middle. */
+.stateCard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  box-sizing: border-box;
+  width: min(440px, calc(100% - 2 * var(--space-4)));
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-overlay);
+  transform: translate(-50%, -50%);
+
+  & p {
+    margin: 0;
+  }
+}

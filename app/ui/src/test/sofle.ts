@@ -1,8 +1,9 @@
 // The simulated Sofle's stock keymap, as `session_keymap` gives it, the key
-// tables, as `key_catalog` and `dom_codes` do, and the Mac actions on macOS 27,
-// as `mac_actions` does there, generated from keywright-app (src/ipc.rs) for the
-// UI's tests and gallery. Don't edit it: run `mise run generate:bindings`.
-import type { Choice, DomCode, KeyEntry, Keymap } from "../ipc/bindings.ts";
+// tables, as `key_catalog` and `dom_codes` do, the Mac actions on macOS 27, as
+// `mac_actions` does there, and its guide, as `keyboard_guide` does, generated
+// from keywright-app (src/ipc.rs) for the UI's tests and gallery. Don't edit it:
+// run `mise run generate:bindings`.
+import type { Choice, DomCode, KeyboardGuide, KeyEntry, Keymap } from "../ipc/bindings.ts";
 
 export const sofleKeymap: Keymap = {
   "keys": [
@@ -8831,3 +8832,625 @@ export const macActions: Choice[] = [
     "defaultShortcut": null
   }
 ];
+
+export const sofleGuide: KeyboardGuide = {
+  "name": "Keebart Sofle Choc Pro BT",
+  "keys": [
+    {
+      "x": 0,
+      "y": 37,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 1, key 1"
+    },
+    {
+      "x": 100,
+      "y": 37,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 1, key 2"
+    },
+    {
+      "x": 200,
+      "y": 12,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 1, key 3"
+    },
+    {
+      "x": 300,
+      "y": 0,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 1, key 4"
+    },
+    {
+      "x": 400,
+      "y": 12,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 1, key 5"
+    },
+    {
+      "x": 500,
+      "y": 24,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 1, key 6"
+    },
+    {
+      "x": 900,
+      "y": 24,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 1, key 1"
+    },
+    {
+      "x": 1000,
+      "y": 12,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 1, key 2"
+    },
+    {
+      "x": 1100,
+      "y": 0,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 1, key 3"
+    },
+    {
+      "x": 1200,
+      "y": 12,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 1, key 4"
+    },
+    {
+      "x": 1300,
+      "y": 37,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 1, key 5"
+    },
+    {
+      "x": 1400,
+      "y": 37,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 1, key 6"
+    },
+    {
+      "x": 0,
+      "y": 137,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 2, key 1"
+    },
+    {
+      "x": 100,
+      "y": 137,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 2, key 2"
+    },
+    {
+      "x": 200,
+      "y": 112,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 2, key 3"
+    },
+    {
+      "x": 300,
+      "y": 100,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 2, key 4"
+    },
+    {
+      "x": 400,
+      "y": 112,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 2, key 5"
+    },
+    {
+      "x": 500,
+      "y": 124,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 2, key 6"
+    },
+    {
+      "x": 900,
+      "y": 124,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 2, key 1"
+    },
+    {
+      "x": 1000,
+      "y": 112,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 2, key 2"
+    },
+    {
+      "x": 1100,
+      "y": 100,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 2, key 3"
+    },
+    {
+      "x": 1200,
+      "y": 112,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 2, key 4"
+    },
+    {
+      "x": 1300,
+      "y": 137,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 2, key 5"
+    },
+    {
+      "x": 1400,
+      "y": 137,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 2, key 6"
+    },
+    {
+      "x": 0,
+      "y": 237,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 3, key 1"
+    },
+    {
+      "x": 100,
+      "y": 237,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 3, key 2"
+    },
+    {
+      "x": 200,
+      "y": 212,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 3, key 3"
+    },
+    {
+      "x": 300,
+      "y": 200,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 3, key 4"
+    },
+    {
+      "x": 400,
+      "y": 212,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 3, key 5"
+    },
+    {
+      "x": 500,
+      "y": 224,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 3, key 6"
+    },
+    {
+      "x": 900,
+      "y": 224,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 3, key 1"
+    },
+    {
+      "x": 1000,
+      "y": 212,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 3, key 2"
+    },
+    {
+      "x": 1100,
+      "y": 200,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 3, key 3"
+    },
+    {
+      "x": 1200,
+      "y": 212,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 3, key 4"
+    },
+    {
+      "x": 1300,
+      "y": 237,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 3, key 5"
+    },
+    {
+      "x": 1400,
+      "y": 237,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 3, key 6"
+    },
+    {
+      "x": 0,
+      "y": 337,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 4, key 1"
+    },
+    {
+      "x": 100,
+      "y": 337,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 4, key 2"
+    },
+    {
+      "x": 200,
+      "y": 312,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 4, key 3"
+    },
+    {
+      "x": 300,
+      "y": 300,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 4, key 4"
+    },
+    {
+      "x": 400,
+      "y": 312,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 4, key 5"
+    },
+    {
+      "x": 500,
+      "y": 324,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 4, key 6"
+    },
+    {
+      "x": 600,
+      "y": 274,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left knob"
+    },
+    {
+      "x": 800,
+      "y": 274,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right knob"
+    },
+    {
+      "x": 900,
+      "y": 324,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 4, key 1"
+    },
+    {
+      "x": 1000,
+      "y": 312,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 4, key 2"
+    },
+    {
+      "x": 1100,
+      "y": 300,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 4, key 3"
+    },
+    {
+      "x": 1200,
+      "y": 312,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 4, key 4"
+    },
+    {
+      "x": 1300,
+      "y": 337,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 4, key 5"
+    },
+    {
+      "x": 1400,
+      "y": 337,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 4, key 6"
+    },
+    {
+      "x": 175,
+      "y": 437,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 5, key 1"
+    },
+    {
+      "x": 275,
+      "y": 412,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 5, key 2"
+    },
+    {
+      "x": 375,
+      "y": 412,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Left half, row 5, key 3"
+    },
+    {
+      "x": 490,
+      "y": 412,
+      "width": 100,
+      "height": 100,
+      "rotation": 1200,
+      "rotationX": 490,
+      "rotationY": 412,
+      "place": "Left half, row 5, key 4"
+    },
+    {
+      "x": 600,
+      "y": 383,
+      "width": 100,
+      "height": 150,
+      "rotation": 2400,
+      "rotationX": 600,
+      "rotationY": 433,
+      "place": "Left half, row 5, key 5"
+    },
+    {
+      "x": 800,
+      "y": 383,
+      "width": 100,
+      "height": 150,
+      "rotation": -2400,
+      "rotationX": 900,
+      "rotationY": 433,
+      "place": "Right half, row 5, key 1"
+    },
+    {
+      "x": 910,
+      "y": 412,
+      "width": 100,
+      "height": 100,
+      "rotation": -1200,
+      "rotationX": 1010,
+      "rotationY": 412,
+      "place": "Right half, row 5, key 2"
+    },
+    {
+      "x": 1025,
+      "y": 412,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 5, key 3"
+    },
+    {
+      "x": 1125,
+      "y": 412,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 5, key 4"
+    },
+    {
+      "x": 1225,
+      "y": 437,
+      "width": 100,
+      "height": 100,
+      "rotation": 0,
+      "rotationX": 0,
+      "rotationY": 0,
+      "place": "Right half, row 5, key 5"
+    }
+  ],
+  "usbHalf": "left",
+  "unlock": [
+    {
+      "position": 56,
+      "hold": true,
+      "name": "raise",
+      "place": "Right half, row 5, key 2"
+    },
+    {
+      "position": 41,
+      "hold": false,
+      "name": "B",
+      "place": "Left half, row 4, key 6"
+    }
+  ],
+  "bluetoothHold": "raise"
+};
