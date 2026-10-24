@@ -1,4 +1,4 @@
-import { shownLayer, type Store, useStore } from "../app/store.ts";
+import { activeRecorder, shownLayer, type Store, useStore } from "../app/store.ts";
 import {
   copyAction,
   pasteAction,
@@ -37,6 +37,7 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
   "copy-action": () => void copyAction(),
   "paste-action": () => void pasteAction(),
   "select-all-keys": () => useStore.getState().selectAll(),
+  "record-shortcut": () => useStore.getState().startRecording(),
   "same-as-layer-below": () => void setKeys("same-as-layer-below"),
   "does-nothing": () => void setKeys("does-nothing"),
   "toggle-layers": () => useStore.getState().togglePanel("layers"),
@@ -64,12 +65,13 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
   const selected = selection.length > 0 && shownLayer(store) !== null;
   const layersLabel = panels.layers ? "menu.hide-layers" : "menu.show-layers";
   const inspectorLabel = panels.inspector ? "menu.hide-inspector" : "menu.show-inspector";
-  return new Map<MenuItem, ItemState>([
+  const states = new Map<MenuItem, ItemState>([
     ["undo", item(editable && session.canUndo)],
     ["redo", item(editable && session.canRedo)],
     ["copy-action", item(keymap !== null && selected)],
     ["paste-action", item(editable && selected && store.copied)],
     ["select-all-keys", item(keymap !== null)],
+    ["record-shortcut", item(editable && selected)],
     ["same-as-layer-below", item(editable && selected)],
     ["does-nothing", item(editable && selected)],
     ["toggle-layers", item(true, strings.format(layersLabel))],
@@ -83,6 +85,10 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
       return [menuItem, item(layer !== undefined, layer?.name ?? fallback)];
     }),
   ]);
+  // While the recorder records, the menus give up their shortcuts, so ⌘S records ⌘S.
+  return activeRecorder(store) === null
+    ? states
+    : new Map([...states].map(([menuItem, state]) => [menuItem, item(false, state.label)]));
 }
 
 /** Whether two states of an item are the same. */

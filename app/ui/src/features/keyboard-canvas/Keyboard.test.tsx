@@ -48,6 +48,16 @@ describe("the keyboard", () => {
     expect(useStore.getState().selection).toEqual([16]);
   });
 
+  test("R records a shortcut for the selected keys, in the inspector", async () => {
+    rustSide();
+    useStore.setState({ panels: { layers: true, inspector: false } });
+    drawSofle();
+    await userEvent.click(keyAt(Q));
+    await userEvent.keyboard("r");
+    expect(useStore.getState().recording).toBe("key");
+    expect(useStore.getState().panels.inspector).toBe(true);
+  });
+
   test("T makes the selected keys the same as the layer below", async () => {
     const calls = rustSide();
     useStore.setState({ selection: [Q, W] });
@@ -165,7 +175,7 @@ describe("the keys' menu", () => {
     const menu = screen.getByRole("menu", { name: "Key" });
     const item = (name: string) =>
       within(menu).getByRole("menuitem", { name: new RegExp(name, "u") });
-    expect(item("Record Shortcut").getAttribute("aria-disabled")).toBe("true");
+    expect(item("Record Shortcut").getAttribute("aria-disabled")).toBeNull();
     expect(item("Paste Action").getAttribute("aria-disabled")).toBe("true");
     await userEvent.click(item("Copy Action"));
     expect(screen.queryByRole("menu")).toBeNull();
@@ -182,6 +192,14 @@ describe("the keys' menu", () => {
       command: "paste_action",
       args: { layer: 0, positions: [W, E] },
     });
+  });
+
+  test("records a shortcut for the keys", async () => {
+    rustSide();
+    drawSofle();
+    fireEvent.contextMenu(keyAt(Q), { clientX: 100, clientY: 100 });
+    await userEvent.click(screen.getByRole("menuitem", { name: /Record Shortcut/u }));
+    expect(useStore.getState().recording).toBe("key");
   });
 
   test("makes keys the same as the layer below, or do nothing, without asking", async () => {

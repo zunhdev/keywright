@@ -12,6 +12,7 @@ use keywright_core::hid::{self, HidUsage, Mods, UsagePage};
 use keywright_core::keycap;
 use keywright_core::keymap::{Keymap, LayerId};
 use keywright_core::keys::{self, KeyCategory};
+use keywright_core::mac::presets;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
@@ -772,6 +773,66 @@ pub fn key_catalog() -> Vec<KeyEntry> {
         .collect()
 }
 
+/// A physical key, by its `KeyboardEvent.code`, for the shortcut recorder (MAC-2, tech
+/// spec §11.2): what the key is, whatever the input source makes it type.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+pub struct DomCode {
+    /// The `KeyboardEvent.code` value, such as `KeyA` or `ShiftRight`.
+    pub code: String,
+    /// The key's usage page.
+    pub page: Page,
+    /// The key's usage ID.
+    pub id: u16,
+}
+
+/// Every `KeyboardEvent.code` value the recorder knows, with the key it stands for.
+#[tauri::command]
+#[specta::specta]
+#[must_use]
+pub fn dom_codes() -> Vec<DomCode> {
+    keys::named_usages()
+        .chain((0xE4..=0xE7).map(|id| HidUsage {
+            page: UsagePage::Keyboard,
+            id,
+        }))
+        .filter_map(|usage| {
+            Some(DomCode {
+                code: keys::dom::code(usage)?.to_owned(),
+                page: usage.page.into(),
+                id: usage.id,
+            })
+        })
+        .collect()
+}
+
+/// What a key or shortcut is called (design §5.3): on a keycap, in text, and the Mac
+/// action it is, if it's one.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+pub struct ShortcutWords {
+    /// As a keycap shows it, such as `⇧⌘4`.
+    pub label: String,
+    /// As text calls it, such as `Escape`.
+    pub name: String,
+    /// The Mac action preset it is, such as `Screenshot of an area`, if it's one.
+    pub preset: Option<String>,
+}
+
+/// What a key or shortcut is called, and the Mac action it is, for the recorder.
+#[tauri::command]
+#[specta::specta]
+#[must_use]
+pub fn shortcut_words(shortcut: Shortcut) -> ShortcutWords {
+    let shortcut = hid::Shortcut::from(shortcut);
+    ShortcutWords {
+        label: keycap::shortcut_label(shortcut),
+        name: keycap::shortcut_name(shortcut),
+        preset: presets::PRESETS
+            .iter()
+            .find(|preset| preset.shortcut == shortcut)
+            .map(|preset| preset.name.to_owned()),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use keywright_core::action::{self as core, BtCommand, ExtPowerCommand, OutCommand};
@@ -782,7 +843,10 @@ mod tests {
     use keywright_sim::Simulator;
     use serde_json::json;
 
-    use super::{Action, Category, LIGHTING, Page, Param, Shortcut, Value, key_catalog};
+    use super::{
+        Action, Category, LIGHTING, Page, Param, Shortcut, Value, dom_codes, key_catalog,
+        shortcut_words,
+    };
     use crate::ipc::AppState;
     use crate::ipc::keymap::Keymap;
 
@@ -900,6 +964,47 @@ mod tests {
         let key = &keymap.layers[0].keys[13];
         assert_eq!(key.action, action);
         assert_eq!(key.sentence, "Runs the firmware's Key Toggle action.");
+    }
+
+    #[test]
+    fn the_recorder_knows_physical_keys_both_sides_modifiers_included() {
+        let codes = dom_codes();
+        let find = |code: &str| {
+            codes
+                .iter()
+                .find(|each| each.code == code)
+                .map(|each| (each.page, each.id))
+        };
+        assert_eq!(find("KeyA"), Some((Page::Keyboard, 0x04)));
+        assert_eq!(find("Digit4"), Some((Page::Keyboard, 0x21)));
+        assert_eq!(find("ShiftLeft"), Some((Page::Keyboard, 0xE1)));
+        assert_eq!(find("AltRight"), Some((Page::Keyboard, 0xE6)));
+        assert_eq!(find("Escape"), Some((Page::Keyboard, 0x29)));
+        assert_eq!(find("Fn"), None);
+    }
+
+    #[test]
+    fn a_recorded_shortcut_is_named_and_matched_to_a_mac_action() {
+        let screenshot_area = shortcut_words(Shortcut {
+            mods: 0x0A,
+            page: Page::Keyboard,
+            id: 0x21,
+        });
+        assert_eq!(screenshot_area.label, "⇧⌘4");
+        assert_eq!(
+            screenshot_area.preset.as_deref(),
+            Some("Screenshot of an area")
+        );
+        let option = shortcut_words(Shortcut {
+            mods: 0,
+            page: Page::Keyboard,
+            id: 0xE2,
+        });
+        assert_eq!(
+            (option.label.as_str(), option.name.as_str()),
+            ("⌥", "⌥ Option")
+        );
+        assert_eq!(option.preset, None);
     }
 
     #[tokio::test]

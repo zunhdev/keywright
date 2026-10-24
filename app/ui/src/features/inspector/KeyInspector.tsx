@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { activeRecorder, KEY_RECORDER, useStore } from "../../app/store.ts";
 import { useMessages } from "../../i18n/messages.ts";
 import type { Action, Keymap, Layer } from "../../ipc/bindings.ts";
 import { setAction } from "../keyboard-canvas/edits.ts";
@@ -37,6 +38,9 @@ export function KeyInspector({
   const [category, setCategory] = useState<CategoryId>(
     key === undefined ? "key" : categoryOf(key.action),
   );
+  const recording = useStore((store) => activeRecorder(store) === KEY_RECORDER);
+  // ⌘R records a key or shortcut, so that editor shows while it records.
+  const shown = recording ? "key" : category;
   if (key === undefined) return null;
   const apply = async (action: Action, recent?: Recent) => {
     setCategory(categoryOf(action));
@@ -54,7 +58,7 @@ export function KeyInspector({
         {positions.length > 1 ? null : <p className={styles.sentence}>{key.sentence}</p>}
       </header>
       <ActionPicker
-        category={category}
+        category={shown}
         categories={availableCategories(keymap)}
         onCategory={(next) => {
           setCategory(next);
@@ -66,8 +70,8 @@ export function KeyInspector({
         }}
       />
       <ActionEditor
-        key={category}
-        category={category}
+        key={shown}
+        category={shown}
         current={key.action}
         onChange={(action, choice) => {
           void apply(action, choice);

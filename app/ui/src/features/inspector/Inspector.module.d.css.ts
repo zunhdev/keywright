@@ -15,6 +15,9 @@ declare const classes: {
   readonly pickerLabel: string;
   readonly pickerPopover: string;
   readonly place: string;
+  readonly recorded: string;
+  readonly recorder: string;
+  readonly recording: string;
   readonly search: string;
   readonly searchInput: string;
   readonly sentence: string;

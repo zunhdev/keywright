@@ -149,6 +149,24 @@ describe("with the Sofle's keymap", () => {
     stop();
   });
 
+  test("Record Shortcut starts the recorder, and while it records, the menus let it", async () => {
+    const { stop } = await readySofle();
+    expect(menu.get("record-shortcut")).toBe("record-shortcut (disabled): null");
+    useStore.getState().select([13]);
+    await Bun.sleep(0);
+    expect(menu.get("record-shortcut")).toBe("record-shortcut: null");
+    await emit("menu://item", "record-shortcut");
+    await Bun.sleep(0);
+    expect(useStore.getState().recording).toBe("key");
+    // ⌘S, ⌘C or ⌃⌘S then reach the recorder, not the menus.
+    expect(menu.get("copy-action")).toBe("copy-action (disabled): null");
+    expect(menu.get("toggle-layers")).toBe("toggle-layers (disabled): Hide Layers");
+    useStore.getState().stopRecording();
+    await Bun.sleep(0);
+    expect(menu.get("copy-action")).toBe("copy-action: null");
+    stop();
+  });
+
   test("Select All Keys selects every key", async () => {
     const { stop } = await readySofle();
     await emit("menu://item", "select-all-keys");

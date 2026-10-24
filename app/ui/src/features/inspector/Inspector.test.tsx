@@ -1,46 +1,15 @@
 import { describe, expect, test } from "bun:test";
 
-import { mockIPC } from "@tauri-apps/api/mocks";
-import { act, render, screen, within } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { I18nProvider } from "react-aria-components";
 
 import { useStore } from "../../app/store.ts";
-import { LOCALE } from "../../i18n/messages.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
-import { status } from "../../test/canvas.tsx";
-import { keyCatalog, sofleKeymap } from "../../test/sofle.ts";
-import { Inspector } from "./Inspector.tsx";
+import { inspect, rustSide } from "../../test/inspector.tsx";
+import { sofleKeymap } from "../../test/sofle.ts";
 
 /** Row 2's Q and W, and the left thumb's Lower key, on the base layer. */
 const [Q, W, LOWER] = [13, 14, 53];
-
-/** Fakes the Rust side, and records the actions set, with the keys they're set on. */
-function rustSide(): Array<{ positions: unknown; action: unknown }> {
-  const set: Array<{ positions: unknown; action: unknown }> = [];
-  mockIPC((command, args) => {
-    if (command === "set_action" && args !== undefined && "action" in args) {
-      set.push({ positions: args["positions"], action: args["action"] });
-    }
-    return null;
-  });
-  return set;
-}
-
-/** Draws the inspector, with the Sofle's stock keymap read and `selection` selected. */
-function inspect(selection: number[], kind: "ready" | "locked" = "ready") {
-  useStore.setState({
-    session: status(kind),
-    keymap: sofleKeymap,
-    keyCatalog,
-    selection,
-  });
-  return render(
-    <I18nProvider locale={LOCALE}>
-      <Inspector />
-    </I18nProvider>,
-  );
-}
 
 /** Opens a combobox by its label, with its button, and chooses an option by its name. */
 async function choose(label: string, option: RegExp | string) {

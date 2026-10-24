@@ -134,6 +134,13 @@ export const en = {
   "category.does-nothing": "Does nothing",
   "category.other": "Other actions",
   "key.field": "Key",
+  "recorder.record": "Record",
+  "recorder.stop": "Cancel",
+  "recorder.none": "No key yet",
+  "recorder.press": "Press a shortcut…",
+  "recorder.cancel": "⎋ cancels",
+  "recorder.hint":
+    "Some shortcuts, like ⌘Tab or ⌘Space, are used by macOS before Keywright can see them. Find them under Mac actions or search their name.",
   "key.modifiers": "Modifiers",
   "key.details": "Details",
   "key.side": "Which side's modifiers",
