@@ -30,6 +30,10 @@ export const commands = {
 	knobs: Knob[],
 	/**  The layers, in order: the base layer first. */
 	layers: Layer[],
+	/**  How many more layers the firmware has room for (LAY-3). */
+	freeLayerSlots: number,
+	/**  The longest layer name, in bytes of UTF-8, for the rename field's counter (LAY-1). */
+	layerNameMax: number,
 	/**  The actions the inspector lists as they are, which the firmware can do. */
 	choices: Choice[],
 	/**  The behaviors Keywright doesn't know, which the inspector edits by their parameters. */
@@ -127,6 +131,58 @@ export const commands = {
 	menuSet: (item: MenuItem, enabled: boolean, label: string | null) => typedError<null, AppError>(__TAURI_INVOKE("menu_set", { item, enabled, label })),
 	/**  Edits the text of whatever has keyboard focus, as the Edit menu's standard items do. */
 	editText: (edit: TextEdit) => __TAURI_INVOKE<void>("edit_text", { edit }),
+	/**
+	 *  What's wrong with a layer name, for the rename field to say as it's typed, or `null`
+	 *  if the keyboard can take it.
+	 */
+	layerNameProblem: (name: string) => __TAURI_INVOKE<
+/**
+ *  It's longer than the keyboard takes, in bytes of UTF-8: 18 letters in English,
+ *  fewer in other scripts.
+ */
+{ kind: "too-long"; 
+/**  The most bytes it can have. */
+max: number } | 
+/**  It has a character the keyboard's firmware can't receive, such as `Э`. */
+{ kind: "character"; 
+/**  The character. */
+character: string } | null>("layer_name_problem", { name }),
+	/**
+	 *  Renames a layer (LAY-1).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keyboard can't take the name, the keymap can't be changed now, or the
+	 *  keyboard doesn't rename it.
+	 */
+	renameLayer: (layer: number, name: string) => typedError<null, AppError>(__TAURI_INVOKE("rename_layer", { layer, name })),
+	/**
+	 *  Moves a layer to another place in the order (LAY-2).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no such layer or place, the keymap can't be changed now, or the
+	 *  keyboard doesn't move it.
+	 */
+	moveLayer: (layer: number, to: number) => typedError<null, AppError>(__TAURI_INVOKE("move_layer", { layer, to })),
+	/**
+	 *  Removes a layer, which undo puts back (LAY-3, LAY-6).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no such layer, the keymap can't be changed now, or the keyboard
+	 *  doesn't remove it.
+	 */
+	removeLayer: (layer: number) => typedError<null, AppError>(__TAURI_INVOKE("remove_layer", { layer })),
+	/**
+	 *  Adds a layer, in the free slot the keyboard picks (LAY-3). Undo removes it again.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keymap can't be changed now, or the keyboard has no room for another
+	 *  layer.
+	 */
+	addLayer: () => typedError<null, AppError>(__TAURI_INVOKE("add_layer")),
 };
 
 /** Events */
@@ -240,7 +296,12 @@ export type AppError =
 /**  The session has stopped, so the app has to be restarted. */
 { code: "session-stopped" } | 
 /**  The menu bar didn't take a change to one of its items. */
-{ code: "menu-failed" };
+{ code: "menu-failed" } | 
+/**
+ *  A layer name the keyboard can't take: too long, or with a character it can't
+ *  receive (`layer_name_problem` says which).
+ */
+{ code: "invalid-layer-name" };
 
 /**  A Bluetooth command. */
 export type Bluetooth = 
@@ -429,6 +490,10 @@ export type Keymap = {
 	knobs: Knob[],
 	/**  The layers, in order: the base layer first. */
 	layers: Layer[],
+	/**  How many more layers the firmware has room for (LAY-3). */
+	freeLayerSlots: number,
+	/**  The longest layer name, in bytes of UTF-8, for the rename field's counter (LAY-1). */
+	layerNameMax: number,
 	/**  The actions the inspector lists as they are, which the firmware can do. */
 	choices: Choice[],
 	/**  The behaviors Keywright doesn't know, which the inspector edits by their parameters. */
@@ -485,6 +550,10 @@ export type Layer = {
 	name: string,
 	/**  Its keys, by key position. */
 	keys: Key[],
+	/**  How it's reached (LAY-4): the keys that turn it on, and the firmware. */
+	reach: Reach[],
+	/**  Whether it's being tried: added, renamed, or with keys that are. */
+	changed: boolean,
 };
 
 /**  How a layer key turns its layer on. */
@@ -535,6 +604,23 @@ export type MenuItem = "settings" | "import" | "export" | "backups" | "update-fi
 
 /**  `menu://item`: someone chose one of Keywright's own menu items. */
 export type MenuItemChosen = MenuItem;
+
+/**
+ *  Why a layer name can't be used (LAY-1, spike S1). In TypeScript, `{ kind: "too-long",
+ *  max: 18 }` and so on.
+ */
+export type NameProblem = 
+/**
+ *  It's longer than the keyboard takes, in bytes of UTF-8: 18 letters in English,
+ *  fewer in other scripts.
+ */
+{ kind: "too-long"; 
+/**  The most bytes it can have. */
+max: number } | 
+/**  It has a character the keyboard's firmware can't receive, such as `Э`. */
+{ kind: "character"; 
+/**  The character. */
+character: string };
 
 /**
  *  A behavior Keywright doesn't know, which the inspector edits by its parameters
@@ -638,6 +724,16 @@ export type Problem =
 "no-answer" | 
 /**  The keyboard answered a request with something else. */
 "unexpected-answer";
+
+/**  One way to reach a layer (LAY-4), such as "Hold lower". */
+export type Reach = {
+	/**  How, in words. */
+	text: string,
+	/**  The key that does it, by key position, if a key does. */
+	position: number | null,
+	/**  Where that key is, in words, such as `Left half, row 5, key 4`. */
+	place: string | null,
+};
 
 /**
  *  What the session is doing (tech spec §7.1). In TypeScript, `{ kind: "ready" }` and so

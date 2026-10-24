@@ -9,11 +9,11 @@
 use std::collections::HashSet;
 
 use keywright_core::action as core;
-use keywright_core::editor::Change;
+use keywright_core::editor::{Change, Editor};
 use keywright_core::keycap;
 use keywright_core::keymap::LayerId;
 use keywright_core::mac::compat;
-use keywright_device::Snapshot;
+use keywright_device::{MAX_NAME_LEN, Snapshot};
 use serde::Serialize;
 use specta::Type;
 
@@ -23,6 +23,7 @@ use super::error::AppError;
 
 /// The keymap the canvas draws: the keyboard's keys, its knobs, and its layers.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct Keymap {
     /// Where each key is, by key position.
     pub keys: Vec<PhysicalKey>,
@@ -30,6 +31,10 @@ pub struct Keymap {
     pub knobs: Vec<Knob>,
     /// The layers, in order: the base layer first.
     pub layers: Vec<Layer>,
+    /// How many more layers the firmware has room for (LAY-3).
+    pub free_layer_slots: u32,
+    /// The longest layer name, in bytes of UTF-8, for the rename field's counter (LAY-1).
+    pub layer_name_max: u32,
     /// The actions the inspector lists as they are, which the firmware can do.
     pub choices: Vec<Choice>,
     /// The behaviors Keywright doesn't know, which the inspector edits by their parameters.
@@ -81,6 +86,21 @@ pub struct Layer {
     pub name: String,
     /// Its keys, by key position.
     pub keys: Vec<Key>,
+    /// How it's reached (LAY-4): the keys that turn it on, and the firmware.
+    pub reach: Vec<Reach>,
+    /// Whether it's being tried: added, renamed, or with keys that are.
+    pub changed: bool,
+}
+
+/// One way to reach a layer (LAY-4), such as "Hold lower".
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+pub struct Reach {
+    /// How, in words.
+    pub text: String,
+    /// The key that does it, by key position, if a key does.
+    pub position: Option<u32>,
+    /// Where that key is, in words, such as `Left half, row 5, key 4`.
+    pub place: Option<String>,
 }
 
 /// What a key shows and does on a layer.
@@ -186,30 +206,37 @@ impl Keymap {
         let pack = snapshot.support_pack();
         let conditional_layers = pack.map_or(&[][..], |pack| &pack.hints.conditional_layers);
 
-        let changed: HashSet<(LayerId, usize)> = editor
-            .changes()
-            .into_iter()
-            .filter_map(|change| match change {
-                Change::Binding {
-                    layer, position, ..
-                } => Some((layer, position)),
-                _ => None,
-            })
-            .collect();
+        let (changed, changed_layers) = changes(editor);
         let warnings: HashSet<(LayerId, usize)> =
             compat::check(keymap, &keyboard.behaviors, compat::RULES)
                 .into_iter()
                 .map(|finding| (finding.layer, finding.position))
                 .collect();
 
+        let place = |position: usize| {
+            pack.and_then(|pack| pack.key_place(position))
+                .unwrap_or_else(|| format!("Key {}", position.saturating_add(1)))
+        };
+
         let described = keycap::describe(keymap, &keyboard.behaviors, conditional_layers);
+        let reach = keycap::reach(keymap, &keyboard.behaviors, conditional_layers);
         let layers = keymap
             .layers
             .iter()
             .zip(described)
-            .map(|(layer, keys)| Layer {
+            .zip(reach)
+            .map(|((layer, keys), ways)| Layer {
                 id: layer.id.0,
                 name: keycap::layer_name(keymap, layer.id),
+                reach: ways
+                    .into_iter()
+                    .map(|way| Reach {
+                        text: way.text,
+                        position: way.position.map(position),
+                        place: way.position.map(place),
+                    })
+                    .collect(),
+                changed: changed_layers.contains(&layer.id),
                 keys: keys
                     .into_iter()
                     .zip(&layer.bindings)
@@ -244,9 +271,7 @@ impl Keymap {
                     rotation: key.rotation,
                     rotation_x: key.rotation_x,
                     rotation_y: key.rotation_y,
-                    place: pack
-                        .and_then(|pack| pack.key_place(index))
-                        .unwrap_or_else(|| format!("Key {}", index.saturating_add(1))),
+                    place: place(index),
                 })
                 .collect(),
             knobs: pack.map_or_else(Vec::new, |pack| {
@@ -260,11 +285,35 @@ impl Keymap {
                     .collect()
             }),
             layers,
+            free_layer_slots: keymap.free_layer_slots,
+            layer_name_max: u32::try_from(MAX_NAME_LEN).unwrap_or(u32::MAX),
             choices: choices(keymap, &keyboard.behaviors),
             others: other_behaviors(&keyboard.behaviors),
             kinds: kinds(&keyboard.behaviors),
         })
     }
+}
+
+/// What's being tried: the keys that do something else than when saved, and the layers
+/// that are added, renamed, or have such keys.
+fn changes(editor: &Editor) -> (HashSet<(LayerId, usize)>, HashSet<LayerId>) {
+    let mut keys = HashSet::new();
+    let mut layers = HashSet::new();
+    for change in editor.changes() {
+        match change {
+            Change::Binding {
+                layer, position, ..
+            } => {
+                keys.insert((layer, position));
+                layers.insert(layer);
+            }
+            Change::LayerAdded { layer } | Change::LayerRenamed { layer, .. } => {
+                layers.insert(layer);
+            }
+            Change::LayersReordered { .. } | Change::LayerRemoved { .. } => {}
+        }
+    }
+    (keys, layers)
 }
 
 /// A key position, which fits: a keyboard has at most a few hundred keys.
@@ -328,7 +377,7 @@ mod tests {
     use serde_json::json;
     use tokio::sync::mpsc;
 
-    use super::{Action, Hold, Key, Keycap, Keymap, LayerMode};
+    use super::{Action, Hold, Key, Keycap, Keymap, LayerMode, Reach};
     use crate::ipc::{Update, follow};
 
     /// The simulated Sofle, unlocked and ready, and the keymaps the UI hears from then on.
@@ -477,6 +526,48 @@ mod tests {
         let keymap = keymaps.recv().await.unwrap().unwrap();
         assert_eq!(keymap.layers[0].keys[13].keycap, label("Q"));
         assert!(!keymap.layers[0].keys[13].changed);
+    }
+
+    /// Each layer says how it's reached, with the key's place, and whether it's being
+    /// tried; the keymap says how many more layers fit (LAY-3, LAY-4).
+    #[tokio::test]
+    async fn each_layer_says_how_its_reached_and_whether_its_changed() {
+        let (session, mut keymaps) = ready_sofle().await;
+        let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
+        assert_eq!(keymap.free_layer_slots, 0);
+        assert_eq!(
+            keymap.layers[1].reach,
+            [Reach {
+                text: "Hold lower".to_owned(),
+                position: Some(53),
+                place: Some("Left half, row 5, key 4".to_owned()),
+            }]
+        );
+        assert_eq!(
+            keymap.layers[3].reach[0].text,
+            "lower + raise, built into the firmware"
+        );
+        assert!(keymap.layers.iter().all(|layer| !layer.changed));
+
+        let editor = session.snapshot().await.unwrap().editor.unwrap();
+        let lower = &editor.current().layers[1];
+        session
+            .apply(vec![Edit::RenameLayer {
+                layer: lower.id,
+                before: lower.name.clone(),
+                after: "Numbers".to_owned(),
+            }])
+            .await
+            .unwrap();
+        let keymap = keymaps.recv().await.unwrap().unwrap();
+        let changed: Vec<_> = keymap.layers.iter().map(|layer| layer.changed).collect();
+        assert_eq!(changed, [false, true, false, false]);
+        // The key that reaches it is named after it.
+        assert_eq!(keymap.layers[1].reach[0].text, "Hold Numbers");
+        assert_eq!(
+            serde_json::to_value(&keymap).unwrap()["freeLayerSlots"],
+            json!(0)
+        );
     }
 
     #[test]

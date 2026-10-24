@@ -1432,6 +1432,25 @@ mod validation {
         }
 
         #[test]
+        fn a_name_is_checked_on_its_own_against_what_zmk_v0_3_receives() {
+            assert_eq!(check_layer_name("Navigation"), Ok(()));
+            assert_eq!(check_layer_name(&"x".repeat(18)), Ok(()));
+            assert_eq!(
+                check_layer_name(&"x".repeat(19)),
+                Err(InvalidRequest::LayerNameTooLong {
+                    length: 19,
+                    max: 18
+                })
+            );
+            // Э is 0xD0 0xAD in UTF-8, and 0xAD is a byte the frame escapes.
+            assert_eq!(
+                check_layer_name("Эхо"),
+                Err(InvalidRequest::LayerNameCharacter('Э'))
+            );
+            assert_eq!(check_layer_name("Навигация"), Ok(()));
+        }
+
+        #[test]
         fn a_firmware_that_reports_no_name_limit_gets_names_that_fit_a_frame() {
             let mut shape = KeymapShape::default();
             let mut unlimited = keymap();

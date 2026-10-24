@@ -11,7 +11,7 @@ test("the gallery shows every primitive, with no accessibility problems", async 
   expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Keywright design system");
   expect(screen.getByRole("toolbar", { name: "Editing" })).toBeDefined();
   expect(screen.getByRole("combobox", { name: "Action" })).toBeDefined();
-  expect(screen.getByRole("grid", { name: "Layers" })).toBeDefined();
+  expect(screen.getAllByRole("grid", { name: "Layers" })).toHaveLength(2);
   await expectNoAxeViolations(container);
 });
 

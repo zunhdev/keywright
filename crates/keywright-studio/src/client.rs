@@ -43,7 +43,7 @@ use tokio::sync::{broadcast, mpsc, oneshot};
 use tokio::time::{Instant, sleep, sleep_until, timeout_at};
 
 use self::validation::KeymapShape;
-pub use self::validation::{InvalidRequest, MAX_NAME_LEN};
+pub use self::validation::{InvalidRequest, MAX_NAME_LEN, check_layer_name};
 use crate::frame::{self, FrameDecoder};
 use crate::message::{
     AddLayerError, AddedLayer, BehaviorDetails, BehaviorId, BehaviorsRequest, BehaviorsResponse,

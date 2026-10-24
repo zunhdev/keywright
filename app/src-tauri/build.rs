@@ -23,6 +23,11 @@ const COMMANDS: &[&str] = &[
     "redo",
     "menu_set",
     "edit_text",
+    "layer_name_problem",
+    "rename_layer",
+    "move_layer",
+    "remove_layer",
+    "add_layer",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

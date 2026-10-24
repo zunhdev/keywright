@@ -216,12 +216,17 @@ describe("the layers", () => {
     readySofle();
     const list = screen.getByRole("grid", { name: "Layers" });
     const rows = screen.getAllByRole("row").filter((row) => list.contains(row));
-    expect(rows.map((row) => row.textContent)).toEqual(["default", "lower", "raise", "adjust"]);
+    expect(rows.map((row) => row.textContent)).toEqual([
+      "defaultThe base layer, always on",
+      "lowerHold lower",
+      "raiseHold raise",
+      "adjustlower + raise, built into the firmware",
+    ]);
     const canvas = screen.getByRole("main", { name: "Keyboard" });
     const title = () => within(canvas).getByRole("heading", { level: 2 }).textContent;
     expect(title()).toBe("default");
 
-    await userEvent.click(screen.getByRole("gridcell", { name: "raise" }));
+    await userEvent.click(within(list).getByText("raise"));
     expect(title()).toBe("raise");
     expect(screen.getByText("raise layer, 60 keys, 0 changed")).toBeDefined();
     expect(

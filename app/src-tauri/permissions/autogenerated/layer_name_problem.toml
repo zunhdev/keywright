@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-layer-name-problem"
+description = "Enables the layer_name_problem command without any pre-configured scope."
+commands.allow = ["layer_name_problem"]
+
+[[permission]]
+identifier = "deny-layer-name-problem"
+description = "Denies the layer_name_problem command without any pre-configured scope."
+commands.deny = ["layer_name_problem"]

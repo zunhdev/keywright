@@ -129,6 +129,16 @@
   overflow: hidden;
 }
 
+/* The layers, as the window's sidebar shows them. */
+.layers {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 220px;
+  border-inline-end: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+}
+
 .inspector {
   flex: none;
   width: 320px;

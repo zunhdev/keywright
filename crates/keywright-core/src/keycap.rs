@@ -21,7 +21,7 @@ use std::collections::BTreeSet;
 
 use crate::action::{Action, BtCommand, ExtPowerCommand, OutCommand, RgbCommand};
 use crate::behavior::BehaviorTable;
-use crate::guard::{BASE, ConditionalLayer};
+use crate::guard::{Activation, BASE, ConditionalLayer, layer_keys};
 use crate::hid::{HidUsage, Mods, Shortcut, UsagePage};
 use crate::keymap::{Keymap, LayerId};
 use crate::keys::us;
@@ -170,6 +170,106 @@ pub fn describe_action(keymap: &Keymap, behaviors: &BehaviorTable, action: Actio
         inherited: false,
         sentence: words.sentence(action),
         spoken: spoken.sentence(action),
+    }
+}
+
+/// One way to reach a layer, in words (LAY-4, design §5.1): a key, or the firmware.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Reach {
+    /// How, such as "Hold lower", "Toggle with Caps Lock on raise", or "lower + raise,
+    /// built into the firmware".
+    pub text: String,
+    /// The key that does it, by key position, if a key does.
+    pub position: Option<usize>,
+}
+
+/// How each layer is reached, layer by layer in the keymap's order (LAY-4): the base layer
+/// is always on; another layer is reached by the keys that turn it on, on other layers, and
+/// by the firmware, for a conditional layer such as Adjust. A layer nothing turns on says
+/// so.
+#[must_use]
+pub fn reach(
+    keymap: &Keymap,
+    behaviors: &BehaviorTable,
+    conditional_layers: &[ConditionalLayer],
+) -> Vec<Vec<Reach>> {
+    let words = Words {
+        keymap,
+        behaviors,
+        shortcut: shortcut_name,
+    };
+    let keys = layer_keys(keymap, behaviors);
+    keymap
+        .layers
+        .iter()
+        .map(|layer| {
+            if layer.id == BASE {
+                return vec![Reach {
+                    text: "The base layer, always on".to_owned(),
+                    position: None,
+                }];
+            }
+            let by_keys = keys
+                .iter()
+                .filter(|key| key.target == layer.id && key.layer != layer.id)
+                .map(|key| {
+                    let binding = keymap
+                        .layer(key.layer)
+                        .and_then(|from| from.bindings.get(key.position).copied());
+                    let label = binding.map_or_else(String::new, |binding| {
+                        key_label(words.keycap(Action::from_binding(binding, behaviors)))
+                    });
+                    let how = match key.activation {
+                        Activation::Momentary | Activation::LayerTap => format!("Hold {label}"),
+                        Activation::Toggle => format!("Toggle with {label}"),
+                        Activation::ToLayer => format!("Switch with {label}"),
+                        Activation::Sticky => format!("Tap {label} for the next key"),
+                    };
+                    let text = if key.layer == BASE {
+                        how
+                    } else {
+                        format!("{how} on {}", layer_name(keymap, key.layer))
+                    };
+                    Reach {
+                        text,
+                        position: Some(key.position),
+                    }
+                });
+            let by_firmware = conditional_layers
+                .iter()
+                .filter(|conditional| conditional.then_layer == layer.id)
+                .map(|conditional| {
+                    let names: Vec<_> = conditional
+                        .if_layers
+                        .iter()
+                        .map(|id| layer_name(keymap, *id))
+                        .collect();
+                    Reach {
+                        text: format!("{}, built into the firmware", names.join(" + ")),
+                        position: None,
+                    }
+                });
+            let ways: Vec<_> = by_keys.chain(by_firmware).collect();
+            if ways.is_empty() {
+                vec![Reach {
+                    text: "No key turns it on".to_owned(),
+                    position: None,
+                }]
+            } else {
+                ways
+            }
+        })
+        .collect()
+}
+
+/// What a keycap says, to name its key in a sentence: a layer key by its layer, a
+/// tap-and-hold key by its tap.
+fn key_label(keycap: Keycap) -> String {
+    match keycap {
+        Keycap::Label(text) | Keycap::Sticky(text) | Keycap::Other(text) => text,
+        Keycap::TapHold { tap, .. } => tap,
+        Keycap::Layer { name, .. } => name,
+        Keycap::Nothing => "a key".to_owned(),
     }
 }
 

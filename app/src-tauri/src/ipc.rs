@@ -22,6 +22,7 @@ mod action;
 mod edit;
 mod error;
 mod keymap;
+mod layers;
 mod menu;
 mod session;
 
@@ -72,7 +73,12 @@ pub fn builder() -> Builder<tauri::Wry> {
             edit::undo,
             edit::redo,
             menu::menu_set,
-            menu::edit_text
+            menu::edit_text,
+            layers::layer_name_problem,
+            layers::rename_layer,
+            layers::move_layer,
+            layers::remove_layer,
+            layers::add_layer
         ])
         .events(collect_events![
             SessionStateChanged,

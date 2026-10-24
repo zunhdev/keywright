@@ -7,6 +7,7 @@ import { Segment, SegmentedControl } from "../design-system/SegmentedControl.tsx
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { Keycap, type KeycapProps, type KeycapState } from "../features/keyboard-canvas/Keycap.tsx";
+import { LayersPane } from "../features/layers/LayersPane.tsx";
 import { KeySearch } from "../features/search/KeySearch.tsx";
 import type { Key, Keycap as KeycapData } from "../ipc/bindings.ts";
 import { domCodes, keyCatalog, macActions, sofleKeymap } from "../test/sofle.ts";
@@ -124,6 +125,9 @@ export function Sofle() {
         <KeySearch />
       </div>
       <div className={styles.window}>
+        <aside className={styles.layers} aria-label="Layers">
+          <LayersPane />
+        </aside>
         <div className={styles.board}>
           <KeyboardCanvas />
         </div>

@@ -2,14 +2,15 @@ import { useMessages } from "../../i18n/messages.ts";
 import { LOCALE } from "../../i18n/messages.ts";
 import type { Keymap, Layer } from "../../ipc/bindings.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
+import { RenameField } from "../layers/RenameField.tsx";
 
 import styles from "./Inspector.module.css";
 
 /**
  * The inspector with no key selected (design §5.1): the layer shown, how many of its keys
- * are changed, and the knobs, which can't be changed yet (VIEW-4). How the layer is
- * reached, its Mac compatibility and its warnings come with the layers sidebar (KEY-45),
- * the compatibility check (KEY-62) and the lockout guard (KEY-51).
+ * are changed, its name to edit, how it's reached (LAY-4), and the knobs, which can't be
+ * changed yet (VIEW-4). Its Mac compatibility and its warnings come with the compatibility
+ * check (KEY-62) and the lockout guard (KEY-51).
  */
 export function LayerOverview({ keymap, layer }: { keymap: Keymap; layer: Layer }) {
   const messages = useMessages();
@@ -27,6 +28,27 @@ export function LayerOverview({ keymap, layer }: { keymap: Keymap; layer: Layer 
           })}
         </p>
       </header>
+      <RenameField
+        // Another layer, or a name changed elsewhere, starts the field afresh.
+        key={`${layer.id}:${layer.name}`}
+        id={layer.id}
+        name={layer.name}
+        max={keymap.layerNameMax}
+        label={messages.format("overview.name")}
+      />
+      <section className={styles.fields}>
+        <h3 className={styles.label}>{messages.format("overview.reach")}</h3>
+        <ul className={styles.list}>
+          {layer.reach.map((way) => (
+            <li key={`${way.text}:${way.position ?? ""}`}>
+              {way.text}
+              {way.place === null ? null : (
+                <span className={styles.description}> · {way.place}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
       <p className={styles.note}>{messages.format("overview.hint")}</p>
       {keymap.knobs.length === 0 ? null : (
         <section className={styles.fields}>

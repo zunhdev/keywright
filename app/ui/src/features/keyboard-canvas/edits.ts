@@ -13,7 +13,7 @@ import { type Action, type AppError, commands, type KeyAction } from "../../ipc/
 const TOAST = 5000;
 
 /** Waits for a command, and says what went wrong if it failed. Resolves to whether it worked. */
-async function run(
+export async function run(
   command: Promise<{ status: "ok"; data: null } | { status: "error"; error: AppError }>,
 ): Promise<boolean> {
   const result = await command;

@@ -31,6 +31,9 @@ pub enum AppError {
     SessionStopped,
     /// The menu bar didn't take a change to one of its items.
     MenuFailed,
+    /// A layer name the keyboard can't take: too long, or with a character it can't
+    /// receive (`layer_name_problem` says which).
+    InvalidLayerName,
 }
 
 impl From<SessionError> for AppError {

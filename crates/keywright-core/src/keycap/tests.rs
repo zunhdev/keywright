@@ -533,3 +533,64 @@ proptest! {
         }
     }
 }
+
+mod reach {
+    use super::*;
+
+    fn texts(keymap: &Keymap, conditional: &[ConditionalLayer]) -> Vec<Vec<String>> {
+        super::super::reach(keymap, &zmk_v0_3_table(), conditional)
+            .into_iter()
+            .map(|ways| ways.into_iter().map(|way| way.text).collect())
+            .collect()
+    }
+
+    #[test]
+    fn the_stock_layers_are_reached_by_their_thumb_keys_and_adjust_by_the_firmware() {
+        let keymap = stock_keymap();
+        assert_eq!(
+            texts(&keymap, &adjust()),
+            [
+                vec!["The base layer, always on"],
+                vec!["Hold lower"],
+                vec!["Hold raise"],
+                vec!["lower + raise, built into the firmware"],
+            ]
+        );
+        let ways = super::super::reach(&keymap, &zmk_v0_3_table(), &adjust());
+        assert_eq!(ways[1][0].position, Some(53));
+        assert_eq!(ways[3][0].position, None);
+    }
+
+    #[test]
+    fn each_way_says_how_and_on_which_layer_its_key_is() {
+        let mut keymap = stock_keymap();
+        set(&mut keymap, LOWER, 0, Action::Toggle(ADJUST));
+        set(&mut keymap, RAISE, 0, Action::ToLayer(ADJUST));
+        set(&mut keymap, BASE, 0, Action::StickyLayer(ADJUST));
+        set(
+            &mut keymap,
+            BASE,
+            1,
+            Action::LayerTap {
+                layer: ADJUST,
+                tap: plain(ESCAPE),
+            },
+        );
+        // A key that turns its own layer on doesn't reach it.
+        set(&mut keymap, ADJUST, 0, Action::Toggle(ADJUST));
+        assert_eq!(
+            texts(&keymap, &[])[3],
+            [
+                "Tap adjust for the next key",
+                "Hold ⎋ Esc",
+                "Toggle with adjust on lower",
+                "Switch with adjust on raise",
+            ]
+        );
+    }
+
+    #[test]
+    fn a_layer_nothing_turns_on_says_so() {
+        assert_eq!(texts(&stock_keymap(), &[])[3], ["No key turns it on"]);
+    }
+}

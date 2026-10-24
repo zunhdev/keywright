@@ -255,6 +255,17 @@ impl Layers {
     }
 }
 
+/// Checks a layer name against what any keyboard on ZMK v0.3 can receive: at most
+/// [`MAX_NAME_LEN`] bytes, and no character it can't receive. The client checks a rename
+/// again against the keyboard's own limit, which can only be smaller.
+///
+/// # Errors
+///
+/// [`InvalidRequest::LayerNameTooLong`] or [`InvalidRequest::LayerNameCharacter`].
+pub fn check_layer_name(name: &str) -> Result<(), InvalidRequest> {
+    check_name(name, None)
+}
+
 /// Checks a layer name against what the keyboard can receive, and against the size of its
 /// name buffer, with room for C's terminating NUL, once the client knows it.
 fn check_name(name: &str, buffer: Option<usize>) -> Result<(), InvalidRequest> {

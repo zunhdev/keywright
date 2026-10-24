@@ -40,6 +40,22 @@ test("with no key selected, it shows the layer, its changes and the knobs", () =
     screen.getByText("Turning: Volume Down and Volume Up. Can't be changed yet."),
   ).toBeDefined();
   expect(screen.getByText("Changing knobs comes in a future version.")).toBeDefined();
+  expect(screen.getByText("The base layer, always on")).toBeDefined();
+  expect(screen.getByRole("textbox", { name: "Name" })).toBeDefined();
+});
+
+test("the overview says how the layer is reached, and where those keys are, and renames it", async () => {
+  const set = rustSide();
+  act(() => {
+    useStore.setState({ layer: 1 });
+  });
+  inspect([]);
+  expect(screen.getByText("Hold lower")).toBeDefined();
+  expect(screen.getByText(/Left half, row 5, key 4/u)).toBeDefined();
+  const field = screen.getByRole("textbox", { name: "Name" });
+  await userEvent.clear(field);
+  await userEvent.type(field, "Numbers{Enter}");
+  expect(set).toEqual([{ positions: [1], action: "Numbers" }]);
 });
 
 describe("a selected key", () => {

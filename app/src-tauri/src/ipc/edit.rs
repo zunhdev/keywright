@@ -39,7 +39,7 @@ fn position(position: u32) -> usize {
 
 impl AppState {
     /// Carries out the edits `build` makes from the keymap the editor holds, as one change.
-    async fn change(
+    pub(super) async fn change(
         &self,
         build: impl FnOnce(&Keymap, &BehaviorTable) -> Result<Vec<Edit>, AppError>,
     ) -> Result<(), AppError> {
