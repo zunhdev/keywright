@@ -86,6 +86,10 @@ run = "typos"
 description = "Check that keywright-core's generated key tables match their generator and sources (needs macOS)"
 run = "bun scripts/generate-key-tables.ts --check"
 
+[tasks."lint:bindings"]
+description = "Check that the UI's IPC bindings match the app's commands, events and payloads"
+run = "cargo nextest run --package keywright-app the_ui_bindings_are_up_to_date"
+
 [tasks.generate]
 description = "Regenerate the checked-in generated code"
 depends = ["generate:*"]
@@ -93,6 +97,11 @@ depends = ["generate:*"]
 [tasks."generate:key-tables"]
 description = "Regenerate keywright-core's key tables from their pinned upstream sources (needs macOS)"
 run = "bun scripts/generate-key-tables.ts"
+
+[tasks."generate:bindings"]
+description = "Regenerate the UI's IPC bindings (app/ui/src/ipc/bindings.ts) from the app's commands, events and payloads"
+env = { KEYWRIGHT_UPDATE_BINDINGS = "1" }
+run = "cargo nextest run --package keywright-app the_ui_bindings_are_up_to_date"
 
 [tasks.test]
 description = "Run all tests"

@@ -23,7 +23,8 @@ use crate::workspace::{
 ///   the backups folder from `keywright-platform`, and has the simulated keyboard for its
 ///   tests, as the app's demo mode will.
 /// - The app shell is thin too: its commands send the device session commands or call
-///   the core, and it uses `keywright-platform` for macOS integration.
+///   the core, and it uses `keywright-platform` for macOS integration. It can connect the
+///   simulated keyboard instead of a real one, for UI work and demo mode.
 const ALLOWED_WORKSPACE_DEPENDENCIES: &[(&str, &[&str])] = &[
     ("keywright-core", &[]),
     ("keywright-studio", &[]),
@@ -45,7 +46,12 @@ const ALLOWED_WORKSPACE_DEPENDENCIES: &[(&str, &[&str])] = &[
     ),
     (
         "keywright-app",
-        &["keywright-core", "keywright-device", "keywright-platform"],
+        &[
+            "keywright-core",
+            "keywright-device",
+            "keywright-platform",
+            "keywright-sim",
+        ],
     ),
     ("architecture-tests", &[]),
 ];

@@ -6,5 +6,5 @@
     "jsx": "react-jsx",
     "types": ["bun"]
   },
-  "include": ["src", "dev.ts"]
+  "include": ["src", "dev.ts", "dev-css-modules.ts"]
 }

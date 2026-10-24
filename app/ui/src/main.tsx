@@ -1,17 +1,20 @@
 /**
- * The UI's entry point, which index.html loads: it renders the app into the page
- * (tech spec §12.2).
+ * The UI's entry point, which index.html loads: it follows the session, and renders the
+ * app into the page (tech spec §12.2).
  */
 import "./app/global.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { App } from "./app/App.tsx";
+import { followSession } from "./ipc/session.ts";
 
 const root = document.querySelector("#root");
 if (!root) {
   throw new Error("index.html should have an element with the id root");
 }
+// For as long as the page is open.
+void followSession();
 createRoot(root).render(
   <StrictMode>
     <App />
