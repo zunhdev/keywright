@@ -38,11 +38,13 @@ use keywright_core::keymap::Binding;
 use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
 
-pub use self::battery::{BatteryChanged, BatteryState, follow as follow_battery};
+pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
 pub use self::keymap::KeymapChanged;
 pub use self::menu::MenuItemChosen;
 pub use self::quit::{QuitGuard, QuitRequested};
-pub use self::session::{SessionStateChanged, SessionStatus, Update, follow};
+pub use self::session::{
+    SessionState, SessionStateChanged, SessionStatus, Transport, Update, follow,
+};
 
 /// What the commands share.
 pub struct AppState {

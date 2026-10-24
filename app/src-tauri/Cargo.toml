@@ -29,9 +29,10 @@ serde_json.workspace = true
 # events, from which `specta-typescript` writes the UI's bindings.
 specta.workspace = true
 specta-typescript.workspace = true
-# The app framework: windows, menus and the webview that runs the UI. Its `devtools`
-# feature stays off, so release builds have no web inspector (tech spec §12.1).
-tauri.workspace = true
+# The app framework: windows, menus, the menu bar item (`tray-icon`) and the webview that
+# runs the UI. Its `devtools` feature stays off, so release builds have no web inspector
+# (tech spec §12.1).
+tauri = { workspace = true, features = ["tray-icon"] }
 # Open and save panels.
 tauri-plugin-dialog.workspace = true
 # macOS notifications.
