@@ -1,0 +1,13 @@
+# Bun settings for the UI's tests (tech spec §13.3). Install and run settings are in the
+# repository's bunfig.toml.
+
+[test]
+# A browser's globals first, then what every test file needs.
+preload = ["./src/test/happy-dom.ts", "./src/test/setup.ts"]
+# Tests run in a random order, so they can't depend on each other.
+randomize = true
+# The UI's tests must cover at least 70% of its lines (tech spec §13.3).
+coverage = true
+coverageThreshold = { lines = 0.7 }
+coverageSkipTestFiles = true
+coveragePathIgnorePatterns = ["src/test/**"]

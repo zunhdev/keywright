@@ -1,7 +1,9 @@
 /**
  * The UI's development server (tech spec §12.2). Bun bundles the page when it's asked
- * for, and updates it in place when a file changes. `mise run dev` starts it, and the
- * app's window loads it: `devUrl` in app/src-tauri/tauri.conf.json names this address.
+ * for, and updates it in place when a file changes: React components keep their state
+ * (React Fast Refresh, which needs the `react-refresh` package). `mise run dev` starts
+ * it, and the app's window loads it: `devUrl` in app/src-tauri/tauri.conf.json names
+ * this address.
  */
 import page from "./src/index.html";
 

@@ -12,6 +12,8 @@
     "eslint/no-inline-comments": "off",
     "eslint/no-warning-comments": "off",
     "import/max-dependencies": "off",
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
+    "react/react-in-jsx-scope": "off",
     "typescript/no-confusing-void-expression": ["warn", { "ignoreArrowShorthand": true }],
     "typescript/prefer-readonly-parameter-types": "off"
   },
