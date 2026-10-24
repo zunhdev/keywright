@@ -9,6 +9,7 @@ import {
 } from "../features/keyboard-canvas/edits.ts";
 import { ZOOMS } from "../features/keyboard-canvas/geometry.ts";
 import { focusSearch } from "../features/search/focus.ts";
+import { restoreStockKeys, selectionRestorable } from "../features/stock/actions.ts";
 import { type MessageKey, messages } from "../i18n/messages.ts";
 import { commands, events, type MenuItem, type TextEdit } from "./bindings.ts";
 
@@ -43,6 +44,8 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
   save: () => useStore.setState({ review: true }),
   "review-changes": () => useStore.setState({ review: true }),
   "discard-changes": () => useStore.setState({ discarding: true }),
+  "restore-stock-key": () => void restoreStockKeys(),
+  "restore-stock-settings": () => useStore.setState({ restoring: true }),
   "same-as-layer-below": () => void setKeys("same-as-layer-below"),
   "does-nothing": () => void setKeys("does-nothing"),
   "toggle-layers": () => useStore.getState().togglePanel("layers"),
@@ -105,6 +108,8 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
     ["save", item(editable && (session?.changes ?? 0) > 0)],
     ["review-changes", item(editable && (session?.changes ?? 0) > 0)],
     ["discard-changes", item(editable && (session?.changes ?? 0) > 0)],
+    ["restore-stock-key", item(editable && selected && selectionRestorable())],
+    ["restore-stock-settings", item(editable)],
     ["copy-action", item(keymap !== null && selected, strings.format("menu.copy-action"))],
     [
       "paste-action",

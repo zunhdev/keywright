@@ -295,6 +295,33 @@ character: string } | null>("layer_name_problem", { name }),
 	 *  quit without them.
 	 */
 	quitNow: () => __TAURI_INVOKE<void>("quit_now"),
+	/**
+	 *  Restores the stock action of some keys on a layer, from the support pack (CHG-4).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if Keywright has no stock keymap for the keyboard, the keymap can't be changed
+	 *  now, the change would strand the user, or the keyboard doesn't carry it out.
+	 */
+	restoreStockKeys: (layer: number, positions: number[], force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("restore_stock_keys", { layer, positions, force })),
+	/**
+	 *  Restores a layer's stock keys and name, from the support pack (CHG-4).
+	 * 
+	 *  # Errors
+	 * 
+	 *  As for [`restore_stock_keys`].
+	 */
+	restoreStockLayer: (layer: number, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("restore_stock_layer", { layer, force })),
+	/**
+	 *  Restores the whole keyboard's stock settings (CHG-5): backs up the keymap, then runs the
+	 *  firmware's own reset (SAF-3). The changes being tried and the history go.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keymap can't be changed now, the backup can't be written, in which case
+	 *  nothing changes, or the keyboard doesn't reset.
+	 */
+	restoreStockSettings: () => typedError<null, AppError>(__TAURI_INVOKE("restore_stock_settings")),
 };
 
 /** Events */
@@ -415,6 +442,10 @@ export type AppError =
  *  receive (`layer_name_problem` says which).
  */
 { code: "invalid-layer-name" } | 
+/**  Keywright has no stock keymap for the keyboard: it has no support pack. */
+{ code: "no-stock-keymap" } | 
+/**  The keyboard said it couldn't restore its stock settings. */
+{ code: "reset-failed" } | 
 /**
  *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
  *  `force`, it is.
@@ -587,6 +618,11 @@ export type Key = {
 	changed: boolean,
 	/**  Whether it does something that doesn't work on a Mac (MAC-7). */
 	macWarning: boolean,
+	/**
+	 *  Whether it does something else than on the stock keymap, so Restore Stock would
+	 *  change it (CHG-4).
+	 */
+	restorable: boolean,
 };
 
 /**  What [`set_keys`] makes keys do. */
@@ -745,6 +781,11 @@ export type Layer = {
 	changed: boolean,
 	/**  What's wrong with it (SAF-2): no key turns it on, or there's no way back from it. */
 	warnings: LayerWarning[],
+	/**
+	 *  Whether it differs from the stock keymap, so Restore Stock Layer would change it
+	 *  (CHG-4).
+	 */
+	restorable: boolean,
 };
 
 /**  How a layer key turns its layer on. */

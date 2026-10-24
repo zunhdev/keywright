@@ -39,6 +39,9 @@
     "allow-revert-change",
     "allow-save-changes",
     "allow-quit-now",
+    "allow-restore-stock-keys",
+    "allow-restore-stock-layer",
+    "allow-restore-stock-settings",
     "core:window:allow-start-dragging",
     "core:window:allow-internal-toggle-maximize",
     {

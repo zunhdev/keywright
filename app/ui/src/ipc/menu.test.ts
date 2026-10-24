@@ -225,6 +225,17 @@ describe("with the Sofle's keymap", () => {
     stop();
   });
 
+  test("Restore Stock for Key needs a key that differs from stock; Settings… asks first", async () => {
+    const { stop } = await readySofle();
+    useStore.getState().select([13]);
+    await Bun.sleep(0);
+    expect(menu.get("restore-stock-key")).toBe("restore-stock-key (disabled): null");
+    expect(menu.get("restore-stock-settings")).toBe("restore-stock-settings: null");
+    await emit("menu://item", "restore-stock-settings");
+    expect(useStore.getState().restoring).toBe(true);
+    stop();
+  });
+
   test("Select All Keys selects every key", async () => {
     const { stop } = await readySofle();
     await emit("menu://item", "select-all-keys");

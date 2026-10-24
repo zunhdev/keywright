@@ -12,6 +12,7 @@ import type { Keymap, Layer } from "../../ipc/bindings.ts";
 import { switchLayer } from "../keyboard-canvas/edits.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { findKeys } from "../search/search.ts";
+import { restoreStockLayer } from "../stock/actions.ts";
 import { addLayer, moveLayer, removeLayer } from "./actions.ts";
 import { BASE, dropIndex, turnedOnByKeys } from "./order.ts";
 import { RemoveLayerSheet } from "./RemoveLayerSheet.tsx";
@@ -181,13 +182,13 @@ export function LayersPane() {
             // Renaming starts once the menu has given focus back, so its field keeps it.
             if (item === "rename") afterFocusSettles(() => setRenaming(menu.layer.id));
             if (item === "remove") remove(menu.layer);
+            if (item === "restore") void restoreStockLayer(menu.layer.id);
           }}
         >
           <MenuItem id="rename" isDisabled={!editable}>
             {messages.format("layers.rename")}
           </MenuItem>
-          {/* Restoring a stock layer comes with stock keys (KEY-52). */}
-          <MenuItem id="restore" isDisabled>
+          <MenuItem id="restore" isDisabled={!editable || !menu.layer.restorable}>
             {messages.format("layers.restore")}
           </MenuItem>
           <MenuItem id="remove" isDisabled={!editable || menu.layer.id === BASE}>

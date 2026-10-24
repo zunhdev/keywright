@@ -8,6 +8,7 @@ declare const classes: {
   readonly details: string;
   readonly empty: string;
   readonly fields: string;
+  readonly footer: string;
   readonly header: string;
   readonly inspector: string;
   readonly label: string;

@@ -71,6 +71,8 @@ export interface UiSlice {
   readonly discarding: boolean;
   /** Whether the quit dialog shows: quitting while changes are tried (SAF-5). */
   readonly quitting: boolean;
+  /** Whether Restore Stock Settings… is asking to be sure (CHG-5). */
+  readonly restoring: boolean;
   /** What the toolbar's search looks for across layers (design §4.6), or `""`. */
   readonly search: string;
   /** Whether a text field has keyboard focus, so Edit's items edit its text. */
@@ -165,6 +167,7 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   review: false,
   discarding: false,
   quitting: false,
+  restoring: false,
   search: "",
   textFocused: false,
   zoom: 1,

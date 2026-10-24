@@ -29,6 +29,7 @@ mod menu;
 mod quit;
 mod review;
 mod session;
+mod stock;
 
 use std::sync::Mutex;
 
@@ -95,7 +96,10 @@ pub fn builder() -> Builder<tauri::Wry> {
             review::review_changes,
             review::revert_change,
             review::save_changes,
-            quit::quit_now
+            quit::quit_now,
+            stock::restore_stock_keys,
+            stock::restore_stock_layer,
+            stock::restore_stock_settings
         ])
         .events(collect_events![
             SessionStateChanged,

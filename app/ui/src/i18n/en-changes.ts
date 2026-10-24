@@ -26,6 +26,20 @@ export const changeStrings = {
   "discard.body": "Your keyboard goes back to how it was when you last saved.",
   "discard.cancel": "Cancel",
   "discard.confirm": "Discard",
+  "restore.title": "Restore stock settings?",
+  "restore.body":
+    "Your keyboard goes back to the keymap it shipped with: every key, and the order of the layers. You can't undo this. Layer names stay until the keyboard restarts.",
+  "restore.changes": (args) => {
+    const count = Number(args?.["count"] ?? 0);
+    return count === 1
+      ? "The change you're trying goes too."
+      : `The ${count} changes you're trying go too.`;
+  },
+  "restore.backup": "Keywright backs up your keymap first, so you can import it again.",
+  "restore.cancel": "Cancel",
+  "restore.confirm": "Restore Stock Settings",
+  "restore.done": "Restored stock settings. Your keymap was backed up first.",
+  "restore.key": "Restore Stock",
   "quit.title": "Save your changes before quitting?",
   "quit.body": (args) => {
     const count = Number(args?.["count"] ?? 0);
