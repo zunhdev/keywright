@@ -174,6 +174,27 @@ pub fn describe_action(keymap: &Keymap, behaviors: &BehaviorTable, action: Actio
     }
 }
 
+/// What a key bound to `binding` does, as its keycap shows it, or in a word or two where
+/// it shows nothing: `B`, `⌘C`, `Esc / ⌃`, `raise`, "Same as layer below", "Does nothing".
+/// The review sheet (design §6) and the CLI's `diff` and `restore` (CLI-5) write keys
+/// this way.
+#[must_use]
+pub fn label(keymap: &Keymap, behaviors: &BehaviorTable, binding: Binding) -> String {
+    match Action::from_binding(binding, behaviors) {
+        Action::Transparent => "Same as layer below".to_owned(),
+        Action::None => "Does nothing".to_owned(),
+        action => match describe_action(keymap, behaviors, action).keycap {
+            Keycap::Label(text) | Keycap::Sticky(text) => text,
+            Keycap::TapHold { tap, hold } => match hold {
+                Hold::Key(hold) => format!("{tap} / {hold}"),
+                Hold::Layer { name, .. } => format!("{tap} / {name}"),
+            },
+            Keycap::Layer { name, .. } | Keycap::Other(name) => name,
+            Keycap::Nothing => "Does nothing".to_owned(),
+        },
+    }
+}
+
 /// One way to reach a layer, in words (LAY-4, design §5.1): a key, or the firmware.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Reach {

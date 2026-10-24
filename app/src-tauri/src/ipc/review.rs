@@ -10,7 +10,7 @@ use keywright_core::action::Action;
 use keywright_core::behavior::BehaviorTable;
 use keywright_core::editor::Change;
 use keywright_core::keycap;
-use keywright_core::keymap::{Binding, Keymap, LayerId};
+use keywright_core::keymap::{Keymap, LayerId};
 use keywright_core::support_packs::SupportPack;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -81,23 +81,6 @@ fn layer_name(layer: &keywright_core::keymap::Layer, index: usize) -> String {
         format!("Layer {}", index.saturating_add(1))
     } else {
         layer.name.clone()
-    }
-}
-
-/// A binding as a keycap shows it, or in a word or two.
-fn label(keymap: &Keymap, behaviors: &BehaviorTable, binding: Binding) -> String {
-    match Action::from_binding(binding, behaviors) {
-        Action::Transparent => "Same as layer below".to_owned(),
-        Action::None => "Does nothing".to_owned(),
-        action => match keycap::describe_action(keymap, behaviors, action).keycap {
-            keycap::Keycap::Label(text) | keycap::Keycap::Sticky(text) => text,
-            keycap::Keycap::TapHold { tap, hold } => match hold {
-                keycap::Hold::Key(hold) => format!("{tap} / {hold}"),
-                keycap::Hold::Layer { name, .. } => format!("{tap} / {name}"),
-            },
-            keycap::Keycap::Layer { name, .. } | keycap::Keycap::Other(name) => name,
-            keycap::Keycap::Nothing => "Does nothing".to_owned(),
-        },
     }
 }
 
@@ -192,8 +175,8 @@ fn rows(
                     pack.and_then(|pack| pack.key_place(*position))
                         .unwrap_or_else(|| format!("Key {}", position.saturating_add(1))),
                 ),
-                before: label(current, behaviors, *before),
-                after: label(current, behaviors, *after),
+                before: keycap::label(current, behaviors, *before),
+                after: keycap::label(current, behaviors, *after),
                 sentence: Some(
                     keycap::describe_action(
                         current,

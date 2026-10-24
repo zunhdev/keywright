@@ -36,6 +36,11 @@ pub(crate) struct Args {
     #[arg(long, short)]
     yes: bool,
 
+    /// Write keys as ZMK names them, such as `kp LG(C)`, rather than as their keycaps show
+    /// them, such as `⌘C`.
+    #[arg(long)]
+    zmk: bool,
+
     #[command(flatten)]
     wait: Wait,
 }
@@ -98,7 +103,7 @@ pub(crate) async fn run(source: Source, args: Args, json: bool) -> Result<Exit, 
     };
 
     if !json {
-        print(preview(&comparison, &name, &file))?;
+        print(preview(&comparison, &name, &file, args.zmk))?;
     }
     if comparison.differences.is_empty() || args.dry_run {
         if json {
@@ -135,8 +140,8 @@ pub(crate) async fn run(source: Source, args: Args, json: bool) -> Result<Exit, 
     Ok(Exit::Done)
 }
 
-/// What restoring changes, as text.
-fn preview(comparison: &Comparison, name: &str, file: &str) -> String {
+/// What restoring changes, as text, with keys as ZMK names them if `zmk`.
+fn preview(comparison: &Comparison, name: &str, file: &str, zmk: bool) -> String {
     let mut lines = if comparison.differences.is_empty() {
         vec![format!(
             "{name} already matches {file}, so there's nothing to restore."
@@ -149,7 +154,7 @@ fn preview(comparison: &Comparison, name: &str, file: &str) -> String {
             ),
             String::new(),
         ];
-        lines.extend(comparison.lines());
+        lines.extend(comparison.lines(zmk));
         lines
     };
     let cannot_apply = comparison.cannot_apply_lines(name, file);

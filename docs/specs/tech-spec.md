@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.62 — for review                                        |
+| **Status**    | Draft v0.63 — for review                                        |
 | **Date**      | 2026-10-24                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -136,7 +136,7 @@ keywright/
 
 - **Keyboards**: it connects a session to every ZMK USB port (`keywright_device::usb`) and, if none answers, to every keyboard macOS has connected over Bluetooth (`keywright_device::bluetooth`), since a keyboard serves Studio only over its output (§6.3). A command that needs the keymap refuses when several keyboards can be edited.
 - **Unlocking**: `status` only looks. The others wait for the keyboard to be unlocked, up to `--unlock-timeout` (120 s), and say which keys unlock it, named from the support pack's stock keymap (`SupportPack::key_name`): "hold the raise key, then tap the B key".
-- **Comparing**: `diff` and `restore` show the rows of the backup's import preview (`Import::preview`, §9), grouped by layer, keyboard first. Actions are written as backup action text (`kp LG(C)`) until the core has the key sentences of design §5.2.
+- **Comparing**: `diff` and `restore` show the rows of the backup's import preview (`Import::preview`, §9), grouped by layer, keyboard first. Keys are written as the review sheet writes them, in the keycaps' words (`keycap::label`: `` ` → ⎋ Esc ``, `Same as layer below → ⌘C`); `--zmk` writes them as ZMK and the backup file name them (`kp GRAVE → kp ESC`), and `--json` gives both (`keyboard`, `file`, `keyboard_zmk`, `file_zmk`).
 - **Restoring** asks first, or needs `--yes` when standard input isn't a terminal (CLI-4); `--dry-run` changes nothing. It backs up into the app's folder (§7.2), imports the backup as one change and saves it. The read-only commands keep no automatic backups, so scripts that poll `status` can't push real backups out.
 - **Battery**: `status` reads the battery once over Bluetooth (`Battery::read`), whichever connection Studio uses, and gives each half: `Left 82% · Right not reported`, and `{"left": 82, "right": null}` with `--json` (CLI-2, BAR-2).
 - **Output**: results go to standard output, as text or with `--json`, and messages for people to standard error. Exit codes: 0 done, 1 `diff` found differences or the answer was no, 2 usage (including a missing `--yes`), 3 no keyboard that can be edited, 4 stayed locked, 5 the keyboard failed or is incompatible, 6 a file problem. `keywright --help` lists them.
@@ -887,3 +887,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.60    | 2026-10-24 | The Settings window's General tab (§12.1, KEY-59): Show in menu bar and Open at login, `settings.json` saved, and the login item over `SMAppService`.                                                                                                                                                                                                              |
 | 0.61    | 2026-10-24 | Hardware tests (§14.1, KEY-60): the release checklist's wireless parity, and the tests that run on their own.                                                                                                                                                                                                                                                      |
 | 0.62    | 2026-10-24 | Telling the halves apart (§6.3, §7.1, KEY-99): the USB device's keyboard interface, read with `nusb`; the other half isn't probed, and `status` says why its port isn't used.                                                                                                                                                                                      |
+| 0.63    | 2026-10-24 | The CLI's rows in the keycaps' words (§4, KEY-96): `keycap::label`, shared with the review sheet, and `--zmk`.                                                                                                                                                                                                                                                     |
