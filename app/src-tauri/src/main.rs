@@ -39,16 +39,13 @@ use tauri_specta::Event;
 
 use crate::ipc::{
     AppState, BatteryChanged, BatteryState, KeymapChanged, MenuItemChosen, QuitGuard,
-    QuitRequested, SessionStateChanged, SessionStatus, Update,
+    QuitRequested, SessionStateChanged, SessionStatus, SettingsState, Update,
 };
 use crate::low_battery::LowBattery;
 use crate::menu::MenuItem;
 use crate::settings::Settings;
 use crate::simulator::Scenario;
-use crate::tray::Tray;
-
-/// The menu bar item, while it's on.
-struct MenuBar(Option<Tray<Wry>>);
+use crate::tray::MenuBar;
 
 /// The main window's label in tauri.conf.json.
 const MAIN_WINDOW: &str = "main";
@@ -77,17 +74,28 @@ fn main() -> tauri::Result<()> {
         .plugin(tauri_plugin_opener::init())
         .menu(menu::build)
         .on_menu_event(|app, event| {
-            // macOS handles its own items, such as Quit; the UI handles Keywright's.
-            if let Some(item) = MenuItem::from_id(event.id().as_ref()) {
-                let _ = MenuItemChosen(item).emit(app);
+            // macOS handles its own items, such as Quit; the shell opens Settings, and the
+            // UI handles Keywright's other items.
+            match MenuItem::from_id(event.id().as_ref()) {
+                Some(item) if item.handled_by_the_shell() => {
+                    let _ = settings::open_window(app);
+                }
+                Some(item) => {
+                    let _ = MenuItemChosen(item).emit(app);
+                }
+                None => {}
             }
         })
         .invoke_handler(ipc.invoke_handler())
         .manage(QuitGuard::default())
         .on_window_event(|window, event| {
+            // Other windows, such as Settings, just close.
             let WindowEvent::CloseRequested { api, .. } = event else {
                 return;
             };
+            if window.label() != MAIN_WINDOW {
+                return;
+            }
             let app = window.app_handle();
             if in_menu_bar(app) {
                 // Keywright stays in the menu bar: the window and the Dock icon go.
@@ -149,12 +157,10 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
         Ok((AppState::new(session), None))
     })?;
     let handle = app.handle().clone();
-    let tray = if settings.menu_bar {
-        Some(menu_bar(&handle, settings, battery.clone())?)
-    } else {
-        None
-    };
-    app.manage(MenuBar(tray));
+    let menu_bar = menu_bar(settings, battery.clone());
+    menu_bar.show(&handle, settings.menu_bar)?;
+    app.manage(menu_bar);
+    app.manage(SettingsState(std::sync::Mutex::new(settings)));
     if let Some(battery) = &battery {
         let handle = handle.clone();
         let mut low = LowBattery::default();
@@ -162,9 +168,7 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
             battery.clone(),
             state.session.clone(),
             move |status, keyboard| {
-                if let Some(tray) = &handle.state::<MenuBar>().0 {
-                    tray.battery_changed(status);
-                }
+                handle.state::<MenuBar<Wry>>().battery_changed(status);
                 for (half, percent) in low.update(status, settings.low_battery) {
                     notify(&handle, &low_battery::message(keyboard, half, percent));
                 }
@@ -183,9 +187,9 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
                     edited = !edited;
                     show_edited(&handle, edited);
                 }
-                if let Some(tray) = &handle.state::<MenuBar>().0 {
-                    tray.session_changed(status.clone());
-                }
+                handle
+                    .state::<MenuBar<Wry>>()
+                    .session_changed(status.clone());
                 let _ = SessionStateChanged(status).emit(&handle);
             }
             Update::Keymap(keymap) => {
@@ -239,13 +243,8 @@ fn session_with_backups() -> Session {
 
 /// The menu bar item (design §9.5), with a dot below the settings' low-battery level. Its
 /// menu reads the `battery` again as it opens.
-fn menu_bar(
-    app: &AppHandle,
-    settings: Settings,
-    battery: Option<BatteryWatch>,
-) -> tauri::Result<Tray<Wry>> {
-    let on_menu = |app: &AppHandle, event: MenuEvent| tray_menu(app, &event);
-    Tray::build(app, settings.low_battery, on_menu, move || {
+fn menu_bar(settings: Settings, battery: Option<BatteryWatch>) -> MenuBar<Wry> {
+    MenuBar::new(settings.low_battery, tray_menu, move || {
         if let Some(battery) = &battery {
             battery.read();
         }
@@ -257,8 +256,7 @@ fn tray_menu<R: Runtime>(app: &AppHandle<R>, event: &MenuEvent) {
     match event.id().as_ref() {
         tray::OPEN => show_main_window(app),
         tray::SETTINGS => {
-            show_main_window(app);
-            let _ = MenuItemChosen(MenuItem::Settings).emit(app);
+            let _ = settings::open_window(app);
         }
         tray::QUIT => {
             // The window asks first, while changes are being tried.
@@ -273,8 +271,8 @@ fn tray_menu<R: Runtime>(app: &AppHandle<R>, event: &MenuEvent) {
 
 /// Whether Keywright stays in the menu bar when the window closes (BAR-4).
 fn in_menu_bar<R: Runtime>(app: &AppHandle<R>) -> bool {
-    app.try_state::<MenuBar>()
-        .is_some_and(|menu_bar| menu_bar.0.is_some())
+    app.try_state::<MenuBar<R>>()
+        .is_some_and(|menu_bar| menu_bar.is_shown())
 }
 
 /// Shows or hides Keywright in the Dock, and the app's menus with it: an accessory app has

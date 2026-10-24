@@ -145,6 +145,16 @@ export const en = {
   "error.no-stock-keymap": "Keywright doesn't have this keyboard's stock keymap.",
   "error.reset-failed": "Your keyboard couldn't restore its stock settings.",
   "error.settings-not-opened": "System Settings didn't open.",
+  "error.setting-not-changed": "Keywright couldn't change that setting.",
+  "settings.general": "General",
+  "settings.menu-bar": "Show in menu bar",
+  "settings.menu-bar-note":
+    "Shows your keyboard's battery in the menu bar. Closing the window keeps Keywright there; with it off, closing the window quits.",
+  "settings.open-at-login": "Open at login",
+  "settings.login-requires-approval":
+    "macOS needs you to allow Keywright in System Settings › Login Items first.",
+  "settings.login-refused": "macOS didn't let Keywright open at login.",
+  "settings.open-login-items": "Open Login Items Settings",
   "error.would-strand": "That change would leave you stuck, so Keywright didn't make it.",
   "inspector.label": "Inspector",
   "inspector.empty": "Select a key to see what it does.",

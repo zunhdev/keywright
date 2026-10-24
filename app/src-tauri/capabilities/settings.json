@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "settings-window",
+  "description": "What the Settings window's UI may use: reading and changing the settings it shows (design §9.4), and opening System Settings at Login Items. Each tab adds the commands it uses.",
+  "windows": ["settings"],
+  "permissions": [
+    "allow-general-settings",
+    "allow-set-menu-bar",
+    "allow-set-open-at-login",
+    "allow-open-login-items-settings"
+  ]
+}

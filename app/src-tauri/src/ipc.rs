@@ -24,6 +24,7 @@ mod bluetooth;
 mod connection;
 mod edit;
 mod error;
+mod general;
 mod guard;
 mod keymap;
 mod layers;
@@ -40,6 +41,7 @@ use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
 
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
+pub use self::general::SettingsState;
 pub use self::keymap::KeymapChanged;
 pub use self::menu::MenuItemChosen;
 pub use self::quit::{QuitGuard, QuitRequested};
@@ -74,6 +76,10 @@ pub fn builder() -> Builder<tauri::Wry> {
             bluetooth::bluetooth_permission,
             bluetooth::allow_bluetooth,
             bluetooth::open_bluetooth_settings,
+            general::general_settings,
+            general::set_menu_bar,
+            general::set_open_at_login,
+            general::open_login_items_settings,
             keymap::session_keymap,
             action::key_catalog,
             action::dom_codes,

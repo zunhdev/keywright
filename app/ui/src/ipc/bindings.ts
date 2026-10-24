@@ -41,6 +41,22 @@ export const commands = {
 	 *  Fails if System Settings doesn't open.
 	 */
 	openBluetoothSettings: () => typedError<null, AppError>(__TAURI_INVOKE("open_bluetooth_settings")),
+	/**  The General tab, as it is now. */
+	generalSettings: () => __TAURI_INVOKE<GeneralSettings>("general_settings"),
+	/**
+	 *  Turns _Show in menu bar_ on or off: puts the item in the menu bar or takes it away, and
+	 *  saves the setting.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if macOS doesn't make the item, or the setting can't be saved; the item is as it
+	 *  was then.
+	 */
+	setMenuBar: (on: boolean) => typedError<null, AppError>(__TAURI_INVOKE("set_menu_bar", { on })),
+	/**  Turns _Open at login_ on or off, and returns it as macOS has it then. */
+	setOpenAtLogin: (on: boolean) => __TAURI_INVOKE<OpenAtLogin>("set_open_at_login", { on }),
+	/**  Opens System Settings at Login Items, where the person can allow Keywright. */
+	openLoginItemsSettings: () => __TAURI_INVOKE<void>("open_login_items_settings"),
 	/**
 	 *  The keymap the canvas draws, or `null` before the session has read one.
 	 * 
@@ -475,6 +491,11 @@ export type AppError =
 /**  System Settings didn't open. */
 { code: "settings-not-opened" } | 
 /**
+ *  A setting didn't change: the menu bar didn't take the item, or the setting couldn't
+ *  be saved.
+ */
+{ code: "setting-not-changed" } | 
+/**
  *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
  *  `force`, it is.
  */
@@ -568,6 +589,14 @@ export type DomCode = {
 	page: Page,
 	/**  The key's usage ID. */
 	id: number,
+};
+
+/**  The General tab. */
+export type GeneralSettings = {
+	/**  _Show in menu bar_: on keeps Keywright in the menu bar when the window closes. */
+	menuBar: boolean,
+	/**  _Open at login_. */
+	openAtLogin: OpenAtLogin,
 };
 
 /**  A group of keys in the key popup. */
@@ -893,6 +922,13 @@ export type Lighting =
 /**  The previous effect. */
 "previous-effect";
 
+/**  Why Keywright can't open at login. */
+export type LoginProblem = 
+/**  The person has to allow it in System Settings › Login Items first. */
+"requires-approval" | 
+/**  macOS refused to register it. */
+"refused";
+
 /**
  *  One of Keywright's own menu items. In TypeScript, its kebab-case name, such as
  *  `"toggle-layers"`, which is also its ID in the menu.
@@ -918,6 +954,14 @@ max: number } |
 { kind: "character"; 
 /**  The character. */
 character: string };
+
+/**  _Open at login_: whether it's on, and why it isn't, if it can't be. */
+export type OpenAtLogin = {
+	/**  Whether Keywright opens at login. */
+	on: boolean,
+	/**  Why it doesn't, though the person turned it on. */
+	problem: LoginProblem | null,
+};
 
 /**
  *  A behavior Keywright doesn't know, which the inspector edits by its parameters

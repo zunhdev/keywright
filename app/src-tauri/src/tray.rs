@@ -17,7 +17,7 @@
 //! is dimmed while no keyboard is connected. The battery is read again whenever the menu
 //! opens.
 
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use tauri::image::Image;
 use tauri::menu::{Menu, MenuEvent, MenuItem, PredefinedMenuItem};
@@ -37,16 +37,108 @@ pub const SETTINGS: &str = "tray:settings";
 /// Quit Keywright.
 pub const QUIT: &str = "tray:quit";
 
+/// The menu bar item, while it's on, and what it shows, which it keeps while it's off, so
+/// it's up to date when turned on (BAR-1, design §9.4).
+pub struct MenuBar<R: Runtime> {
+    tray: Mutex<Option<Tray<R>>>,
+    /// What the session and the battery last said.
+    last: Mutex<(Option<SessionStatus>, BatteryStatus)>,
+    /// The level below which a half's battery counts as low.
+    threshold: u8,
+    /// Hears the menu's items chosen.
+    on_menu: fn(&AppHandle<R>, &MenuEvent),
+    /// Hears the menu opening.
+    on_open: Arc<dyn Fn() + Send + Sync>,
+}
+
 /// The menu bar item, and the lines of its menu that change.
-pub struct Tray<R: Runtime> {
+struct Tray<R: Runtime> {
     icon: TrayIcon<R>,
     keyboard: MenuItem<R>,
     status: MenuItem<R>,
     battery: MenuItem<R>,
-    /// The level below which a half's battery counts as low.
-    threshold: u8,
-    /// What the session and the battery last said.
-    last: Mutex<(Option<SessionStatus>, BatteryStatus)>,
+}
+
+/// The lock, even if a thread panicked holding it: what it holds is still what was last
+/// heard.
+fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
+    mutex.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
+impl<R: Runtime> MenuBar<R> {
+    /// The menu bar item, off until [`show`](Self::show), with a dot below `threshold`
+    /// percent. `on_menu` hears its menu's items chosen, and `on_open` the menu opening.
+    pub fn new(
+        threshold: u8,
+        on_menu: fn(&AppHandle<R>, &MenuEvent),
+        on_open: impl Fn() + Send + Sync + 'static,
+    ) -> Self {
+        Self {
+            tray: Mutex::new(None),
+            last: Mutex::new((None, BatteryStatus::default())),
+            threshold,
+            on_menu,
+            on_open: Arc::new(on_open),
+        }
+    }
+
+    /// Whether the item is in the menu bar.
+    pub fn is_shown(&self) -> bool {
+        lock(&self.tray).is_some()
+    }
+
+    /// Puts the item in the menu bar, or takes it away.
+    ///
+    /// # Errors
+    ///
+    /// Fails if macOS doesn't make the item.
+    pub fn show(&self, app: &AppHandle<R>, shown: bool) -> tauri::Result<()> {
+        let mut tray = lock(&self.tray);
+        if !shown {
+            if tray.take().is_some() {
+                let _ = app.remove_tray_by_id(TRAY);
+            }
+            return Ok(());
+        }
+        if tray.is_none() {
+            let on_menu = self.on_menu;
+            let on_open = Arc::clone(&self.on_open);
+            *tray = Some(Tray::build(
+                app,
+                &self.shown(),
+                move |app, event| on_menu(app, &event),
+                move || on_open(),
+            )?);
+        }
+        Ok(())
+    }
+
+    /// Shows the session's new status.
+    pub fn session_changed(&self, status: SessionStatus) {
+        lock(&self.last).0 = Some(status);
+        self.refresh();
+    }
+
+    /// Shows the battery's new levels.
+    pub fn battery_changed(&self, battery: BatteryStatus) {
+        lock(&self.last).1 = battery;
+        self.refresh();
+    }
+
+    /// What the item shows now.
+    fn shown(&self) -> Shown {
+        let last = lock(&self.last);
+        Shown::of(last.0.as_ref(), last.1, self.threshold)
+    }
+
+    /// Shows what was last heard, if the item is on.
+    fn refresh(&self) {
+        let shown = self.shown();
+        if let Some(tray) = &*lock(&self.tray) {
+            // If macOS doesn't change the item, it shows what it did.
+            let _ = tray.show(&shown);
+        }
+    }
 }
 
 /// What the item shows.
@@ -129,19 +221,13 @@ fn level(percent: Option<u8>) -> String {
 }
 
 impl<R: Runtime> Tray<R> {
-    /// Puts the item in the menu bar, with a dot below `threshold` percent. `on_menu` hears
-    /// its menu's items chosen, and `on_open` the menu opening.
-    ///
-    /// # Errors
-    ///
-    /// Fails if macOS doesn't make the item.
-    pub fn build(
+    /// Puts the item in the menu bar, showing `shown`.
+    fn build(
         app: &AppHandle<R>,
-        threshold: u8,
+        shown: &Shown,
         on_menu: impl Fn(&AppHandle<R>, MenuEvent) + Send + Sync + 'static,
         on_open: impl Fn() + Send + Sync + 'static,
     ) -> tauri::Result<Self> {
-        let shown = &Shown::of(None, BatteryStatus::default(), threshold);
         let line = |text: &str| MenuItem::new(app, text, false, None::<&str>);
         let keyboard = line(&shown.keyboard)?;
         let status = line(&shown.status)?;
@@ -177,34 +263,7 @@ impl<R: Runtime> Tray<R> {
             keyboard,
             status,
             battery,
-            threshold,
-            last: Mutex::new((None, BatteryStatus::default())),
         })
-    }
-
-    /// Shows the session's new status.
-    pub fn session_changed(&self, status: SessionStatus) {
-        self.update(|last| last.0 = Some(status));
-    }
-
-    /// Shows the battery's new levels.
-    pub fn battery_changed(&self, battery: BatteryStatus) {
-        self.update(|last| last.1 = battery);
-    }
-
-    /// Changes what the item last heard, and shows it.
-    fn update(&self, change: impl FnOnce(&mut (Option<SessionStatus>, BatteryStatus))) {
-        let shown = {
-            // A poisoned lock still holds what was last heard.
-            let mut last = self
-                .last
-                .lock()
-                .unwrap_or_else(std::sync::PoisonError::into_inner);
-            change(&mut last);
-            Shown::of(last.0.as_ref(), last.1, self.threshold)
-        };
-        // If macOS doesn't change the item, it shows what it did.
-        let _ = self.show(&shown);
     }
 
     /// Shows `shown`.

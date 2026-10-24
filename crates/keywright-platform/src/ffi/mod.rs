@@ -4,3 +4,4 @@
 pub mod appkit;
 pub mod core_bluetooth;
 pub mod foundation;
+pub mod service_management;
