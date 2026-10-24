@@ -25,6 +25,10 @@ export function WindowToolbar() {
       <h1 className={styles.title} data-tauri-drag-region>
         {session?.keyboard ?? messages.format("app.name")}
       </h1>
+      {/* Demo mode says so, plainly (DEV-6). */}
+      {session?.transport === "simulated" && session.state.kind !== "no-device" ? (
+        <span className={styles.demo}>{messages.format("connection.demo-label")}</span>
+      ) : null}
       <Toolbar aria-label={messages.format("toolbar.label")}>
         <ConnectionChip />
         <div className={styles.search} data-tauri-drag-region>

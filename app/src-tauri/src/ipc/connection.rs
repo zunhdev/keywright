@@ -4,9 +4,12 @@
 //! [`keyboard_guide`] draws on the support pack, since a locked keyboard can't report its
 //! layout: the board with its unlock keys, which half to plug in, and the Bluetooth keys.
 //! The other commands answer the session's states: try again, keep or discard the changes
-//! the keyboard had, and apply again or discard the changes a restart lost.
+//! the keyboard had, and apply again or discard the changes a restart lost. Demo mode
+//! (DEV-6) connects a simulated keyboard instead of a real one.
 
 use keywright_core::support_packs::{self, Half, SupportPack};
+use keywright_device::{Connection, Peer, Session};
+use keywright_sim::Simulator;
 use serde::Serialize;
 use specta::Type;
 
@@ -111,6 +114,38 @@ pub fn keyboard_guide(pack: Option<String>) -> Option<KeyboardGuide> {
     .map(KeyboardGuide::of)
 }
 
+/// Connects a session to the demo keyboard (DEV-6): a simulated Sofle with its stock
+/// keymap, unlocked, which isn't backed up. Saving saves to it, and nothing else.
+pub async fn demo(session: &Session) -> Result<(), AppError> {
+    let keyboard = Simulator::sofle().map_err(|_| AppError::SessionStopped)?;
+    keyboard.press_unlock_key();
+    let connection = Connection::new(keyboard.connect(), Peer::Simulated).without_backups();
+    Ok(session.connect(connection).await?)
+}
+
+/// Explores Keywright without a keyboard (DEV-6, design §7): connects the demo keyboard,
+/// in place of whatever is connected.
+///
+/// # Errors
+///
+/// Fails if the session has stopped.
+#[tauri::command]
+#[specta::specta]
+pub async fn start_demo(app: tauri::State<'_, AppState>) -> Result<(), AppError> {
+    demo(&app.session).await
+}
+
+/// Leaves the demo: disconnects the demo keyboard, so a keyboard on USB can connect.
+///
+/// # Errors
+///
+/// Fails if the session has stopped.
+#[tauri::command]
+#[specta::specta]
+pub async fn leave_demo(app: tauri::State<'_, AppState>) -> Result<(), AppError> {
+    Ok(app.session.disconnect().await?)
+}
+
 /// Tries the keyboard again, after it stopped answering (CON-4, design §7).
 ///
 /// # Errors
@@ -170,7 +205,9 @@ pub async fn discard_changes(app: tauri::State<'_, AppState>) -> Result<(), AppE
 mod tests {
     use serde_json::json;
 
-    use super::{GuideStep, HalfName, keyboard_guide};
+    use keywright_device::{Session, State};
+
+    use super::{GuideStep, HalfName, demo, keyboard_guide};
 
     #[test]
     fn the_sofle_is_unlocked_by_holding_raise_and_tapping_b() {
@@ -209,5 +246,22 @@ mod tests {
             Some("Keebart Sofle Choc Pro BT".to_owned())
         );
         assert_eq!(keyboard_guide(Some("corne".to_owned())), None);
+    }
+
+    #[tokio::test]
+    async fn the_demo_is_an_unlocked_sofle_ready_to_edit() {
+        let session = Session::start();
+        demo(&session).await.unwrap();
+        session
+            .wait_for(|state| *state == State::Ready)
+            .await
+            .unwrap();
+        let snapshot = session.snapshot().await.unwrap();
+        assert_eq!(snapshot.keyboard.unwrap().identity.name, "Sofle Choc BT");
+        session.disconnect().await.unwrap();
+        session
+            .wait_for(|state| *state == State::NoDevice)
+            .await
+            .unwrap();
     }
 }

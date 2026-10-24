@@ -83,6 +83,13 @@ describe("with no keyboard", () => {
     await expectNoAxeViolations(container);
     stop();
   });
+
+  test("Explore Without a Keyboard starts the demo", async () => {
+    const { calls, stop } = drawWindow(sofle({ kind: "no-device" }));
+    await userEvent.click(screen.getByRole("button", { name: "Explore Without a Keyboard" }));
+    expect(calls).toEqual(["start_demo"]);
+    stop();
+  });
 });
 
 describe("connecting", () => {

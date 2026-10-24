@@ -85,6 +85,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             layers::remove_layer,
             layers::add_layer,
             connection::keyboard_guide,
+            connection::start_demo,
+            connection::leave_demo,
             connection::session_retry,
             connection::keep_unsaved_changes,
             connection::discard_unsaved_changes,

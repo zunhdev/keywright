@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { mockIPC } from "@tauri-apps/api/mocks";
 import { act, render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 
@@ -87,6 +88,23 @@ describe("the toolbar", () => {
     });
     await userEvent.click(screen.getByRole("button", { name: "3 changes" }));
     expect(useStore.getState().review).toBe(true);
+  });
+
+  test("the demo keyboard says so, and the chip's details offer to leave it", async () => {
+    const calls: string[] = [];
+    mockIPC((command) => {
+      calls.push(command);
+      return null;
+    });
+    renderAt(1280);
+    report({ ...sofle("ready"), transport: "simulated" });
+    expect(screen.getByText("Demo keyboard")).toBeDefined();
+    await userEvent.click(screen.getByRole("button", { name: "Demo · Unlocked" }));
+    expect(screen.getByText(/A demo keyboard, simulated in Keywright/u)).toBeDefined();
+    await userEvent.click(screen.getByRole("button", { name: "Leave Demo" }));
+    expect(calls).toContain("leave_demo");
+    report(sofle("no-device"));
+    expect(screen.queryByText("Demo keyboard")).toBeNull();
   });
 
   test("the chip's details say how, which firmware, and that the keyboard locks itself", async () => {

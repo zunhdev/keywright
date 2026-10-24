@@ -4,6 +4,7 @@ import { DialogTrigger } from "react-aria-components";
 import { Button } from "../design-system/Button.tsx";
 import { Icon } from "../design-system/Icon.tsx";
 import { Popover } from "../design-system/Popover.tsx";
+import { leaveDemo } from "../features/connection/actions.ts";
 import { type Messages, useMessages } from "../i18n/messages.ts";
 import type { SessionState, SessionStatus, Transport } from "../ipc/bindings.ts";
 import { useStore } from "./store.ts";
@@ -77,6 +78,11 @@ export function ConnectionChip() {
               <p className={styles.note}>{messages.format("chip.auto-lock")}</p>
             </>
           )}
+          {transport === "simulated" ? (
+            <Button size="compact" onPress={() => void leaveDemo()}>
+              {messages.format("connection.leave-demo")}
+            </Button>
+          ) : null}
           {locked ? (
             <Button
               variant="primary"

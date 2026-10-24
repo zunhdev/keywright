@@ -157,7 +157,12 @@ test("before a keymap is read, the canvas says what the session is doing", () =>
   expect(state.textContent).toBe("Not connected");
   // The canvas shows how to connect one; the state is for VoiceOver.
   expect(state.dataset["over"]).toBe("nothing");
-  expect(within(document.body).queryByRole("button")).toBeNull();
+  // The one thing to do without a keyboard is explore the demo.
+  expect(
+    within(document.body)
+      .getAllByRole("button")
+      .map((button) => button.textContent),
+  ).toEqual(["Explore Without a Keyboard"]);
 });
 
 test("switching layers tells VoiceOver which layer it is, and how many keys changed", () => {

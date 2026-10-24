@@ -39,7 +39,7 @@ export const en = {
   // The connection chip: how the keyboard is connected, and whether it's locked.
   "transport.usb": "USB",
   "transport.bluetooth": "Bluetooth",
-  "transport.simulated": "Simulated",
+  "transport.simulated": "Demo",
   "chip.not-connected": "Not connected",
   "chip.connecting": "Connecting…",
   "chip.locked": (args) => `${text(args, "transport")} · Locked`,
@@ -48,7 +48,8 @@ export const en = {
   "chip.details": "Connection",
   "chip.over.usb": "Connected over USB.",
   "chip.over.bluetooth": "Connected over Bluetooth.",
-  "chip.over.simulated": "Connected to a simulated keyboard.",
+  "chip.over.simulated":
+    "A demo keyboard, simulated in Keywright: everything works, and saving changes only it.",
   "chip.firmware": (args) => `Firmware: ${text(args, "name")}`,
   "chip.auto-lock": "Your keyboard locks itself after 10 minutes idle.",
   "chip.unlock": "Unlock…",

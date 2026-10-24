@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.17 — for review                                                       |
+| **Status**    | Draft v0.18 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -307,7 +307,7 @@ If a change would remove the last _Unlock editing_ key, strand a layer, or trap 
 
 - The unlock sheet opens when a keyboard connects locked. A keyboard that locks itself after it could be edited gets the banner instead, whose _Unlock…_ opens the sheet; so does the connection chip's.
 - The cards for the wrong half, the other connection, no live editing and incompatible firmware have _Try Again_, once the cable is in the right half or the output is switched. "Talking over the other connection" is a keyboard that stopped answering after it could be edited; one that never answered gets the no-live-editing card.
-- The no-keyboard outline and the unlock sheet's board are drawn from the support pack's layout; with no keyboard, it's the keyboard Keywright knows best. _Explore without a keyboard_ comes with demo mode (KEY-47).
+- The no-keyboard outline and the unlock sheet's board are drawn from the support pack's layout; with no keyboard, it's the keyboard Keywright knows best. _Explore without a keyboard_ starts demo mode (DEV-6): a simulated Sofle, unlocked, on which everything works and saving changes only it. The toolbar labels it "Demo keyboard" beside its name, the chip reads "Demo · Unlocked", and the chip's details offer _Leave Demo_, after which a keyboard on USB connects.
 
 ---
 
@@ -561,3 +561,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.15    | 2026-10-24 | Connection states (§7, KEY-46): the unsaved-changes card; when the unlock sheet opens and when the banner shows; Try Again on the cards; which keyboard the outline draws.                                                                                                                 |
 | 0.16    | 2026-10-24 | Changes (§6, KEY-50): Revert is a change undo undoes; layer rows; what opens the sheet; Undo and Redo name the change; the quit dialog's buttons, and closing the window asks too.                                                                                                         |
 | 0.17    | 2026-10-24 | Lockout guard (§5.1, §5.5, KEY-51): which changes go through it, the other warnings' words, the overview's warnings with Show Keys, and the sidebar's ⚠.                                                                                                                                   |
+| 0.18    | 2026-10-24 | Demo mode (§7, KEY-47): Explore without a keyboard, the "Demo keyboard" label, and Leave Demo.                                                                                                                                                                                             |

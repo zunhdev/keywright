@@ -50,6 +50,8 @@ struct Link {
     client: Client,
     notifications: broadcast::Receiver<Notification>,
     peer: Peer,
+    /// Whether the keyboard is backed up, if the session keeps backups.
+    backed_up: bool,
 }
 
 /// What the session knows about the keyboard. It outlives a connection, so reconnecting to
@@ -138,12 +140,17 @@ impl Actor {
 
     async fn command(&mut self, command: Command) {
         match command {
-            Command::Connect(Connection { client, peer }) => {
+            Command::Connect(Connection {
+                client,
+                peer,
+                backed_up,
+            }) => {
                 let notifications = client.notifications();
                 self.link = Some(Link {
                     client,
                     notifications,
                     peer,
+                    backed_up,
                 });
                 self.probe().await;
             }
@@ -332,7 +339,7 @@ impl Actor {
         let keymap = keyboard.keymap.clone();
         known.keyboard = Some(keyboard);
         let device = known.device.clone();
-        if self.backups.is_some() && !self.backed_up.contains(&device) {
+        if self.keeps_backups() && !self.backed_up.contains(&device) {
             // A backup that fails says so, and doesn't stop the session.
             if self.write_backup(Reason::FirstConnect, &keymap).is_ok() {
                 self.backed_up.push(device);
@@ -602,10 +609,16 @@ impl Actor {
         self.change(Change::Apply(edits)).await
     }
 
+    /// Whether the session backs up the keyboard: it keeps backups, and the connection
+    /// isn't one whose keyboard isn't backed up, such as a demo.
+    fn keeps_backups(&self) -> bool {
+        self.backups.is_some() && self.link.as_ref().is_none_or(|link| link.backed_up)
+    }
+
     /// Backs up the keymap the editor shows, which the keyboard holds. Returns `None` if
-    /// the session keeps no backups.
+    /// the session keeps no backups, or not of this keyboard.
     fn back_up(&mut self, reason: Reason) -> Result<Option<PathBuf>, SessionError> {
-        if self.backups.is_none() {
+        if !self.keeps_backups() {
             return Ok(None);
         }
         let Some(Known {

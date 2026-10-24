@@ -29,6 +29,8 @@ const COMMANDS: &[&str] = &[
     "remove_layer",
     "add_layer",
     "keyboard_guide",
+    "start_demo",
+    "leave_demo",
     "session_retry",
     "keep_unsaved_changes",
     "discard_unsaved_changes",
