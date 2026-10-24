@@ -7,12 +7,16 @@
 import { useStore } from "../../app/store.ts";
 import { toasts } from "../../design-system/Toast.tsx";
 import { messages } from "../../i18n/messages.ts";
+import type { Transport } from "../../ipc/bindings.ts";
 
 /** How long the transport toast stays, in ms. */
 const TOAST = 6000;
 
 /** Follows the session until the returned function. */
 export function followConnection(): () => void {
+  // The last real connection: the session has none for a moment when the keyboard moves,
+  // as when the cable comes out and it goes on over Bluetooth.
+  let last = real(useStore.getState().session?.transport ?? null);
   return useStore.subscribe((store, previous) => {
     const now = store.session;
     const before = previous.session;
@@ -25,8 +29,11 @@ export function followConnection(): () => void {
     } else if (kind !== "locked" && was === "locked") {
       useStore.setState({ unlockSheet: false, relocked: false });
     }
-    const [from, to] = [before?.transport ?? null, now?.transport ?? null];
-    if (from !== null && to !== null && from !== to) {
+    const to = now?.transport ?? null;
+    if (to === null) return;
+    const from = last;
+    last = real(to);
+    if (from !== null && last !== null && from !== last) {
       toasts.add(
         {
           title: messages().format("connection.moved", {
@@ -37,4 +44,9 @@ export function followConnection(): () => void {
       );
     }
   });
+}
+
+/** A connection to a real keyboard: entering or leaving demo mode isn't the keyboard moving. */
+function real(transport: Transport | null): Transport | null {
+  return transport === "simulated" ? null : transport;
 }

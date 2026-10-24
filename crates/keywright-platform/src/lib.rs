@@ -5,6 +5,7 @@
 //! - key labels for the current input source, and events when it changes;
 //! - detection of UF2 firmware volumes;
 //! - the login item;
+//! - whether Keywright may use Bluetooth, read without asking (`bluetooth`);
 //! - the window's "edited" dot, and the standard text-editing actions;
 //! - where Keywright keeps its files, such as automatic backups (`paths`);
 //! - the macOS version, for the Mac actions verified on it (`system`).
@@ -17,6 +18,7 @@
 //!
 //! Tech spec §11 describes the design.
 
+pub mod bluetooth;
 #[cfg(target_os = "macos")]
 mod ffi;
 pub mod paths;

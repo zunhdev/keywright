@@ -2,4 +2,5 @@
 //! is allowed (tech spec §4). Each module explains why its calls are sound.
 
 pub mod appkit;
+pub mod core_bluetooth;
 pub mod foundation;

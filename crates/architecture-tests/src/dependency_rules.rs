@@ -91,6 +91,15 @@ const OS_BINDINGS: &[&str] = &[
     "windows",
 ];
 
+/// Dependencies on [`OS_BINDINGS`] that only turn on a Cargo feature, by crate. The crate
+/// can't call them: it forbids `unsafe`, which calling them needs.
+const FEATURE_ONLY_BINDINGS: &[(&str, &str)] = &[
+    // Turns off objc2's signature check in debug builds, which bluest's `NSUUID` calls fail
+    // on macOS 27 (keywright-transport's Cargo.toml says why). Every build that uses
+    // Bluetooth has keywright-transport in it, so every one gets the feature.
+    ("keywright-transport", "objc2"),
+];
+
 /// The crates that may depend on [`OS_BINDINGS`] directly: the platform layer, and the app
 /// shell, which works with Tauri's native windows (tech spec §2).
 const OS_BINDING_USERS: &[&str] = &["keywright-platform", "keywright-app"];
@@ -158,6 +167,10 @@ fn only_the_platform_layer_and_the_app_bind_to_the_os() {
         .flat_map(|package| {
             non_dev_dependencies(package)
                 .filter(|dependency| in_any_family(&dependency.name, OS_BINDINGS))
+                .filter(|dependency| {
+                    !FEATURE_ONLY_BINDINGS
+                        .contains(&(package.name.as_str(), dependency.name.as_str()))
+                })
                 .map(move |dependency| {
                     format!(
                         "{} must not depend on {}; OS bindings belong in keywright-platform or the app",

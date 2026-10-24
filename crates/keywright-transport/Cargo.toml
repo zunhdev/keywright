@@ -25,10 +25,16 @@ tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
 # Logs what the transport can't report as an error, such as a port list that failed.
 tracing.workspace = true
 
+# Only to turn on a feature: the crate forbids `unsafe`, so it can't call objc2. In debug
+# builds, objc2 checks each call's signature. bluest reads peripherals' identifiers through
+# `NSUUID`, whose signature on macOS 27 isn't the one objc2 expects, and the check aborts.
+# objc2-foundation's `NSUUID` docs say to turn it off; release builds never check. Every
+# build with Bluetooth in it has this crate, so every one gets the feature. The
+# architecture tests allow this one dependency on an OS binding.
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = { workspace = true, features = ["disable-encoding-assertions"] }
+
 [dev-dependencies]
-# Only to turn off objc2's signature check in debug builds, for the Bluetooth tests (the
-# workspace's Cargo.toml says why). The crate itself mustn't bind to the OS.
-objc2.workspace = true
 tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
 
 [lints]

@@ -23,13 +23,13 @@ insta = { version = "1.49.0", default-features = false }
 # AppKit, for the macOS integration in keywright-platform (tech spec §11), at the versions
 # Tauri uses: objc2 calls Objective-C, objc2-app-kit has the AppKit classes, and
 # objc2-foundation the Foundation ones.
-#
-# In debug builds, objc2 checks every call's signature. bluest (the Bluetooth transport)
-# reads peripherals' identifiers through `NSUUID`, whose signature on macOS 27 isn't the
-# one objc2 expects, and the check aborts. objc2-foundation's `NSUUID` docs say to turn the
-# check off; release builds never make it. The app and the CLI get it through
-# keywright-platform, and keywright-transport's tests through their own dev-dependency.
-objc2 = { version = "0.6.5", features = ["disable-encoding-assertions"] }
+objc2 = "0.6.5"
+# CoreBluetooth's classes, for asking whether Keywright may use Bluetooth, which bluest
+# can't say without asking the person (CON-6).
+objc2-core-bluetooth = { version = "0.3.2", default-features = false, features = [
+  "std",
+  "CBManager",
+] }
 objc2-foundation = { version = "0.3.2", default-features = false, features = [
   "std",
   "NSProcessInfo",
