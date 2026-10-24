@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/*"]
+members = ["app/src-tauri", "crates/*"]
 resolver = "3"
 
 [workspace.package]
@@ -16,6 +16,9 @@ cargo_metadata = "0.23.1"
 # The CLI's command-line parsing, with `derive` for declaring it as types.
 clap = { version = "4.6.7", features = ["derive"] }
 insta = { version = "1.49.0", default-features = false }
+# The menu library Tauri uses, for the app's tests of its menu shortcuts. Keep it at the
+# version in Cargo.lock that `tauri` depends on.
+muda = { version = "0.20.0", default-features = false }
 proptest = "1.12.0"
 proptest-derive = "0.9.0"
 serde = { version = "1.0.229", features = ["derive"] }
@@ -24,6 +27,16 @@ serialport = "4.10.1"
 prost = "0.14.4"
 prost-build = "0.14.4"
 protox = "0.10.0"
+# The desktop app's framework (tech spec §12.1), its build script, and the plugins the
+# shell uses. Tauri's command-line tool, which builds the app, comes from Bun
+# (`@tauri-apps/cli` in package.json); keep its minor version in step with `tauri`.
+tauri = "2.12.4"
+tauri-build = "2.7.3"
+tauri-plugin-dialog = "2.8.3"
+tauri-plugin-notification = "2.7.0"
+tauri-plugin-opener = "2.7.2"
+tauri-plugin-single-instance = "2.5.4"
+tauri-plugin-window-state = "2.5.0"
 thiserror = "2.0.21"
 # Parsing only: Keywright writes its files itself, to control their layout and comments.
 toml = { version = "1.1.8", default-features = false, features = ["parse", "serde", "std"] }

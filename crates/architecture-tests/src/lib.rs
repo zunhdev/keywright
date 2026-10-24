@@ -5,7 +5,7 @@
 //!
 //! - each crate depends only on the workspace crates the architecture allows (tech spec §2);
 //! - `keywright-core` stays free of I/O, async and platform crates;
-//! - only `keywright-platform` binds to operating-system APIs;
+//! - only `keywright-platform` and the app shell bind to operating-system APIs;
 //! - every crate except `keywright-platform` forbids `unsafe` code (tech spec §4).
 //!
 //! When the architecture changes on purpose, update these rules and the tech spec in the

@@ -73,6 +73,46 @@ jobs:
       - name: Coverage
         run: mise run coverage
 
+  app:
+    name: App (macOS)
+    # Paused like the rust job above (KEY-94): run `mise run build:debug` locally before
+    # opening a pull request that changes the app. A skipped job still satisfies the
+    # required check.
+    if: vars.FULL_CI == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        with:
+          minimum_release_age: 3d
+          # Bun builds the UI and runs Tauri's command-line tool.
+          install_args: bun
+
+      - name: Install the Rust toolchain from rust-toolchain.toml
+        run: rustup toolchain install
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Check that Cargo.lock is up to date
+        run: cargo fetch --locked
+
+      # Builds the UI, then the app around it, unoptimised and without bundling it.
+      - name: Build the app (tauri build --debug --no-bundle)
+        run: mise run build:debug
+
   rust-portable:
     name: Rust portable (Linux)
     runs-on: ubuntu-24.04

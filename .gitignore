@@ -10,3 +10,9 @@ node_modules/
 # cargo-mutants output
 mutants.out/
 mutants.out.old/
+
+# The UI build, which the app embeds
+/app/ui/dist/
+
+# Tauri's generated schemas and permissions
+/app/src-tauri/gen/
