@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { List, ListItem } from "../design-system/List.tsx";
+import { switchLayer } from "../features/keyboard-canvas/edits.ts";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { LayerName } from "../features/keyboard-canvas/Keycap.tsx";
 import { useMessages } from "../i18n/messages.ts";
@@ -40,7 +41,6 @@ export function MainWindow() {
   const width = useWindowWidth();
   const layers = useStore((store) => store.keymap?.layers ?? NO_LAYERS);
   const shown = useStore(shownLayer);
-  const showLayer = useStore((store) => store.showLayer);
   const keyboard = useStore((store) => keyboardWidth(store.keymap));
   const panels = useStore((store) => store.panels);
   const paneWidths = useStore((store) => store.paneWidths);
@@ -70,7 +70,7 @@ export function MainWindow() {
             selectedKeys={shown === null ? [] : [shown.id]}
             onSelectionChange={(keys) => {
               const [id] = keys;
-              if (typeof id === "number") showLayer(id);
+              if (typeof id === "number") switchLayer(id);
             }}
             renderEmptyState={() => (
               <p className={styles.empty}>{messages.format("layers.empty")}</p>

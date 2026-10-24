@@ -36,6 +36,9 @@ pub struct Key {
     pub inherited: bool,
     /// What it does, in one sentence, such as "Tap for Escape, hold for ⌃ Control."
     pub sentence: String,
+    /// The sentence for VoiceOver, with keys by name rather than symbol, such as "Tap for
+    /// Escape, hold for Control." or "Types Shift-Command-4."
+    pub spoken: String,
 }
 
 /// What a keycap shows.
@@ -104,7 +107,15 @@ pub fn describe(
     behaviors: &BehaviorTable,
     conditional_layers: &[ConditionalLayer],
 ) -> Vec<Vec<Key>> {
-    let words = Words { keymap, behaviors };
+    let words = Words {
+        keymap,
+        behaviors,
+        shortcut: shortcut_name,
+    };
+    let spoken = Words {
+        shortcut: shortcut_spoken,
+        ..words
+    };
     keymap
         .layers
         .iter()
@@ -122,17 +133,18 @@ pub fn describe(
                             keycap: words.keycap(action),
                             inherited: false,
                             sentence: words.sentence(action),
+                            spoken: spoken.sentence(action),
                         };
                     }
                     let inherited = inherited(keymap, behaviors, &below, position);
-                    let sentence = words.sentence(inherited);
+                    let see_through = |sentence: String| {
+                        format!("Same as the layer below: {}", lowercase_first(&sentence))
+                    };
                     Key {
                         keycap: words.keycap(inherited),
                         inherited: true,
-                        sentence: format!(
-                            "Same as the layer below: {}",
-                            lowercase_first(&sentence)
-                        ),
+                        sentence: see_through(words.sentence(inherited)),
+                        spoken: see_through(spoken.sentence(inherited)),
                     }
                 })
                 .collect()
@@ -203,10 +215,13 @@ fn lowercase_first(sentence: &str) -> String {
     })
 }
 
-/// A keymap's words for its actions, which name its layers.
+/// A keymap's words for its actions, which name its layers, and name keys and shortcuts
+/// with `shortcut`: for reading, or for VoiceOver.
+#[derive(Clone, Copy)]
 struct Words<'a> {
     keymap: &'a Keymap,
     behaviors: &'a BehaviorTable,
+    shortcut: fn(Shortcut) -> String,
 }
 
 impl Words<'_> {
@@ -255,28 +270,27 @@ impl Words<'_> {
 
     fn sentence(&self, action: Action) -> String {
         let layer = |id| layer_phrase(self.keymap, id);
+        let name = self.shortcut;
         match action {
             Action::KeyPress(shortcut) if modifier_bits(shortcut.usage).is_some() => {
-                format!("Acts as {}.", shortcut_name(shortcut))
+                format!("Acts as {}.", name(shortcut))
             }
             Action::KeyPress(shortcut) if shortcut.usage.page == UsagePage::Consumer => {
-                format!("Presses {}.", shortcut_name(shortcut))
+                format!("Presses {}.", name(shortcut))
             }
-            Action::KeyPress(shortcut) => format!("Types {}.", shortcut_name(shortcut)),
-            Action::ModTap { hold, tap } => format!(
-                "Tap for {}, hold for {}.",
-                shortcut_name(tap),
-                shortcut_name(hold)
-            ),
+            Action::KeyPress(shortcut) => format!("Types {}.", name(shortcut)),
+            Action::ModTap { hold, tap } => {
+                format!("Tap for {}, hold for {}.", name(tap), name(hold))
+            }
             Action::LayerTap { layer: id, tap } => {
-                format!("Tap for {}, hold to use {}.", shortcut_name(tap), layer(id))
+                format!("Tap for {}, hold to use {}.", name(tap), layer(id))
             }
             Action::Momentary(id) => format!("Hold to use {}.", layer(id)),
             Action::ToLayer(id) => format!("Switches to {}.", layer(id)),
             Action::Toggle(id) => format!("Turns {} on or off.", layer(id)),
             Action::StickyLayer(id) => format!("Uses {} for the next key.", layer(id)),
             Action::StickyKey(shortcut) => {
-                format!("Holds {} for the next key.", shortcut_name(shortcut))
+                format!("Holds {} for the next key.", name(shortcut))
             }
             Action::Transparent => "Same as the layer below.".to_owned(),
             Action::None => "Does nothing.".to_owned(),
@@ -425,6 +439,27 @@ pub fn shortcut_name(shortcut: Shortcut) -> String {
         return name;
     }
     shortcut_label(shortcut)
+}
+
+/// A key or shortcut as VoiceOver should say it: by names rather than symbols, such as
+/// `Escape`, `Control-Shift` or `Shift-Command-4`. With Shift alone, a key is what it
+/// types, such as `!`.
+#[must_use]
+pub fn shortcut_spoken(shortcut: Shortcut) -> String {
+    let mods = shortcut.mods;
+    let modifiers = |bits: u8| held(bits).map(|(_, name)| name).collect::<Vec<_>>();
+    if let Some(bits) = modifier_bits(shortcut.usage) {
+        return modifiers(mods.bits() | bits).join("-");
+    }
+    if only_shift(mods)
+        && let Some(shifted) = us::label(shortcut.usage).and_then(|label| label.shifted)
+    {
+        return shifted.to_owned();
+    }
+    let (_, name) = names(shortcut.usage);
+    let mut words = modifiers(mods.bits());
+    words.push(&name);
+    words.join("-")
 }
 
 /// A Bluetooth command on a keycap. ZMK numbers devices from 0, people from 1.

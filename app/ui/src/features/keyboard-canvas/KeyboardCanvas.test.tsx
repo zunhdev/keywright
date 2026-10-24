@@ -6,46 +6,39 @@ import { I18nProvider } from "react-aria-components";
 
 import { useStore } from "../../app/store.ts";
 import { LOCALE } from "../../i18n/messages.ts";
-import type { SessionStatus } from "../../ipc/bindings.ts";
+import type { Layer } from "../../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
+import { drawSofle, keys, status } from "../../test/canvas.tsx";
 import { sofleKeymap } from "../../test/sofle-keymap.ts";
+import { switchLayer } from "./edits.ts";
 import { KeyboardCanvas } from "./KeyboardCanvas.tsx";
 
 const keymap = sofleKeymap;
 
-function status(kind: "ready" | "locked" | "no-device"): SessionStatus {
-  return {
-    state: { kind },
-    keyboard: "Sofle Choc BT",
-    pack: "keebart-sofle-choc-pro-bt",
-    transport: "usb",
-    changes: 0,
-  };
-}
-
-/** Draws the canvas, with the session in `kind` and the Sofle's stock keymap read. */
-function drawSofle(kind: "ready" | "locked" | "no-device" = "ready") {
-  useStore.setState({ session: status(kind), keymap });
-  return render(
-    <I18nProvider locale={LOCALE}>
-      <KeyboardCanvas />
-    </I18nProvider>,
+/** What VoiceOver should call each key on a layer: where it is, what it does, and how it stands out. */
+function labels(layer: Layer): string[] {
+  return layer.keys.map((key, position) =>
+    [
+      `${keymap.keys[position]?.place}. ${key.spoken}`,
+      key.changed ? "Changed." : null,
+      key.macWarning ? "Doesn't work on a Mac." : null,
+    ]
+      .filter((words) => words !== null)
+      .join(" "),
   );
 }
 
-/** The keys drawn, by key position. */
-function keys(): HTMLElement[] {
-  return screen.getAllByRole("button", { hidden: true });
-}
-
 describe("the Sofle's stock keymap", () => {
-  test("draws all 60 keys, each named by what it does", () => {
+  test("draws all 60 keys, each a key named by where it is and what it does", () => {
     drawSofle();
     expect(screen.getByRole("heading", { level: 2 }).textContent).toBe("default");
     const names = keys().map((key) => key.getAttribute("aria-label"));
-    expect(names).toEqual(keymap.layers[0]?.keys.map((key) => key.sentence) ?? []);
-    expect(names.slice(0, 3)).toEqual(["Types `.", "Types 1.", "Types 2."]);
-    expect(names[53]).toBe("Hold to use the lower layer.");
+    expect(names.slice(0, 2)).toEqual([
+      "Left half, row 1, key 1. Types `.",
+      "Left half, row 1, key 2. Types 1.",
+    ]);
+    expect(names[53]).toBe("Left half, row 5, key 4. Hold to use the lower layer.");
+    expect(keys().every((key) => key.getAttribute("aria-roledescription") === "key")).toBe(true);
   });
 
   test.each(keymap.layers.map((layer) => [layer.name, layer] as const))(
@@ -56,9 +49,7 @@ describe("the Sofle's stock keymap", () => {
         useStore.getState().showLayer(layer.id);
       });
       expect(screen.getByRole("heading", { level: 2 }).textContent).toBe(layer.name);
-      expect(keys().map((key) => key.getAttribute("aria-label"))).toEqual(
-        layer.keys.map((key) => key.sentence),
-      );
+      expect(keys().map((key) => key.getAttribute("aria-label"))).toEqual(labels(layer));
     },
   );
 
@@ -100,7 +91,9 @@ describe("the Sofle's stock keymap", () => {
       useStore.getState().showLayer(1);
     });
     const grave = keys()[0];
-    expect(grave?.getAttribute("aria-label")).toBe("Same as the layer below: types `.");
+    expect(grave?.getAttribute("aria-label")).toBe(
+      "Left half, row 1, key 1. Same as the layer below: types `.",
+    );
     expect(grave?.querySelector("[data-inherited]")?.textContent).toBe("`");
   });
 
@@ -110,13 +103,16 @@ describe("the Sofle's stock keymap", () => {
   });
 });
 
+/** The keys Tab reaches: the canvas has one. */
+const tabStops = () => keys().flatMap((key, position) => (key.tabIndex === 0 ? [position] : []));
+
 describe("selecting", () => {
   test("a click selects the key, which becomes the canvas's tab stop", async () => {
     drawSofle();
-    const tabStops = () =>
-      keys().flatMap((key, position) => (key.tabIndex === 0 ? [position] : []));
     expect(tabStops()).toEqual([0]);
-    await userEvent.click(screen.getByRole("button", { name: "Types Q." }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Left half, row 2, key 2. Types Q." }),
+    );
     expect(useStore.getState().selection).toEqual([13]);
     expect(keys()[13]?.dataset["selected"]).toBe("single");
     expect(tabStops()).toEqual([13]);
@@ -161,4 +157,13 @@ test("before a keymap is read, the canvas says what the session is doing", () =>
   expect(state.textContent).toBe("Not connected");
   expect(state.dataset["over"]).toBeUndefined();
   expect(within(document.body).queryByRole("button")).toBeNull();
+});
+
+test("switching layers tells VoiceOver which layer it is, and how many keys changed", () => {
+  drawSofle();
+  act(() => {
+    switchLayer(1);
+  });
+  expect(screen.getByText("lower layer, 60 keys, 0 changed")).toBeDefined();
+  expect(screen.getByRole("heading", { level: 2 }).textContent).toBe("lower");
 });

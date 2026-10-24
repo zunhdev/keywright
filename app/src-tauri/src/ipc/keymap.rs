@@ -32,7 +32,7 @@ pub struct Keymap {
 
 /// A key's place, size and rotation, as the keyboard reports them. Lengths are in
 /// hundredths of a key unit, and angles in hundredths of a degree, clockwise.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PhysicalKey {
     /// The left edge.
@@ -49,6 +49,9 @@ pub struct PhysicalKey {
     pub rotation_x: i32,
     /// The y coordinate of the point the key rotates around.
     pub rotation_y: i32,
+    /// Where the key is, in words, for VoiceOver: `Left half, row 3, key 1`, or `Key 12`
+    /// on a keyboard without a support pack.
+    pub place: String,
 }
 
 /// A knob: pressing it is the key at `position`, and turning it does what the support pack
@@ -82,6 +85,8 @@ pub struct Key {
     pub inherited: bool,
     /// What it does, in one sentence, for its tooltip.
     pub sentence: String,
+    /// The sentence for VoiceOver, with keys by name rather than symbol.
+    pub spoken: String,
     /// Whether it's being tried: it does something else than when last saved.
     pub changed: bool,
     /// Whether it does something that doesn't work on a Mac (MAC-7).
@@ -201,6 +206,7 @@ impl Keymap {
                         keycap: key.keycap.into(),
                         inherited: key.inherited,
                         sentence: key.sentence,
+                        spoken: key.spoken,
                         changed: changed.contains(&(layer.id, position)),
                         mac_warning: warnings.contains(&(layer.id, position)),
                     })
@@ -213,7 +219,8 @@ impl Keymap {
                 .layout
                 .keys
                 .iter()
-                .map(|key| PhysicalKey {
+                .enumerate()
+                .map(|(index, key)| PhysicalKey {
                     x: key.x,
                     y: key.y,
                     width: key.width,
@@ -221,6 +228,9 @@ impl Keymap {
                     rotation: key.rotation,
                     rotation_x: key.rotation_x,
                     rotation_y: key.rotation_y,
+                    place: pack
+                        .and_then(|pack| pack.key_place(index))
+                        .unwrap_or_else(|| format!("Key {}", index.saturating_add(1))),
                 })
                 .collect(),
             knobs: pack.map_or_else(Vec::new, |pack| {
@@ -354,11 +364,13 @@ mod tests {
         let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
         assert_eq!(keymap.keys.len(), 60);
         // The right thumb's inner key, rotated 24° anticlockwise around its corner.
-        let thumb = keymap.keys[55];
+        let thumb = &keymap.keys[55];
         assert_eq!(
             (thumb.rotation, thumb.rotation_x, thumb.rotation_y),
             (-2400, 900, 433)
         );
+        assert_eq!(thumb.place, "Right half, row 5, key 1");
+        assert_eq!(keymap.keys[42].place, "Left knob");
         let names: Vec<_> = keymap.layers.iter().map(|layer| &layer.name).collect();
         assert_eq!(names, ["default", "lower", "raise", "adjust"]);
         let turns: Vec<_> = keymap
@@ -459,6 +471,7 @@ mod tests {
             },
             inherited: false,
             sentence: "Tap for Escape, hold for ⌃ Control.".to_owned(),
+            spoken: "Tap for Escape, hold for Control.".to_owned(),
             changed: true,
             mac_warning: false,
         };
@@ -468,6 +481,7 @@ mod tests {
                 "keycap": { "kind": "tap-hold", "tap": "⎋ Esc", "hold": { "kind": "key", "text": "⌃" } },
                 "inherited": false,
                 "sentence": "Tap for Escape, hold for ⌃ Control.",
+                "spoken": "Tap for Escape, hold for Control.",
                 "changed": true,
                 "macWarning": false,
             })

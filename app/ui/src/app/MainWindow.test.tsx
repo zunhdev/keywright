@@ -17,6 +17,8 @@ function sofle(state: Exclude<SessionState["kind"], "incompatible">, changes = 0
     pack: "keebart-sofle-choc-pro-bt",
     transport: "usb",
     changes,
+    canUndo: false,
+    canRedo: false,
   };
 }
 
@@ -167,7 +169,9 @@ describe("the panes", () => {
     expect(layers.contains(document.activeElement)).toBe(true);
     await userEvent.tab();
     expect(canvas.contains(document.activeElement)).toBe(true);
-    expect(document.activeElement?.getAttribute("aria-label")).toBe("Types `.");
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Left half, row 1, key 1. Types `.",
+    );
     await userEvent.tab();
     expect(canvas.contains(document.activeElement)).toBe(false);
   });
@@ -186,7 +190,10 @@ describe("the layers", () => {
 
     await userEvent.click(screen.getByRole("gridcell", { name: "raise" }));
     expect(title()).toBe("raise");
-    expect(screen.getByRole("button", { name: "Uses Bluetooth device 1." })).toBeDefined();
+    expect(screen.getByText("raise layer, 60 keys, 0 changed")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Left half, row 1, key 2. Uses Bluetooth device 1." }),
+    ).toBeDefined();
   });
 });
 

@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Button } from "react-aria-components";
+import { Pressable, type PressEvent } from "react-aria-components";
 
 import { layerColour } from "../../design-system/layers.ts";
 import { TooltipTrigger } from "../../design-system/Tooltip.tsx";
@@ -31,9 +31,20 @@ export interface KeycapProps extends KeycapState {
   readonly round?: boolean;
   /** Whether Tab reaches it: one key on the canvas is the canvas's tab stop. */
   readonly tabbable?: boolean;
+  /** Its key position, which the canvas finds it by. */
+  readonly position?: number;
+  /**
+   * What VoiceOver calls it: where it is, what it does, and how it stands out, such as
+   * "Left half, row 3, key 1. Tap for Escape, hold for Control. Changed." By default, its
+   * sentence.
+   */
+  readonly label?: string;
+  /** Whether it's being dragged. */
+  readonly dragged?: boolean;
   /** Where it sits, rotated, on the canvas. */
   readonly style?: CSSProperties;
-  readonly onPress?: () => void;
+  /** Says that it was clicked or pressed, and whether with ⇧ or ⌘, to extend a selection. */
+  readonly onPress?: (modifiers: { shift: boolean; command: boolean }) => void;
 }
 
 /** How many characters a layer's colour square and its gap take, about. */
@@ -66,6 +77,9 @@ export function Keycap({
   selected,
   dropTarget,
   search,
+  position,
+  label = face.sentence,
+  dragged = false,
   style,
   onPress,
 }: KeycapProps) {
@@ -83,45 +97,59 @@ export function Keycap({
         : null;
   return (
     <TooltipTrigger tip={face.sentence}>
-      <Button
-        className={styles.key}
-        style={
-          { ...style, width, height, "--gap": `${gap}px`, "--unit": `${unit}px` } as CSSProperties
-        }
-        aria-label={face.sentence}
-        excludeFromTabOrder={!tabbable}
-        data-round={round || undefined}
-        data-selected={selected}
-        data-drop-target={dropTarget}
-        data-search={search}
-        {...(onPress === undefined ? {} : { onPress })}
+      <Pressable
+        {...(onPress === undefined
+          ? {}
+          : {
+              onPress: (event: PressEvent) => {
+                onPress({ shift: event.shiftKey, command: event.metaKey });
+              },
+            })}
       >
-        <span className={styles.cap} data-kind={face.keycap.kind} aria-hidden="true">
-          {dropTarget === undefined ? (
-            <span className={styles.face} data-inherited={face.inherited || undefined}>
-              <Face
-                face={face}
-                width={textWidth}
-                height={cap.height}
-                unit={unit}
-                messages={messages}
-              />
-            </span>
-          ) : (
-            <span className={styles.preview}>{messages.format(`keycap.drop.${dropTarget}`)}</span>
-          )}
-          {badge === null ? null : (
-            <span className={styles.badge} data-corner="top-left" data-badge={badge}>
-              {badge}
-            </span>
-          )}
-          {face.changed ? (
-            <span className={styles.badge} data-corner="top-right" data-badge="changed">
-              •
-            </span>
-          ) : null}
-        </span>
-      </Button>
+        {/* A native button, which keeps its role description: React Aria's drops it. */}
+        <button
+          type="button"
+          className={styles.key}
+          style={
+            { ...style, width, height, "--gap": `${gap}px`, "--unit": `${unit}px` } as CSSProperties
+          }
+          aria-label={label}
+          aria-roledescription={messages.format("keycap.role")}
+          tabIndex={tabbable ? 0 : -1}
+          data-position={position}
+          data-dragged={dragged || undefined}
+          data-round={round || undefined}
+          data-selected={selected}
+          data-drop-target={dropTarget}
+          data-search={search}
+        >
+          <span className={styles.cap} data-kind={face.keycap.kind} aria-hidden="true">
+            {dropTarget === undefined ? (
+              <span className={styles.face} data-inherited={face.inherited || undefined}>
+                <Face
+                  face={face}
+                  width={textWidth}
+                  height={cap.height}
+                  unit={unit}
+                  messages={messages}
+                />
+              </span>
+            ) : (
+              <span className={styles.preview}>{messages.format(`keycap.drop.${dropTarget}`)}</span>
+            )}
+            {badge === null ? null : (
+              <span className={styles.badge} data-corner="top-left" data-badge={badge}>
+                {badge}
+              </span>
+            )}
+            {face.changed ? (
+              <span className={styles.badge} data-corner="top-right" data-badge="changed">
+                •
+              </span>
+            ) : null}
+          </span>
+        </button>
+      </Pressable>
     </TooltipTrigger>
   );
 }

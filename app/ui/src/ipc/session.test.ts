@@ -13,6 +13,8 @@ const locked: SessionStatus = {
   pack: "keebart-sofle-choc-pro-bt",
   transport: "usb",
   changes: 0,
+  canUndo: false,
+  canRedo: false,
 };
 const ready: SessionStatus = { ...locked, state: { kind: "ready" } };
 

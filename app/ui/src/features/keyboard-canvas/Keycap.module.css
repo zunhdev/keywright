@@ -15,6 +15,11 @@
   cursor: default;
   transition: opacity var(--motion-hover) var(--ease-out);
 
+  /* The key being dragged onto another (design §4.5). */
+  &[data-dragged] {
+    opacity: 0.5;
+  }
+
   /* Searching: keys that don't match fade (design §4.6). */
   &[data-search="no-match"] {
     opacity: 0.3;
@@ -40,7 +45,7 @@
     border-radius: 50%;
   }
 
-  .key[data-hovered] & {
+  .key:hover & {
     --fill: var(--surface-hover);
   }
 

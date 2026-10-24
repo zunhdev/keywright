@@ -62,11 +62,51 @@ export const en = {
   "canvas.label": "Keyboard",
   "canvas.knob": (args) => `Turning: ${text(args, "turn")}. Can't be changed yet.`,
   "canvas.knobs": (args) => `Turning the knobs: ${text(args, "turns")}. Can't be changed yet.`,
+  "canvas.layer-shown": (args) => {
+    const changed = Number(args?.["changed"] ?? 0);
+    return `${text(args, "name")} layer, ${text(args, "keys")} keys, ${changed} changed`;
+  },
+
+  // A key, as VoiceOver hears it (design §12): where it is, what it does, and how it stands
+  // out.
+  "key.label": (args) => `${text(args, "place")}. ${text(args, "spoken")}`,
+  "key.changed": "Changed.",
+  "key.mac-warning": "Doesn't work on a Mac.",
+  "key.selected": "Selected.",
+
+  // The keys' context menu (design §4.5), and Keyboard › Does Nothing's one-time hint
+  // (design §4.7).
+  "key-menu.label": "Key",
+  "key-menu.record": "Record Shortcut",
+  "key-menu.copy": "Copy Action",
+  "key-menu.paste": "Paste Action",
+  "key-menu.same-as-layer-below": "Same as Layer Below",
+  "key-menu.does-nothing": "Does Nothing",
+  "key-menu.restore": "Restore Stock",
+  "key-menu.review": "Show in Review",
+  "does-nothing.title": "Make it do nothing?",
+  "does-nothing.body":
+    "A key that does nothing stops presses on this layer, so the layers below it don't get them either. To leave a key to the layer below, press T for Same as Layer Below.",
+  "does-nothing.cancel": "Cancel",
+  "does-nothing.confirm": "Does Nothing",
+
+  // Why a change didn't happen, by the Rust side's error code (NFR-6).
+  "error.not-ready": "The keymap can't be changed right now.",
+  "error.busy": "The keyboard is still making the last change. Try again in a moment.",
+  "error.nothing-to-undo": "There's nothing to undo.",
+  "error.nothing-to-redo": "There's nothing to redo.",
+  "error.nothing-to-paste": "Copy a key's action first.",
+  "error.edit-refused": "That change no longer fits the keymap.",
+  "error.keyboard-failed": "The keyboard didn't make the change, so Keywright undid it.",
+  "error.backup-failed": "Keywright couldn't back up the keymap, so it changed nothing.",
+  "error.session-stopped": "Keywright lost track of the keyboard. Quit and open it again.",
+  "error.menu-failed": "The menu bar didn't take a change.",
   "inspector.label": "Inspector",
   "inspector.empty": "Select a key to see what it does.",
 
-  // Keycaps (design §4.2): what holding a key does, how a layer key turns its layer on,
-  // and what dropping a dragged key would do.
+  // Keycaps (design §4.2): what VoiceOver calls them, what holding a key does, how a layer
+  // key turns its layer on, and what dropping a dragged key would do.
+  "keycap.role": "key",
   "keycap.hold": "hold",
   "keycap.mode.hold": "hold",
   "keycap.mode.switch": "switch",
@@ -76,6 +116,7 @@ export const en = {
   "keycap.drop.copy": "Copy here",
 
   // Menu items the window renames (design §9.6).
+  "menu.layer": (args) => `Layer ${text(args, "number")}`,
   "menu.hide-layers": "Hide Layers",
   "menu.show-layers": "Show Layers",
   "menu.hide-inspector": "Hide Inspector",

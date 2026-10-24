@@ -147,6 +147,86 @@ pub enum EditError {
 }
 
 impl Edit {
+    /// The edits that make the keys at `positions` on a layer do what `binding` says, such
+    /// as pasting an action onto several keys (EDIT-5, EDIT-7). Keys that already do it
+    /// need no edit, and a key named twice gets one.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the keymap has no such layer, or a position is past its keys.
+    pub fn set_keys(
+        keymap: &Keymap,
+        layer: LayerId,
+        positions: &[usize],
+        binding: Binding,
+    ) -> Result<Vec<Self>, EditError> {
+        let bindings = &layer_of(keymap, layer)?.bindings;
+        let mut edits: Vec<Self> = Vec::new();
+        for &position in positions {
+            let before = *bindings
+                .get(position)
+                .ok_or(EditError::PositionOutOfRange {
+                    position,
+                    keys: bindings.len(),
+                })?;
+            let named = edits.iter().any(|edit| {
+                matches!(edit, Self::SetBinding { position: earlier, .. } if *earlier == position)
+            });
+            if before != binding && !named {
+                edits.push(Self::SetBinding {
+                    layer,
+                    position,
+                    before,
+                    after: binding,
+                });
+            }
+        }
+        Ok(edits)
+    }
+
+    /// The edits that swap what two keys do on a layer, as dragging one onto the other
+    /// does (EDIT-5): one group, so undoing it undoes both. Keys that do the same need no
+    /// edit.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the keymap has no such layer, or a position is past its keys.
+    pub fn swap_keys(
+        keymap: &Keymap,
+        layer: LayerId,
+        first: usize,
+        second: usize,
+    ) -> Result<Vec<Self>, EditError> {
+        let bindings = &layer_of(keymap, layer)?.bindings;
+        let binding = |position: usize| {
+            bindings
+                .get(position)
+                .copied()
+                .ok_or(EditError::PositionOutOfRange {
+                    position,
+                    keys: bindings.len(),
+                })
+        };
+        let (a, b) = (binding(first)?, binding(second)?);
+        if a == b {
+            return Ok(Vec::new());
+        }
+        Ok(vec![
+            Self::SetBinding {
+                layer,
+                position: first,
+                before: a,
+                after: b,
+            },
+            Self::SetBinding {
+                layer,
+                position: second,
+                before: b,
+                after: a,
+            },
+        ])
+    }
+
     /// The edit that undoes this one.
     ///
     /// Undoing an added layer removes it, and undoing that restores it: the keyboard
@@ -297,6 +377,10 @@ impl Edit {
         }
         Ok(())
     }
+}
+
+fn layer_of(keymap: &Keymap, id: LayerId) -> Result<&Layer, EditError> {
+    keymap.layer(id).ok_or(EditError::UnknownLayer(id))
 }
 
 fn layer_mut(keymap: &mut Keymap, id: LayerId) -> Result<&mut Layer, EditError> {

@@ -32,6 +32,63 @@ export const commands = {
 	layers: Layer[],
 } | null, AppError>(__TAURI_INVOKE("session_keymap")),
 	/**
+	 *  Swaps what two keys do on a layer (dragging one onto the other).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keymap can't be changed now, a key isn't there, or the keyboard doesn't
+	 *  carry out the change, which is then undone.
+	 */
+	swapKeys: (layer: number, first: number, second: number) => typedError<null, AppError>(__TAURI_INVOKE("swap_keys", { layer, first, second })),
+	/**
+	 *  Makes the key at `to` do what the key at `from` does, on a layer (⌥-dragging).
+	 * 
+	 *  # Errors
+	 * 
+	 *  As for [`swap_keys`].
+	 */
+	copyKey: (layer: number, from: number, to: number) => typedError<null, AppError>(__TAURI_INVOKE("copy_key", { layer, from, to })),
+	/**
+	 *  Copies what a key does, to paste onto other keys (⌘C).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no keymap, or the key isn't there.
+	 */
+	copyAction: (layer: number, position: number) => typedError<null, AppError>(__TAURI_INVOKE("copy_action", { layer, position })),
+	/**
+	 *  Makes keys do what the key last copied does (⌘V).
+	 * 
+	 *  # Errors
+	 * 
+	 *  As for [`swap_keys`], and if nothing has been copied.
+	 */
+	pasteAction: (layer: number, positions: number[]) => typedError<null, AppError>(__TAURI_INVOKE("paste_action", { layer, positions })),
+	/**
+	 *  Makes keys "same as layer below" (T) or "does nothing" (⌫).
+	 * 
+	 *  # Errors
+	 * 
+	 *  As for [`swap_keys`].
+	 */
+	setKeys: (layer: number, positions: number[], action: KeyAction) => typedError<null, AppError>(__TAURI_INVOKE("set_keys", { layer, positions, action })),
+	/**
+	 *  Undoes the last change (⌘Z).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's nothing to undo, or as for [`swap_keys`].
+	 */
+	undo: () => typedError<null, AppError>(__TAURI_INVOKE("undo")),
+	/**
+	 *  Redoes the last change undone (⇧⌘Z).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's nothing to redo, or as for [`swap_keys`].
+	 */
+	redo: () => typedError<null, AppError>(__TAURI_INVOKE("redo")),
+	/**
 	 *  Enables or disables a menu item, and renames it if `label` is given, such as View's
 	 *  "Show Layers" once the layers are hidden.
 	 * 
@@ -63,6 +120,8 @@ export type AppError =
 { code: "nothing-to-undo" } | 
 /**  There's nothing to redo. */
 { code: "nothing-to-redo" } | 
+/**  Nothing has been copied to paste. */
+{ code: "nothing-to-paste" } | 
 /**  The editor refused an edit that doesn't fit the keymap. */
 { code: "edit-refused" } | 
 /**  The keyboard didn't carry out a request, so the session rolled the change back. */
@@ -95,11 +154,20 @@ export type Key = {
 	inherited: boolean,
 	/**  What it does, in one sentence, for its tooltip. */
 	sentence: string,
+	/**  The sentence for VoiceOver, with keys by name rather than symbol. */
+	spoken: string,
 	/**  Whether it's being tried: it does something else than when last saved. */
 	changed: boolean,
 	/**  Whether it does something that doesn't work on a Mac (MAC-7). */
 	macWarning: boolean,
 };
+
+/**  What [`set_keys`] makes keys do. */
+export type KeyAction = 
+/**  Same as the layer below (T on the canvas). */
+"same-as-layer-below" | 
+/**  Nothing (⌫ on the canvas). */
+"does-nothing";
 
 /**
  *  What a keycap shows (design §4.2). In TypeScript, `{ kind: "label", text: "A" }` and so
@@ -208,6 +276,11 @@ export type PhysicalKey = {
 	rotationX: number,
 	/**  The y coordinate of the point the key rotates around. */
 	rotationY: number,
+	/**
+	 *  Where the key is, in words, for VoiceOver: `Left half, row 3, key 1`, or `Key 12`
+	 *  on a keyboard without a support pack.
+	 */
+	place: string,
 };
 
 /**  Why a keyboard is incompatible. */
@@ -273,6 +346,10 @@ export type SessionStatus = {
 	transport: Transport | null,
 	/**  How many changes are being tried and not saved: the rows of the review list. */
 	changes: number,
+	/**  Whether there's a change to undo. */
+	canUndo: boolean,
+	/**  Whether there's a change undone to redo. */
+	canRedo: boolean,
 };
 
 /**  How the session reaches the keyboard. */

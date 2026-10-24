@@ -6,7 +6,18 @@
 use tauri_build::{AppManifest, Attributes};
 
 /// The app's own commands (src/ipc.rs).
-const COMMANDS: &[&str] = &["session_state", "session_keymap", "menu_set"];
+const COMMANDS: &[&str] = &[
+    "session_state",
+    "session_keymap",
+    "swap_keys",
+    "copy_key",
+    "copy_action",
+    "paste_action",
+    "set_keys",
+    "undo",
+    "redo",
+    "menu_set",
+];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     tauri_build::try_build(Attributes::new().app_manifest(AppManifest::new().commands(COMMANDS)))?;

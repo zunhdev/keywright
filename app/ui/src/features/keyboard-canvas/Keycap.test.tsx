@@ -13,6 +13,7 @@ function face(keycap: KeycapData, more: Partial<Key> = {}): Key {
     keycap,
     inherited: false,
     sentence: "Does something.",
+    spoken: "Does something.",
     changed: false,
     macWarning: false,
     ...more,
