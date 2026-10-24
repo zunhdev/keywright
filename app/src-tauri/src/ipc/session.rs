@@ -4,7 +4,9 @@
 //! (`session://state`), which [`follow`] sends each time the state changes. [`follow`]
 //! sends the keymap too, when it changes ([`super::keymap`]).
 
+use keywright_core::edit::Edit;
 use keywright_core::editor::Editor;
+use keywright_core::keycap;
 use keywright_device::{Incompatibility, Peer, Session, SessionEvent, Snapshot, State};
 use serde::Serialize;
 use specta::Type;
@@ -33,6 +35,10 @@ pub struct SessionStatus {
     pub can_undo: bool,
     /// Whether there's a change undone to redo.
     pub can_redo: bool,
+    /// What undo would take back, in a few words, for the Edit menu: "Assign ⌘C to B".
+    pub undo: Option<String>,
+    /// What redo would apply again, in a few words.
+    pub redo: Option<String>,
 }
 
 /// How the session reaches the keyboard.
@@ -213,6 +219,8 @@ struct Tracker {
     changes: u32,
     can_undo: bool,
     can_redo: bool,
+    undo: Option<String>,
+    redo: Option<String>,
 }
 
 impl Tracker {
@@ -226,6 +234,16 @@ impl Tracker {
             });
             self.can_undo = editor.is_some_and(Editor::can_undo);
             self.can_redo = editor.is_some_and(Editor::can_redo);
+            let name = |group: Option<&[Edit]>| {
+                let (editor, keyboard) = (editor?, snapshot.keyboard.as_ref()?);
+                Some(keycap::describe_edits(
+                    editor.current(),
+                    &keyboard.behaviors,
+                    group?,
+                ))
+            };
+            self.undo = name(editor.and_then(Editor::next_undo));
+            self.redo = name(editor.and_then(Editor::next_redo));
             if let Some(keyboard) = &snapshot.keyboard {
                 self.keyboard = Some(keyboard.identity.name.clone());
             }
@@ -247,6 +265,8 @@ impl Tracker {
             changes: self.changes,
             can_undo: self.can_undo,
             can_redo: self.can_redo,
+            undo: self.undo.clone(),
+            redo: self.redo.clone(),
         }
     }
 }
@@ -282,6 +302,8 @@ mod tests {
             changes: 0,
             can_undo: false,
             can_redo: false,
+            undo: None,
+            redo: None,
         }
     }
 
@@ -294,6 +316,8 @@ mod tests {
             changes: 0,
             can_undo: false,
             can_redo: false,
+            undo: None,
+            redo: None,
         }
     }
 
@@ -358,12 +382,17 @@ mod tests {
             (tried.changes, tried.can_undo, tried.can_redo),
             (1, true, false)
         );
+        assert_eq!(tried.undo.as_deref(), Some("Rename default to Home"));
 
         session.undo().await.unwrap();
         let undone = statuses.recv().await.unwrap();
         assert_eq!(
             (undone.changes, undone.can_undo, undone.can_redo),
             (0, false, true)
+        );
+        assert_eq!(
+            (undone.undo, undone.redo.as_deref()),
+            (None, Some("Rename default to Home"))
         );
     }
 

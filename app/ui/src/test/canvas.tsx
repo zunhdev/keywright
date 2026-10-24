@@ -21,6 +21,8 @@ export function status(kind: "ready" | "locked" | "no-device"): SessionStatus {
     changes: 0,
     canUndo: false,
     canRedo: false,
+    undo: null,
+    redo: null,
   };
 }
 

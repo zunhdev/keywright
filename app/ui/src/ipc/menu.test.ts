@@ -16,6 +16,8 @@ const ready: SessionStatus = {
   changes: 0,
   canUndo: false,
   canRedo: false,
+  undo: null,
+  redo: null,
 };
 
 /** Each menu item's state, as the Rust side last heard it: "item: label", or "item (disabled): label". */
@@ -89,7 +91,8 @@ describe("with no keymap", () => {
   test("the items for keys, layers and zoom are disabled", async () => {
     const calls = rustSide();
     const stop = await followMenu();
-    for (const item of ["zoom-in", "actual-size", "undo"]) {
+    expect(calls).toContain("undo (disabled): Undo");
+    for (const item of ["zoom-in", "actual-size"]) {
       expect(calls).toContain(`${item} (disabled): null`);
     }
     expect(calls).toContain("copy-action (disabled): Copy Action");
@@ -182,7 +185,7 @@ describe("with the Sofle's keymap", () => {
     expect(menu.get("copy-action")).toBe("copy-action: Copy");
     expect(menu.get("paste-action")).toBe("paste-action: Paste");
     expect(menu.get("select-all-keys")).toBe("select-all-keys: Select All");
-    expect(menu.get("undo")).toBe("undo: null");
+    expect(menu.get("undo")).toBe("undo: Undo");
     calls.length = 0;
     await emit("menu://item", "undo");
     await emit("menu://item", "redo");
@@ -200,7 +203,25 @@ describe("with the Sofle's keymap", () => {
     useStore.setState({ textFocused: false });
     await Bun.sleep(0);
     expect(menu.get("copy-action")).toBe("copy-action: Copy Action");
-    expect(menu.get("undo")).toBe("undo (disabled): null");
+    expect(menu.get("undo")).toBe("undo (disabled): Undo");
+    stop();
+  });
+
+  test("Save, Review Changes and Discard Changes… are enabled while changes are tried", async () => {
+    const { stop } = await readySofle();
+    expect(menu.get("save")).toBe("save (disabled): null");
+    useStore.setState({ session: { ...ready, changes: 2 } });
+    await Bun.sleep(0);
+    for (const item of ["save", "review-changes", "discard-changes"]) {
+      expect(menu.get(item)).toBe(`${item}: null`);
+    }
+    await emit("menu://item", "save");
+    expect(useStore.getState().review).toBe(true);
+    useStore.setState({ review: false });
+    await emit("menu://item", "review-changes");
+    expect(useStore.getState().review).toBe(true);
+    await emit("menu://item", "discard-changes");
+    expect(useStore.getState().discarding).toBe(true);
     stop();
   });
 
@@ -211,11 +232,16 @@ describe("with the Sofle's keymap", () => {
     stop();
   });
 
-  test("Undo and Redo follow what the session can undo, and ask it to", async () => {
+  test("Undo and Redo say what they'd do, follow what the session can undo, and ask it to", async () => {
     const { calls, stop } = await readySofle();
-    useStore.setState({ session: { ...ready, canUndo: true } });
-    expect(calls).toContain("undo: null");
-    expect(calls).not.toContain("redo: null");
+    useStore.setState({ session: { ...ready, canUndo: true, undo: "Assign ⌘C to B" } });
+    await Bun.sleep(0);
+    expect(calls).toContain("undo: Undo Assign ⌘C to B");
+    expect(calls).not.toContain("redo: Redo");
+    useStore.setState({ session: { ...ready, canRedo: true, redo: "Swap Q and W" } });
+    await Bun.sleep(0);
+    expect(calls).toContain("redo: Redo Swap Q and W");
+    expect(menu.get("undo")).toBe("undo (disabled): Undo");
 
     await emit("menu://item", "undo");
     await emit("menu://item", "redo");
@@ -232,9 +258,10 @@ describe("with the Sofle's keymap", () => {
       copied: true,
     });
     expect(menu.get("copy-action")).toBe("copy-action: Copy Action");
-    for (const item of ["same-as-layer-below", "does-nothing", "undo"]) {
+    for (const item of ["same-as-layer-below", "does-nothing"]) {
       expect(menu.get(item)).toBe(`${item} (disabled): null`);
     }
+    expect(menu.get("undo")).toBe("undo (disabled): Undo");
     expect(menu.get("paste-action")).toBe("paste-action (disabled): Paste Action");
     stop();
   });

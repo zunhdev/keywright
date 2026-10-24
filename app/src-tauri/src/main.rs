@@ -19,12 +19,13 @@ mod simulator;
 use std::error::Error;
 
 use keywright_device::{Backups, Session};
-use tauri::{App, AppHandle, Manager, Runtime};
+use tauri::{App, AppHandle, Manager, RunEvent, Runtime, WindowEvent};
 use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
 
 use crate::ipc::{
-    AppState, KeymapChanged, MenuItemChosen, SessionStateChanged, SessionStatus, Update,
+    AppState, KeymapChanged, MenuItemChosen, QuitGuard, QuitRequested, SessionStateChanged,
+    SessionStatus, Update,
 };
 use crate::menu::MenuItem;
 use crate::simulator::Scenario;
@@ -62,11 +63,39 @@ fn main() -> tauri::Result<()> {
             }
         })
         .invoke_handler(ipc.invoke_handler())
+        .manage(QuitGuard::default())
+        .on_window_event(|window, event| {
+            // Closing the window quits, so it asks first too (SAF-5).
+            if let WindowEvent::CloseRequested { api, .. } = event
+                && ask_before_quitting(window.app_handle())
+            {
+                api.prevent_close();
+            }
+        })
         .setup(move |app| {
             ipc.mount_events(app);
             start_session(app)
         })
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())?
+        .run(|app, event| {
+            // ⌘Q and the Dock's Quit, while changes are being tried (SAF-5).
+            if let RunEvent::ExitRequested { api, .. } = event
+                && ask_before_quitting(app)
+            {
+                api.prevent_exit();
+            }
+        });
+    Ok(())
+}
+
+/// Whether a quit has to stop, because changes are being tried and the UI hasn't said to
+/// quit anyway; if so, asks the UI to ask.
+fn ask_before_quitting<R: Runtime>(app: &AppHandle<R>) -> bool {
+    let ask = app.state::<QuitGuard>().should_ask();
+    if ask {
+        let _ = QuitRequested.emit(app);
+    }
+    ask
 }
 
 /// Starts the device session, connects a simulated keyboard if `KEYWRIGHT_SIMULATOR`
@@ -90,6 +119,7 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
         state.session.clone(),
         move |update| match update {
             Update::Status(status) => {
+                handle.state::<QuitGuard>().set_edited(is_edited(&status));
                 if is_edited(&status) != edited {
                     edited = !edited;
                     show_edited(&handle, edited);

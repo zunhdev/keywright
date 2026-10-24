@@ -19,6 +19,8 @@ function sofle(state: Exclude<SessionState["kind"], "incompatible">, changes = 0
     changes,
     canUndo: false,
     canRedo: false,
+    undo: null,
+    redo: null,
   };
 }
 
@@ -66,7 +68,7 @@ describe("the toolbar", () => {
     expect(screen.getByRole("button", { name: "Not connected" })).toBeDefined();
   });
 
-  test("shows the changes being tried, and can save only when there are some", () => {
+  test("shows the changes being tried, and can save only when there are some, through Review", async () => {
     renderAt(1280);
     report(sofle("ready"));
     expect(screen.queryByRole("button", { name: /change/u })).toBeNull();
@@ -77,6 +79,14 @@ describe("the toolbar", () => {
     report(sofle("ready", 3));
     expect(screen.getByRole("button", { name: "3 changes" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Save" }).hasAttribute("disabled")).toBe(false);
+    // Saving goes through Review (design §6), from either button.
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(useStore.getState().review).toBe(true);
+    act(() => {
+      useStore.setState({ review: false });
+    });
+    await userEvent.click(screen.getByRole("button", { name: "3 changes" }));
+    expect(useStore.getState().review).toBe(true);
   });
 
   test("the chip's details say how, which firmware, and that the keyboard locks itself", async () => {

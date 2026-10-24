@@ -392,6 +392,26 @@ fn a_new_change_clears_redo() {
 }
 
 #[test]
+fn the_next_undo_and_redo_are_the_groups_as_applied() {
+    let mut editor = Editor::new(stock_keymap());
+    assert_eq!(editor.next_undo(), None);
+    set(&mut editor, 2, RAISE_COPY, kp(COMMAND_C));
+    editor.confirm();
+    let applied = editor.next_undo().unwrap().to_vec();
+    assert!(matches!(
+        applied.as_slice(),
+        [Edit::SetBinding {
+            position: RAISE_COPY,
+            ..
+        }]
+    ));
+    editor.undo().unwrap();
+    editor.confirm();
+    assert_eq!(editor.next_undo(), None);
+    assert_eq!(editor.next_redo(), Some(applied.as_slice()));
+}
+
+#[test]
 fn a_drag_swap_is_one_group() {
     let mut editor = Editor::new(stock_keymap());
     let raise = stock_keymap().layers[2].clone();

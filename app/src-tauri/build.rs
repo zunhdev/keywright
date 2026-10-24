@@ -34,6 +34,10 @@ const COMMANDS: &[&str] = &[
     "discard_unsaved_changes",
     "reapply_changes",
     "discard_changes",
+    "review_changes",
+    "revert_change",
+    "save_changes",
+    "quit_now",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

@@ -216,7 +216,7 @@ describe("the keys' menu", () => {
     ]);
   });
 
-  test("offers to show a changed key in Review", () => {
+  test("offers to show a changed key in Review", async () => {
     const changed = structuredClone(sofleKeymap);
     for (const layer of changed.layers) {
       const tried = layer.keys[Q];
@@ -230,6 +230,7 @@ describe("the keys' menu", () => {
     expect(screen.queryByRole("menuitem", { name: /Show in Review/u })).toBeNull();
     fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
     fireEvent.contextMenu(keyAt(Q), { clientX: 100, clientY: 100 });
-    expect(screen.getByRole("menuitem", { name: /Show in Review/u })).toBeDefined();
+    await userEvent.click(screen.getByRole("menuitem", { name: /Show in Review/u }));
+    expect(useStore.getState().review).toBe(true);
   });
 });

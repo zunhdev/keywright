@@ -443,6 +443,7 @@ impl Actor {
             Change::Apply(edits) => editor.apply(edits),
             Change::Undo => editor.undo(),
             Change::Redo => editor.redo(),
+            Change::Revert(row) => editor.revert(&row),
         }?;
 
         let mut failed = None;

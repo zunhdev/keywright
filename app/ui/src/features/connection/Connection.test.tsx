@@ -43,6 +43,8 @@ function sofle(
     changes,
     canUndo: false,
     canRedo: false,
+    undo: null,
+    redo: null,
   };
 }
 

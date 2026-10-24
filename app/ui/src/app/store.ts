@@ -56,6 +56,12 @@ export interface UiSlice {
   readonly unlockSheet: boolean;
   /** Whether the keyboard locked itself after it could be edited, so a banner says so. */
   readonly relocked: boolean;
+  /** Whether the review sheet shows (design §6). */
+  readonly review: boolean;
+  /** Whether "Discard all…" is asking to be sure. */
+  readonly discarding: boolean;
+  /** Whether the quit dialog shows: quitting while changes are tried (SAF-5). */
+  readonly quitting: boolean;
   /** What the toolbar's search looks for across layers (design §4.6), or `""`. */
   readonly search: string;
   /** Whether a text field has keyboard focus, so Edit's items edit its text. */
@@ -146,6 +152,9 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   recording: null,
   unlockSheet: false,
   relocked: false,
+  review: false,
+  discarding: false,
+  quitting: false,
   search: "",
   textFocused: false,
   zoom: 1,

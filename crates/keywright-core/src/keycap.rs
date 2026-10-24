@@ -21,9 +21,10 @@ use std::collections::BTreeSet;
 
 use crate::action::{Action, BtCommand, ExtPowerCommand, OutCommand, RgbCommand};
 use crate::behavior::BehaviorTable;
+use crate::edit::Edit;
 use crate::guard::{Activation, BASE, ConditionalLayer, layer_keys};
 use crate::hid::{HidUsage, Mods, Shortcut, UsagePage};
-use crate::keymap::{Keymap, LayerId};
+use crate::keymap::{Binding, Keymap, LayerId};
 use crate::keys::us;
 
 /// What a key shows and does on one layer.
@@ -270,6 +271,62 @@ fn key_label(keycap: Keycap) -> String {
         Keycap::TapHold { tap, .. } => tap,
         Keycap::Layer { name, .. } => name,
         Keycap::Nothing => "a key".to_owned(),
+    }
+}
+
+/// A group of edits in a few words, as the Edit menu names it after "Undo" or "Redo"
+/// (design §6): "Assign ⌘C to B", "Swap Q and W", "Rename lower to Numbers", "Change 3
+/// Keys". Keys are named by what their keycaps show.
+#[must_use]
+pub fn describe_edits(keymap: &Keymap, behaviors: &BehaviorTable, edits: &[Edit]) -> String {
+    let words = Words {
+        keymap,
+        behaviors,
+        shortcut: shortcut_name,
+    };
+    let label = |binding: Binding| match Action::from_binding(binding, behaviors) {
+        Action::Transparent => "Same as Layer Below".to_owned(),
+        Action::None => "Does Nothing".to_owned(),
+        action => key_label(words.keycap(action)),
+    };
+    let keys: Vec<_> = edits
+        .iter()
+        .filter_map(|edit| match edit {
+            Edit::SetBinding { before, after, .. } => Some((*before, *after)),
+            _ => None,
+        })
+        .collect();
+    if keys.len() == edits.len() {
+        return match keys.as_slice() {
+            [(before, after)] => match Action::from_binding(*after, behaviors) {
+                Action::Transparent => format!("Make {} Same as Layer Below", label(*before)),
+                Action::None => format!("Make {} Do Nothing", label(*before)),
+                _ => format!("Assign {} to {}", label(*after), label(*before)),
+            },
+            [(first, second_after), (second, first_after)]
+                if first == first_after && second == second_after =>
+            {
+                format!("Swap {} and {}", label(*first), label(*second))
+            }
+            _ => format!("Change {} Keys", keys.len()),
+        };
+    }
+    match edits {
+        [Edit::RenameLayer { before, after, .. }] => format!("Rename {before} to {after}"),
+        [Edit::MoveLayer { .. }] => "Move Layer".to_owned(),
+        [Edit::RemoveLayer { layer, .. }] => format!("Remove {}", named(&layer.name)),
+        [Edit::RestoreLayer { layer, .. }] => format!("Restore {}", named(&layer.name)),
+        [Edit::AddLayer { .. }] => "Add Layer".to_owned(),
+        _ => "Changes".to_owned(),
+    }
+}
+
+/// A layer's name in a sentence, or "Layer" for one without.
+fn named(name: &str) -> String {
+    if name.is_empty() {
+        "Layer".to_owned()
+    } else {
+        name.to_owned()
     }
 }
 

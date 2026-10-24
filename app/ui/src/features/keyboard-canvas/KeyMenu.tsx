@@ -8,8 +8,8 @@ import { copyAction, pasteAction, setKeys } from "./edits.ts";
 import styles from "./KeyMenu.module.css";
 
 /**
- * The selected keys' context menu (design §4.5). Restoring stock and showing a key in
- * Review come with stock keys (KEY-52) and the review sheet (KEY-50).
+ * The selected keys' context menu (design §4.5). Restoring stock comes with stock keys
+ * (KEY-52).
  */
 export function KeyMenu({
   point,
@@ -35,6 +35,7 @@ export function KeyMenu({
         if (item === "paste") void pasteAction();
         if (item === "same-as-layer-below") void setKeys("same-as-layer-below");
         if (item === "does-nothing") void setKeys("does-nothing");
+        if (item === "review") useStore.setState({ review: true });
       }}
     >
       <MenuItem id="record" shortcut="R">
@@ -57,11 +58,7 @@ export function KeyMenu({
       <MenuItem id="restore" isDisabled>
         {messages.format("key-menu.restore")}
       </MenuItem>
-      {changed ? (
-        <MenuItem id="review" isDisabled>
-          {messages.format("key-menu.review")}
-        </MenuItem>
-      ) : null}
+      {changed ? <MenuItem id="review">{messages.format("key-menu.review")}</MenuItem> : null}
     </ContextMenu>
   );
 }

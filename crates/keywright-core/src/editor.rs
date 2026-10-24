@@ -184,6 +184,19 @@ impl Editor {
         self.start(edits, GroupKind::New)
     }
 
+    /// The group the next undo takes back, as it was applied, to name it in the Edit menu
+    /// ("Undo Assign ⌘C to B").
+    #[must_use]
+    pub fn next_undo(&self) -> Option<&[Edit]> {
+        self.undo.last().map(Vec::as_slice)
+    }
+
+    /// The group the next redo applies again, to name it in the Edit menu.
+    #[must_use]
+    pub fn next_redo(&self) -> Option<&[Edit]> {
+        self.redo.last().map(Vec::as_slice)
+    }
+
     /// Undoes the last group, and returns what the keyboard has to do, as for
     /// [`apply`](Self::apply).
     ///

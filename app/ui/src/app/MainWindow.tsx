@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { DiscardSheet } from "../features/changes/DiscardSheet.tsx";
+import { QuitDialog } from "../features/changes/QuitDialog.tsx";
+import { ReviewSheet } from "../features/changes/ReviewSheet.tsx";
 import { UnlockSheet } from "../features/connection/UnlockSheet.tsx";
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
@@ -63,6 +66,9 @@ export function MainWindow() {
         <KeyboardCanvas />
       </main>
       <UnlockSheet />
+      <ReviewSheet />
+      <DiscardSheet />
+      <QuitDialog />
       {inspector === null ? null : (
         <aside
           className={styles.inspector}

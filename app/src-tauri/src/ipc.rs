@@ -25,6 +25,8 @@ mod error;
 mod keymap;
 mod layers;
 mod menu;
+mod quit;
+mod review;
 mod session;
 
 use std::sync::Mutex;
@@ -35,6 +37,7 @@ use tauri_specta::{Builder, collect_commands, collect_events};
 
 pub use self::keymap::KeymapChanged;
 pub use self::menu::MenuItemChosen;
+pub use self::quit::{QuitGuard, QuitRequested};
 pub use self::session::{SessionStateChanged, SessionStatus, Update, follow};
 
 /// What the commands share.
@@ -85,12 +88,17 @@ pub fn builder() -> Builder<tauri::Wry> {
             connection::keep_unsaved_changes,
             connection::discard_unsaved_changes,
             connection::reapply_changes,
-            connection::discard_changes
+            connection::discard_changes,
+            review::review_changes,
+            review::revert_change,
+            review::save_changes,
+            quit::quit_now
         ])
         .events(collect_events![
             SessionStateChanged,
             KeymapChanged,
-            MenuItemChosen
+            MenuItemChosen,
+            QuitRequested
         ])
 }
 

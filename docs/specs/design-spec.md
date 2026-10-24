@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.15 — for review                                                       |
+| **Status**    | Draft v0.16 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -277,7 +277,10 @@ If a change would remove the last _Unlock editing_ key, strand a layer, or trap 
 - **After saving.** A toast reads "Saved to keyboard ✓". The badges clear, and the window's edited dot clears.
 - **Discard all.** A destructive confirmation: "Discard 3 changes? Your keyboard goes back to how it was when you last saved."
 - **Undo after save.** Undoing a saved change makes it _trying_ again, and the badge and count come back.
-- **Quit or disconnect with trying changes** (SAF-5). A dialog offers _Save_, _Discard_ or _Cancel_, and explains that the keyboard forgets unsaved changes when it restarts or goes to sleep.
+- **Revert** takes one row back as a change of its own, which ⌘Z undoes. The sheet's rows also cover layers: the order, a layer added or removed, and a new name.
+- **Opening the sheet:** ⌘S, Keyboard › Review Changes (⇧⌘R), the toolbar's changes button and Save, and a changed key's _Show in Review_. Keyboard › Discard Changes… asks as _Discard all…_ does.
+- **Undo and Redo name the change** in the Edit menu: "Undo Assign ⌘C to B", "Redo Swap Q and W", "Undo Rename lower to Numbers", "Undo Change 3 Keys".
+- **Quit or disconnect with trying changes** (SAF-5). A dialog offers _Save and Quit_, _Discard and Quit_ or _Cancel_, and explains that the keyboard forgets unsaved changes when it restarts or goes to sleep. Closing the window asks too.
 
 ---
 
@@ -552,3 +555,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.13    | 2026-10-24 | Search (§4.6, §9.6, KEY-44): the count in the field, the order of ↩ and ⇧↩, what VoiceOver hears, inherited keys; Edit's items edit a focused text field's text.                                                                                                                           |
 | 0.14    | 2026-10-24 | Layer sidebar (§3.1, §5.1, KEY-45): what a row shows, renaming with a byte counter, reordering by a handle with the base layer first, add and remove with the capacity footer, and asking before removing a layer keys turn on.                                                            |
 | 0.15    | 2026-10-24 | Connection states (§7, KEY-46): the unsaved-changes card; when the unlock sheet opens and when the banner shows; Try Again on the cards; which keyboard the outline draws.                                                                                                                 |
+| 0.16    | 2026-10-24 | Changes (§6, KEY-50): Revert is a change undo undoes; layer rows; what opens the sheet; Undo and Redo name the change; the quit dialog's buttons, and closing the window asks too.                                                                                                         |

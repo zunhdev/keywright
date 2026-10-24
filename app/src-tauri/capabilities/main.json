@@ -33,6 +33,10 @@
     "allow-discard-unsaved-changes",
     "allow-reapply-changes",
     "allow-discard-changes",
+    "allow-review-changes",
+    "allow-revert-change",
+    "allow-save-changes",
+    "allow-quit-now",
     "core:window:allow-start-dragging",
     "core:window:allow-internal-toggle-maximize",
     {
