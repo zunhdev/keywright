@@ -7,13 +7,16 @@
 //! has no [`hid_name`].
 //!
 //! - [`hid_name`] and [`KeyCategory`] describe a key.
+//! - [`us`] says what keys are called on a US keyboard, in Mac terms: `⌫` on the keycap,
+//!   `Delete` in text.
 //! - [`zmk`] reads and writes ZMK's names for keys, such as `N1` and `C_VOL_UP`.
 //! - [`dom`] maps `KeyboardEvent.code` values to keys, for the shortcut recorder.
 //!
 //! The names and codes come from tables generated from upstream files (tech spec §8.2). The
-//! categories are Keywright's own.
+//! categories and the US labels are Keywright's own.
 
 pub mod dom;
+pub mod us;
 pub mod zmk;
 
 #[cfg(test)]

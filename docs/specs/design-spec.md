@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.7 — for review                                                        |
+| **Status**    | Draft v0.8 — for review                                                        |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -105,9 +105,9 @@ The minimum window size is 960 × 600. The keyboard never shrinks below 36 px pe
 
 ### 4.1 Geometry
 
-The keyboard is drawn from the physical layout the device reports (VIEW-1), with 1u = the current key size (default 56 px, minimum 36 px), and each key rotated around its own pivot. While the keyboard is locked, the device can't report its layout, so the unlock sheet uses the copy stored in the keyboard support pack (§7).
+The keyboard is drawn from the physical layout the device reports (VIEW-1), with 1u = the current key size, and each key rotated around its own pivot. Keys are as big as the canvas fits, up to 56 px and never below 36 px; zooming then scales them, in steps of 75%, 87.5%, 100% (⌘0), 125%, 150% and 200%, and the canvas scrolls if they don't fit. While the keyboard is locked, the device can't report its layout, so the unlock sheet uses the copy stored in the keyboard support pack (§7).
 
-Knob push-keys are drawn as **round keys** with a thin ring that stands for rotation. The ring is non-interactive, and its tooltip and accessible label say: "Turning: volume down/up. Can't be changed yet." The knob _press_ is a normal key and can be edited. Displays aren't drawn on the canvas, because they're on the back of the board and only matter in the Firmware Update illustrations.
+Knob push-keys are drawn as **round keys** with a thin ring that stands for rotation. The ring is non-interactive, and its tooltip and accessible label say: "Turning: Volume Down and Volume Up. Can't be changed yet." A line under the keyboard says the same for all the knobs. The knob _press_ is a normal key and can be edited. Displays aren't drawn on the canvas, because they're on the back of the board and only matter in the Firmware Update illustrations.
 
 ### 4.2 Keycap anatomy
 
@@ -122,17 +122,17 @@ Knob push-keys are drawn as **round keys** with a thin ring that stands for rota
   warning badges                                                       below (ghost)
 ```
 
-| Element                     | Rule                                                                                                                                                                                                                                            |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Main label**              | What the key does when tapped, in the current input source (MAC-5): Inter Semibold. One character at 40% of the key height; words at 22%, shrinking to fit, then truncated with "…" (the full text is in the tooltip and the accessible label). |
-| **Shortcut**                | Modifier glyphs in Apple order ⌃⌥⇧⌘, followed by the key: `⌘⇧4` is shown as `⇧⌘4`.                                                                                                                                                              |
-| **Hold strip**              | Dual-role keys have a bottom strip, 30% of the key height, that reads `hold ⌃` or `hold ■ Nav`. It's divided from the tap area by a hairline.                                                                                                   |
-| **Layer keys**              | A layer-coloured square ■ followed by the layer name, then the mode underneath ("hold", "switch", "toggle", "next key").                                                                                                                        |
-| **Same as layer below**     | The label it inherits is drawn at 35% opacity with a ▽ badge in the top-left corner. It must never look identical to "Does nothing".                                                                                                            |
-| **Does nothing**            | An empty keycap with a faint diagonal hatch and a centred `–`.                                                                                                                                                                                  |
-| **Other actions**           | The firmware's display name in small text, with a ⋯ badge.                                                                                                                                                                                      |
-| **Secondary label** (MAC-6) | Top-right corner at 25% size, in `text-secondary`.                                                                                                                                                                                              |
-| **Badges**                  | Top-left: Mac compatibility ⚠ (warning colour). Top-right: changed • (accent). Bottom-right: search match (accent outline).                                                                                                                     |
+| Element                     | Rule                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Main label**              | What the key does when tapped, in the current input source (MAC-5): Inter Semibold. One character at 40% of the key height; words at 22%, on up to two lines (broken at a space, or after a slash as in Play/Pause), shrinking to fit down to 8 px, then truncated with "…" (the full text is in the tooltip and the accessible label).      |
+| **Shortcut**                | Modifier glyphs in Apple order ⌃⌥⇧⌘, followed by the key: `⌘⇧4` is shown as `⇧⌘4`.                                                                                                                                                                                                                                                           |
+| **Hold strip**              | Dual-role keys have a bottom strip, 30% of the key height, that reads `hold ⌃` or `hold ■ Nav`. It's divided from the tap area by a hairline.                                                                                                                                                                                                |
+| **Layer keys**              | A layer-coloured square ■ followed by the layer name, then the mode underneath ("hold", "switch", "toggle", "next key").                                                                                                                                                                                                                     |
+| **Same as layer below**     | The label it inherits is drawn at 35% opacity with a ▽ badge in the top-left corner. It must never look identical to "Does nothing". It inherits what the key does on the next layer down that is on whenever its own layer is: the base layer, and for a layer the firmware turns on by itself, such as Adjust, the layers that turn it on. |
+| **Does nothing**            | An empty keycap with a faint diagonal hatch and a centred `–`.                                                                                                                                                                                                                                                                               |
+| **Other actions**           | The firmware's display name in small text, with a ⋯ badge.                                                                                                                                                                                                                                                                                   |
+| **Secondary label** (MAC-6) | Top-right corner at 25% size, in `text-secondary`.                                                                                                                                                                                                                                                                                           |
+| **Badges**                  | Top-left: Mac compatibility ⚠ (warning colour), or ▽ or ⋯ above, which never apply together. Top-right: changed • (accent). Search matches get an accent outline.                                                                                                                                                                            |
 
 ### 4.3 Key states
 
@@ -460,9 +460,9 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 
 | Situation                 | Text                                                                                                                                                               |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Key sentence: dual role   | "Tap for Esc, hold for ⌃ Control."                                                                                                                                 |
+| Key sentence: dual role   | "Tap for Escape, hold for ⌃ Control."                                                                                                                              |
 | Key sentence: layer       | "Hold to use the Navigation layer."                                                                                                                                |
-| Key sentence: transparent | "Same as the layer below: types q."                                                                                                                                |
+| Key sentence: transparent | "Same as the layer below: types Q."                                                                                                                                |
 | Mac compatibility         | "**Copy (Linux style)** doesn't do anything on a Mac. Use **⌘C** instead?"                                                                                         |
 | Layer limit               | "Your keyboard's firmware has room for 4 layers, and all 4 are in use. Getting more needs different firmware, which a future version of Keywright will help with." |
 | Firmware limit            | "How long counts as a hold is set in your keyboard's firmware (200 ms on the stock firmware)."                                                                     |
@@ -529,3 +529,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.5     | 2026-10-24 | App menus (§9.6, KEY-36): the items every Mac app has (Services, Hide Others, Show All, Close Window, the Window menu's), and Zoom In shown as ⌘=.                                                                                                                                         |
 | 0.6     | 2026-10-24 | Design system (§4.3, §10, §14, KEY-39): the layer palette, chosen for colour-vision deficiencies (resolves D1); `border-key` for key outlines at 3:1; hover, pressed and subtle-accent tokens; Increase Contrast values; `warning` darkened for AA; the symbols come from the system font. |
 | 0.7     | 2026-10-24 | Main window (§3.1, KEY-40): the toolbar's height and traffic lights, when a collapsed sidebar comes back, and resizing panes by their edges.                                                                                                                                               |
+| 0.8     | 2026-10-24 | Keyboard canvas (§4.1, §4.2, §11.3, KEY-41): key sizes and zoom steps, the knobs' line, words on two lines, what a "same as layer below" key inherits, the top-left badges, and key names in sentences as §11.2 has them.                                                                  |

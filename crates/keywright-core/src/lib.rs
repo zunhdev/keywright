@@ -3,6 +3,7 @@
 //! This crate holds everything Keywright knows about keymaps as people see them:
 //!
 //! - the keymap model, the behavior table and the action catalog;
+//! - what keys are called, and what each key shows and does in words;
 //! - edits, undo and redo history, the review diff, and reconciling with the keyboard;
 //! - lockout guards, Mac compatibility rules and Mac action presets;
 //! - the tables that map HID usages to key names, DOM codes and macOS key codes;
@@ -25,6 +26,7 @@ pub mod editor;
 mod generated;
 pub mod guard;
 pub mod hid;
+pub mod keycap;
 pub mod keymap;
 pub mod keys;
 pub mod mac;

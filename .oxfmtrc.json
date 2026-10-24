@@ -5,6 +5,7 @@
     "bun.lock",
     "Cargo.lock",
     "app/ui/src/ipc/bindings.ts",
+    "app/ui/src/test/sofle-keymap.ts",
     "scripts/key-tables/upstream/chromium",
     "scripts/key-tables/upstream/zmk"
   ]

@@ -95,8 +95,8 @@ description = "Check that the UI's CSS Modules' typings match their stylesheets"
 run = "bun scripts/generate-css-types.ts --check"
 
 [tasks."lint:bindings"]
-description = "Check that the UI's IPC bindings match the app's commands, events and payloads"
-run = "cargo nextest run --package keywright-app the_ui_bindings_are_up_to_date"
+description = "Check that the UI's IPC bindings match the app's commands, events and payloads, and its test keymap the app's"
+run = "cargo nextest run --package keywright-app up_to_date"
 
 [tasks.generate]
 description = "Regenerate the checked-in generated code"
@@ -111,9 +111,9 @@ description = "Regenerate the typings of the UI's CSS Modules (*.module.d.css.ts
 run = "bun scripts/generate-css-types.ts"
 
 [tasks."generate:bindings"]
-description = "Regenerate the UI's IPC bindings (app/ui/src/ipc/bindings.ts) from the app's commands, events and payloads"
+description = "Regenerate the UI's IPC bindings (app/ui/src/ipc/bindings.ts) from the app's commands, events and payloads, and the Sofle keymap its tests draw (app/ui/src/test/sofle-keymap.ts)"
 env = { KEYWRIGHT_UPDATE_BINDINGS = "1" }
-run = "cargo nextest run --package keywright-app the_ui_bindings_are_up_to_date"
+run = "cargo nextest run --package keywright-app up_to_date"
 
 [tasks.test]
 description = "Run all tests"

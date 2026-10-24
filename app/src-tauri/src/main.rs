@@ -23,7 +23,9 @@ use tauri::{App, AppHandle, Manager, Runtime};
 use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
 
-use crate::ipc::{AppState, MenuItemChosen, SessionStateChanged, SessionStatus};
+use crate::ipc::{
+    AppState, KeymapChanged, MenuItemChosen, SessionStateChanged, SessionStatus, Update,
+};
 use crate::menu::MenuItem;
 use crate::simulator::Scenario;
 
@@ -68,7 +70,7 @@ fn main() -> tauri::Result<()> {
 }
 
 /// Starts the device session, connects a simulated keyboard if `KEYWRIGHT_SIMULATOR`
-/// names one, and sends the UI the session's state from then on.
+/// names one, and sends the UI the session's state and keymap from then on.
 fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     let scenario = Scenario::from_env()?;
     let state = tauri::async_runtime::block_on(async {
@@ -85,14 +87,22 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     })?;
     let handle = app.handle().clone();
     let mut edited = false;
-    tauri::async_runtime::spawn(ipc::follow(state.session.clone(), move |status| {
-        if is_edited(&status) != edited {
-            edited = !edited;
-            show_edited(&handle, edited);
-        }
-        // Nothing listens until the UI has loaded; it asks for the state then.
-        let _ = SessionStateChanged(status).emit(&handle);
-    }));
+    // Nothing listens until the UI has loaded; it asks for the state and keymap then.
+    tauri::async_runtime::spawn(ipc::follow(
+        state.session.clone(),
+        move |update| match update {
+            Update::Status(status) => {
+                if is_edited(&status) != edited {
+                    edited = !edited;
+                    show_edited(&handle, edited);
+                }
+                let _ = SessionStateChanged(status).emit(&handle);
+            }
+            Update::Keymap(keymap) => {
+                let _ = KeymapChanged(keymap).emit(&handle);
+            }
+        },
+    ));
     app.manage(state);
     Ok(())
 }

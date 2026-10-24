@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": ["app/ui/src/ipc/bindings.ts"],
+  "ignorePatterns": ["app/ui/src/ipc/bindings.ts", "app/ui/src/test/sofle-keymap.ts"],
   "plugins": ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import", "promise"],
   "categories": {
     "correctness": "error",

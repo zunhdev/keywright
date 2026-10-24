@@ -17,6 +17,21 @@ export const commands = {
 	 */
 	sessionState: () => typedError<SessionStatus, AppError>(__TAURI_INVOKE("session_state")),
 	/**
+	 *  The keymap the canvas draws, or `null` before the session has read one.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the session has stopped.
+	 */
+	sessionKeymap: () => typedError<{
+	/**  Where each key is, by key position. */
+	keys: PhysicalKey[],
+	/**  The knobs, whose turning can't be changed yet (VIEW-4). Their presses are keys. */
+	knobs: Knob[],
+	/**  The layers, in order: the base layer first. */
+	layers: Layer[],
+} | null, AppError>(__TAURI_INVOKE("session_keymap")),
+	/**
 	 *  Enables or disables a menu item, and renames it if `label` is given, such as View's
 	 *  "Show Layers" once the layers are hidden.
 	 * 
@@ -30,6 +45,7 @@ export const commands = {
 /** Events */
 export const events = {
 	menuItem: makeEvent<MenuItemChosen>("menu://item"),
+	sessionKeymap: makeEvent<KeymapChanged>("session://keymap"),
 	sessionState: makeEvent<SessionStateChanged>("session://state"),
 };
 
@@ -58,6 +74,112 @@ export type AppError =
 /**  The menu bar didn't take a change to one of its items. */
 { code: "menu-failed" };
 
+/**  What holding a tap-and-hold key does. */
+export type Hold = 
+/**  Holds a modifier or a key, such as `⌃`. */
+{ kind: "key"; 
+/**  The modifier or key. */
+text: string } | 
+/**  Turns a layer on. */
+{ kind: "layer"; 
+/**  The layer's ID, for its colour. */
+layer: number; 
+/**  The layer's name. */
+name: string };
+
+/**  What a key shows and does on a layer. */
+export type Key = {
+	/**  What its keycap shows. For a "same as layer below" key, what it inherits. */
+	keycap: Keycap,
+	/**  Whether the key is "same as layer below": its keycap is drawn faded, with a ▽. */
+	inherited: boolean,
+	/**  What it does, in one sentence, for its tooltip. */
+	sentence: string,
+	/**  Whether it's being tried: it does something else than when last saved. */
+	changed: boolean,
+	/**  Whether it does something that doesn't work on a Mac (MAC-7). */
+	macWarning: boolean,
+};
+
+/**
+ *  What a keycap shows (design §4.2). In TypeScript, `{ kind: "label", text: "A" }` and so
+ *  on.
+ */
+export type Keycap = 
+/**  A key or shortcut, such as `A`, `⇧⌘4` or `!`, or an action in a word or two. */
+{ kind: "label"; 
+/**  What it says. */
+text: string } | 
+/**  A key when tapped, and something else when held. */
+{ kind: "tap-hold"; 
+/**  The key or shortcut when tapped. */
+tap: string; 
+/**  What holding it does. */
+hold: Hold } | 
+/**  A key that turns a layer on. */
+{ kind: "layer"; 
+/**  The layer's ID, for its colour. */
+layer: number; 
+/**  The layer's name. */
+name: string; 
+/**  How the key turns it on. */
+mode: LayerMode } | 
+/**  A modifier held for the next key only, such as `⇧`. */
+{ kind: "sticky"; 
+/**  The modifier. */
+text: string } | 
+/**  Nothing. */
+{ kind: "nothing" } | 
+/**  An action Keywright doesn't know, by the firmware's name for it. */
+{ kind: "other"; 
+/**  The firmware's name. */
+name: string };
+
+/**  The keymap the canvas draws: the keyboard's keys, its knobs, and its layers. */
+export type Keymap = {
+	/**  Where each key is, by key position. */
+	keys: PhysicalKey[],
+	/**  The knobs, whose turning can't be changed yet (VIEW-4). Their presses are keys. */
+	knobs: Knob[],
+	/**  The layers, in order: the base layer first. */
+	layers: Layer[],
+};
+
+/**  `session://keymap`: the keymap the canvas draws changed, or the session has none. */
+export type KeymapChanged = Keymap | null;
+
+/**
+ *  A knob: pressing it is the key at `position`, and turning it does what the support pack
+ *  says the stock firmware does.
+ */
+export type Knob = {
+	/**  The key its press is. */
+	position: number,
+	/**  What turning it does, one way then the other, such as `Volume Down` and `Volume Up`. */
+	turn: string[],
+};
+
+/**  A layer, and what each key shows and does on it. */
+export type Layer = {
+	/**  The layer's ID, which picks its colour (design §4.4). */
+	id: number,
+	/**  Its name: its own, or `Layer 2` for an unnamed second layer. */
+	name: string,
+	/**  Its keys, by key position. */
+	keys: Key[],
+};
+
+/**  How a layer key turns its layer on. */
+export type LayerMode = 
+/**  While the key is held. */
+"hold" | 
+/**  Switches to it. */
+"switch" | 
+/**  Turns it on or off. */
+"toggle" | 
+/**  For the next key only. */
+"next-key";
+
 /**
  *  One of Keywright's own menu items. In TypeScript, its kebab-case name, such as
  *  `"toggle-layers"`, which is also its ID in the menu.
@@ -66,6 +188,27 @@ export type MenuItem = "settings" | "import" | "export" | "backups" | "update-fi
 
 /**  `menu://item`: someone chose one of Keywright's own menu items. */
 export type MenuItemChosen = MenuItem;
+
+/**
+ *  A key's place, size and rotation, as the keyboard reports them. Lengths are in
+ *  hundredths of a key unit, and angles in hundredths of a degree, clockwise.
+ */
+export type PhysicalKey = {
+	/**  The left edge. */
+	x: number,
+	/**  The top edge. */
+	y: number,
+	/**  The width. */
+	width: number,
+	/**  The height. */
+	height: number,
+	/**  The rotation. */
+	rotation: number,
+	/**  The x coordinate of the point the key rotates around. */
+	rotationX: number,
+	/**  The y coordinate of the point the key rotates around. */
+	rotationY: number,
+};
 
 /**  Why a keyboard is incompatible. */
 export type Problem = 
