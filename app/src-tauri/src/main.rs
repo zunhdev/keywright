@@ -18,6 +18,7 @@ mod simulator;
 
 use std::error::Error;
 
+use keywright_device::battery::Battery;
 use keywright_device::selection::{self, ThisMac};
 use keywright_device::{Backups, Session};
 use keywright_platform::bluetooth::{self, Permission};
@@ -26,8 +27,8 @@ use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
 
 use crate::ipc::{
-    AppState, KeymapChanged, MenuItemChosen, QuitGuard, QuitRequested, SessionStateChanged,
-    SessionStatus, Update,
+    AppState, BatteryChanged, BatteryState, KeymapChanged, MenuItemChosen, QuitGuard,
+    QuitRequested, SessionStateChanged, SessionStatus, Update,
 };
 use crate::menu::MenuItem;
 use crate::simulator::Scenario;
@@ -101,23 +102,35 @@ fn ask_before_quitting<R: Runtime>(app: &AppHandle<R>) -> bool {
 }
 
 /// Starts the device session, and keeps it connected to a keyboard on USB or Bluetooth
-/// (tech spec §6.3), or to a simulated keyboard if `KEYWRIGHT_SIMULATOR` names one. Sends
-/// the UI the session's state and keymap from then on.
+/// (tech spec §6.3), or to a simulated keyboard if `KEYWRIGHT_SIMULATOR` names one. Follows
+/// a real keyboard's battery (BAR-2). Sends the UI the session's state, keymap and battery
+/// from then on.
 fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     let scenario = Scenario::from_env()?;
-    let state = tauri::async_runtime::block_on(async {
+    let (state, battery) = tauri::async_runtime::block_on(async {
         let Some(scenario) = scenario else {
             let session = session_with_backups();
             let keyboards = ThisMac::new(bluetooth_allowed);
             tauri::async_runtime::spawn(selection::select(session.clone(), keyboards));
-            return Ok::<_, simulator::Error>(AppState::new(session));
+            let battery = Battery::watch(ThisMac::new(bluetooth_allowed));
+            return Ok::<_, simulator::Error>((AppState::new(session), Some(battery)));
         };
-        // Like the CLI, a simulated keyboard's backups go nowhere.
+        // Like the CLI, a simulated keyboard's backups go nowhere. It has no battery.
         let session = Session::start();
         scenario.connect(&session).await?;
-        Ok(AppState::new(session))
+        Ok((AppState::new(session), None))
     })?;
     let handle = app.handle().clone();
+    if let Some(battery) = &battery {
+        let handle = handle.clone();
+        tauri::async_runtime::spawn(ipc::follow_battery(
+            battery.clone(),
+            state.session.clone(),
+            move |status| {
+                let _ = BatteryChanged(status).emit(&handle);
+            },
+        ));
+    }
     let mut edited = false;
     // Nothing listens until the UI has loaded; it asks for the state and keymap then.
     tauri::async_runtime::spawn(ipc::follow(
@@ -137,6 +150,7 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
         },
     ));
     app.manage(state);
+    app.manage(BatteryState(battery));
     Ok(())
 }
 

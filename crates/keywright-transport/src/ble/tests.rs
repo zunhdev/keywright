@@ -43,11 +43,8 @@ fn indications(list: impl IntoIterator<Item = bluest::Result<Vec<u8>>>) -> Indic
 async fn indications_reach_the_client_in_order_until_its_end_is_dropped() {
     let (to_client, mut from_keyboard) = mpsc::unbounded_channel();
     let forwarding = tokio::spawn(async move {
-        forward(
-            indications([Ok(vec![0xAB, 1]), Ok(vec![2, 0xAD])]),
-            &to_client,
-        )
-        .await;
+        let indications = indications([Ok(vec![0xAB, 1]), Ok(vec![2, 0xAD])]);
+        forward(indications, &to_client, |indication| indication).await;
     });
     assert_eq!(from_keyboard.recv().await.unwrap().unwrap(), [0xAB, 1]);
     assert_eq!(from_keyboard.recv().await.unwrap().unwrap(), [2, 0xAD]);
@@ -60,11 +57,8 @@ async fn indications_reach_the_client_in_order_until_its_end_is_dropped() {
 async fn the_keyboard_going_away_closes_the_transport() {
     let (to_client, mut from_keyboard) = mpsc::unbounded_channel();
     let gone = bluest::Error::from(ErrorKind::NotConnected);
-    forward(
-        indications([Ok(vec![1]), Err(gone), Ok(vec![2])]),
-        &to_client,
-    )
-    .await;
+    let indications = indications([Ok(vec![1]), Err(gone), Ok(vec![2])]);
+    forward(indications, &to_client, |indication| indication).await;
     drop(to_client);
     assert_eq!(from_keyboard.recv().await.unwrap().unwrap(), [1]);
     assert!(matches!(
@@ -82,7 +76,8 @@ async fn indications_that_end_close_the_transport() {
         list: [Ok(vec![1])].into(),
         end: true,
     };
-    let forwarding = tokio::spawn(async move { forward(ended, &to_client).await });
+    let forwarding =
+        tokio::spawn(async move { forward(ended, &to_client, |indication| indication).await });
     assert_eq!(from_keyboard.recv().await.unwrap().unwrap(), [1]);
     forwarding.await.unwrap();
     assert!(from_keyboard.recv().await.is_none());

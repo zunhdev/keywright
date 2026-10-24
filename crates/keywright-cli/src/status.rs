@@ -7,6 +7,7 @@
 use std::fmt::Write as _;
 
 use keywright_device::State;
+use keywright_device::battery::Battery;
 use serde::Serialize;
 
 use crate::failure::{Exit, Failure, Kind};
@@ -28,12 +29,19 @@ struct Status {
     state: &'static str,
     /// Once it's unlocked: `saved`, or `trying` when it has changes it hasn't saved.
     changes: Option<Changes>,
-    /// The left half's battery level in percent, which only Bluetooth reports (BAR-2).
-    battery: Option<u8>,
+    /// Each half's battery level, which the keyboard reports only over Bluetooth (BAR-2).
+    battery: Levels,
     /// How to unlock it, while it's locked.
     unlock: Option<String>,
     /// What stops Keywright editing it, in words.
     problem: Option<String>,
+}
+
+/// Each half's battery level in percent, or `null`: not reported. Never estimated (BAR-2).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize)]
+struct Levels {
+    left: Option<u8>,
+    right: Option<u8>,
 }
 
 /// What `status --json` prints.
@@ -44,7 +52,14 @@ struct Report<'a> {
 
 pub(crate) async fn run(source: Source, json: bool) -> Result<Exit, Failure> {
     let found = source.connect_all(None).await?;
-    let (statuses, kinds): (Vec<Status>, Vec<Option<Kind>>) = found.iter().map(status).unzip();
+    // A real keyboard's battery reads over Bluetooth, whichever connection Studio uses
+    // (spike S3). A simulated one has none.
+    let battery = match source {
+        Source::Connected if !found.is_empty() => Battery::read().await,
+        Source::Connected | Source::Simulator(_) => Battery::default(),
+    };
+    let (statuses, kinds): (Vec<Status>, Vec<Option<Kind>>) =
+        found.iter().map(|found| status(found, battery)).unzip();
     if json {
         print_json(&Report {
             keyboards: &statuses,
@@ -68,8 +83,9 @@ pub(crate) async fn run(source: Source, json: bool) -> Result<Exit, Failure> {
     ))
 }
 
-/// A keyboard's status, and the kind of problem that stops Keywright editing it, if any.
-fn status(found: &Found) -> (Status, Option<Kind>) {
+/// A keyboard's status, with the `battery` read over Bluetooth if it answered, and the kind
+/// of problem that stops Keywright editing it, if any.
+fn status(found: &Found, battery: Battery) -> (Status, Option<Kind>) {
     let keyboard = match found {
         Found::Keyboard(keyboard) => keyboard,
         Found::Unavailable { link, error } => {
@@ -79,7 +95,7 @@ fn status(found: &Found) -> (Status, Option<Kind>) {
                 connection: link.clone(),
                 state: "unavailable",
                 changes: None,
-                battery: None,
+                battery: Levels::default(),
                 unlock: None,
                 problem: Some(words::unavailable(link, error)),
             };
@@ -89,13 +105,17 @@ fn status(found: &Found) -> (Status, Option<Kind>) {
     let snapshot = &keyboard.snapshot;
     let state = &snapshot.state;
     let problem = words::problem(state);
+    let (left, right) = match problem {
+        None => battery.halves(snapshot.support_pack()),
+        Some(_) => (None, None),
+    };
     let status = Status {
         name: keyboard.reported_name(),
         model: snapshot.support_pack().map(|pack| pack.name.clone()),
         connection: keyboard.link.clone(),
         state: state_name(state),
         changes: keyboard.changes(),
-        battery: None,
+        battery: Levels { left, right },
         unlock: matches!(state, State::Locked { .. })
             .then(|| words::unlock_instructions(snapshot.support_pack())),
         problem: problem.as_ref().map(|(_, message)| message.clone()),
@@ -152,14 +172,19 @@ fn text(status: &Status) -> String {
             Some(Changes::Trying) => "Trying changes it hasn't saved",
             None => "Unknown until it's unlocked",
         };
-        let battery = match status.connection {
-            Link::Usb { .. } => "Not reported over USB",
-            Link::Bluetooth { .. } | Link::Simulated => "Not reported",
+        let battery = match status.battery {
+            Levels {
+                left: None,
+                right: None,
+            } => "Not reported".to_owned(),
+            Levels { left, right } => {
+                format!("Left {} · Right {}", level(left), level(right))
+            }
         };
         lines.extend([
             ("Lock", lock),
             ("Changes", changes.to_owned()),
-            ("Battery", battery.to_owned()),
+            ("Battery", battery),
         ]);
     }
     let mut text = name;
@@ -168,6 +193,14 @@ fn text(status: &Status) -> String {
         let _ = write!(text, "\n  {label:<10}  {value}");
     }
     text
+}
+
+/// A battery level, as the text says it.
+fn level(percent: Option<u8>) -> String {
+    percent.map_or_else(
+        || "not reported".to_owned(),
+        |percent| format!("{percent}%"),
+    )
 }
 
 #[cfg(test)]
@@ -183,7 +216,7 @@ mod tests {
             },
             state: "unlocked",
             changes: Some(changes),
-            battery: None,
+            battery: Levels::default(),
             unlock: None,
             problem: None,
         }
@@ -198,9 +231,25 @@ mod tests {
   Connection  USB, /dev/cu.usbmodem101
   Lock        Unlocked
   Changes     Trying changes it hasn't saved
-  Battery     Not reported over USB"
+  Battery     Not reported"
         );
         assert!(text(&unlocked(Changes::Saved)).contains("  Changes     Saved\n"));
+    }
+
+    #[test]
+    fn the_battery_says_each_half_and_which_isnt_reported() {
+        let status = Status {
+            battery: Levels {
+                left: Some(82),
+                right: None,
+            },
+            ..unlocked(Changes::Saved)
+        };
+        assert!(
+            text(&status).ends_with("\n  Battery     Left 82% · Right not reported"),
+            "{}",
+            text(&status)
+        );
     }
 
     #[test]
@@ -221,13 +270,16 @@ mod tests {
 
     #[test]
     fn a_keyboard_on_bluetooth_that_cant_be_connected_is_named_by_macos_name() {
-        let (status, kind) = status(&Found::Unavailable {
-            link: Link::Bluetooth {
-                name: Some("Sofle Choc Pro".to_owned()),
-                id: "6F1C5D2A-0000-4000-8000-000000000000".to_owned(),
+        let (status, kind) = status(
+            &Found::Unavailable {
+                link: Link::Bluetooth {
+                    name: Some("Sofle Choc Pro".to_owned()),
+                    id: "6F1C5D2A-0000-4000-8000-000000000000".to_owned(),
+                },
+                error: "the connection to the keyboard was closed".to_owned(),
             },
-            error: "the connection to the keyboard was closed".to_owned(),
-        });
+            Battery::default(),
+        );
         assert_eq!(kind, Some(Kind::NoKeyboard));
         assert_eq!(
             text(&status),
@@ -240,12 +292,15 @@ mod tests {
 
     #[test]
     fn a_port_that_cant_be_opened_is_named_by_its_path() {
-        let (status, kind) = status(&Found::Unavailable {
-            link: Link::Usb {
-                port: "/dev/cu.usbmodem101".to_owned(),
+        let (status, kind) = status(
+            &Found::Unavailable {
+                link: Link::Usb {
+                    port: "/dev/cu.usbmodem101".to_owned(),
+                },
+                error: "Resource busy".to_owned(),
             },
-            error: "Resource busy".to_owned(),
-        });
+            Battery::default(),
+        );
         assert_eq!(kind, Some(Kind::NoKeyboard));
         assert_eq!(
             text(&status),

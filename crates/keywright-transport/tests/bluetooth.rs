@@ -19,6 +19,7 @@ use std::time::{Duration, Instant};
 use keywright_studio::client::{Client, MAX_NAME_LEN};
 use keywright_studio::message::{CoreNotification, LayerId, LockState, Notification};
 use keywright_studio::transport::{TransportError, TransportKind};
+use keywright_transport::ble::battery::BatteryReader;
 use keywright_transport::ble::{BlePeripheral, BleTransport, Bluetooth};
 
 /// How long a test waits for someone to do something to the keyboard.
@@ -112,4 +113,59 @@ async fn switching_the_keyboard_off_closes_the_transport() {
         .expect("the transport stayed open for five minutes");
     println!("closed after {:?}: {closed}", start.elapsed());
     assert!(matches!(*closed, TransportError::Closed), "{closed:?}");
+}
+
+/// The keyboard macOS has connected over Bluetooth, whichever connection Studio uses.
+async fn any_keyboard() -> BlePeripheral {
+    let bluetooth = Bluetooth::open().await.unwrap();
+    let keyboards = bluetooth.keyboards().await.unwrap();
+    keyboards
+        .into_iter()
+        .next()
+        .expect("no keyboard on Bluetooth: connect it in System Settings › Bluetooth")
+}
+
+/// The Battery Service reads while macOS holds the keyboard, even with Studio on USB (spike
+/// S3). Stock Sofle firmware reports one level, the left half's, with no description.
+#[tokio::test]
+#[ignore = "needs a ZMK keyboard on Bluetooth: run `mise run hardware:bluetooth`"]
+async fn the_battery_levels_read() {
+    let reader = BatteryReader::open(&any_keyboard().await).await.unwrap();
+    let levels = reader.levels().borrow().clone();
+    println!("battery levels: {levels:?}");
+    assert!(!levels.is_empty(), "the keyboard has no Battery Service");
+    assert!(levels[0].percent.is_some(), "the first level didn't read");
+}
+
+/// A notification comes when the level changes, which ZMK measures every minute while the
+/// keyboard is in use. A full battery stays at 99% for hours (spike S3), so it needs the
+/// keyboard in use while the level moves: running down, or charging from low. It waits
+/// `BATTERY_WAIT_MINUTES` (30 by default), so it runs only on its own:
+///
+/// ```sh
+/// BATTERY_WAIT_MINUTES=360 cargo nextest run -p keywright-transport --test bluetooth \
+///   --run-ignored only --no-capture notification
+/// ```
+#[tokio::test]
+#[ignore = "needs someone typing while the level changes: run it on its own, as it says"]
+async fn a_battery_notification_arrives_when_the_level_changes() {
+    let reader = BatteryReader::open(&any_keyboard().await).await.unwrap();
+    let mut levels = reader.levels();
+    let before = levels.borrow_and_update().clone();
+    println!("battery levels: {before:?}; type now and then until the level changes");
+    let minutes: u64 = std::env::var("BATTERY_WAIT_MINUTES")
+        .ok()
+        .and_then(|minutes| minutes.parse().ok())
+        .unwrap_or(30);
+    let start = Instant::now();
+    tokio::time::timeout(Duration::from_secs(minutes * 60), levels.changed())
+        .await
+        .unwrap_or_else(|_| panic!("no notification came within {minutes} minutes"))
+        .unwrap();
+    println!(
+        "after {:?}, at {:?}, notified: {:?}",
+        start.elapsed(),
+        std::time::SystemTime::now(),
+        *levels.borrow()
+    );
 }

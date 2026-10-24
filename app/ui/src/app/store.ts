@@ -3,6 +3,7 @@ import { type StateCreator, create } from "zustand";
 import { bounds, zoomIn, zoomOut } from "../features/keyboard-canvas/geometry.ts";
 import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
 import type {
+  BatteryStatus,
   Choice,
   DomCode,
   GuardWarning,
@@ -22,6 +23,8 @@ export interface SessionSlice {
   readonly session: SessionStatus | null;
   /** The keymap the canvas draws, or `null` until the session has read one. */
   readonly keymap: Keymap | null;
+  /** The keyboard's battery levels, or `null` until the Rust side has reported them. */
+  readonly battery: BatteryStatus | null;
   /** Every key ZMK names, for the inspector's key popup, once loaded. */
   readonly keyCatalog: readonly KeyEntry[];
   /** The key behind each `KeyboardEvent.code`, for the shortcut recorder, once loaded. */
@@ -126,6 +129,7 @@ export type Store = SessionSlice & UiSlice;
 const sessionSlice: StateCreator<Store, [], [], SessionSlice> = () => ({
   session: null,
   keymap: null,
+  battery: null,
   keyCatalog: [],
   domCodes: [],
   macActions: [],

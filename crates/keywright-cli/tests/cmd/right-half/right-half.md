@@ -24,7 +24,10 @@ $ keywright --json status
       },
       "state": "other-half",
       "changes": null,
-      "battery": null,
+      "battery": {
+        "left": null,
+        "right": null
+      },
       "unlock": null,
       "problem": "This looks like the right half. Keywright talks to the left half: plug the cable in there."
     }

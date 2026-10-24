@@ -119,6 +119,17 @@ describe("the toolbar", () => {
     await expectNoAxeViolations(document.body);
   });
 
+  test("the chip's details give each half's battery, saying when it isn't reported", async () => {
+    renderAt(1280);
+    report(sofle("ready"));
+    act(() => {
+      useStore.setState({ battery: { left: 82, right: null } });
+    });
+    await userEvent.click(screen.getByRole("button", { name: "USB · Unlocked" }));
+    const details = screen.getByRole("dialog", { name: "Connection" }).textContent;
+    expect(details).toContain("Battery: Left 82% · Right not reported");
+  });
+
   test("while locked, Unlock… says how, and the sheet closes once the keyboard is unlocked", async () => {
     renderAt(1280);
     report(sofle("locked"));

@@ -26,7 +26,10 @@ $ keywright --json status
       },
       "state": "locked",
       "changes": null,
-      "battery": null,
+      "battery": {
+        "left": null,
+        "right": null
+      },
       "unlock": "To unlock it, hold the raise key, then tap the B key.",
       "problem": null
     }

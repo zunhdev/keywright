@@ -7,8 +7,8 @@
 //!
 //! - **Commands** are thin: each sends the session a command, or asks the core, and holds
 //!   no logic of its own. Those that change keys are in [`edit`].
-//! - **Events** carry snapshots of what the UI shows, such as `session://state`, and
-//!   `session://keymap` for the canvas.
+//! - **Events** carry snapshots of what the UI shows, such as `session://state`,
+//!   `session://keymap` for the canvas, and `session://battery`.
 //! - **Errors** are codes with data, never English text ([`AppError`]): the UI words them.
 //!
 //! A window may call a command only if its capability allows it: build.rs lists the
@@ -19,6 +19,7 @@
 //! that file up to date too, and `tsc` checks it against the bindings.
 
 mod action;
+mod battery;
 mod connection;
 mod edit;
 mod error;
@@ -37,6 +38,7 @@ use keywright_core::keymap::Binding;
 use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
 
+pub use self::battery::{BatteryChanged, BatteryState, follow as follow_battery};
 pub use self::keymap::KeymapChanged;
 pub use self::menu::MenuItemChosen;
 pub use self::quit::{QuitGuard, QuitRequested};
@@ -65,6 +67,7 @@ pub fn builder() -> Builder<tauri::Wry> {
     Builder::new()
         .commands(collect_commands![
             session::session_state,
+            battery::battery_levels,
             keymap::session_keymap,
             action::key_catalog,
             action::dom_codes,
@@ -103,6 +106,7 @@ pub fn builder() -> Builder<tauri::Wry> {
         ])
         .events(collect_events![
             SessionStateChanged,
+            BatteryChanged,
             KeymapChanged,
             MenuItemChosen,
             QuitRequested

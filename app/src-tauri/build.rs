@@ -8,6 +8,7 @@ use tauri_build::{AppManifest, Attributes};
 /// The app's own commands (src/ipc.rs).
 const COMMANDS: &[&str] = &[
     "session_state",
+    "battery_levels",
     "session_keymap",
     "key_catalog",
     "dom_codes",

@@ -15,6 +15,7 @@
 #![forbid(unsafe_code)]
 
 pub mod backups;
+pub mod battery;
 pub mod bluetooth;
 mod convert;
 pub mod selection;

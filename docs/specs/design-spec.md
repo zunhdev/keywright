@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.20 — for review                                                       |
+| **Status**    | Draft v0.21 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -101,7 +101,7 @@ The minimum window size is 960 × 600. The keyboard never shrinks below 36 px pe
 
 ### 3.2 Toolbar
 
-- **Keyboard name and connection chip.** For example `⌁ USB · Unlocked`, `ᛒ Bluetooth · Locked`, or `Not connected`. Clicking the chip opens a popover with details: transport, firmware name, the "Keyboard locks itself after 10 minutes idle" note, and _Unlock…_ if locked. Colour is never the only signal: the chip always includes the words.
+- **Keyboard name and connection chip.** For example `⌁ USB · Unlocked`, `ᛒ Bluetooth · Locked`, or `Not connected`. Clicking the chip opens a popover with details: transport, firmware name, each half's battery ("Battery: Left 82% · Right not reported", BAR-2; not for the demo keyboard), the "Keyboard locks itself after 10 minutes idle" note, and _Unlock…_ if locked. Colour is never the only signal: the chip always includes the words.
 - **Search** (⌘F): see §4.6.
 - **Changes button.** Hidden when there's nothing to save. Otherwise it reads `1 change` / `3 changes`, uses the accent tint, and opens Review. The window also shows the macOS "edited" dot in its close button.
 - **Save** (⌘S): the primary button. It's disabled, with the tooltip "Nothing to save", when there are no changes. It always goes through Review (§6).
@@ -565,3 +565,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.18    | 2026-10-24 | Demo mode (§7, KEY-47): Explore without a keyboard, the "Demo keyboard" label, and Leave Demo.                                                                                                                                                                                             |
 | 0.19    | 2026-10-24 | Restore stock (§5.2, KEY-52): when it's offered for keys and layers, and the words of the whole keyboard's confirmation.                                                                                                                                                                   |
 | 0.20    | 2026-10-24 | Connection states (§7): a silent port's card waits 3 seconds, since a keyboard plugged back in with Bluetooth on is silent for a moment.                                                                                                                                                   |
+| 0.21    | 2026-10-24 | Connection chip (§3.2, KEY-56): its details give each half's battery, so the window shows it without the menu bar item.                                                                                                                                                                    |

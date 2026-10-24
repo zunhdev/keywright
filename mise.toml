@@ -137,8 +137,9 @@ run = "cargo nextest run --workspace --run-ignored only --test-threads 1 -E 'not
 
 [tasks."hardware:bluetooth"]
 description = "Run the tests that need a ZMK keyboard on Bluetooth: connect it to this Mac, and unplug its cable"
-# The test that needs the keyboard switched off runs only on its own (tests/bluetooth.rs).
-run = "cargo nextest run --package keywright-transport --test bluetooth --run-ignored only --no-capture -E 'not test(switching_the_keyboard_off)'"
+# The tests that need someone to switch the keyboard off, or to type until the battery
+# level changes, run only on their own (tests/bluetooth.rs).
+run = "cargo nextest run --package keywright-transport --test bluetooth --run-ignored only --no-capture -E 'not test(switching_the_keyboard_off) and not test(a_battery_notification)'"
 
 [tasks.audit]
 description = "Check dependencies for known vulnerabilities, and Rust crates for licence and source problems"
