@@ -20,6 +20,7 @@
 
 mod action;
 mod battery;
+mod bluetooth;
 mod connection;
 mod edit;
 mod error;
@@ -70,6 +71,9 @@ pub fn builder() -> Builder<tauri::Wry> {
         .commands(collect_commands![
             session::session_state,
             battery::battery_levels,
+            bluetooth::bluetooth_permission,
+            bluetooth::allow_bluetooth,
+            bluetooth::open_bluetooth_settings,
             keymap::session_keymap,
             action::key_catalog,
             action::dom_codes,

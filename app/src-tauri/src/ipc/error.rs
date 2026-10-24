@@ -40,6 +40,8 @@ pub enum AppError {
     NoStockKeymap,
     /// The keyboard said it couldn't restore its stock settings.
     ResetFailed,
+    /// System Settings didn't open.
+    SettingsNotOpened,
     /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
     /// `force`, it is.
     WouldStrand {
