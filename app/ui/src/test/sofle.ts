@@ -646,7 +646,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types `.",
           "spoken": "Types `.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -665,7 +666,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 1.",
           "spoken": "Types 1.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -684,7 +686,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 2.",
           "spoken": "Types 2.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -703,7 +706,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 3.",
           "spoken": "Types 3.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -722,7 +726,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 4.",
           "spoken": "Types 4.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -741,7 +746,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 5.",
           "spoken": "Types 5.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -760,7 +766,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 6.",
           "spoken": "Types 6.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -779,7 +786,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 7.",
           "spoken": "Types 7.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -798,7 +806,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 8.",
           "spoken": "Types 8.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -817,7 +826,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 9.",
           "spoken": "Types 9.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -836,7 +846,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 0.",
           "spoken": "Types 0.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -855,7 +866,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types `.",
           "spoken": "Types `.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -874,7 +886,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Escape.",
           "spoken": "Types Escape.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -893,7 +906,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Q.",
           "spoken": "Types Q.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -912,7 +926,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types W.",
           "spoken": "Types W.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -931,7 +946,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types E.",
           "spoken": "Types E.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -950,7 +966,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types R.",
           "spoken": "Types R.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -969,7 +986,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types T.",
           "spoken": "Types T.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -988,7 +1006,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Y.",
           "spoken": "Types Y.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1007,7 +1026,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types U.",
           "spoken": "Types U.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1026,7 +1046,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types I.",
           "spoken": "Types I.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1045,7 +1066,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types O.",
           "spoken": "Types O.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1064,7 +1086,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types P.",
           "spoken": "Types P.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1083,7 +1106,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Delete.",
           "spoken": "Types Delete.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1102,7 +1126,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Tab.",
           "spoken": "Types Tab.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1121,7 +1146,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types A.",
           "spoken": "Types A.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1140,7 +1166,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types S.",
           "spoken": "Types S.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1159,7 +1186,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types D.",
           "spoken": "Types D.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1178,7 +1206,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F.",
           "spoken": "Types F.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1197,7 +1226,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types G.",
           "spoken": "Types G.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1216,7 +1246,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types H.",
           "spoken": "Types H.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1235,7 +1266,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types J.",
           "spoken": "Types J.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1254,7 +1286,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types K.",
           "spoken": "Types K.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1273,7 +1306,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types L.",
           "spoken": "Types L.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1292,7 +1326,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types ;.",
           "spoken": "Types ;.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1311,7 +1346,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types '.",
           "spoken": "Types '.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1330,7 +1366,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⇧ Shift.",
           "spoken": "Acts as Shift.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1349,7 +1386,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Z.",
           "spoken": "Types Z.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1368,7 +1406,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types X.",
           "spoken": "Types X.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1387,7 +1426,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types C.",
           "spoken": "Types C.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1406,7 +1446,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types V.",
           "spoken": "Types V.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1425,7 +1466,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types B.",
           "spoken": "Types B.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1444,7 +1486,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Presses Mute.",
           "spoken": "Presses Mute.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1463,7 +1506,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Presses Play.",
           "spoken": "Presses Play.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1482,7 +1526,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types N.",
           "spoken": "Types N.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1501,7 +1546,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types M.",
           "spoken": "Types M.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1520,7 +1566,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types ,.",
           "spoken": "Types ,.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1539,7 +1586,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types ..",
           "spoken": "Types ..",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1558,7 +1606,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types /.",
           "spoken": "Types /.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1577,7 +1626,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⇧ Shift.",
           "spoken": "Acts as Shift.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1596,7 +1646,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌘ Command.",
           "spoken": "Acts as Command.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1615,7 +1666,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌥ Option.",
           "spoken": "Acts as Option.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1634,7 +1686,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌃ Control.",
           "spoken": "Acts as Control.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1651,7 +1704,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Hold to use the lower layer.",
           "spoken": "Hold to use the lower layer.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1670,7 +1724,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Return.",
           "spoken": "Types Return.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1689,7 +1744,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Space.",
           "spoken": "Types Space.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1706,7 +1762,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Hold to use the raise layer.",
           "spoken": "Hold to use the raise layer.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1725,7 +1782,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌃ Control.",
           "spoken": "Acts as Control.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1744,7 +1802,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌥ Option.",
           "spoken": "Acts as Option.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1763,7 +1822,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌘ Command.",
           "spoken": "Acts as Command.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         }
       ],
       "reach": [
@@ -1774,7 +1834,8 @@ export const sofleKeymap: Keymap = {
         }
       ],
       "changed": false,
-      "warnings": []
+      "warnings": [],
+      "restorable": false
     },
     {
       "id": 1,
@@ -1792,7 +1853,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types `.",
           "spoken": "Same as the layer below: types `.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1811,7 +1873,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F1.",
           "spoken": "Types F1.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1830,7 +1893,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F2.",
           "spoken": "Types F2.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1849,7 +1913,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F3.",
           "spoken": "Types F3.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1868,7 +1933,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F4.",
           "spoken": "Types F4.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1887,7 +1953,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F5.",
           "spoken": "Types F5.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1906,7 +1973,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F6.",
           "spoken": "Types F6.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1925,7 +1993,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F7.",
           "spoken": "Types F7.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1944,7 +2013,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F8.",
           "spoken": "Types F8.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1963,7 +2033,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F9.",
           "spoken": "Types F9.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -1982,7 +2053,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F10.",
           "spoken": "Types F10.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2001,7 +2073,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F11.",
           "spoken": "Types F11.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2020,7 +2093,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types `.",
           "spoken": "Types `.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2039,7 +2113,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 1.",
           "spoken": "Types 1.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2058,7 +2133,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 2.",
           "spoken": "Types 2.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2077,7 +2153,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 3.",
           "spoken": "Types 3.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2096,7 +2173,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 4.",
           "spoken": "Types 4.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2115,7 +2193,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 5.",
           "spoken": "Types 5.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2134,7 +2213,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 6.",
           "spoken": "Types 6.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2153,7 +2233,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 7.",
           "spoken": "Types 7.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2172,7 +2253,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 8.",
           "spoken": "Types 8.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2191,7 +2273,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 9.",
           "spoken": "Types 9.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2210,7 +2293,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 0.",
           "spoken": "Types 0.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2229,7 +2313,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types F12.",
           "spoken": "Types F12.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2243,7 +2328,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Tab.",
           "spoken": "Same as the layer below: types Tab.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2262,7 +2348,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types !.",
           "spoken": "Types !.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2281,7 +2368,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types @.",
           "spoken": "Types @.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2300,7 +2388,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types #.",
           "spoken": "Types #.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2319,7 +2408,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types $.",
           "spoken": "Types $.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2338,7 +2428,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types %.",
           "spoken": "Types %.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2357,7 +2448,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types ^.",
           "spoken": "Types ^.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2376,7 +2468,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types &.",
           "spoken": "Types &.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2395,7 +2488,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types *.",
           "spoken": "Types *.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2414,7 +2508,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types (.",
           "spoken": "Types (.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2433,7 +2528,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types ).",
           "spoken": "Types ).",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2452,7 +2548,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types |.",
           "spoken": "Types |.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2466,7 +2563,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2485,7 +2583,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types =.",
           "spoken": "Types =.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2504,7 +2603,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types -.",
           "spoken": "Types -.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2523,7 +2623,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types +.",
           "spoken": "Types +.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2542,7 +2643,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types {.",
           "spoken": "Types {.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2561,7 +2663,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types }.",
           "spoken": "Types }.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2575,7 +2678,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: presses Mute.",
           "spoken": "Same as the layer below: presses Mute.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2589,7 +2693,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: presses Play.",
           "spoken": "Same as the layer below: presses Play.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2608,7 +2713,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types [.",
           "spoken": "Types [.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2627,7 +2733,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types ].",
           "spoken": "Types ].",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2646,7 +2753,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types ;.",
           "spoken": "Types ;.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2665,7 +2773,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types :.",
           "spoken": "Types :.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2684,7 +2793,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types \\.",
           "spoken": "Types \\.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2698,7 +2808,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2712,7 +2823,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2726,7 +2838,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2740,7 +2853,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2756,7 +2870,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: hold to use the lower layer.",
           "spoken": "Same as the layer below: hold to use the lower layer.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2770,7 +2885,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Return.",
           "spoken": "Same as the layer below: types Return.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2784,7 +2900,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Space.",
           "spoken": "Same as the layer below: types Space.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2800,7 +2917,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: hold to use the raise layer.",
           "spoken": "Same as the layer below: hold to use the raise layer.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2814,7 +2932,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2828,7 +2947,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2842,7 +2962,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         }
       ],
       "reach": [
@@ -2853,7 +2974,8 @@ export const sofleKeymap: Keymap = {
         }
       ],
       "changed": false,
-      "warnings": []
+      "warnings": [],
+      "restorable": false
     },
     {
       "id": 2,
@@ -2873,7 +2995,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Forgets the pairing of the Bluetooth device in use.",
           "spoken": "Forgets the pairing of the Bluetooth device in use.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2889,7 +3012,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 1.",
           "spoken": "Uses Bluetooth device 1.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2905,7 +3029,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 2.",
           "spoken": "Uses Bluetooth device 2.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2921,7 +3046,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 3.",
           "spoken": "Uses Bluetooth device 3.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2937,7 +3063,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 4.",
           "spoken": "Uses Bluetooth device 4.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2953,7 +3080,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 5.",
           "spoken": "Uses Bluetooth device 5.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2967,7 +3095,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types 6.",
           "spoken": "Same as the layer below: types 6.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2981,7 +3110,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types 7.",
           "spoken": "Same as the layer below: types 7.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -2995,7 +3125,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types 8.",
           "spoken": "Same as the layer below: types 8.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3009,7 +3140,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types 9.",
           "spoken": "Same as the layer below: types 9.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3023,7 +3155,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types 0.",
           "spoken": "Same as the layer below: types 0.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3037,7 +3170,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types `.",
           "spoken": "Same as the layer below: types `.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3051,7 +3185,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Escape.",
           "spoken": "Same as the layer below: types Escape.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3070,7 +3205,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Insert.",
           "spoken": "Types Insert.",
           "changed": false,
-          "macWarning": true
+          "macWarning": true,
+          "restorable": false
         },
         {
           "action": {
@@ -3089,7 +3225,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Print Screen.",
           "spoken": "Types Print Screen.",
           "changed": false,
-          "macWarning": true
+          "macWarning": true,
+          "restorable": false
         },
         {
           "action": {
@@ -3108,7 +3245,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Menu.",
           "spoken": "Types Menu.",
           "changed": false,
-          "macWarning": true
+          "macWarning": true,
+          "restorable": false
         },
         {
           "action": {
@@ -3122,7 +3260,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types R.",
           "spoken": "Same as the layer below: types R.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3136,7 +3275,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types T.",
           "spoken": "Same as the layer below: types T.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3155,7 +3295,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Page Up.",
           "spoken": "Types Page Up.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3169,7 +3310,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types U.",
           "spoken": "Same as the layer below: types U.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3188,7 +3330,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Up Arrow.",
           "spoken": "Types Up Arrow.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3202,7 +3345,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types O.",
           "spoken": "Same as the layer below: types O.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3221,7 +3365,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types 0.",
           "spoken": "Types 0.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3235,7 +3380,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Delete.",
           "spoken": "Same as the layer below: types Delete.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3249,7 +3395,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Tab.",
           "spoken": "Same as the layer below: types Tab.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3268,7 +3415,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌥ Option.",
           "spoken": "Acts as Option.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3287,7 +3435,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⌃ Control.",
           "spoken": "Acts as Control.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3306,7 +3455,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Acts as ⇧ Shift.",
           "spoken": "Acts as Shift.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3320,7 +3470,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types F.",
           "spoken": "Same as the layer below: types F.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3339,7 +3490,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Caps Lock.",
           "spoken": "Types Caps Lock.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3358,7 +3510,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Page Down.",
           "spoken": "Types Page Down.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3377,7 +3530,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Left Arrow.",
           "spoken": "Types Left Arrow.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3396,7 +3550,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Down Arrow.",
           "spoken": "Types Down Arrow.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3415,7 +3570,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Right Arrow.",
           "spoken": "Types Right Arrow.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3434,7 +3590,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Forward Delete.",
           "spoken": "Types Forward Delete.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3453,7 +3610,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Delete.",
           "spoken": "Types Delete.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3467,7 +3625,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3486,7 +3645,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Undo.",
           "spoken": "Types Undo.",
           "changed": false,
-          "macWarning": true
+          "macWarning": true,
+          "restorable": false
         },
         {
           "action": {
@@ -3505,7 +3665,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Cut.",
           "spoken": "Types Cut.",
           "changed": false,
-          "macWarning": true
+          "macWarning": true,
+          "restorable": false
         },
         {
           "action": {
@@ -3524,7 +3685,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Copy.",
           "spoken": "Types Copy.",
           "changed": false,
-          "macWarning": true
+          "macWarning": true,
+          "restorable": false
         },
         {
           "action": {
@@ -3543,7 +3705,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Types Paste.",
           "spoken": "Types Paste.",
           "changed": false,
-          "macWarning": true
+          "macWarning": true,
+          "restorable": false
         },
         {
           "action": {
@@ -3557,7 +3720,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Unlocks the keyboard, so Keywright can change it.",
           "spoken": "Unlocks the keyboard, so Keywright can change it.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3571,7 +3735,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: presses Mute.",
           "spoken": "Same as the layer below: presses Mute.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3585,7 +3750,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: presses Play.",
           "spoken": "Same as the layer below: presses Play.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3599,7 +3765,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types N.",
           "spoken": "Same as the layer below: types N.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3613,7 +3780,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types M.",
           "spoken": "Same as the layer below: types M.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3627,7 +3795,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types ,.",
           "spoken": "Same as the layer below: types ,.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3641,7 +3810,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types ..",
           "spoken": "Same as the layer below: types ..",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3655,7 +3825,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types /.",
           "spoken": "Same as the layer below: types /.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3669,7 +3840,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3683,7 +3855,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3697,7 +3870,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3711,7 +3885,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3727,7 +3902,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: hold to use the lower layer.",
           "spoken": "Same as the layer below: hold to use the lower layer.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3741,7 +3917,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Return.",
           "spoken": "Same as the layer below: types Return.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3755,7 +3932,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: types Space.",
           "spoken": "Same as the layer below: types Space.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3771,7 +3949,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: hold to use the raise layer.",
           "spoken": "Same as the layer below: hold to use the raise layer.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3785,7 +3964,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3799,7 +3979,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3813,7 +3994,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         }
       ],
       "reach": [
@@ -3824,7 +4006,8 @@ export const sofleKeymap: Keymap = {
         }
       ],
       "changed": false,
-      "warnings": []
+      "warnings": [],
+      "restorable": false
     },
     {
       "id": 3,
@@ -3844,7 +4027,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Forgets the pairing of the Bluetooth device in use.",
           "spoken": "Forgets the pairing of the Bluetooth device in use.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3860,7 +4044,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 1.",
           "spoken": "Uses Bluetooth device 1.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3876,7 +4061,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 2.",
           "spoken": "Uses Bluetooth device 2.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3892,7 +4078,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 3.",
           "spoken": "Uses Bluetooth device 3.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3908,7 +4095,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 4.",
           "spoken": "Uses Bluetooth device 4.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3924,7 +4112,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Uses Bluetooth device 5.",
           "spoken": "Uses Bluetooth device 5.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3937,7 +4126,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3950,7 +4140,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3963,7 +4154,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3976,7 +4168,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -3989,7 +4182,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4002,7 +4196,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4017,7 +4212,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Turns the power to the lights and display on or off.",
           "spoken": "Turns the power to the lights and display on or off.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4032,7 +4228,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Shifts the lights' colour the other way.",
           "spoken": "Shifts the lights' colour the other way.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4047,7 +4244,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Shifts the lights' colour one way.",
           "spoken": "Shifts the lights' colour one way.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4062,7 +4260,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Makes the lights' colour paler.",
           "spoken": "Makes the lights' colour paler.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4077,7 +4276,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Makes the lights' colour stronger.",
           "spoken": "Makes the lights' colour stronger.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4092,7 +4292,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Switches the lights to the next effect.",
           "spoken": "Switches the lights to the next effect.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4105,7 +4306,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4118,7 +4320,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4131,7 +4334,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4144,7 +4348,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4157,7 +4362,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4170,7 +4376,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4183,7 +4390,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4198,7 +4406,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Makes the lights dimmer.",
           "spoken": "Makes the lights dimmer.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4213,7 +4422,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Makes the lights brighter.",
           "spoken": "Makes the lights brighter.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4226,7 +4436,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4239,7 +4450,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4252,7 +4464,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4265,7 +4478,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4278,7 +4492,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4291,7 +4506,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4304,7 +4520,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4317,7 +4534,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4330,7 +4548,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4343,7 +4562,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4356,7 +4576,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4369,7 +4590,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4382,7 +4604,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4395,7 +4618,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4408,7 +4632,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4423,7 +4648,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Turns the lights on or off.",
           "spoken": "Turns the lights on or off.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4436,7 +4662,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4449,7 +4676,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4462,7 +4690,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4475,7 +4704,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4488,7 +4718,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4501,7 +4732,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4514,7 +4746,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4527,7 +4760,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4540,7 +4774,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4553,7 +4788,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4566,7 +4802,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4579,7 +4816,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4592,7 +4830,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4605,7 +4844,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4618,7 +4858,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4631,7 +4872,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         },
         {
           "action": {
@@ -4644,7 +4886,8 @@ export const sofleKeymap: Keymap = {
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
           "changed": false,
-          "macWarning": false
+          "macWarning": false,
+          "restorable": false
         }
       ],
       "reach": [
@@ -4655,7 +4898,8 @@ export const sofleKeymap: Keymap = {
         }
       ],
       "changed": false,
-      "warnings": []
+      "warnings": [],
+      "restorable": false
     }
   ],
   "freeLayerSlots": 0,

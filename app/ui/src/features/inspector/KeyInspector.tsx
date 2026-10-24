@@ -1,10 +1,12 @@
 import { useState } from "react";
 
 import { activeRecorder, KEY_RECORDER, useStore } from "../../app/store.ts";
+import { Button } from "../../design-system/Button.tsx";
 import { useMessages } from "../../i18n/messages.ts";
 import type { Action, Keymap, Layer } from "../../ipc/bindings.ts";
 import { setAction } from "../keyboard-canvas/edits.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
+import { restoreStockKeys } from "../stock/actions.ts";
 import { ActionEditor } from "./ActionEditor.tsx";
 import { ActionPicker } from "./ActionPicker.tsx";
 import {
@@ -86,6 +88,17 @@ export function KeyInspector({
           void apply(action, choice);
         }}
       />
+      {/* The footer (design §5.2): back to what the keyboard shipped with (CHG-4). */}
+      <footer className={styles.footer}>
+        <Button
+          variant="quiet"
+          size="compact"
+          isDisabled={!positions.some((position) => layer.keys[position]?.restorable === true)}
+          onPress={() => void restoreStockKeys()}
+        >
+          {messages.format("restore.key")}
+        </Button>
+      </footer>
     </div>
   );
 }

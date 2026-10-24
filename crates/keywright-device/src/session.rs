@@ -272,6 +272,9 @@ pub enum SessionError {
     /// The keymap couldn't be backed up, so a destructive command changed nothing.
     #[error("couldn't back up the keymap: {0}")]
     Backup(Arc<io::Error>),
+    /// The keyboard said it couldn't restore its stock settings.
+    #[error("the keyboard couldn't restore its stock settings")]
+    ResetFailed,
     /// The session has stopped.
     #[error("the session has stopped")]
     Stopped,
@@ -288,6 +291,7 @@ enum Command {
     AddLayer(oneshot::Sender<Result<(), SessionError>>),
     Save(oneshot::Sender<Result<(), SessionError>>),
     Discard(oneshot::Sender<Result<(), SessionError>>),
+    RestoreStockSettings(oneshot::Sender<Result<(), SessionError>>),
     Reapply(oneshot::Sender<Result<(), SessionError>>),
     Import(Vec<Edit>, oneshot::Sender<Result<(), SessionError>>),
     BackUp(
@@ -473,6 +477,19 @@ impl Session {
     /// Fails if the session isn't [`State::Ready`], or the keyboard doesn't save.
     pub async fn save(&self) -> Result<(), SessionError> {
         self.ask(Command::Save).await
+    }
+
+    /// Restores the keyboard's stock settings (CHG-5): the firmware's `reset_settings`,
+    /// after a backup of the keymap (SAF-3). The keyboard goes back to the keymap it was
+    /// built with, and the session reads it again, with no history. ZMK v0.3 keeps layer
+    /// names until it restarts.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the session isn't [`State::Ready`], the backup can't be written, in which
+    /// case nothing changes, or the keyboard doesn't reset.
+    pub async fn restore_stock_settings(&self) -> Result<(), SessionError> {
+        self.ask(Command::RestoreStockSettings).await
     }
 
     /// Discards the changes being tried: the keyboard goes back to its saved keymap, and

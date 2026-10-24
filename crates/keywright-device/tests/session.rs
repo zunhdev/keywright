@@ -1419,6 +1419,28 @@ mod automatic_backups {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn restoring_stock_settings_backs_up_first_then_reads_the_stock_keymap() {
+        let folder = Folder::new();
+        let (session, keyboard) = ready_with_backups(&folder).await;
+        let stock = keyboard_key(&keyboard, 3).await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+        session.save().await.unwrap();
+        assert_ne!(keyboard_key(&keyboard, 3).await, stock);
+
+        session.restore_stock_settings().await.unwrap();
+        assert_eq!(keyboard_key(&keyboard, 3).await, stock);
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(editor.changes(), []);
+        assert!(!editor.can_undo());
+        // The keymap as it was is backed up first.
+        let backups = folder.read();
+        assert_eq!(
+            reasons(&backups),
+            [Reason::BeforeRestore, Reason::FirstConnect]
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn a_keyboard_connected_without_backups_isnt_backed_up() {
         let folder = Folder::new();
         let keyboard = Simulator::sofle().unwrap();

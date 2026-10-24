@@ -36,6 +36,10 @@ pub enum AppError {
     /// A layer name the keyboard can't take: too long, or with a character it can't
     /// receive (`layer_name_problem` says which).
     InvalidLayerName,
+    /// Keywright has no stock keymap for the keyboard: it has no support pack.
+    NoStockKeymap,
+    /// The keyboard said it couldn't restore its stock settings.
+    ResetFailed,
     /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
     /// `force`, it is.
     WouldStrand {
@@ -54,6 +58,7 @@ impl From<SessionError> for AppError {
             SessionError::Editor(EditorError::Edit(_)) => Self::EditRefused,
             SessionError::Keyboard(_) => Self::KeyboardFailed,
             SessionError::Backup(_) => Self::BackupFailed,
+            SessionError::ResetFailed => Self::ResetFailed,
             SessionError::Stopped => Self::SessionStopped,
         }
     }

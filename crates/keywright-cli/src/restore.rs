@@ -241,5 +241,9 @@ fn failed(name: &str, error: SessionError) -> Failure {
         SessionError::Stopped => Failure::keyboard(format!(
             "Keywright lost track of {name}, so nothing changed."
         )),
+        // A restore applies changes; it never resets the keyboard's settings.
+        SessionError::ResetFailed => {
+            Failure::keyboard(format!("{name} couldn't restore its stock settings."))
+        }
     }
 }

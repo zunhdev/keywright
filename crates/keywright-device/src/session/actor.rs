@@ -181,6 +181,10 @@ impl Actor {
                 let result = self.discard().await;
                 self.reply(reply, result).await;
             }
+            Command::RestoreStockSettings(reply) => {
+                let result = self.restore_stock_settings().await;
+                self.reply(reply, result).await;
+            }
             Command::Reapply(reply) => {
                 let result = self.reapply().await;
                 self.reply(reply, result).await;
@@ -522,6 +526,35 @@ impl Actor {
         if let Some(editor) = &mut known.editor {
             editor.saved()?;
         }
+        known.unsaved_from_before = false;
+        self.set_unsaved(false);
+        let _ = self.events.send(SessionEvent::Editor);
+        Ok(())
+    }
+
+    /// Restores the keyboard's stock settings, after a backup, and reads the keymap again.
+    async fn restore_stock_settings(&mut self) -> Result<(), SessionError> {
+        let (client, _) = self.ready()?;
+        self.back_up(Reason::BeforeRestore)?;
+        let answer = async {
+            let reset = ask("reset_settings", || client.reset_settings()).await?;
+            let keymap = ask("get_keymap", || client.get_keymap()).await?;
+            Ok::<_, Failure>((reset, convert::keymap(&keymap)))
+        };
+        let keymap = match answer.await {
+            Ok((true, keymap)) => keymap,
+            Ok((false, _)) => return Err(SessionError::ResetFailed),
+            Err(failure) => {
+                let error = failure.error.clone();
+                self.interrupted(&error);
+                return Err(SessionError::Keyboard(error));
+            }
+        };
+        let Some(known) = &mut self.known else {
+            return Err(SessionError::NotReady);
+        };
+        // The history goes: the keyboard no longer holds what it describes.
+        known.start_afresh(keymap);
         known.unsaved_from_before = false;
         self.set_unsaved(false);
         let _ = self.events.send(SessionEvent::Editor);

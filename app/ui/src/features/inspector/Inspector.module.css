@@ -190,3 +190,11 @@
     box-shadow: 0 0 0 2px var(--accent-subtle);
   }
 }
+
+/* The key inspector's footer: Restore Stock (design §5.2). */
+.footer {
+  display: flex;
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}

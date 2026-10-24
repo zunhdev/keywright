@@ -7,6 +7,7 @@ import { UnlockSheet } from "../features/connection/UnlockSheet.tsx";
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { LayersPane } from "../features/layers/LayersPane.tsx";
+import { RestoreSheet } from "../features/stock/RestoreSheet.tsx";
 import { useMessages } from "../i18n/messages.ts";
 import { inspectorPlacement } from "./layout.ts";
 import { Splitter } from "./Splitter.tsx";
@@ -69,6 +70,7 @@ export function MainWindow() {
       <ReviewSheet />
       <DiscardSheet />
       <QuitDialog />
+      <RestoreSheet />
       {inspector === null ? null : (
         <aside
           className={styles.inspector}

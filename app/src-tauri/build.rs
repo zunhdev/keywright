@@ -40,6 +40,9 @@ const COMMANDS: &[&str] = &[
     "revert_change",
     "save_changes",
     "quit_now",
+    "restore_stock_keys",
+    "restore_stock_layer",
+    "restore_stock_settings",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

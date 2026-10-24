@@ -3,14 +3,12 @@ import { Button } from "../../design-system/Button.tsx";
 import { ContextMenu, MenuItem, MenuSeparator } from "../../design-system/Menu.tsx";
 import { Sheet } from "../../design-system/Sheet.tsx";
 import { useMessages } from "../../i18n/messages.ts";
+import { restoreStockKeys } from "../stock/actions.ts";
 import { copyAction, pasteAction, setKeys } from "./edits.ts";
 
 import styles from "./KeyMenu.module.css";
 
-/**
- * The selected keys' context menu (design §4.5). Restoring stock comes with stock keys
- * (KEY-52).
- */
+/** The selected keys' context menu (design §4.5). */
 export function KeyMenu({
   point,
   onClose,
@@ -20,6 +18,10 @@ export function KeyMenu({
 }) {
   const messages = useMessages();
   const copied = useStore((store) => store.copied);
+  const restorable = useStore((store) => {
+    const keys = shownLayer(store)?.keys ?? [];
+    return store.selection.some((position) => keys[position]?.restorable === true);
+  });
   const changed = useStore((store) => {
     const keys = shownLayer(store)?.keys ?? [];
     return store.selection.some((position) => keys[position]?.changed === true);
@@ -36,6 +38,7 @@ export function KeyMenu({
         if (item === "same-as-layer-below") void setKeys("same-as-layer-below");
         if (item === "does-nothing") void setKeys("does-nothing");
         if (item === "review") useStore.setState({ review: true });
+        if (item === "restore") void restoreStockKeys();
       }}
     >
       <MenuItem id="record" shortcut="R">
@@ -55,7 +58,7 @@ export function KeyMenu({
         {messages.format("key-menu.does-nothing")}
       </MenuItem>
       <MenuSeparator />
-      <MenuItem id="restore" isDisabled>
+      <MenuItem id="restore" isDisabled={!restorable}>
         {messages.format("key-menu.restore")}
       </MenuItem>
       {changed ? <MenuItem id="review">{messages.format("key-menu.review")}</MenuItem> : null}

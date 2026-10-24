@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-restore-stock-layer"
+description = "Enables the restore_stock_layer command without any pre-configured scope."
+commands.allow = ["restore_stock_layer"]
+
+[[permission]]
+identifier = "deny-restore-stock-layer"
+description = "Denies the restore_stock_layer command without any pre-configured scope."
+commands.deny = ["restore_stock_layer"]

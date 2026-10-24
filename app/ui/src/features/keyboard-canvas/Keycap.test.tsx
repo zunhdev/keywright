@@ -17,6 +17,7 @@ function face(keycap: KeycapData, more: Partial<Key> = {}): Key {
     spoken: "Does something.",
     changed: false,
     macWarning: false,
+    restorable: false,
     ...more,
   };
 }

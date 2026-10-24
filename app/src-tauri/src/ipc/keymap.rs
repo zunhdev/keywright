@@ -22,6 +22,7 @@ use super::AppState;
 use super::action::{Action, Choice, Kind, OtherBehavior, choices, kinds, other_behaviors};
 use super::error::AppError;
 use super::guard::{self, LayerWarning};
+use super::stock;
 
 /// The keymap the canvas draws: the keyboard's keys, its knobs, and its layers.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
@@ -96,6 +97,9 @@ pub struct Layer {
     pub changed: bool,
     /// What's wrong with it (SAF-2): no key turns it on, or there's no way back from it.
     pub warnings: Vec<LayerWarning>,
+    /// Whether it differs from the stock keymap, so Restore Stock Layer would change it
+    /// (CHG-4).
+    pub restorable: bool,
 }
 
 /// One way to reach a layer (LAY-4), such as "Hold lower".
@@ -112,6 +116,10 @@ pub struct Reach {
 /// What a key shows and does on a layer.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "independent facts about a key, which the canvas and the inspector read as flags"
+)]
 pub struct Key {
     /// What it does, for the inspector's editors. A "same as layer below" key is that,
     /// whatever it inherits.
@@ -128,6 +136,9 @@ pub struct Key {
     pub changed: bool,
     /// Whether it does something that doesn't work on a Mac (MAC-7).
     pub mac_warning: bool,
+    /// Whether it does something else than on the stock keymap, so Restore Stock would
+    /// change it (CHG-4).
+    pub restorable: bool,
 }
 
 /// What a keycap shows (design §4.2). In TypeScript, `{ kind: "label", text: "A" }` and so
@@ -225,6 +236,7 @@ impl Keymap {
         let reach = keycap::reach(keymap, &keyboard.behaviors, conditional_layers);
         let (layer_warnings, unlockable) =
             guard::warnings(keymap, &keyboard.behaviors, conditional_layers);
+        let (not_stock, layers_not_stock) = stock::differences(pack, keymap, &keyboard.behaviors);
         let layers = keymap
             .layers
             .iter()
@@ -233,6 +245,7 @@ impl Keymap {
             .zip(layer_warnings)
             .map(|(((layer, keys), ways), layer_warnings)| Layer {
                 warnings: layer_warnings,
+                restorable: layers_not_stock.contains(&layer.id),
                 id: layer.id.0,
                 name: keycap::layer_name(keymap, layer.id),
                 reach: ways
@@ -259,6 +272,7 @@ impl Keymap {
                         spoken: key.spoken,
                         changed: changed.contains(&(layer.id, position)),
                         mac_warning: warnings.contains(&(layer.id, position)),
+                        restorable: not_stock.contains(&(layer.id, position)),
                     })
                     .collect(),
             })
@@ -606,6 +620,7 @@ mod tests {
             spoken: "Tap for Escape, hold for Control.".to_owned(),
             changed: true,
             mac_warning: false,
+            restorable: false,
         };
         assert_eq!(
             serde_json::to_value(key).unwrap(),
@@ -617,6 +632,7 @@ mod tests {
                 "spoken": "Tap for Escape, hold for Control.",
                 "changed": true,
                 "macWarning": false,
+                "restorable": false,
             })
         );
         assert_eq!(

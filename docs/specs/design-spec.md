@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.18 — for review                                                       |
+| **Status**    | Draft v0.19 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -216,7 +216,7 @@ From top to bottom:
 2. **Action picker.** A button that names the key's kind of action, with its icon, and opens a search over a menu: the actions picked last, then the categories from EDIT-1, each with an icon. Typing searches across every action, by its name or what it does, and every key name. Choosing a category shows its editor; choosing an action sets it. ↩ on the canvas, or a double-click on a key, focuses the button.
 3. **Action editor.** The editor for the chosen action type (§5.4).
 4. **Notices.** Compatibility warning, lockout guard, or a firmware-limitation note, if any apply.
-5. **Footer.** _Restore stock_ (CHG-4) and, with _Show ZMK names_ on, the raw binding in mono (`&mt LCTRL ESC`, EDIT-6).
+5. **Footer.** _Restore stock_ (CHG-4) and, with _Show ZMK names_ on, the raw binding in mono (`&mt LCTRL ESC`, EDIT-6). Restore stock is enabled when a selected key does something else than on the stock keymap, and restores those keys as changes to try, through the lockout guard; so do the keys' menu and Keyboard › Restore Stock for Key. A layer's menu has _Restore Stock Layer_ for its keys and name. Keyboard › Restore Stock Settings… asks first (SAF-3): "Restore stock settings? Your keyboard goes back to the keymap it shipped with: every key, and the order of the layers. You can't undo this. Layer names stay until the keyboard restarts.", how many changes being tried go too, and "Keywright backs up your keymap first, so you can import it again."
 
 ### 5.3 Shortcut recorder (MAC-2, MAC-3)
 
@@ -562,3 +562,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.16    | 2026-10-24 | Changes (§6, KEY-50): Revert is a change undo undoes; layer rows; what opens the sheet; Undo and Redo name the change; the quit dialog's buttons, and closing the window asks too.                                                                                                         |
 | 0.17    | 2026-10-24 | Lockout guard (§5.1, §5.5, KEY-51): which changes go through it, the other warnings' words, the overview's warnings with Show Keys, and the sidebar's ⚠.                                                                                                                                   |
 | 0.18    | 2026-10-24 | Demo mode (§7, KEY-47): Explore without a keyboard, the "Demo keyboard" label, and Leave Demo.                                                                                                                                                                                             |
+| 0.19    | 2026-10-24 | Restore stock (§5.2, KEY-52): when it's offered for keys and layers, and the words of the whole keyboard's confirmation.                                                                                                                                                                   |

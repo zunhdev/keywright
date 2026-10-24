@@ -139,6 +139,8 @@ export const en = {
   "error.session-stopped": "Keywright lost track of the keyboard. Quit and open it again.",
   "error.menu-failed": "The menu bar didn't take a change.",
   "error.invalid-layer-name": "Your keyboard can't take that layer name.",
+  "error.no-stock-keymap": "Keywright doesn't have this keyboard's stock keymap.",
+  "error.reset-failed": "Your keyboard couldn't restore its stock settings.",
   "error.would-strand": "That change would leave you stuck, so Keywright didn't make it.",
   "inspector.label": "Inspector",
   "inspector.empty": "Select a key to see what it does.",
