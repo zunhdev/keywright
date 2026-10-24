@@ -1,29 +1,15 @@
-import { type ReactNode, useEffect, useState } from "react";
 import { ProgressBar } from "react-aria-components";
 
 import { useStore } from "../../app/store.ts";
 import { useMessages } from "../../i18n/messages.ts";
 import { BoardOutline } from "./BoardOutline.tsx";
+import { Delayed } from "./Delayed.tsx";
 import { useKeyboardGuide } from "./guide.ts";
 
 import styles from "./Connection.module.css";
 
 /** How long reading the keymap takes before a progress bar shows, in ms (design §7). */
 const PROGRESS_AFTER = 400;
-
-/** `children`, once `delay` ms have passed since this was drawn. */
-function Delayed({ delay, children }: { delay: number; children: ReactNode }) {
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShown(true);
-    }, delay);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [delay]);
-  return shown ? children : null;
-}
 
 /**
  * Connecting, unlocking or reading the keymap (design §7): a skeleton keyboard, which

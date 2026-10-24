@@ -27,6 +27,21 @@ export const hasCard = (session: SessionStatus | null) =>
   session !== null && CARDS.has(session.state.kind);
 
 /**
+ * The states that come from a port's silence: the wrong half, or a keyboard typing over
+ * another connection. A keyboard plugged back in while Bluetooth is on types over
+ * Bluetooth for a moment, then switches to the cable and locks, so these wait before they
+ * show a card.
+ */
+const SILENT = new Set<string>(["wrong-half", "no-live-editing"]);
+
+/** Whether the session's state comes from a port's silence. */
+export const isSilent = (session: SessionStatus | null) =>
+  session !== null && SILENT.has(session.state.kind);
+
+/** How long a silent port is given before its card shows, in ms. Tests shorten it. */
+export const silence = { grace: 3000 };
+
+/**
  * A card over the canvas for a keyboard that can't be edited yet (design §7, SAF-6,
  * CON-4, CON-5, DEV-4, DEV-5): what happened, in words, and what to do.
  */
