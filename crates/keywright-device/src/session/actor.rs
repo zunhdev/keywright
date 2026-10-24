@@ -25,10 +25,6 @@ use super::{
 use crate::backups::{self, Backups};
 use crate::convert;
 
-/// The USB product string of the half of a split keyboard that doesn't serve Studio, as
-/// spike S1 found it on the Sofle. Spike S4 checks it on other boards.
-const OTHER_HALF_PRODUCT: &str = "Generic CDC";
-
 /// How many rounds of operations bringing the keyboard in step with the editor may take.
 /// Two are enough, unless the keyboard refuses something ([`reconcile::operations`]).
 const RESYNC_ROUNDS: usize = 2;
@@ -249,6 +245,10 @@ impl Actor {
         };
         let client = link.client.clone();
         let peer = link.peer.clone();
+        if is_other_half(&peer) {
+            // It never answers: no need to wait a second to find out.
+            return self.set(State::WrongHalf);
+        }
         self.set(State::Probing);
 
         let info = match client.probe().await {
@@ -893,13 +893,25 @@ async fn listen(link: &mut Option<Link>) -> Input {
     }
 }
 
-/// What a keyboard that doesn't answer is.
-fn silent(peer: &Peer) -> State {
-    match peer {
+/// Whether the connection is to the half of a split keyboard that doesn't talk to the
+/// computer: a USB device without a keyboard interface (spike S4).
+const fn is_other_half(peer: &Peer) -> bool {
+    matches!(
+        peer,
         Peer::Usb {
-            product: Some(product),
-        } if product == OTHER_HALF_PRODUCT => State::WrongHalf,
-        _ => State::NoLiveEditing,
+            keyboard_interface: Some(false),
+            ..
+        }
+    )
+}
+
+/// What a keyboard that doesn't answer is: the other half, or one with no live editing over
+/// this connection, as when it types over another (spike S5).
+const fn silent(peer: &Peer) -> State {
+    if is_other_half(peer) {
+        State::WrongHalf
+    } else {
+        State::NoLiveEditing
     }
 }
 

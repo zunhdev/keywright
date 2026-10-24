@@ -1236,13 +1236,17 @@ mod keyboards_that_dont_answer {
         let keyboard = Simulator::sofle().unwrap();
         keyboard.set_wrong_half(true);
         let session = Session::start();
-        let usb = |product: &str| Peer::Usb {
-            product: Some(product.to_owned()),
+        let usb = |keyboard_interface| Peer::Usb {
+            product: Some("Sofle Choc Pro".to_owned()),
+            keyboard_interface,
         };
 
-        connect(&session, keyboard.connect(), usb("Generic CDC")).await;
+        // Without a keyboard interface, it's the other half (spike S4).
+        connect(&session, keyboard.connect(), usb(Some(false))).await;
         wait_until(&session, |state| *state == State::WrongHalf).await;
-        connect(&session, keyboard.connect(), usb("Sofle Choc Pro")).await;
+        connect(&session, keyboard.connect(), usb(Some(true))).await;
+        wait_until(&session, |state| *state == State::NoLiveEditing).await;
+        connect(&session, keyboard.connect(), usb(None)).await;
         wait_until(&session, |state| *state == State::NoLiveEditing).await;
         connect(&session, keyboard.connect(), Peer::Bluetooth).await;
         wait_until(&session, |state| *state == State::NoLiveEditing).await;
@@ -1250,6 +1254,23 @@ mod keyboards_that_dont_answer {
         keyboard.set_wrong_half(false);
         session.retry().await.unwrap();
         wait_until(&session, is_locked).await;
+    }
+
+    /// The other half never answers, so the session says so at once, without a probe.
+    #[tokio::test(start_paused = true)]
+    async fn the_other_half_is_told_without_asking_it() {
+        let keyboard = Simulator::sofle().unwrap();
+        let session = Session::start();
+        let mut events = session.subscribe();
+        let other_half = Peer::Usb {
+            product: Some("Generic CDC".to_owned()),
+            keyboard_interface: Some(false),
+        };
+        connect(&session, keyboard.connect(), other_half).await;
+        wait_until(&session, |state| *state == State::WrongHalf).await;
+        while let Ok(event) = events.try_recv() {
+            assert_ne!(event, SessionEvent::State(State::Probing));
+        }
     }
 
     #[tokio::test(start_paused = true)]

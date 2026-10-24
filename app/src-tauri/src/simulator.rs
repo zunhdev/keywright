@@ -99,6 +99,7 @@ impl Scenario {
         let peer = if self == Self::SofleWrongHalf {
             Peer::Usb {
                 product: Some("Generic CDC".to_owned()),
+                keyboard_interface: Some(false),
             }
         } else {
             Peer::Simulated

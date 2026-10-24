@@ -9,7 +9,16 @@ fn port(path: &str) -> UsbPort {
         path: path.to_owned(),
         serial_number: None,
         product: None,
+        keyboard_interface: Some(true),
     }
+}
+
+/// The other half's port: its USB device has no keyboard interface.
+fn other_half(path: &str) -> Candidate {
+    Candidate::Usb(UsbPort {
+        keyboard_interface: Some(false),
+        ..port(path)
+    })
 }
 
 fn usb(path: &str) -> Candidate {
@@ -69,6 +78,43 @@ fn the_sessions_own_connection_and_those_tried_lately_are_left_out() {
         selector.untried(&candidates, start + RETRY_AFTER),
         [usb("/dev/cu.usbmodem101"), bluetooth("a")]
     );
+}
+
+#[test]
+fn the_other_half_is_never_probed_and_comes_after_the_keyboards_port() {
+    let selector = Selector::default();
+    let candidates = [
+        bluetooth("a"),
+        other_half("/dev/cu.usbmodem2101"),
+        usb("/dev/cu.usbmodem101"),
+    ];
+    assert_eq!(
+        selector.in_order(&candidates),
+        [
+            usb("/dev/cu.usbmodem101"),
+            other_half("/dev/cu.usbmodem2101"),
+            bluetooth("a")
+        ]
+    );
+    assert_eq!(
+        selector.untried(&candidates, Instant::now()),
+        [usb("/dev/cu.usbmodem101"), bluetooth("a")]
+    );
+}
+
+#[test]
+fn the_other_half_appearing_while_on_bluetooth_isnt_watched() {
+    let start = Instant::now();
+    let mut selector = Selector {
+        working: true,
+        current: Some(bluetooth("a")),
+        ..Selector::default()
+    };
+    let Candidate::Usb(charging) = other_half("/dev/cu.usbmodem2101") else {
+        unreachable!()
+    };
+    selector.arrivals(&[charging], start);
+    assert_eq!(selector.arriving, []);
 }
 
 #[test]

@@ -85,14 +85,16 @@ struct Inner {
 }
 
 impl Mac {
-    /// Plugs in a port at `path`, whose USB product is `product`.
-    fn plug_in(&self, path: &str, product: Option<&str>, keyboard: &Simulator) {
+    /// Plugs in a port at `path`, whose USB device has a keyboard interface or not, or
+    /// says nothing about it.
+    fn plug_in(&self, path: &str, keyboard_interface: Option<bool>, keyboard: &Simulator) {
         let (plugged, _) = watch::channel(true);
         self.inner.lock().unwrap().ports.push(Port {
             usb: UsbPort {
                 path: path.to_owned(),
                 serial_number: None,
-                product: product.map(str::to_owned),
+                product: None,
+                keyboard_interface,
             },
             keyboard: keyboard.clone(),
             plugged,
@@ -164,6 +166,7 @@ impl Mac {
                 };
                 let peer = Peer::Usb {
                     product: wanted.product.clone(),
+                    keyboard_interface: wanted.keyboard_interface,
                 };
                 Ok(Connection::new(cable, peer))
             }
@@ -216,8 +219,17 @@ async fn ready_over(session: &Session, peer: &Peer) {
     .await;
 }
 
+/// The keyboard's USB port: it has a keyboard interface.
+const KEYBOARD: Option<bool> = Some(true);
+
+/// The other half's: it doesn't.
+const OTHER_HALF: Option<bool> = Some(false);
+
 fn usb() -> Peer {
-    Peer::Usb { product: None }
+    Peer::Usb {
+        product: None,
+        keyboard_interface: KEYBOARD,
+    }
 }
 
 /// Assigns A to layer 1's key 3. Returns the binding, and how it went.
@@ -244,7 +256,7 @@ async fn change_a_key(session: &Session) -> (Binding, Result<(), SessionError>) 
 #[tokio::test(start_paused = true)]
 async fn a_keyboard_answering_over_both_is_edited_over_usb() {
     let mac = Mac::default();
-    mac.plug_in("/dev/cu.usbmodem101", None, &unlocked_sofle());
+    mac.plug_in("/dev/cu.usbmodem101", KEYBOARD, &unlocked_sofle());
     mac.pair("sofle", &unlocked_sofle());
     let session = selecting(&mac);
     ready_over(&session, &usb()).await;
@@ -255,7 +267,7 @@ async fn a_keyboard_answering_over_both_is_edited_over_usb() {
 #[tokio::test(start_paused = true)]
 async fn a_silent_port_gives_way_to_bluetooth_without_the_session_seeing_it() {
     let mac = Mac::default();
-    mac.plug_in("/dev/cu.usbmodem2101", None, &silent_half());
+    mac.plug_in("/dev/cu.usbmodem2101", OTHER_HALF, &silent_half());
     mac.pair("sofle", &unlocked_sofle());
     let session = selecting(&mac);
     let mut events = session.subscribe();
@@ -275,12 +287,13 @@ async fn a_silent_port_gives_way_to_bluetooth_without_the_session_seeing_it() {
 #[tokio::test(start_paused = true)]
 async fn with_nothing_answering_the_session_says_why() {
     let mac = Mac::default();
-    mac.plug_in("/dev/cu.usbmodem2101", Some("Generic CDC"), &silent_half());
+    mac.plug_in("/dev/cu.usbmodem2101", OTHER_HALF, &silent_half());
     let session = selecting(&mac);
     wait_until(&session, |state| *state == State::WrongHalf).await;
-    // It isn't tried again and again while nothing changes.
+    // It's never probed, since it never answers, and isn't opened again while nothing
+    // changes.
     tokio::time::sleep(Duration::from_secs(60)).await;
-    assert_eq!(mac.opened("/dev/cu.usbmodem2101"), 2);
+    assert_eq!(mac.opened("/dev/cu.usbmodem2101"), 1);
     assert_eq!(session.state(), State::WrongHalf);
 }
 
@@ -293,15 +306,31 @@ async fn plugging_the_cable_in_moves_the_session_to_it() {
     ready_over(&session, &Peer::Bluetooth).await;
 
     let cable = silent_half();
-    mac.plug_in("/dev/cu.usbmodem101", None, &cable);
+    mac.plug_in("/dev/cu.usbmodem101", KEYBOARD, &cable);
     tokio::time::sleep(Duration::from_secs(2)).await;
     cable.set_wrong_half(false);
     cable.press_unlock_key();
     ready_over(&session, &usb()).await;
 }
 
-/// The right half plugged in to charge never answers: the session stays on Bluetooth, and
-/// selection stops probing the port.
+/// The right half plugged in to charge has no keyboard interface: it's never probed, and
+/// the session stays on Bluetooth.
+#[tokio::test(start_paused = true)]
+async fn the_other_half_plugged_in_to_charge_isnt_probed() {
+    let mac = Mac::default();
+    mac.pair("sofle", &unlocked_sofle());
+    let session = selecting(&mac);
+    ready_over(&session, &Peer::Bluetooth).await;
+
+    mac.plug_in("/dev/cu.usbmodem2101", OTHER_HALF, &silent_half());
+    tokio::time::sleep(ARRIVAL_WINDOW * 2).await;
+    assert_eq!(mac.opened("/dev/cu.usbmodem2101"), 0);
+    assert_eq!(session.state(), State::Ready);
+}
+
+/// A port with a keyboard interface that never answers, as when the keyboard goes on
+/// typing over Bluetooth: selection probes it for a while, then stops, and the session
+/// stays on Bluetooth.
 #[tokio::test(start_paused = true)]
 async fn a_port_that_never_answers_leaves_the_session_on_bluetooth() {
     let mac = Mac::default();
@@ -309,12 +338,12 @@ async fn a_port_that_never_answers_leaves_the_session_on_bluetooth() {
     let session = selecting(&mac);
     ready_over(&session, &Peer::Bluetooth).await;
 
-    mac.plug_in("/dev/cu.usbmodem2101", None, &silent_half());
+    mac.plug_in("/dev/cu.usbmodem101", KEYBOARD, &silent_half());
     tokio::time::sleep(ARRIVAL_WINDOW + Duration::from_secs(5)).await;
-    let probes = mac.opened("/dev/cu.usbmodem2101");
+    let probes = mac.opened("/dev/cu.usbmodem101");
     assert!(probes > 1, "{probes}");
     tokio::time::sleep(Duration::from_secs(60)).await;
-    assert_eq!(mac.opened("/dev/cu.usbmodem2101"), probes);
+    assert_eq!(mac.opened("/dev/cu.usbmodem101"), probes);
     assert_eq!(session.state(), State::Ready);
     assert_eq!(
         session.snapshot().await.unwrap().peer,
@@ -328,7 +357,7 @@ async fn a_port_that_never_answers_leaves_the_session_on_bluetooth() {
 async fn unplugging_the_cable_moves_to_bluetooth_and_keeps_the_changes() {
     let mac = Mac::default();
     let keyboard = unlocked_sofle();
-    mac.plug_in("/dev/cu.usbmodem101", None, &keyboard);
+    mac.plug_in("/dev/cu.usbmodem101", KEYBOARD, &keyboard);
     mac.pair("sofle", &keyboard);
     let session = selecting(&mac);
     ready_over(&session, &usb()).await;
@@ -359,7 +388,7 @@ async fn an_output_switch_shows_at_the_next_request_and_selection_follows_it() {
     let mac = Mac::default();
     // The cable is in, but the keyboard types over Bluetooth.
     let cable = silent_half();
-    mac.plug_in("/dev/cu.usbmodem101", None, &cable);
+    mac.plug_in("/dev/cu.usbmodem101", KEYBOARD, &cable);
     let bluetooth = unlocked_sofle();
     mac.pair("sofle", &bluetooth);
     let session = selecting(&mac);
@@ -380,20 +409,20 @@ async fn an_output_switch_shows_at_the_next_request_and_selection_follows_it() {
 }
 
 /// Unplugged, the keyboard takes a moment to answer over Bluetooth, longer than selection's
-/// first try there. With the right half still on its cable, the session waits on its silent
-/// port meanwhile, and selection tries Bluetooth again.
+/// first try there. With the right half still on its cable, the session says it's the
+/// wrong half meanwhile, and selection tries Bluetooth again.
 #[tokio::test(start_paused = true)]
 async fn a_keyboard_that_takes_a_moment_to_move_to_bluetooth_is_found_there() {
     let mac = Mac::default();
-    mac.plug_in("/dev/cu.usbmodem2101", None, &silent_half());
-    mac.plug_in("/dev/cu.usbmodem101", None, &unlocked_sofle());
+    mac.plug_in("/dev/cu.usbmodem2101", OTHER_HALF, &silent_half());
+    mac.plug_in("/dev/cu.usbmodem101", KEYBOARD, &unlocked_sofle());
     let bluetooth = silent_half();
     mac.pair("sofle", &bluetooth);
     let session = selecting(&mac);
     ready_over(&session, &usb()).await;
 
     mac.unplug("/dev/cu.usbmodem101");
-    wait_until(&session, |state| *state == State::NoLiveEditing).await;
+    wait_until(&session, |state| *state == State::WrongHalf).await;
     tokio::time::sleep(Duration::from_secs(3)).await;
     bluetooth.set_wrong_half(false);
     bluetooth.press_unlock_key();

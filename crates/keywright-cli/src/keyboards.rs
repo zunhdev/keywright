@@ -33,9 +33,6 @@ const SIMULATOR: &str = "KEYWRIGHT_SIMULATOR";
 /// The variable that moves the automatic backups' folder, for tests.
 const BACKUPS_DIR: &str = "KEYWRIGHT_BACKUPS_DIR";
 
-/// The USB product string of the Sofle's right half, which never answers (spike S1).
-const RIGHT_HALF_PRODUCT: &str = "Generic CDC";
-
 /// How long the commands that read the keymap wait for the keyboard to be unlocked.
 #[derive(Debug, Clone, Copy, clap::Args)]
 pub(crate) struct Wait {
@@ -223,8 +220,10 @@ impl Source {
             }
             Scenario::RightHalf => {
                 simulator.set_wrong_half(true);
+                // The right half's port has no keyboard interface (spike S4).
                 Peer::Usb {
-                    product: Some(RIGHT_HALF_PRODUCT.to_owned()),
+                    product: Some("Generic CDC".to_owned()),
+                    keyboard_interface: Some(false),
                 }
             }
             Scenario::Sofle | Scenario::SofleStaysLocked => Peer::Simulated,
