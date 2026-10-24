@@ -162,6 +162,26 @@ describe("once it could be edited", () => {
     stop();
   });
 
+  test("a keyboard that moves to Bluetooth says so, after a moment without a connection", () => {
+    const { stop } = drawWindow(sofle({ kind: "ready" }));
+    report({ ...sofle({ kind: "no-device" }), transport: null });
+    report({ ...sofle({ kind: "probing" }), transport: null });
+    report({ ...sofle({ kind: "locked" }), transport: "bluetooth" });
+    expect(toasts.visibleToasts.map((toast) => toast.content.title)).toContain(
+      "Now connected over Bluetooth. Unlock again to continue.",
+    );
+    for (const toast of toasts.visibleToasts) toasts.close(toast.key);
+    stop();
+  });
+
+  test("leaving demo mode isn't a move", () => {
+    const { stop } = drawWindow({ ...sofle({ kind: "ready" }), transport: "simulated" });
+    report({ ...sofle({ kind: "no-device" }), transport: null });
+    report({ ...sofle({ kind: "locked" }), transport: "usb" });
+    expect(toasts.visibleToasts).toHaveLength(0);
+    stop();
+  });
+
   test("a keyboard that moves to Bluetooth says so", () => {
     const { stop } = drawWindow(sofle({ kind: "ready" }));
     report({ ...sofle({ kind: "locked" }), transport: "bluetooth" });

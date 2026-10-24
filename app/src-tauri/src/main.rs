@@ -15,11 +15,12 @@
 mod ipc;
 mod menu;
 mod simulator;
-mod usb;
 
 use std::error::Error;
 
+use keywright_device::selection::{self, ThisMac};
 use keywright_device::{Backups, Session};
+use keywright_platform::bluetooth::{self, Permission};
 use tauri::{App, AppHandle, Manager, RunEvent, Runtime, WindowEvent};
 use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
@@ -99,14 +100,16 @@ fn ask_before_quitting<R: Runtime>(app: &AppHandle<R>) -> bool {
     ask
 }
 
-/// Starts the device session, connects a simulated keyboard if `KEYWRIGHT_SIMULATOR`
-/// names one, and sends the UI the session's state and keymap from then on.
+/// Starts the device session, and keeps it connected to a keyboard on USB or Bluetooth
+/// (tech spec §6.3), or to a simulated keyboard if `KEYWRIGHT_SIMULATOR` names one. Sends
+/// the UI the session's state and keymap from then on.
 fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     let scenario = Scenario::from_env()?;
     let state = tauri::async_runtime::block_on(async {
         let Some(scenario) = scenario else {
             let session = session_with_backups();
-            tauri::async_runtime::spawn(usb::connect_keyboards(session.clone()));
+            let keyboards = ThisMac::new(bluetooth_allowed);
+            tauri::async_runtime::spawn(selection::select(session.clone(), keyboards));
             return Ok::<_, simulator::Error>(AppState::new(session));
         };
         // Like the CLI, a simulated keyboard's backups go nowhere.
@@ -152,6 +155,12 @@ fn show_edited<R: Runtime>(app: &AppHandle<R>, edited: bool) {
             let _ = keywright_platform::window::set_document_edited(&window, edited);
         }
     });
+}
+
+/// Whether Keywright may use Bluetooth. Until the person has been asked, in context
+/// (CON-6), it doesn't: using it would ask.
+fn bluetooth_allowed() -> bool {
+    bluetooth::permission() == Permission::Allowed
 }
 
 /// A session that keeps automatic backups in the app's folder (SAF-4), or none if the
