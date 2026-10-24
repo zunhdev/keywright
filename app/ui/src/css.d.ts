@@ -1,13 +1,6 @@
-// Stylesheets, which Bun bundles natively.
-
 /**
- * A CSS Module (`*.module.css`): the default export maps each class name in the file to
- * its scoped name. It comes first, so TypeScript prefers it to `*.css` below.
+ * A stylesheet imported for its rules alone, such as `import "./global.css"`. CSS Modules
+ * (`*.module.css`) have typings of their own instead, which `mise run generate:css-types`
+ * writes next to them.
  */
-declare module "*.module.css" {
-  const classes: Readonly<Record<string, string>>;
-  export default classes;
-}
-
-/** A global stylesheet, imported for its rules alone: `import "./global.css"`. */
 declare module "*.css" {}

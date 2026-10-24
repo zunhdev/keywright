@@ -86,6 +86,14 @@ run = "typos"
 description = "Check that keywright-core's generated key tables match their generator and sources (needs macOS)"
 run = "bun scripts/generate-key-tables.ts --check"
 
+[tasks."lint:contrast"]
+description = "Check that the UI's colour tokens meet WCAG AA, in light, dark and Increase Contrast"
+run = "bun scripts/check-contrast.ts"
+
+[tasks."lint:css-types"]
+description = "Check that the UI's CSS Modules' typings match their stylesheets"
+run = "bun scripts/generate-css-types.ts --check"
+
 [tasks."lint:bindings"]
 description = "Check that the UI's IPC bindings match the app's commands, events and payloads"
 run = "cargo nextest run --package keywright-app the_ui_bindings_are_up_to_date"
@@ -97,6 +105,10 @@ depends = ["generate:*"]
 [tasks."generate:key-tables"]
 description = "Regenerate keywright-core's key tables from their pinned upstream sources (needs macOS)"
 run = "bun scripts/generate-key-tables.ts"
+
+[tasks."generate:css-types"]
+description = "Regenerate the typings of the UI's CSS Modules (*.module.d.css.ts), which name their classes"
+run = "bun scripts/generate-css-types.ts"
 
 [tasks."generate:bindings"]
 description = "Regenerate the UI's IPC bindings (app/ui/src/ipc/bindings.ts) from the app's commands, events and payloads"

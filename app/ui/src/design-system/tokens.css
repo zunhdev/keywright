@@ -1,0 +1,133 @@
+/*
+ * Keywright's design tokens (design §10): colour, type, space, shape, depth and motion,
+ * as CSS custom properties. Components use these, never raw values.
+ *
+ * Colours are `light-dark(light, dark)`: the page follows the system's appearance, and
+ * `data-theme` on the root element switches it, as Settings › Appearance will. (Bun's
+ * bundler rewrites light-dark() into variables set on the root, so a theme can't be
+ * switched for only part of the page.)
+ * scripts/check-contrast.ts checks every pair the UI draws against WCAG AA, in light, dark
+ * and with Increase Contrast, so a change here that breaks one fails CI.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces */
+  --bg-window: light-dark(#f7f7f8, #141416);
+  --bg-panel: light-dark(#ffffff, #1b1b1f);
+  --bg-canvas: light-dark(#efeff2, #101012);
+  --surface-key: light-dark(#ffffff, #26262c);
+  --surface-hover: light-dark(#f0f0f3, #2a2a31);
+  --surface-pressed: light-dark(#e7e7ec, #33333b);
+  --scrim: light-dark(rgb(20 20 26 / 0.25), rgb(0 0 0 / 0.5));
+
+  /* Lines: dividers, and key outlines, which must stand out from what's around them */
+  --border-subtle: light-dark(#e2e2e7, #2e2e35);
+  --border-key: light-dark(#898992, #6f6f78);
+
+  /* Text */
+  --text-primary: light-dark(#16161a, #ededf0);
+  --text-secondary: light-dark(#5d5d66, #a0a0ab);
+
+  /* The one accent: selection, the primary button, the changed badge, focus */
+  --accent: light-dark(#4c5bd4, #8b96ff);
+  --accent-hover: light-dark(#4251c7, #a0a9ff);
+  --accent-subtle: light-dark(#e7e9fb, #2b2e52);
+  --accent-contrast: light-dark(#ffffff, #0e0e2a);
+
+  /* Status, always with an icon or words too */
+  --warning: light-dark(#a65800, #f2a541);
+  --danger: light-dark(#c2333b, #ff6b70);
+  --success: light-dark(#1f7a4d, #4cc38a);
+
+  /*
+   * Layers, in order of layer ID (design §4.4): matched lightness (OKLCH L 0.60 light,
+   * 0.74 dark), with the hues ordered so that the first four differ most from each other
+   * and from the accent with protanopia, deuteranopia and tritanopia. A layer's name is
+   * always shown with its colour.
+   */
+  --layer-1: light-dark(#c8536c, #f97f95);
+  --layer-2: light-dark(#928103, #c1ac15);
+  --layer-3: light-dark(#0a938e, #10c4bc);
+  --layer-4: light-dark(#ac5db1, #da87de);
+  --layer-5: light-dark(#7173d7, #9ba0ff);
+  --layer-6: light-dark(#3a9742, #68c36d);
+  --layer-7: light-dark(#c16302, #f28e42);
+  --layer-8: light-dark(#068bc0, #22b8fb);
+
+  /* Type (design §10.1): weight, size / line height, family */
+  --font-ui: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --font-features-numbers: "tnum", "cv11";
+  --type-caption: 500 11px / 14px var(--font-ui);
+  --type-body: 400 13px / 18px var(--font-ui);
+  --type-body-strong: 600 13px / 18px var(--font-ui);
+  --type-title: 600 15px / 20px var(--font-ui);
+  --type-sentence: 500 18px / 24px var(--font-ui);
+  --type-display: 600 24px / 30px var(--font-ui);
+
+  /* Space (design §10.3): a 4 px scale, and control heights */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --control-compact: 28px;
+  --control-default: 32px;
+
+  /* Shape */
+  --radius-badge: 4px;
+  --radius-control: 6px;
+  --radius-key: 8px;
+  --radius-panel: 12px;
+
+  /* Depth: keys, and what floats over the window. Panels use hairlines, not shadows. */
+  --shadow-key: 0 1px 1px light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.4));
+  --shadow-overlay:
+    0 0 0 1px var(--border-subtle), 0 8px 24px light-dark(rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.5));
+
+  /* Focus (design §12): a ring with an offset, on every focusable element */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* "Same as layer below" labels (design §4.2) */
+  --ghost-opacity: 0.35;
+
+  /*
+   * Motion (design §10.3). Components move and scale by multiples of --motion-distance,
+   * which Reduce Motion sets to 0, leaving opacity-only transitions.
+   */
+  --motion-hover: 120ms;
+  --motion-panel: 200ms;
+  --motion-sheet: 320ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --motion-distance: 1;
+}
+
+/* Increase Contrast: borders move up two steps, secondary text darkens, the ring thickens. */
+@media (prefers-contrast: more) {
+  :root {
+    --border-subtle: light-dark(#8e8e97, #66666f);
+    --border-key: light-dark(#6c6c75, #8c8c95);
+    --text-secondary: light-dark(#4f4f58, #b1b1ba);
+    --focus-ring-width: 3px;
+    --ghost-opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-distance: 0;
+  }
+}
+
+/* An appearance chosen in Settings, or in the gallery, set on the root element. */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}

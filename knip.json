@@ -1,11 +1,11 @@
 {
   "$schema": "./node_modules/knip/schema.json",
-  "ignore": ["app/ui/src/ipc/bindings.ts"],
+  "ignore": ["app/ui/src/ipc/bindings.ts", "app/ui/src/**/*.module.d.css.ts"],
   "ignoreBinaries": ["rustfmt"],
   "ignoreDependencies": ["react-refresh"],
   "workspaces": {
     "app/ui": {
-      "entry": ["src/main.tsx", "dev-css-modules.ts"]
+      "entry": ["src/main.tsx", "src/gallery/main.tsx", "dev-css-modules.ts"]
     }
   }
 }

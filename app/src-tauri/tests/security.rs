@@ -18,6 +18,10 @@ use serde_json::Value;
 /// Every source the CSP may name: the app's own files, nothing, and Tauri's IPC.
 const ALLOWED_CSP_SOURCES: &[&str] = &["'self'", "'none'", "ipc:", "http://ipc.localhost"];
 
+/// The one exception: fonts as `data:` URLs, since Bun's bundler inlines the bundled
+/// fonts into the stylesheet. A font is passive, and comes from the app's own bundle.
+const FONT_DATA: (&str, &str) = ("font-src", "data:");
+
 /// The only addresses the UI may open: System Settings, and Keywright's user docs.
 const ALLOWED_OPENER_URLS: &[&str] = &[
     "x-apple.systempreferences:*",
@@ -74,7 +78,8 @@ fn the_csp_allows_only_the_app_itself_and_ipc() {
     for (directive, sources) in csp() {
         for source in sources {
             assert!(
-                ALLOWED_CSP_SOURCES.contains(&source.as_str()),
+                ALLOWED_CSP_SOURCES.contains(&source.as_str())
+                    || (directive.as_str(), source.as_str()) == FONT_DATA,
                 "{directive} allows {source}: no remote origins, inline code or eval"
             );
         }

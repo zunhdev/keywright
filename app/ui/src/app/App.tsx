@@ -1,5 +1,6 @@
 import { I18nProvider } from "react-aria-components";
 
+import { ToastRegion } from "../design-system/Toast.tsx";
 import { LOCALE, useMessages } from "../i18n/messages.ts";
 import { useStore } from "./store.ts";
 
@@ -7,12 +8,13 @@ import styles from "./App.module.css";
 
 /**
  * The whole UI. It sets the locale for everything inside, React Aria's own strings
- * included, and shows the main window's content.
+ * included, and shows the main window's content and its toasts.
  */
 export function App() {
   return (
     <I18nProvider locale={LOCALE}>
       <MainWindow />
+      <ToastRegion />
     </I18nProvider>
   );
 }

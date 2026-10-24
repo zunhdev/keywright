@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/bun": "1.4.3",
+    "lightningcss": "1.33.0",
     "typescript": "7.0.2"
   }
 }

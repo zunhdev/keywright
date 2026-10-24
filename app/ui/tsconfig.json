@@ -4,6 +4,8 @@
   "compilerOptions": {
     "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "react-jsx",
+    // Reads each CSS Module's generated typings, Name.module.d.css.ts.
+    "allowArbitraryExtensions": true,
     "types": ["bun"]
   },
   "include": ["src", "dev.ts", "dev-css-modules.ts"]

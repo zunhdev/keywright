@@ -1,5 +1,16 @@
-/* Page-wide rules. The design tokens and fonts replace these (design §10). */
+/* Page-wide rules, on the design tokens (design §10, §12). */
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font: var(--type-body);
+  color: var(--text-primary);
+  background: var(--bg-window);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Design §12: a visible accent ring with an offset on every focusable element, for
+   keyboard focus only. React Aria marks its components with data-focus-visible. */
+:focus-visible,
+[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--accent);
+  outline-offset: var(--focus-ring-offset);
 }
