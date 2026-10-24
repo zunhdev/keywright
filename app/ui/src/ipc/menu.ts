@@ -40,6 +40,9 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
   "select-all-keys": () => useStore.getState().selectAll(),
   find: focusSearch,
   "record-shortcut": () => useStore.getState().startRecording(),
+  save: () => useStore.setState({ review: true }),
+  "review-changes": () => useStore.setState({ review: true }),
+  "discard-changes": () => useStore.setState({ discarding: true }),
   "same-as-layer-below": () => void setKeys("same-as-layer-below"),
   "does-nothing": () => void setKeys("does-nothing"),
   "toggle-layers": () => useStore.getState().togglePanel("layers"),
@@ -55,8 +58,8 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
  * what they're called then (design §9.6).
  */
 const TEXT_EDITS = new Map<MenuItem, readonly [TextEdit, MessageKey | null]>([
-  ["undo", ["undo", null]],
-  ["redo", ["redo", null]],
+  ["undo", ["undo", "menu.undo"]],
+  ["redo", ["redo", "menu.redo"]],
   ["copy-action", ["copy", "menu.copy"]],
   ["paste-action", ["paste", "menu.paste"]],
   ["select-all-keys", ["select-all", "menu.select-all"]],
@@ -79,9 +82,29 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
   const selected = selection.length > 0 && shownLayer(store) !== null;
   const layersLabel = panels.layers ? "menu.hide-layers" : "menu.show-layers";
   const inspectorLabel = panels.inspector ? "menu.hide-inspector" : "menu.show-inspector";
+  const [undoName, redoName] = [session?.undo ?? null, session?.redo ?? null];
   const states = new Map<MenuItem, ItemState>([
-    ["undo", item(editable && session.canUndo)],
-    ["redo", item(editable && session.canRedo)],
+    [
+      "undo",
+      item(
+        editable && session.canUndo,
+        undoName === null
+          ? strings.format("menu.undo")
+          : strings.format("menu.undo-named", { what: undoName }),
+      ),
+    ],
+    [
+      "redo",
+      item(
+        editable && session.canRedo,
+        redoName === null
+          ? strings.format("menu.redo")
+          : strings.format("menu.redo-named", { what: redoName }),
+      ),
+    ],
+    ["save", item(editable && (session?.changes ?? 0) > 0)],
+    ["review-changes", item(editable && (session?.changes ?? 0) > 0)],
+    ["discard-changes", item(editable && (session?.changes ?? 0) > 0)],
     ["copy-action", item(keymap !== null && selected, strings.format("menu.copy-action"))],
     [
       "paste-action",

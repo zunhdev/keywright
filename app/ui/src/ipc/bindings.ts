@@ -240,10 +240,43 @@ character: string } | null>("layer_name_problem", { name }),
 	 *  Fails if the keymap can't be changed now, or the keyboard doesn't discard them.
 	 */
 	discardChanges: () => typedError<null, AppError>(__TAURI_INVOKE("discard_changes")),
+	/**
+	 *  The review sheet's rows (design §6): each way the keymap differs from the one the
+	 *  keyboard saved, grouped by layer, in the keycaps' words.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the session has stopped.
+	 */
+	reviewChanges: () => typedError<ReviewRow[], AppError>(__TAURI_INVOKE("review_changes")),
+	/**
+	 *  Takes back one row of the review sheet, as a change that undo undoes (design §6).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no such row now, the keymap can't be changed now, or the keyboard
+	 *  doesn't carry it out.
+	 */
+	revertChange: (key: RowKey) => typedError<null, AppError>(__TAURI_INVOKE("revert_change", { key })),
+	/**
+	 *  Saves the changes being tried to the keyboard (CHG-2). The history stays, so a saved
+	 *  change can be undone, and is then tried again.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keymap can't be changed now, or the keyboard doesn't save.
+	 */
+	saveChanges: () => typedError<null, AppError>(__TAURI_INVOKE("save_changes")),
+	/**
+	 *  Quits, once the UI has saved or discarded the changes being tried, or been told to
+	 *  quit without them.
+	 */
+	quitNow: () => __TAURI_INVOKE<void>("quit_now"),
 };
 
 /** Events */
 export const events = {
+	appQuitRequested: makeEvent<QuitRequested>("app://quit-requested"),
 	menuItem: makeEvent<MenuItemChosen>("menu://item"),
 	sessionKeymap: makeEvent<KeymapChanged>("session://keymap"),
 	sessionState: makeEvent<SessionStateChanged>("session://state"),
@@ -818,6 +851,12 @@ export type Problem =
 /**  The keyboard answered a request with something else. */
 "unexpected-answer";
 
+/**
+ *  `app://quit-requested`: someone asked to quit, or to close the window, while changes are
+ *  being tried. The UI asks whether to save them.
+ */
+export type QuitRequested = null;
+
 /**  One way to reach a layer (LAY-4), such as "Hold lower". */
 export type Reach = {
 	/**  How, in words. */
@@ -827,6 +866,53 @@ export type Reach = {
 	/**  Where that key is, in words, such as `Left half, row 5, key 4`. */
 	place: string | null,
 };
+
+/**
+ *  One row of the review sheet (design §6): what changed, how it was when saved, and how
+ *  it is now.
+ */
+export type ReviewRow = {
+	/**  What it's about, to take it back. */
+	key: RowKey,
+	/**  The layer it's listed under, by ID and name, unless it's the layers' order. */
+	layer: number | null,
+	/**  That layer's name. */
+	layerName: string | null,
+	/**  Where the key is, for a key, such as `Left half, row 2, key 1`. */
+	place: string | null,
+	/**  How it was when saved, as a keycap shows it or in a word or two. */
+	before: string,
+	/**  How it is now. */
+	after: string,
+	/**  What it does now, in a sentence, for a key. */
+	sentence: string | null,
+};
+
+/**
+ *  What a review row is about: the order of the layers, a layer, or a key on one. In
+ *  TypeScript, `{ kind: "key", layer: 0, position: 13 }` and so on.
+ */
+export type RowKey = 
+/**  The layers' order. */
+{ kind: "order" } | 
+/**  A layer that's new. */
+{ kind: "added"; 
+/**  The layer. */
+layer: number } | 
+/**  A layer that's gone. */
+{ kind: "removed"; 
+/**  The layer. */
+layer: number } | 
+/**  A layer's name. */
+{ kind: "renamed"; 
+/**  The layer. */
+layer: number } | 
+/**  A key on a layer. */
+{ kind: "key"; 
+/**  The layer. */
+layer: number; 
+/**  The key. */
+position: number };
 
 /**
  *  What the session is doing (tech spec §7.1). In TypeScript, `{ kind: "ready" }` and so
@@ -886,6 +972,10 @@ export type SessionStatus = {
 	canUndo: boolean,
 	/**  Whether there's a change undone to redo. */
 	canRedo: boolean,
+	/**  What undo would take back, in a few words, for the Edit menu: "Assign ⌘C to B". */
+	undo: string | null,
+	/**  What redo would apply again, in a few words. */
+	redo: string | null,
 };
 
 /**  A key or shortcut: a key, with modifiers held. */

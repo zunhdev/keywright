@@ -654,6 +654,24 @@ mod saving_and_discarding {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn one_row_of_the_review_list_is_taken_back_and_can_be_undone() {
+        let (session, keyboard) = ready_session().await;
+        let stock = keyboard_key(&keyboard, 4).await;
+        set_key(&session, 3, KEY_A).await.unwrap();
+        set_key(&session, 4, KEY_A).await.unwrap();
+        let changes = snapshot(&session).await.editor.unwrap().changes();
+        assert_eq!(changes.len(), 2);
+
+        session.revert(changes[1].clone()).await.unwrap();
+        let editor = snapshot(&session).await.editor.unwrap();
+        assert_eq!(editor.changes(), changes[..1]);
+        assert_eq!(keyboard_key(&keyboard, 4).await, stock);
+        // Taking a row back is a change of its own, which undo undoes.
+        session.undo().await.unwrap();
+        assert_eq!(snapshot(&session).await.editor.unwrap().changes().len(), 2);
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn a_save_the_keyboard_refuses_keeps_the_changes_being_tried() {
         let keyboard = Simulator::sofle().unwrap();
         keyboard.press_unlock_key();

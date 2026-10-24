@@ -594,3 +594,93 @@ mod reach {
         assert_eq!(texts(&stock_keymap(), &[])[3], ["No key turns it on"]);
     }
 }
+
+mod edits {
+    use super::*;
+    use crate::edit::Edit;
+
+    fn named(edits: &[Edit]) -> String {
+        super::super::describe_edits(&stock_keymap(), &zmk_v0_3_table(), edits)
+    }
+
+    fn set(position: usize, before: Action, after: Action) -> Edit {
+        Edit::SetBinding {
+            layer: BASE,
+            position,
+            before: binding(before),
+            after: binding(after),
+        }
+    }
+
+    #[test]
+    fn a_key_says_what_it_became_and_what_it_was() {
+        let b = Action::KeyPress(plain(key(0x05)));
+        let copy = Action::KeyPress(with(Mods::LEFT_COMMAND, C));
+        assert_eq!(named(&[set(41, b, copy)]), "Assign ⌘C to B");
+        assert_eq!(
+            named(&[set(41, b, Action::Transparent)]),
+            "Make B Same as Layer Below"
+        );
+        assert_eq!(named(&[set(41, b, Action::None)]), "Make B Do Nothing");
+    }
+
+    #[test]
+    fn a_swap_names_both_keys_and_more_keys_are_counted() {
+        let q = Action::KeyPress(plain(key(0x14)));
+        let w = Action::KeyPress(plain(key(0x1A)));
+        assert_eq!(named(&[set(13, q, w), set(14, w, q)]), "Swap Q and W");
+        assert_eq!(
+            named(&[set(13, q, w), set(14, q, w), set(15, q, w)]),
+            "Change 3 Keys"
+        );
+    }
+
+    #[test]
+    fn layer_edits_say_what_happened_to_the_layer() {
+        let keymap = stock_keymap();
+        let lower = keymap.layers[1].clone();
+        assert_eq!(
+            named(&[Edit::RenameLayer {
+                layer: LOWER,
+                before: "lower".to_owned(),
+                after: "Numbers".to_owned(),
+            }]),
+            "Rename lower to Numbers"
+        );
+        assert_eq!(named(&[Edit::MoveLayer { from: 1, to: 2 }]), "Move Layer");
+        assert_eq!(
+            named(&[Edit::RemoveLayer {
+                index: 1,
+                layer: lower.clone(),
+            }]),
+            "Remove lower"
+        );
+        assert_eq!(
+            named(&[Edit::RestoreLayer {
+                index: 1,
+                layer: Layer {
+                    name: String::new(),
+                    ..lower.clone()
+                },
+            }]),
+            "Restore Layer"
+        );
+        assert_eq!(
+            named(&[Edit::AddLayer {
+                index: 4,
+                layer: lower.clone(),
+            }]),
+            "Add Layer"
+        );
+        assert_eq!(
+            named(&[
+                Edit::MoveLayer { from: 1, to: 2 },
+                Edit::AddLayer {
+                    index: 4,
+                    layer: lower
+                },
+            ]),
+            "Changes"
+        );
+    }
+}

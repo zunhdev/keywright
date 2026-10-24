@@ -7,6 +7,11 @@ import { useStore } from "./store.ts";
 
 import styles from "./WindowToolbar.module.css";
 
+/** Opens the review sheet, which saving goes through (design §6). */
+function openReview(): void {
+  useStore.setState({ review: true });
+}
+
 /**
  * The window's toolbar (design §3.2), which is also where the window is dragged: the
  * keyboard's name, the connection chip, search, the changes button, and Save.
@@ -26,10 +31,12 @@ export function WindowToolbar() {
           <KeySearch />
         </div>
         {changes > 0 ? (
-          <Button size="compact">{messages.format("toolbar.changes", { count: changes })}</Button>
+          <Button size="compact" onPress={openReview}>
+            {messages.format("toolbar.changes", { count: changes })}
+          </Button>
         ) : null}
         {/* Saving always goes through Review (design §6). */}
-        <Button variant="primary" size="compact" isDisabled={changes === 0}>
+        <Button variant="primary" size="compact" isDisabled={changes === 0} onPress={openReview}>
           {messages.format("toolbar.save")}
         </Button>
       </Toolbar>

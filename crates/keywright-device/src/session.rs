@@ -59,7 +59,7 @@ use std::sync::Arc;
 
 use keywright_core::backup::{Backup, Datetime, Reason};
 use keywright_core::edit::Edit;
-use keywright_core::editor::{Editor, EditorError};
+use keywright_core::editor::{self, Editor, EditorError};
 use keywright_core::keymap::{DeviceIdentity, Keyboard};
 use keywright_core::support_packs::{self, SupportPack};
 use keywright_studio::client::{Client, RpcError};
@@ -288,6 +288,7 @@ enum Change {
     Apply(Vec<Edit>),
     Undo,
     Redo,
+    Revert(editor::Change),
 }
 
 impl Session {
@@ -429,6 +430,16 @@ impl Session {
     /// As for [`apply`](Self::apply), and if there's nothing to redo.
     pub async fn redo(&self) -> Result<(), SessionError> {
         self.change(Change::Redo).await
+    }
+
+    /// Takes back one row of the review list, as a change that can itself be undone, as
+    /// for [`apply`](Self::apply) (design §6).
+    ///
+    /// # Errors
+    ///
+    /// As for [`apply`](Self::apply), and if the row no longer fits the keymap.
+    pub async fn revert(&self, change: editor::Change) -> Result<(), SessionError> {
+        self.change(Change::Revert(change)).await
     }
 
     /// Adds a layer: the keyboard picks the free slot, and the editor records what it
