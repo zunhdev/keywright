@@ -9,6 +9,7 @@ import {
   reapplyChanges,
   retry,
 } from "./actions.ts";
+import { BluetoothPermission, useBluetoothBarred } from "./BluetoothPermission.tsx";
 import { useKeyboardGuide } from "./guide.ts";
 
 import styles from "./Connection.module.css";
@@ -43,13 +44,16 @@ export const silence = { grace: 3000 };
 
 /**
  * A card over the canvas for a keyboard that can't be edited yet (design §7, SAF-6,
- * CON-4, CON-5, DEV-4, DEV-5): what happened, in words, and what to do.
+ * CON-4, CON-5, DEV-4, DEV-5): what happened, in words, and what to do. A silent cable
+ * may be the half that doesn't talk to the computer, or a keyboard typing over Bluetooth,
+ * so while Keywright may not use Bluetooth the card offers it too (CON-6).
  */
 export function StateCard({ session }: { session: SessionStatus }) {
   const messages = useMessages();
   // A keymap that was read before means the keyboard was edited over this connection.
   const hadKeymap = useStore((store) => store.keymap !== null);
   const guide = useKeyboardGuide(session.pack);
+  const offerBluetooth = useBluetoothBarred() && isSilent(session) && session.transport === "usb";
   const tryAgain = (
     <Button variant="primary" onPress={() => void retry()}>
       {messages.format("connection.try-again")}
@@ -114,6 +118,11 @@ export function StateCard({ session }: { session: SessionStatus }) {
   return (
     <div className={styles.stateCard}>
       <p>{text}</p>
+      {offerBluetooth ? (
+        <div className={styles.permission}>
+          <BluetoothPermission />
+        </div>
+      ) : null}
       <div className={styles.buttons}>{buttons}</div>
     </div>
   );
