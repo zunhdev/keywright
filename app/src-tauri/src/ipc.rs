@@ -14,12 +14,14 @@
 //! commands, and `capabilities/` grants them.
 
 mod error;
+mod menu;
 mod session;
 
 use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
 
-pub use self::session::{SessionStateChanged, follow};
+pub use self::menu::MenuItemChosen;
+pub use self::session::{SessionStateChanged, SessionStatus, follow};
 
 /// What the commands share.
 pub struct AppState {
@@ -30,8 +32,8 @@ pub struct AppState {
 /// The commands and events the UI can use.
 pub fn builder() -> Builder<tauri::Wry> {
     Builder::new()
-        .commands(collect_commands![session::session_state])
-        .events(collect_events![SessionStateChanged])
+        .commands(collect_commands![session::session_state, menu::menu_set])
+        .events(collect_events![SessionStateChanged, MenuItemChosen])
 }
 
 #[cfg(test)]

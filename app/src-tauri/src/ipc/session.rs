@@ -3,7 +3,7 @@
 //! The UI asks once, with [`session_state`], then follows [`SessionStateChanged`]
 //! (`session://state`), which [`follow`] sends each time the state changes.
 
-use keywright_device::{Incompatibility, Session, SessionEvent, Snapshot, State};
+use keywright_device::{Incompatibility, Peer, Session, SessionEvent, Snapshot, State};
 use serde::Serialize;
 use specta::Type;
 use tokio::sync::broadcast::error::RecvError;
@@ -11,7 +11,8 @@ use tokio::sync::broadcast::error::RecvError;
 use super::AppState;
 use super::error::AppError;
 
-/// The session's status: its state, and the keyboard it's connected to.
+/// The session's status: its state, the keyboard it's connected to and how, and how
+/// many changes are being tried.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 pub struct SessionStatus {
     /// What the session is doing.
@@ -20,6 +21,32 @@ pub struct SessionStatus {
     pub keyboard: Option<String>,
     /// The ID of the keyboard's support pack, if Keywright has one for it.
     pub pack: Option<String>,
+    /// How the session reaches the keyboard, once it knows.
+    pub transport: Option<Transport>,
+    /// How many changes are being tried and not saved: the rows of the review list.
+    pub changes: u32,
+}
+
+/// How the session reaches the keyboard.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "kebab-case")]
+pub enum Transport {
+    /// A USB cable.
+    Usb,
+    /// Bluetooth.
+    Bluetooth,
+    /// A simulated keyboard, in the same process.
+    Simulated,
+}
+
+impl From<&Peer> for Transport {
+    fn from(peer: &Peer) -> Self {
+        match peer {
+            Peer::Usb { .. } => Self::Usb,
+            Peer::Bluetooth => Self::Bluetooth,
+            Peer::Simulated => Self::Simulated,
+        }
+    }
 }
 
 /// What the session is doing (tech spec §7.1). In TypeScript, `{ kind: "ready" }` and so
@@ -114,9 +141,9 @@ pub async fn session_state(app: tauri::State<'_, AppState>) -> Result<SessionSta
     Ok(Tracker::default().status(&snapshot.state, Some(&snapshot)))
 }
 
-/// Calls `send` with the session's status each time its state changes, until the session
-/// stops. It listens from the moment it's called, so the returned future can be spawned
-/// later without missing a state.
+/// Calls `send` with the session's status each time its state or its changes change,
+/// until the session stops. It listens from the moment it's called, so the returned
+/// future can be spawned later without missing a state.
 pub fn follow(
     session: Session,
     mut send: impl FnMut(SessionStatus) + Send + 'static,
@@ -127,80 +154,97 @@ pub fn follow(
         loop {
             let state = match events.recv().await {
                 Ok(SessionEvent::State(state)) => state,
+                // The changes being tried changed, or some events were missed, of which
+                // only the latest state matters.
+                Ok(SessionEvent::Editor | SessionEvent::ChangedElsewhere)
+                | Err(RecvError::Lagged(_)) => session.state(),
                 Ok(_) => continue,
-                // Only the latest state matters.
-                Err(RecvError::Lagged(_)) => session.state(),
                 Err(RecvError::Closed) => return,
             };
-            // A snapshot waits until the session is free, so it's only asked for in the
-            // states where the session waits for the user. Asking while it probes or
-            // loads would hold the status back until it's done.
-            let snapshot = if matches!(
-                state,
-                State::Ready | State::UnsavedChanges | State::ChangesLost
-            ) {
+            // A snapshot waits until the session is free, so it isn't asked for while the
+            // session probes or loads: that would hold the status back until it's done.
+            let snapshot = if matches!(state, State::Probing | State::Loading) {
+                None
+            } else {
                 match session.snapshot().await {
                     Ok(snapshot) => Some(snapshot),
                     Err(_) => return,
                 }
-            } else {
-                None
             };
             send(tracker.status(&state, snapshot.as_ref()));
         }
     }
 }
 
-/// Builds the status for each new state. The state names the keyboard only while it's
-/// locked, so the tracker remembers the name and support pack it last saw, and takes them
-/// from a snapshot where it has one.
+/// Builds the status for each new state, from a snapshot where there is one. Without one,
+/// while the session probes or loads, it keeps what it last knew.
 #[derive(Debug, Default)]
 struct Tracker {
     keyboard: Option<String>,
     pack: Option<String>,
+    transport: Option<Transport>,
+    changes: u32,
 }
 
 impl Tracker {
     fn status(&mut self, state: &State, snapshot: Option<&Snapshot>) -> SessionStatus {
-        match (state, snapshot) {
-            (State::NoDevice, _) => {
-                self.keyboard = None;
-                self.pack = None;
+        if let Some(snapshot) = snapshot {
+            self.transport = snapshot.peer.as_ref().map(Transport::from);
+            self.pack.clone_from(&snapshot.pack);
+            self.changes = snapshot.editor.as_ref().map_or(0, |editor| {
+                u32::try_from(editor.changes().len()).unwrap_or(u32::MAX)
+            });
+            if let Some(keyboard) = &snapshot.keyboard {
+                self.keyboard = Some(keyboard.identity.name.clone());
             }
-            (State::Locked { device, pack }, _) => {
+        }
+        match state {
+            State::NoDevice => *self = Self::default(),
+            // The state names the keyboard while it's locked, before its keymap is read.
+            State::Locked { device, pack } => {
                 self.keyboard = Some(device.name.clone());
                 self.pack.clone_from(pack);
             }
-            (_, Some(snapshot)) => {
-                if let Some(keyboard) = &snapshot.keyboard {
-                    self.keyboard = Some(keyboard.identity.name.clone());
-                }
-                self.pack.clone_from(&snapshot.pack);
-            }
-            (_, None) => {}
+            _ => {}
         }
         SessionStatus {
             state: state.into(),
             keyboard: self.keyboard.clone(),
             pack: self.pack.clone(),
+            transport: self.transport,
+            changes: self.changes,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use keywright_core::edit::Edit;
     use keywright_device::{Connection, Incompatibility, Peer, Session, State};
     use keywright_sim::Simulator;
     use serde_json::json;
     use tokio::sync::mpsc;
 
-    use super::{SessionState, SessionStatus, follow};
+    use super::{SessionState, SessionStatus, Transport, follow};
 
-    fn status(state: SessionState, keyboard: Option<&str>) -> SessionStatus {
+    /// The status of the simulated Sofle, connected, in `state`.
+    fn sofle(state: SessionState) -> SessionStatus {
         SessionStatus {
             state,
-            keyboard: keyboard.map(String::from),
-            pack: keyboard.map(|_| "keebart-sofle-choc-pro-bt".to_owned()),
+            keyboard: Some("Sofle Choc BT".to_owned()),
+            pack: Some("keebart-sofle-choc-pro-bt".to_owned()),
+            transport: Some(Transport::Simulated),
+            changes: 0,
+        }
+    }
+
+    fn nothing(state: SessionState) -> SessionStatus {
+        SessionStatus {
+            state,
+            keyboard: None,
+            pack: None,
+            transport: None,
+            changes: 0,
         }
     }
 
@@ -221,33 +265,55 @@ mod tests {
             .unwrap();
         assert_eq!(
             statuses.recv().await.unwrap(),
-            SessionStatus {
-                state: SessionState::Probing,
-                keyboard: None,
-                pack: None
-            }
+            nothing(SessionState::Probing)
         );
-        let name = Some("Sofle Choc BT");
-        assert_eq!(
-            statuses.recv().await.unwrap(),
-            status(SessionState::Locked, name)
-        );
+        assert_eq!(statuses.recv().await.unwrap(), sofle(SessionState::Locked));
 
         keyboard.press_unlock_key();
-        assert_eq!(
-            statuses.recv().await.unwrap(),
-            status(SessionState::Loading, name)
-        );
-        assert_eq!(
-            statuses.recv().await.unwrap(),
-            status(SessionState::Ready, name)
-        );
+        assert_eq!(statuses.recv().await.unwrap(), sofle(SessionState::Loading));
+        assert_eq!(statuses.recv().await.unwrap(), sofle(SessionState::Ready));
 
         session.disconnect().await.unwrap();
         assert_eq!(
             statuses.recv().await.unwrap(),
-            status(SessionState::NoDevice, None)
+            nothing(SessionState::NoDevice)
         );
+    }
+
+    /// Each change tried, or undone, updates the count, for the toolbar and the window's
+    /// edited dot.
+    #[tokio::test]
+    async fn the_ui_hears_how_many_changes_are_being_tried() {
+        let session = Session::start();
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        session
+            .connect(Connection::new(keyboard.connect(), Peer::Simulated))
+            .await
+            .unwrap();
+        session
+            .wait_for(|state| *state == State::Ready)
+            .await
+            .unwrap();
+        let (sender, mut statuses) = mpsc::unbounded_channel();
+        tokio::spawn(follow(session.clone(), move |status| {
+            sender.send(status).unwrap();
+        }));
+
+        let editor = session.snapshot().await.unwrap().editor.unwrap();
+        let base = &editor.current().layers[0];
+        session
+            .apply(vec![Edit::RenameLayer {
+                layer: base.id,
+                before: base.name.clone(),
+                after: "Home".to_owned(),
+            }])
+            .await
+            .unwrap();
+        assert_eq!(statuses.recv().await.unwrap().changes, 1);
+
+        session.undo().await.unwrap();
+        assert_eq!(statuses.recv().await.unwrap().changes, 0);
     }
 
     #[test]

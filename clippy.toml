@@ -5,3 +5,6 @@ allow-expect-in-tests = true
 allow-panic-in-tests = true
 allow-dbg-in-tests = true
 allow-print-in-tests = true
+
+# Proper names that clippy would otherwise take for code in doc comments.
+doc-valid-idents = ["AppKit", ".."]

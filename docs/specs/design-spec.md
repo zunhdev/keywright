@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.6 — for review                                                        |
+| **Status**    | Draft v0.7 — for review                                                        |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -83,14 +83,14 @@ This document defines how Keywright looks, reads and behaves for v1.0: informati
 ├──────────────┴─────────────────────────────────────────────────┴──────────────────┤
 ```
 
-| Region            | Width                      | Behaviour                                                                                   |
-| ----------------- | -------------------------- | ------------------------------------------------------------------------------------------- |
-| **Toolbar**       | full                       | Keyboard name, connection chip, search, changes button, Save. It is the window's drag area. |
-| **Layer sidebar** | 220 px (180–280 resizable) | Collapsible (⌃⌘S). Collapses automatically when the window is narrower than 1100 px.        |
-| **Canvas**        | flexible                   | Shows the selected layer's name and the keyboard, scaled to fit. Zoom with ⌘+ / ⌘− / ⌘0.    |
-| **Inspector**     | 320 px (300–400 resizable) | Collapsible (⌥⌘0). Always shows something: the selected key, or the layer overview.         |
+| Region            | Width                      | Behaviour                                                                                                                                      |
+| ----------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Toolbar**       | full, 52 px high           | Keyboard name, connection chip, search, changes button, Save. It is the window's drag area, and holds the window's traffic lights on its left. |
+| **Layer sidebar** | 220 px (180–280 resizable) | Collapsible (⌃⌘S). Collapses automatically when the window is narrower than 1100 px.                                                           |
+| **Canvas**        | flexible                   | Shows the selected layer's name and the keyboard, scaled to fit. Zoom with ⌘+ / ⌘− / ⌘0.                                                       |
+| **Inspector**     | 320 px (300–400 resizable) | Collapsible (⌥⌘0). Always shows something: the selected key, or the layer overview.                                                            |
 
-The minimum window size is 960 × 600. The keyboard never shrinks below 36 px per key (1u). Below that, the sidebar collapses first, then the inspector becomes an overlay panel.
+The minimum window size is 960 × 600. The keyboard never shrinks below 36 px per key (1u). Below that, the sidebar collapses first, then the inspector becomes an overlay panel. A sidebar that collapsed for width comes back when there's room again, unless it was hidden on purpose; one shown again in a narrow window stays. The panes' edges are dragged to resize them. With the keyboard, a pane is hidden or shown instead (⌃⌘S, ⌥⌘0), so the edges aren't tab stops.
 
 ### 3.2 Toolbar
 
@@ -528,3 +528,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.4     | 2026-10-24 | Spike outcomes (KEY-19): the Globe helper makes a chosen key act as Globe (§5.4, §9.4; spike S7); the keyboard forgets unsaved changes when it sleeps, too (§6, §8; spike S5).                                                                                                             |
 | 0.5     | 2026-10-24 | App menus (§9.6, KEY-36): the items every Mac app has (Services, Hide Others, Show All, Close Window, the Window menu's), and Zoom In shown as ⌘=.                                                                                                                                         |
 | 0.6     | 2026-10-24 | Design system (§4.3, §10, §14, KEY-39): the layer palette, chosen for colour-vision deficiencies (resolves D1); `border-key` for key outlines at 3:1; hover, pressed and subtle-accent tokens; Increase Contrast values; `warning` darkened for AA; the symbols come from the system font. |
+| 0.7     | 2026-10-24 | Main window (§3.1, KEY-40): the toolbar's height and traffic lights, when a collapsed sidebar comes back, and resizing panes by their edges.                                                                                                                                               |

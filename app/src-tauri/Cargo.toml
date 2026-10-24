@@ -18,12 +18,13 @@ keywright-core = { path = "../../crates/keywright-core" }
 # The device session, which the UI drives through the commands and follows through the
 # events.
 keywright-device = { path = "../../crates/keywright-device" }
-# The automatic backups' folder.
+# The automatic backups' folder, and the window's edited dot.
 keywright-platform = { path = "../../crates/keywright-platform" }
 # A simulated keyboard, which `KEYWRIGHT_SIMULATOR` connects instead of a real one.
 keywright-sim = { path = "../../crates/keywright-sim" }
-# The IPC payloads, as JSON.
+# The IPC payloads, as JSON, and the menu items' IDs, which are their JSON names.
 serde.workspace = true
+serde_json.workspace = true
 # Typed IPC (ADR-0010): `specta` describes the payloads, and tauri-specta the commands and
 # events, from which `specta-typescript` writes the UI's bindings.
 specta.workspace = true
@@ -50,8 +51,6 @@ tokio = { workspace = true, features = ["rt", "sync", "time"] }
 [dev-dependencies]
 # Parses the menu shortcuts the way Tauri does, to check them.
 muda.workspace = true
-# Reads tauri.conf.json and the capabilities in the security tests, and checks payloads.
-serde_json.workspace = true
 # Runs the session in the tests; `test-util` pauses the clock.
 tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
 

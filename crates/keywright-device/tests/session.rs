@@ -266,6 +266,15 @@ mod probing_and_loading {
         assert!(matches!(session.undo().await, Err(SessionError::NotReady)));
         let snapshot = snapshot(&session).await;
         assert!(snapshot.keyboard.is_none() && snapshot.editor.is_none());
+        assert_eq!(snapshot.peer, None);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn the_snapshot_says_how_the_keyboard_is_connected_until_it_goes() {
+        let (session, _keyboard) = ready_session().await;
+        assert_eq!(snapshot(&session).await.peer, Some(Peer::Simulated));
+        session.disconnect().await.unwrap();
+        assert_eq!(snapshot(&session).await.peer, None);
     }
 
     #[tokio::test(start_paused = true)]

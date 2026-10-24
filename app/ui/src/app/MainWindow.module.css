@@ -1,0 +1,66 @@
+/* Design §3.1: the toolbar, then the layers, the canvas and the inspector side by side. */
+.window {
+  position: relative;
+  display: grid;
+  grid-template:
+    "toolbar toolbar toolbar" 52px
+    "layers canvas inspector" minmax(0, 1fr)
+    / auto minmax(0, 1fr) auto;
+  height: 100vh;
+}
+
+.layers {
+  grid-area: layers;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-inline-end: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+}
+
+.caption {
+  margin: 0;
+  padding: var(--space-3) var(--space-3) var(--space-1);
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  text-transform: uppercase;
+}
+
+.canvas {
+  grid-area: canvas;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: var(--space-6);
+  overflow: auto;
+  background: var(--bg-canvas);
+}
+
+.state {
+  color: var(--text-secondary);
+}
+
+.inspector {
+  grid-area: inspector;
+  position: relative;
+  box-sizing: border-box;
+  padding: var(--space-4);
+  border-inline-start: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+
+  /* Too little room for the keys: the inspector floats over the canvas (design §3.1). */
+  &[data-placement="overlay"] {
+    position: absolute;
+    top: 52px;
+    right: 0;
+    bottom: 0;
+    box-shadow: var(--shadow-overlay);
+  }
+}
+
+.empty {
+  margin: 0;
+  padding: var(--space-3);
+  color: var(--text-secondary);
+}

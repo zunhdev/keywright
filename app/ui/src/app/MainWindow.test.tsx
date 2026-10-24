@@ -1,0 +1,156 @@
+import { describe, expect, test } from "bun:test";
+
+import { act, render, screen } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
+
+import type { SessionState, SessionStatus } from "../ipc/bindings.ts";
+import { expectNoAxeViolations } from "../test/axe.ts";
+import { App } from "./App.tsx";
+import { useStore } from "./store.ts";
+
+/** The Sofle over USB, in `state`, trying `changes` changes. */
+function sofle(state: Exclude<SessionState["kind"], "incompatible">, changes = 0): SessionStatus {
+  return {
+    state: { kind: state },
+    keyboard: "Sofle Choc BT",
+    pack: "keebart-sofle-choc-pro-bt",
+    transport: "usb",
+    changes,
+  };
+}
+
+function report(session: SessionStatus | null) {
+  act(() => {
+    useStore.setState({ session });
+  });
+}
+
+/** Renders the app in a window `width` px wide. */
+function renderAt(width: number) {
+  Object.defineProperty(window, "innerWidth", { value: width, configurable: true });
+  return render(<App />);
+}
+
+describe("before the session reports", () => {
+  test("the window names the app, and says it isn't connected", () => {
+    renderAt(1280);
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Keywright");
+    expect(screen.getByRole("button", { name: "Not connected" })).toBeDefined();
+    expect(screen.getByRole("status").textContent).toBe("");
+  });
+});
+
+describe("the toolbar", () => {
+  test("names the keyboard, and its chip says how it's connected and whether it's locked, in words", () => {
+    renderAt(1280);
+    report(sofle("probing"));
+    expect(screen.getByRole("button", { name: "Connecting…" })).toBeDefined();
+    report(sofle("locked"));
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Sofle Choc BT");
+    expect(screen.getByRole("button", { name: "USB · Locked" })).toBeDefined();
+    report(sofle("ready"));
+    expect(screen.getByRole("button", { name: "USB · Unlocked" })).toBeDefined();
+    report(sofle("wrong-half"));
+    expect(screen.getByRole("button", { name: "USB · Can't edit" })).toBeDefined();
+    report({ ...sofle("no-device"), keyboard: null, transport: null });
+    expect(screen.getByRole("button", { name: "Not connected" })).toBeDefined();
+  });
+
+  test("shows the changes being tried, and can save only when there are some", () => {
+    renderAt(1280);
+    report(sofle("ready"));
+    expect(screen.queryByRole("button", { name: /change/u })).toBeNull();
+    expect(screen.getByRole("button", { name: "Save" }).hasAttribute("disabled")).toBe(true);
+
+    report(sofle("ready", 1));
+    expect(screen.getByRole("button", { name: "1 change" })).toBeDefined();
+    report(sofle("ready", 3));
+    expect(screen.getByRole("button", { name: "3 changes" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Save" }).hasAttribute("disabled")).toBe(false);
+  });
+
+  test("the chip's details say how, which firmware, and that the keyboard locks itself", async () => {
+    renderAt(1280);
+    report(sofle("ready"));
+    await userEvent.click(screen.getByRole("button", { name: "USB · Unlocked" }));
+    const details = screen.getByRole("dialog", { name: "Connection" }).textContent;
+    expect(details).toContain("Connected over USB.");
+    expect(details).toContain("Firmware: Sofle Choc BT");
+    expect(details).toContain("Your keyboard locks itself after 10 minutes idle.");
+    expect(screen.queryByRole("button", { name: "Unlock…" })).toBeNull();
+    await expectNoAxeViolations(document.body);
+  });
+
+  test("while locked, Unlock… says how, and the sheet closes once the keyboard is unlocked", async () => {
+    renderAt(1280);
+    report(sofle("locked"));
+    await userEvent.click(screen.getByRole("button", { name: "USB · Locked" }));
+    await userEvent.click(screen.getByRole("button", { name: "Unlock…" }));
+    const sheet = screen.getByRole("dialog", { name: "Unlock your keyboard" });
+    expect(sheet.textContent).toContain("Press the Unlock editing key on your keyboard");
+
+    report(sofle("ready"));
+    expect(screen.queryByRole("dialog", { name: "Unlock your keyboard" })).toBeNull();
+  });
+});
+
+describe("the panes", () => {
+  test("at 1728 px, the layers, the canvas and the inspector sit side by side", () => {
+    renderAt(1728);
+    expect(screen.getByRole("complementary", { name: "Layers" })).toBeDefined();
+    expect(screen.getByRole("main", { name: "Keyboard" })).toBeDefined();
+    expect(screen.getByRole("complementary", { name: "Inspector" }).dataset["placement"]).toBe(
+      "docked",
+    );
+  });
+
+  test("at 960 px, the layers collapse and the inspector stays beside the canvas", () => {
+    renderAt(960);
+    expect(screen.queryByRole("complementary", { name: "Layers" })).toBeNull();
+    expect(screen.getByRole("complementary", { name: "Inspector" }).dataset["placement"]).toBe(
+      "docked",
+    );
+  });
+
+  test("when the keys would draw too small, the inspector floats over the canvas", () => {
+    useStore.getState().resizePanel("inspector", 400);
+    renderAt(960);
+    expect(screen.getByRole("complementary", { name: "Inspector" }).dataset["placement"]).toBe(
+      "overlay",
+    );
+  });
+
+  test("a hidden pane goes from the window", () => {
+    useStore.getState().togglePanel("inspector");
+    renderAt(1728);
+    expect(screen.queryByRole("complementary", { name: "Inspector" })).toBeNull();
+  });
+
+  test("keyboard focus moves through the toolbar, the layers, the canvas and the inspector, in that order", async () => {
+    renderAt(1728);
+    const regions = [
+      screen.getByRole("toolbar"),
+      screen.getByRole("complementary", { name: "Layers" }),
+      screen.getByRole("main", { name: "Keyboard" }),
+      screen.getByRole("complementary", { name: "Inspector" }),
+    ];
+    // Nothing reorders focus, so it follows the page's order.
+    for (const [index, region] of regions.slice(1).entries()) {
+      expect(regions[index]?.compareDocumentPosition(region)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    }
+    expect(document.querySelector("[tabindex]:not([tabindex='0'], [tabindex='-1'])")).toBeNull();
+
+    await userEvent.tab();
+    expect(regions[0]?.contains(document.activeElement)).toBe(true);
+    await userEvent.tab();
+    expect(regions[1]?.contains(document.activeElement)).toBe(true);
+  });
+});
+
+test("the window has no accessibility problems", async () => {
+  const { container } = renderAt(1728);
+  report(sofle("ready", 2));
+  await expectNoAxeViolations(container);
+});

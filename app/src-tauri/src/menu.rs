@@ -2,11 +2,81 @@
 //!
 //! The menus are a table, [`MENUS`], so the code reads like the design and the tests can
 //! check every shortcut. Items that macOS provides, such as Hide, Minimize or Quit, work
-//! from the start. Keywright's own items start disabled: each feature enables the items it
-//! handles, and finds them by their ids.
+//! from the start. Keywright's own items, each a [`MenuItem`], start disabled. The UI
+//! enables and renames them (`menu_set`), and hears when one is chosen (`menu://item`).
 
-use tauri::menu::{AboutMetadataBuilder, Menu, MenuItem, PredefinedMenuItem, Submenu};
+use serde::{Deserialize, Serialize};
+use specta::Type;
+use tauri::menu::{AboutMetadataBuilder, Menu, MenuItemKind, PredefinedMenuItem, Submenu};
 use tauri::{AppHandle, Runtime};
+
+/// One of Keywright's own menu items. In TypeScript, its kebab-case name, such as
+/// `"toggle-layers"`, which is also its ID in the menu.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Type)]
+#[serde(rename_all = "kebab-case")]
+pub enum MenuItem {
+    Settings,
+    Import,
+    Export,
+    Backups,
+    UpdateFirmware,
+    Undo,
+    Redo,
+    CopyAction,
+    PasteAction,
+    SelectAllKeys,
+    Find,
+    Save,
+    ReviewChanges,
+    DiscardChanges,
+    RecordShortcut,
+    SameAsLayerBelow,
+    DoesNothing,
+    RestoreStockKey,
+    RestoreStockSettings,
+    ToggleLayers,
+    ToggleInspector,
+    #[serde(rename = "layer-1")]
+    Layer1,
+    #[serde(rename = "layer-2")]
+    Layer2,
+    #[serde(rename = "layer-3")]
+    Layer3,
+    #[serde(rename = "layer-4")]
+    Layer4,
+    #[serde(rename = "layer-5")]
+    Layer5,
+    #[serde(rename = "layer-6")]
+    Layer6,
+    #[serde(rename = "layer-7")]
+    Layer7,
+    #[serde(rename = "layer-8")]
+    Layer8,
+    #[serde(rename = "layer-9")]
+    Layer9,
+    ZoomIn,
+    ZoomOut,
+    ActualSize,
+    Help,
+    KeyboardShortcuts,
+    FirstTimeSetup,
+    ReportIssue,
+}
+
+impl MenuItem {
+    /// The item's ID in the menu: its name in TypeScript.
+    pub fn id(self) -> String {
+        match serde_json::to_value(self) {
+            Ok(serde_json::Value::String(id)) => id,
+            _ => unreachable!("a unit variant serializes to its name"),
+        }
+    }
+
+    /// The item with this ID, or `None` for one of macOS's own items.
+    pub fn from_id(id: &str) -> Option<Self> {
+        serde_json::from_value(serde_json::Value::String(id.to_owned())).ok()
+    }
+}
 
 /// One menu in the menu bar.
 struct MenuSpec {
@@ -31,10 +101,10 @@ enum Role {
 /// One line in a menu.
 #[derive(Clone, Copy)]
 enum Entry {
-    /// One of Keywright's own items. Its feature finds it by `id`. The shortcut is in
-    /// Tauri's accelerator syntax, such as `Shift+Cmd+E`.
+    /// One of Keywright's own items. The shortcut is in Tauri's accelerator syntax, such as
+    /// `Shift+Cmd+E`.
     Item {
-        id: &'static str,
+        item: MenuItem,
         label: &'static str,
         shortcut: Option<&'static str>,
     },
@@ -61,17 +131,17 @@ enum SystemItem {
     BringAllToFront,
 }
 
-const fn item(id: &'static str, label: &'static str, shortcut: &'static str) -> Entry {
+const fn item(item: MenuItem, label: &'static str, shortcut: &'static str) -> Entry {
     Entry::Item {
-        id,
+        item,
         label,
         shortcut: Some(shortcut),
     }
 }
 
-const fn item_without_shortcut(id: &'static str, label: &'static str) -> Entry {
+const fn item_without_shortcut(item: MenuItem, label: &'static str) -> Entry {
     Entry::Item {
-        id,
+        item,
         label,
         shortcut: None,
     }
@@ -93,7 +163,7 @@ const MENUS: &[MenuSpec] = &[
         entries: &[
             system(SystemItem::About, "About Keywright"),
             Entry::Separator,
-            item("settings", "Settings…", "Cmd+,"),
+            item(MenuItem::Settings, "Settings…", "Cmd+,"),
             Entry::Separator,
             system(SystemItem::Services, "Services"),
             Entry::Separator,
@@ -108,11 +178,11 @@ const MENUS: &[MenuSpec] = &[
         title: "File",
         role: Role::Plain,
         entries: &[
-            item("import", "Import…", "Cmd+O"),
-            item("export", "Export…", "Shift+Cmd+E"),
+            item(MenuItem::Import, "Import…", "Cmd+O"),
+            item(MenuItem::Export, "Export…", "Shift+Cmd+E"),
             Entry::Separator,
-            item("backups", "Backups…", "Shift+Cmd+B"),
-            item_without_shortcut("update-firmware", "Update Firmware…"),
+            item(MenuItem::Backups, "Backups…", "Shift+Cmd+B"),
+            item_without_shortcut(MenuItem::UpdateFirmware, "Update Firmware…"),
             Entry::Separator,
             system(SystemItem::CloseWindow, "Close Window"),
         ],
@@ -121,52 +191,52 @@ const MENUS: &[MenuSpec] = &[
         title: "Edit",
         role: Role::Plain,
         entries: &[
-            item("undo", "Undo", "Cmd+Z"),
-            item("redo", "Redo", "Shift+Cmd+Z"),
+            item(MenuItem::Undo, "Undo", "Cmd+Z"),
+            item(MenuItem::Redo, "Redo", "Shift+Cmd+Z"),
             Entry::Separator,
-            item("copy-action", "Copy Action", "Cmd+C"),
-            item("paste-action", "Paste Action", "Cmd+V"),
-            item("select-all-keys", "Select All Keys", "Cmd+A"),
+            item(MenuItem::CopyAction, "Copy Action", "Cmd+C"),
+            item(MenuItem::PasteAction, "Paste Action", "Cmd+V"),
+            item(MenuItem::SelectAllKeys, "Select All Keys", "Cmd+A"),
             Entry::Separator,
-            item("find", "Find", "Cmd+F"),
+            item(MenuItem::Find, "Find", "Cmd+F"),
         ],
     },
     MenuSpec {
         title: "Keyboard",
         role: Role::Plain,
         entries: &[
-            item("save", "Save to Keyboard", "Cmd+S"),
-            item("review-changes", "Review Changes", "Shift+Cmd+R"),
-            item_without_shortcut("discard-changes", "Discard Changes…"),
+            item(MenuItem::Save, "Save to Keyboard", "Cmd+S"),
+            item(MenuItem::ReviewChanges, "Review Changes", "Shift+Cmd+R"),
+            item_without_shortcut(MenuItem::DiscardChanges, "Discard Changes…"),
             Entry::Separator,
-            item("record-shortcut", "Record Shortcut", "Cmd+R"),
-            item_without_shortcut("same-as-layer-below", "Same as Layer Below"),
-            item_without_shortcut("does-nothing", "Does Nothing"),
+            item(MenuItem::RecordShortcut, "Record Shortcut", "Cmd+R"),
+            item_without_shortcut(MenuItem::SameAsLayerBelow, "Same as Layer Below"),
+            item_without_shortcut(MenuItem::DoesNothing, "Does Nothing"),
             Entry::Separator,
-            item_without_shortcut("restore-stock-key", "Restore Stock for Key"),
-            item_without_shortcut("restore-stock-settings", "Restore Stock Settings…"),
+            item_without_shortcut(MenuItem::RestoreStockKey, "Restore Stock for Key"),
+            item_without_shortcut(MenuItem::RestoreStockSettings, "Restore Stock Settings…"),
         ],
     },
     MenuSpec {
         title: "View",
         role: Role::Plain,
         entries: &[
-            item("toggle-layers", "Hide Layers", "Ctrl+Cmd+S"),
-            item("toggle-inspector", "Hide Inspector", "Alt+Cmd+0"),
+            item(MenuItem::ToggleLayers, "Hide Layers", "Ctrl+Cmd+S"),
+            item(MenuItem::ToggleInspector, "Hide Inspector", "Alt+Cmd+0"),
             Entry::Separator,
-            item("layer-1", "Layer 1", "Cmd+1"),
-            item("layer-2", "Layer 2", "Cmd+2"),
-            item("layer-3", "Layer 3", "Cmd+3"),
-            item("layer-4", "Layer 4", "Cmd+4"),
-            item("layer-5", "Layer 5", "Cmd+5"),
-            item("layer-6", "Layer 6", "Cmd+6"),
-            item("layer-7", "Layer 7", "Cmd+7"),
-            item("layer-8", "Layer 8", "Cmd+8"),
-            item("layer-9", "Layer 9", "Cmd+9"),
+            item(MenuItem::Layer1, "Layer 1", "Cmd+1"),
+            item(MenuItem::Layer2, "Layer 2", "Cmd+2"),
+            item(MenuItem::Layer3, "Layer 3", "Cmd+3"),
+            item(MenuItem::Layer4, "Layer 4", "Cmd+4"),
+            item(MenuItem::Layer5, "Layer 5", "Cmd+5"),
+            item(MenuItem::Layer6, "Layer 6", "Cmd+6"),
+            item(MenuItem::Layer7, "Layer 7", "Cmd+7"),
+            item(MenuItem::Layer8, "Layer 8", "Cmd+8"),
+            item(MenuItem::Layer9, "Layer 9", "Cmd+9"),
             Entry::Separator,
-            item("zoom-in", "Zoom In", "Cmd+="),
-            item("zoom-out", "Zoom Out", "Cmd+-"),
-            item("actual-size", "Actual Size", "Cmd+0"),
+            item(MenuItem::ZoomIn, "Zoom In", "Cmd+="),
+            item(MenuItem::ZoomOut, "Zoom Out", "Cmd+-"),
+            item(MenuItem::ActualSize, "Actual Size", "Cmd+0"),
         ],
     },
     MenuSpec {
@@ -183,12 +253,12 @@ const MENUS: &[MenuSpec] = &[
         title: "Help",
         role: Role::Help,
         entries: &[
-            item_without_shortcut("help", "Keywright Help"),
-            item("keyboard-shortcuts", "Keyboard Shortcuts", "Cmd+/"),
+            item_without_shortcut(MenuItem::Help, "Keywright Help"),
+            item(MenuItem::KeyboardShortcuts, "Keyboard Shortcuts", "Cmd+/"),
             Entry::Separator,
-            item_without_shortcut("first-time-setup", "Run First-Time Setup"),
+            item_without_shortcut(MenuItem::FirstTimeSetup, "Run First-Time Setup"),
             Entry::Separator,
-            item_without_shortcut("report-issue", "Report an Issue…"),
+            item_without_shortcut(MenuItem::ReportIssue, "Report an Issue…"),
         ],
     },
 ];
@@ -201,10 +271,16 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
         for entry in spec.entries {
             match *entry {
                 Entry::Item {
-                    id,
+                    item,
                     label,
                     shortcut,
-                } => submenu.append(&MenuItem::with_id(app, id, label, false, shortcut)?)?,
+                } => submenu.append(&tauri::menu::MenuItem::with_id(
+                    app,
+                    item.id(),
+                    label,
+                    false,
+                    shortcut,
+                )?)?,
                 Entry::System { item, label } => submenu.append(&system_item(app, item, label)?)?,
                 Entry::Separator => submenu.append(&PredefinedMenuItem::separator(app)?)?,
             }
@@ -217,6 +293,35 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
         menu.append(&submenu)?;
     }
     Ok(menu)
+}
+
+/// Enables or disables one of Keywright's own items, and renames it if `label` is given.
+///
+/// # Errors
+///
+/// Fails if the app has no menu bar, or AppKit refuses the change.
+pub fn set<R: Runtime>(
+    app: &AppHandle<R>,
+    item: MenuItem,
+    enabled: bool,
+    label: Option<&str>,
+) -> tauri::Result<()> {
+    let id = item.id();
+    let found = app
+        .menu()
+        .into_iter()
+        .flat_map(|menu| menu.items().unwrap_or_default())
+        .find_map(|kind| match kind {
+            MenuItemKind::Submenu(submenu) => submenu.get(&id),
+            _ => None,
+        });
+    if let Some(MenuItemKind::MenuItem(found)) = found {
+        found.set_enabled(enabled)?;
+        if let Some(label) = label {
+            found.set_text(label)?;
+        }
+    }
+    Ok(())
 }
 
 fn system_item<R: Runtime>(
@@ -255,7 +360,7 @@ mod tests {
 
     use muda::accelerator::Accelerator;
 
-    use super::{Entry, MENUS};
+    use super::{Entry, MENUS, MenuItem};
 
     /// The shortcuts macOS gives its own items, and Enter Full Screen, which it adds to
     /// the View menu.
@@ -268,16 +373,16 @@ mod tests {
         "Ctrl+Cmd+F",
     ];
 
-    fn items() -> impl Iterator<Item = (&'static str, &'static str, Option<&'static str>)> {
+    fn items() -> impl Iterator<Item = (MenuItem, &'static str, Option<&'static str>)> {
         MENUS
             .iter()
             .flat_map(|spec| spec.entries)
             .filter_map(|entry| match *entry {
                 Entry::Item {
-                    id,
+                    item,
                     label,
                     shortcut,
-                } => Some((id, label, shortcut)),
+                } => Some((item, label, shortcut)),
                 Entry::System { .. } | Entry::Separator => None,
             })
     }
@@ -307,7 +412,7 @@ mod tests {
             if let Some(shortcut) = shortcut {
                 assert!(
                     shortcut.parse::<Accelerator>().is_ok(),
-                    "{id}'s shortcut {shortcut:?} doesn't parse"
+                    "{id:?}'s shortcut {shortcut:?} doesn't parse"
                 );
             }
         }
@@ -323,17 +428,28 @@ mod tests {
             if let Some(shortcut) = shortcut {
                 assert!(
                     taken.insert(shortcut.parse().unwrap()),
-                    "{id}'s shortcut {shortcut} is taken"
+                    "{id:?}'s shortcut {shortcut} is taken"
                 );
             }
         }
     }
 
     #[test]
-    fn no_two_items_share_an_id() {
-        let mut ids = HashSet::new();
-        for (id, _, _) in items() {
-            assert!(ids.insert(id), "two items have the id {id}");
+    fn no_item_is_in_the_menus_twice() {
+        let mut seen = HashSet::new();
+        for (item, _, _) in items() {
+            assert!(seen.insert(item), "{item:?} is in the menus twice");
         }
+    }
+
+    /// The UI names items as their IDs, so an ID must lead back to its item.
+    #[test]
+    fn ids_are_kebab_case_names_that_lead_back_to_their_items() {
+        assert_eq!(MenuItem::ToggleLayers.id(), "toggle-layers");
+        assert_eq!(MenuItem::Layer3.id(), "layer-3");
+        for (item, _, _) in items() {
+            assert_eq!(MenuItem::from_id(&item.id()), Some(item));
+        }
+        assert_eq!(MenuItem::from_id("quit"), None);
     }
 }
