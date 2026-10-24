@@ -62,6 +62,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             action::key_catalog,
             action::dom_codes,
             action::shortcut_words,
+            action::mac_actions,
             edit::set_action,
             edit::swap_keys,
             edit::copy_key,
@@ -144,20 +145,26 @@ mod tests {
             .unwrap();
         let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
         let generated = format!(
-            "// The simulated Sofle's stock keymap, as `session_keymap` gives it, and the key\n\
-             // tables, as `key_catalog` and `dom_codes` do, generated from keywright-app\n\
-             // (src/ipc.rs) for the UI's tests and gallery. Don't edit it: run\n\
-             // `mise run generate:bindings`.\n\
-             import type {{ DomCode, KeyEntry, Keymap }} from \"../ipc/bindings.ts\";\n\
+            "// The simulated Sofle's stock keymap, as `session_keymap` gives it, the key\n\
+             // tables, as `key_catalog` and `dom_codes` do, and the Mac actions on macOS 27,\n\
+             // as `mac_actions` does there, generated from keywright-app (src/ipc.rs) for the\n\
+             // UI's tests and gallery. Don't edit it: run `mise run generate:bindings`.\n\
+             import type {{ Choice, DomCode, KeyEntry, Keymap }} from \"../ipc/bindings.ts\";\n\
              \n\
              export const sofleKeymap: Keymap = {};\n\
              \n\
              export const keyCatalog: KeyEntry[] = {};\n\
              \n\
-             export const domCodes: DomCode[] = {};\n",
+             export const domCodes: DomCode[] = {};\n\
+             \n\
+             export const macActions: Choice[] = {};\n",
             serde_json::to_string_pretty(&keymap).unwrap(),
             serde_json::to_string_pretty(&super::action::key_catalog()).unwrap(),
-            serde_json::to_string_pretty(&super::action::dom_codes()).unwrap()
+            serde_json::to_string_pretty(&super::action::dom_codes()).unwrap(),
+            serde_json::to_string_pretty(&super::action::mac_choices(Some(
+                keywright_core::mac::presets::MacOsVersion(27)
+            )))
+            .unwrap()
         );
 
         let committed = ui_file("test/sofle.ts");

@@ -47,6 +47,11 @@ export const commands = {
 	/**  What a key or shortcut is called, and the Mac action it is, for the recorder. */
 	shortcutWords: (shortcut: Shortcut) => __TAURI_INVOKE<ShortcutWords>("shortcut_words", { shortcut }),
 	/**
+	 *  The Mac actions this Mac's macOS version offers, for the action picker. They don't
+	 *  depend on the keyboard, so the UI asks once.
+	 */
+	macActions: () => __TAURI_INVOKE<Choice[]>("mac_actions"),
+	/**
 	 *  Makes keys on a layer do an action (the inspector).
 	 * 
 	 *  # Errors
@@ -250,8 +255,10 @@ export type Bluetooth =
 /**  Disconnects a device, by `profile`. */
 "disconnect";
 
-/**  A group of actions in the action picker (EDIT-1). Mac actions come with KEY-49. */
+/**  A group of actions in the action picker (EDIT-1). */
 export type Category = 
+/**  Mac actions: Mission Control, Spotlight, Lock Screen and the like (MAC-4). */
+"mac" | 
 /**  Media & system: playback, volume and brightness. */
 "media" | 
 /**  Bluetooth & connection. */
@@ -274,6 +281,13 @@ export type Choice = {
 	sentence: string,
 	/**  The action. */
 	action: Action,
+	/**  The name of its icon in the UI's icon set, for a Mac action. */
+	icon: string | null,
+	/**
+	 *  For a Mac action that relies on a default macOS shortcut, which people can change,
+	 *  that shortcut, such as `⌃⌘Q` for Lock Screen (design §5.4).
+	 */
+	defaultShortcut: string | null,
 };
 
 /**

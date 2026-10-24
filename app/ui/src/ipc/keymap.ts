@@ -3,12 +3,16 @@ import { commands, events } from "./bindings.ts";
 
 /**
  * Loads the key tables from the core: every key ZMK names, for the inspector's key popup,
- * and the key behind each `KeyboardEvent.code`, for the shortcut recorder. They don't
- * change.
+ * the key behind each `KeyboardEvent.code`, for the shortcut recorder, and the Mac actions
+ * this Mac offers. They don't change.
  */
 export async function loadKeyTables(): Promise<void> {
-  const [keyCatalog, domCodes] = await Promise.all([commands.keyCatalog(), commands.domCodes()]);
-  useStore.setState({ keyCatalog, domCodes });
+  const [keyCatalog, domCodes, macActions] = await Promise.all([
+    commands.keyCatalog(),
+    commands.domCodes(),
+    commands.macActions(),
+  ]);
+  useStore.setState({ keyCatalog, domCodes, macActions });
 }
 
 /**

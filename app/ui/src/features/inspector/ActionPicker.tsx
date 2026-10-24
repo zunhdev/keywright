@@ -18,8 +18,7 @@ import { Button } from "../../design-system/Button.tsx";
 import { Icon } from "../../design-system/Icon.tsx";
 import { useMessages } from "../../i18n/messages.ts";
 import type { Action } from "../../ipc/bindings.ts";
-import { CATEGORIES, type CategoryId } from "./categories.ts";
-import { sameAction } from "./ChoiceList.tsx";
+import { CATEGORIES, type CategoryId, choicesOf, sameAction } from "./categories.ts";
 import { pickerButton } from "./focus.ts";
 import { type Recent, recentActions } from "./recents.ts";
 
@@ -91,7 +90,9 @@ function PickerMenu({
 }) {
   const messages = useMessages();
   const [query, setQuery] = useState("");
-  const choices = useStore((store) => store.keymap?.choices) ?? [];
+  const keymap = useStore((store) => store.keymap);
+  const macActions = useStore((store) => store.macActions);
+  const choices = choicesOf(keymap, macActions);
   const others = useStore((store) => store.keymap?.others) ?? [];
   const keys = useStore((store) => store.keyCatalog);
   const searching = query.trim() !== "";

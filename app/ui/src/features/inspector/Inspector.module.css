@@ -70,6 +70,22 @@
 }
 
 /* An action in a list: what it's called, then what it does. */
+/* A Mac action's icon, beside its name, what it does and its note. */
+.choiceRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.choiceIcon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: calc(var(--space-1) + 2px);
+  color: var(--text-secondary);
+}
+
 .choice {
   display: flex;
   flex-direction: column;

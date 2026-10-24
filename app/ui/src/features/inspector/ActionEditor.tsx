@@ -40,7 +40,12 @@ export function ActionEditor({
       />
     );
   }
-  if (category === "media" || category === "bluetooth" || category === "lighting") {
+  if (
+    category === "mac" ||
+    category === "media" ||
+    category === "bluetooth" ||
+    category === "lighting"
+  ) {
     return (
       <ChoiceList
         label={messages.format(`category.${category}`)}
