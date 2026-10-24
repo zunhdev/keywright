@@ -67,6 +67,7 @@ export function ReviewSheet() {
   return (
     <Sheet
       title={messages.format("review.title")}
+      size="fit"
       isOpen={open}
       onOpenChange={(isOpen) => {
         if (!isOpen) close();
@@ -91,44 +92,40 @@ export function ReviewSheet() {
                     )}
                   </h3>
                   <ul className={styles.rows}>
-                    {group.rows.map((row) => (
-                      <li
-                        key={JSON.stringify(row.key)}
-                        className={styles.row}
-                        title={row.sentence ?? undefined}
-                      >
-                        <span className={styles.what}>
-                          {row.place ??
-                            messages.format(
-                              row.key.kind === "order"
-                                ? "review.order-row"
-                                : `review.${row.key.kind}`,
-                            )}
-                        </span>
-                        <span className={styles.before}>{row.before}</span>
-                        <span className={styles.arrow} aria-label={messages.format("review.to")}>
-                          →
-                        </span>
-                        <span className={styles.after}>{row.after}</span>
-                        <Button
-                          variant="quiet"
-                          size="compact"
-                          isDisabled={!editable}
-                          aria-label={messages.format("review.revert-row", {
-                            what:
-                              row.place ??
-                              messages.format(
-                                row.key.kind === "order"
-                                  ? "review.order-row"
-                                  : `review.${row.key.kind}`,
-                              ),
-                          })}
-                          onPress={() => void revertChange(row.key)}
-                        >
-                          {messages.format("review.revert")}
-                        </Button>
-                      </li>
-                    ))}
+                    {group.rows.map((row) => {
+                      const what =
+                        row.place ??
+                        messages.format(
+                          row.key.kind === "order" ? "review.order-row" : `review.${row.key.kind}`,
+                        );
+                      // Each column truncates a long text, which its title gives in full; the
+                      // after column's gives what the key does now, in a sentence.
+                      return (
+                        <li key={JSON.stringify(row.key)} className={styles.row}>
+                          <span className={styles.what} title={what}>
+                            {what}
+                          </span>
+                          <span className={styles.before} title={row.before}>
+                            {row.before}
+                          </span>
+                          <span className={styles.arrow} aria-label={messages.format("review.to")}>
+                            →
+                          </span>
+                          <span className={styles.after} title={row.sentence ?? row.after}>
+                            {row.after}
+                          </span>
+                          <Button
+                            variant="quiet"
+                            size="compact"
+                            isDisabled={!editable}
+                            aria-label={messages.format("review.revert-row", { what })}
+                            onPress={() => void revertChange(row.key)}
+                          >
+                            {messages.format("review.revert")}
+                          </Button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </section>
               ))}

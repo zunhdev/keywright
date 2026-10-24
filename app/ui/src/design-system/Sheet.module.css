@@ -26,6 +26,12 @@
   background: var(--bg-panel);
   box-shadow: var(--shadow-overlay);
 
+  &[data-size="fit"] {
+    width: fit-content;
+    min-width: min(480px, 100% - 2 * var(--space-6));
+    max-width: calc(100% - 2 * var(--space-6));
+  }
+
   &[data-entering] {
     animation: sheet-in var(--motion-sheet) var(--ease-out);
   }

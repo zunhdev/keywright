@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.22 — for review                                                       |
+| **Status**    | Draft v0.23 — for review                                                       |
 | **Date**      | 2026-10-25                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -277,6 +277,8 @@ If a change would remove the last _Unlock editing_ key, strand a layer, or trap 
  ─────────────────────────────────────────────────────────────────────
  [Discard all…]                                  [Cancel] [Save to keyboard]
 ```
+
+- **The sheet's size.** It's as wide as its rows need, at least 480 px and at most the window less its margins, so it fits the smallest window (960 × 600). The columns line up across layers, each as wide as its content: a long place, before or after (a tap-and-hold, a long shortcut) ends in an ellipsis, with its whole text in a tooltip, rather than widening the sheet. The after column's tooltip is the key's sentence. The after column takes any room left, so _Revert_ lines up at the right edge. The rows scroll when there are many; the footer's buttons always show whole.
 
 - **After saving.** A toast reads "Saved to keyboard ✓". The badges clear, and the window's edited dot clears.
 - **Discard all.** A destructive confirmation: "Discard 3 changes? Your keyboard goes back to how it was when you last saved."
@@ -568,3 +570,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.20    | 2026-10-24 | Connection states (§7): a silent port's card waits 3 seconds, since a keyboard plugged back in with Bluetooth on is silent for a moment.                                                                                                                                                   |
 | 0.21    | 2026-10-24 | Connection chip (§3.2, KEY-56): its details give each half's battery, so the window shows it without the menu bar item.                                                                                                                                                                    |
 | 0.22    | 2026-10-25 | Connection states (§7, §8, KEY-101): a silent cable's card offers Bluetooth while Keywright may not use it.                                                                                                                                                                                |
+| 0.23    | 2026-10-25 | Review sheet (§6, KEY-102): as wide as its rows need within the window; columns sized to their content, long texts truncated with a tooltip; the rows scroll and the footer shows whole.                                                                                                   |
