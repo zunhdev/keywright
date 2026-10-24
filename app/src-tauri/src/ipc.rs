@@ -71,7 +71,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             edit::set_keys,
             edit::undo,
             edit::redo,
-            menu::menu_set
+            menu::menu_set,
+            menu::edit_text
         ])
         .events(collect_events![
             SessionStateChanged,

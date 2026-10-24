@@ -4,7 +4,9 @@ declare const classes: {
   readonly caption: string;
   readonly empty: string;
   readonly inspector: string;
+  readonly layerRow: string;
   readonly layers: string;
+  readonly matches: string;
   readonly toolbar: string;
   readonly window: string;
 };

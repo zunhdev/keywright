@@ -8,8 +8,9 @@ import {
   undo,
 } from "../features/keyboard-canvas/edits.ts";
 import { ZOOMS } from "../features/keyboard-canvas/geometry.ts";
-import { messages } from "../i18n/messages.ts";
-import { commands, events, type MenuItem } from "./bindings.ts";
+import { focusSearch } from "../features/search/focus.ts";
+import { type MessageKey, messages } from "../i18n/messages.ts";
+import { commands, events, type MenuItem, type TextEdit } from "./bindings.ts";
 
 /** View's layer items, ⌘1 to ⌘9, in order. */
 const LAYER_ITEMS = [
@@ -37,6 +38,7 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
   "copy-action": () => void copyAction(),
   "paste-action": () => void pasteAction(),
   "select-all-keys": () => useStore.getState().selectAll(),
+  find: focusSearch,
   "record-shortcut": () => useStore.getState().startRecording(),
   "same-as-layer-below": () => void setKeys("same-as-layer-below"),
   "does-nothing": () => void setKeys("does-nothing"),
@@ -47,6 +49,18 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
   "actual-size": () => useStore.getState().zoomCanvas("actual-size"),
   ...Object.fromEntries(LAYER_ITEMS.map((item, index) => [item, () => showLayerAt(index)])),
 };
+
+/**
+ * Edit's items that edit a text field's text while one has focus, rather than keys, with
+ * what they're called then (design §9.6).
+ */
+const TEXT_EDITS = new Map<MenuItem, readonly [TextEdit, MessageKey | null]>([
+  ["undo", ["undo", null]],
+  ["redo", ["redo", null]],
+  ["copy-action", ["copy", "menu.copy"]],
+  ["paste-action", ["paste", "menu.paste"]],
+  ["select-all-keys", ["select-all", "menu.select-all"]],
+]);
 
 /** Whether a menu item can be chosen, and its label if the window renames it. */
 interface ItemState {
@@ -68,9 +82,13 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
   const states = new Map<MenuItem, ItemState>([
     ["undo", item(editable && session.canUndo)],
     ["redo", item(editable && session.canRedo)],
-    ["copy-action", item(keymap !== null && selected)],
-    ["paste-action", item(editable && selected && store.copied)],
-    ["select-all-keys", item(keymap !== null)],
+    ["copy-action", item(keymap !== null && selected, strings.format("menu.copy-action"))],
+    [
+      "paste-action",
+      item(editable && selected && store.copied, strings.format("menu.paste-action")),
+    ],
+    ["select-all-keys", item(keymap !== null, strings.format("menu.select-all-keys"))],
+    ["find", item(keymap !== null)],
     ["record-shortcut", item(editable && selected)],
     ["same-as-layer-below", item(editable && selected)],
     ["does-nothing", item(editable && selected)],
@@ -86,9 +104,15 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
     }),
   ]);
   // While the recorder records, the menus give up their shortcuts, so ⌘S records ⌘S.
-  return activeRecorder(store) === null
-    ? states
-    : new Map([...states].map(([menuItem, state]) => [menuItem, item(false, state.label)]));
+  if (activeRecorder(store) !== null) {
+    return new Map([...states].map(([menuItem, state]) => [menuItem, item(false, state.label)]));
+  }
+  if (store.textFocused) {
+    for (const [menuItem, [, label]] of TEXT_EDITS) {
+      states.set(menuItem, item(true, label === null ? null : strings.format(label)));
+    }
+  }
+  return states;
 }
 
 /** Whether two states of an item are the same. */
@@ -103,7 +127,9 @@ const same = (a: ItemState | undefined, b: ItemState) =>
  */
 export async function followMenu(): Promise<() => void> {
   const unlisten = await events.menuItem.listen(({ payload }) => {
-    handlers[payload]?.();
+    const edit = useStore.getState().textFocused ? TEXT_EDITS.get(payload) : undefined;
+    if (edit === undefined) handlers[payload]?.();
+    else void commands.editText(edit[0]);
   });
   let shown: ReadonlyMap<MenuItem, ItemState> = new Map();
   const update = async (store: Store) => {

@@ -40,6 +40,10 @@ export interface UiSlice {
    * `KEY_RECORDER`, the key or shortcut field that ⌘R starts, or another field's ID.
    */
   readonly recording: string | null;
+  /** What the toolbar's search looks for across layers (design §4.6), or `""`. */
+  readonly search: string;
+  /** Whether a text field has keyboard focus, so Edit's items edit its text. */
+  readonly textFocused: boolean;
   /** The canvas's zoom, one of `ZOOMS`: 1 is actual size. */
   readonly zoom: number;
   /** Whether each side pane shows. */
@@ -123,6 +127,8 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   copied: false,
   announcement: "",
   recording: null,
+  search: "",
+  textFocused: false,
   zoom: 1,
   panels: { layers: true, inspector: true },
   paneWidths: { layers: PANES.layers.width, inspector: PANES.inspector.width },

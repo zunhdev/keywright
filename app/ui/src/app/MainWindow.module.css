@@ -65,3 +65,30 @@
   padding: var(--space-3);
   color: var(--text-secondary);
 }
+
+/* A layer's row: its name, and while searching, how many keys it found (design §4.6). */
+.layerRow {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.matches {
+  flex: none;
+  min-width: 18px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-badge);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+
+  &[data-none] {
+    background: none;
+    color: var(--text-secondary);
+  }
+}

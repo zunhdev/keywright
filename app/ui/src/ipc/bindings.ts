@@ -125,6 +125,8 @@ export const commands = {
 	 *  Fails if the menu bar refuses the change.
 	 */
 	menuSet: (item: MenuItem, enabled: boolean, label: string | null) => typedError<null, AppError>(__TAURI_INVOKE("menu_set", { item, enabled, label })),
+	/**  Edits the text of whatever has keyboard focus, as the Edit menu's standard items do. */
+	editText: (edit: TextEdit) => __TAURI_INVOKE<void>("edit_text", { edit }),
 };
 
 /** Events */
@@ -722,6 +724,22 @@ export type ShortcutWords = {
 	/**  The Mac action preset it is, such as `Screenshot of an area`, if it's one. */
 	preset: string | null,
 };
+
+/**
+ *  A standard text-editing action, for Edit's items while a text field has focus (design
+ *  §9.6): they act on keys otherwise.
+ */
+export type TextEdit = 
+/**  Undo (⌘Z). */
+"undo" | 
+/**  Redo (⇧⌘Z). */
+"redo" | 
+/**  Copy (⌘C). */
+"copy" | 
+/**  Paste (⌘V). */
+"paste" | 
+/**  Select All (⌘A). */
+"select-all";
 
 /**  How the session reaches the keyboard. */
 export type Transport = 

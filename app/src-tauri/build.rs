@@ -22,6 +22,7 @@ const COMMANDS: &[&str] = &[
     "undo",
     "redo",
     "menu_set",
+    "edit_text",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

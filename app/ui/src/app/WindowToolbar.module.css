@@ -21,7 +21,11 @@
   white-space: nowrap;
 }
 
+/* Search sits in the middle of the room left, which drags the window. */
 .search {
+  display: flex;
   flex: 1;
+  align-items: center;
   align-self: stretch;
+  justify-content: center;
 }

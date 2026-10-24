@@ -1,5 +1,6 @@
 import { Button } from "../design-system/Button.tsx";
 import { Toolbar } from "../design-system/Toolbar.tsx";
+import { KeySearch } from "../features/search/KeySearch.tsx";
 import { useMessages } from "../i18n/messages.ts";
 import { ConnectionChip } from "./ConnectionChip.tsx";
 import { useStore } from "./store.ts";
@@ -8,7 +9,7 @@ import styles from "./WindowToolbar.module.css";
 
 /**
  * The window's toolbar (design §3.2), which is also where the window is dragged: the
- * keyboard's name, the connection chip, a place for search, the changes button, and Save.
+ * keyboard's name, the connection chip, search, the changes button, and Save.
  */
 export function WindowToolbar() {
   const messages = useMessages();
@@ -21,8 +22,9 @@ export function WindowToolbar() {
       </h1>
       <Toolbar aria-label={messages.format("toolbar.label")}>
         <ConnectionChip />
-        {/* Search keys (design §4.6) goes here. */}
-        <div className={styles.search} data-tauri-drag-region />
+        <div className={styles.search} data-tauri-drag-region>
+          <KeySearch />
+        </div>
         {changes > 0 ? (
           <Button size="compact">{messages.format("toolbar.changes", { count: changes })}</Button>
         ) : null}

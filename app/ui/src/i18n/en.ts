@@ -58,6 +58,19 @@ export const en = {
 
   // The panes (design §3.1).
   "layers.title": "Layers",
+  "layers.matches": (args) => {
+    const count = Number(args?.["count"] ?? 0);
+    return count === 1 ? "1 match" : `${count} matches`;
+  },
+  "search.label": "Search keys",
+  "search.placeholder": "Search keys…",
+  "search.clear": "Clear search",
+  "search.count": (args) => {
+    const count = Number(args?.["count"] ?? 0);
+    return count === 0 ? "No keys" : count === 1 ? "1 key" : `${count} keys`;
+  },
+  "search.match": (args) =>
+    `${text(args, "index")} of ${text(args, "count")}: ${text(args, "place")}, ${text(args, "layer")} layer. ${text(args, "spoken")}`,
   "layers.empty": "The layers show once your keyboard is unlocked.",
   "canvas.label": "Keyboard",
   "canvas.knob": (args) => `Turning: ${text(args, "turn")}. Can't be changed yet.`,
@@ -198,6 +211,13 @@ export const en = {
 
   // Menu items the window renames (design §9.6).
   "menu.layer": (args) => `Layer ${text(args, "number")}`,
+  "menu.copy-action": "Copy Action",
+  "menu.paste-action": "Paste Action",
+  "menu.select-all-keys": "Select All Keys",
+  // Edit's items while a text field has focus (design §9.6).
+  "menu.copy": "Copy",
+  "menu.paste": "Paste",
+  "menu.select-all": "Select All",
   "menu.hide-layers": "Hide Layers",
   "menu.show-layers": "Show Layers",
   "menu.hide-inspector": "Hide Inspector",
