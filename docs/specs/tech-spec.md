@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.36 — for review                                        |
+| **Status**    | Draft v0.37 — for review                                        |
 | **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -542,9 +542,10 @@ support-packs/keebart-sofle-choc-pro-bt/
 
 ### 12.1 Tauri shell (`app/src-tauri`)
 
-- **Commands** are thin wrappers that send a `Command` to the session actor or call the core. They are `async`, return `Result<T, AppError>`, and are annotated for **tauri-specta**. That generates `ui/src/ipc/bindings.ts` with typed commands _and_ typed events, and CI fails if the generated file is stale.
-- **Events**: `session://state`, `session://keymap`, `session://changes`, `session://battery`, `platform://input-source`. Payloads are snapshots or diffs defined in Rust.
-- **Errors** carry a stable `code` plus structured data, never English text. The UI renders the message (NFR-6).
+- **Commands** are thin wrappers that send a `Command` to the session actor or call the core. They are `async`, return `Result<T, AppError>`, and are annotated for **tauri-specta**. That generates `ui/src/ipc/bindings.ts` with typed commands _and_ typed events; `mise run generate:bindings` rewrites it, and a test fails if it is stale. `build.rs` lists the commands, which gives each a permission (`allow-session-state`), so a window may call only the commands its capability grants.
+- **Events**: `session://state`, `session://keymap`, `session://changes`, `session://battery`, `platform://input-source`. Payloads are snapshots or diffs defined in Rust, in the app crate, since the core stays free of IPC crates (§2). `session://state` carries the session's state, the keyboard's name and its support pack; the others arrive with what produces and shows them: the keymap with the canvas, the changes with the review sheet, the battery with Bluetooth, and the input source with its labels.
+- **Errors** carry a stable `code` plus structured data, never English text, such as `{ code: "not-ready" }`. The UI renders the message (NFR-6).
+- **A simulated keyboard** replaces a real one when `KEYWRIGHT_SIMULATOR` names it (`sofle`, which unlocks itself after a few seconds, or `sofle-unlocked`), for working on the UI without hardware. Demo mode builds on it (DEV-6).
 - **Plugins**, kept minimal: `dialog` (open/save panels), `notification`, `opener` (scoped to `x-apple.systempreferences:` and the docs URL), `single-instance`, `window-state`. The tray and menus use Tauri core APIs.
 - **Security**:
   - Capability files grant each window only the commands it uses.
@@ -554,18 +555,18 @@ support-packs/keebart-sofle-choc-pro-bt/
 
 ### 12.2 UI (`app/ui`)
 
-| Concern               | Choice                                                                                                                                                            |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Language              | TypeScript 7 in strict mode, plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `verbatimModuleSyntax`                                             |
-| Framework             | React 19.3 with the React Compiler, enabled through `bun build --react-compiler`                                                                                  |
-| Accessible primitives | React Aria Components (buttons, menus, combobox, dialogs, toolbar, list, focus management)                                                                        |
-| Keyboard canvas       | Custom component: SVG geometry with focusable key buttons, roving tabindex and spatial arrow navigation (design §4.7, §12)                                        |
-| State                 | Zustand 5: a `session` slice that mirrors backend events (read-only), and a `ui` slice (selection, zoom, panels). Domain logic is never duplicated in TypeScript. |
-| Styling               | CSS Modules plus design tokens as CSS custom properties (`tokens.css`, light/dark/high-contrast)                                                                  |
-| Fonts and icons       | `@fontsource-variable/inter`, `@fontsource-variable/jetbrains-mono` (bundled locally) and `lucide-react`                                                          |
-| Strings               | `@internationalized/string` (ships with React Aria). Typed message catalogues per locale; English only in v1.                                                     |
-| Dev server            | Bun's HTML-import dev server (`app/ui/dev.ts`) with HMR and React Fast Refresh. Tauri's `devUrl` points at it.                                                    |
-| Build                 | `bun build --production --react-compiler` to `app/ui/dist`. Tauri's `frontendDist` points at it.                                                                  |
+| Concern               | Choice                                                                                                                                                                                                                                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Language              | TypeScript 7 in strict mode, plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `verbatimModuleSyntax`                                                                                                                                     |
+| Framework             | React 19.3 with the React Compiler, enabled through `bun build --react-compiler`                                                                                                                                                                          |
+| Accessible primitives | React Aria Components (buttons, menus, combobox, dialogs, toolbar, list, focus management)                                                                                                                                                                |
+| Keyboard canvas       | Custom component: SVG geometry with focusable key buttons, roving tabindex and spatial arrow navigation (design §4.7, §12)                                                                                                                                |
+| State                 | Zustand 5: a `session` slice that mirrors backend events (read-only), and a `ui` slice (selection, zoom, panels). Domain logic is never duplicated in TypeScript.                                                                                         |
+| Styling               | CSS Modules plus design tokens as CSS custom properties (`tokens.css`, light/dark/high-contrast). In the dev server, a plugin compiles CSS Modules with lightningcss, around a Bun bug ([oven-sh/bun#18258](https://github.com/oven-sh/bun/issues/18258)) |
+| Fonts and icons       | `@fontsource-variable/inter`, `@fontsource-variable/jetbrains-mono` (bundled locally) and `lucide-react`                                                                                                                                                  |
+| Strings               | `@internationalized/string` (ships with React Aria). Typed message catalogues per locale; English only in v1.                                                                                                                                             |
+| Dev server            | Bun's HTML-import dev server (`app/ui/dev.ts`) with HMR and React Fast Refresh. Tauri's `devUrl` points at it.                                                                                                                                            |
+| Build                 | `bun build --production --react-compiler` to `app/ui/dist`. Tauri's `frontendDist` points at it.                                                                                                                                                          |
 
 ```
 app/ui/src/
@@ -585,18 +586,18 @@ app/ui/src/
 
 `mise.toml` pins **every tool**: Bun, cargo-nextest, cargo-deny, cargo-shear, cargo-llvm-cov, typos, zizmor, actionlint and others. It also defines the tasks that local development and CI both run, so "works on my machine" equals "passes CI".
 
-| Task                   | Runs                                                               |
-| ---------------------- | ------------------------------------------------------------------ |
-| `mise run dev`         | Tauri dev (Bun dev server + Rust app)                              |
-| `mise run fmt`         | `cargo fmt` + `oxfmt`                                              |
-| `mise run lint`        | §13.2 and §13.3 linters                                            |
-| `mise run test`        | `cargo nextest run` + `bun test`                                   |
-| `mise run audit`       | `cargo deny check` + `bun audit`                                   |
-| `mise run check`       | fmt check + lint + test + audits: everything CI requires           |
-| `mise run build`       | Release build of app + CLI                                         |
-| `mise run build:debug` | Unoptimised, unbundled app build, as CI's **app** job runs (§13.5) |
-| `mise run generate`    | Regenerate checked-in generated code: the key tables (§8.2)        |
-| `mise run fuzz`        | Each fuzz target for `FUZZ_SECONDS` (60 by default)                |
+| Task                   | Runs                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| `mise run dev`         | Tauri dev (Bun dev server + Rust app)                                                         |
+| `mise run fmt`         | `cargo fmt` + `oxfmt`                                                                         |
+| `mise run lint`        | §13.2 and §13.3 linters                                                                       |
+| `mise run test`        | `cargo nextest run` + `bun test`                                                              |
+| `mise run audit`       | `cargo deny check` + `bun audit`                                                              |
+| `mise run check`       | fmt check + lint + test + audits: everything CI requires                                      |
+| `mise run build`       | Release build of app + CLI                                                                    |
+| `mise run build:debug` | Unoptimised, unbundled app build, as CI's **app** job runs (§13.5)                            |
+| `mise run generate`    | Regenerate checked-in generated code: the key tables (§8.2) and the UI's IPC bindings (§12.1) |
+| `mise run fuzz`        | Each fuzz target for `FUZZ_SECONDS` (60 by default)                                           |
 
 Contributors install the toolchain with `mise install` (the Rust toolchain itself comes from `rust-toolchain.toml` via rustup).
 
@@ -833,3 +834,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.34    | 2026-10-24 | Spike outcomes (§11.3, §15, §17, KEY-19): S1–S9 are recorded. The owner accepted self-signed release signing (§17), and chose a Globe key that Keywright maps itself (§11.3). Product spec v0.5 and design spec v0.4 record the rest.                                                                                                                              |
 | 0.35    | 2026-10-24 | App shell (§12.1, §13.1, §13.5, KEY-36): the CSP applies to the bundled UI, which `mise run build:debug` builds as CI's paused **app** job does; tests guard the CSP and capabilities. cargo-deny allows the common open-source licences, MPL-2.0 included (§13.2).                                                                                                |
 | 0.36    | 2026-10-24 | UI foundation (§12.2, §13.3, KEY-38): the dev server's file, the production build with the React Compiler, and why knip ignores `react-refresh`.                                                                                                                                                                                                                   |
+| 0.37    | 2026-10-24 | Typed IPC (§12.1, §12.2, §13.1, KEY-37): per-command permissions, the payloads in the app crate, `session://state` first, error codes, the simulated keyboard for UI work, and the dev server's CSS Modules plugin.                                                                                                                                                |

@@ -10,4 +10,9 @@ randomize = true
 coverage = true
 coverageThreshold = { lines = 0.7 }
 coverageSkipTestFiles = true
-coveragePathIgnorePatterns = ["src/test/**"]
+# Test helpers, and the generated IPC bindings.
+coveragePathIgnorePatterns = ["src/test/**", "src/ipc/bindings.ts"]
+
+[serve.static]
+# Works around a Bun bug with CSS Modules in the dev server; see the file.
+plugins = ["./dev-css-modules.ts"]

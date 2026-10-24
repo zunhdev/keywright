@@ -13,6 +13,21 @@ publish.workspace = true
 tauri-build.workspace = true
 
 [dependencies]
+# The keymap model, for what the UI shows.
+keywright-core = { path = "../../crates/keywright-core" }
+# The device session, which the UI drives through the commands and follows through the
+# events.
+keywright-device = { path = "../../crates/keywright-device" }
+# The automatic backups' folder.
+keywright-platform = { path = "../../crates/keywright-platform" }
+# A simulated keyboard, which `KEYWRIGHT_SIMULATOR` connects instead of a real one.
+keywright-sim = { path = "../../crates/keywright-sim" }
+# The IPC payloads, as JSON.
+serde.workspace = true
+# Typed IPC (ADR-0010): `specta` describes the payloads, and tauri-specta the commands and
+# events, from which `specta-typescript` writes the UI's bindings.
+specta.workspace = true
+specta-typescript.workspace = true
 # The app framework: windows, menus and the webview that runs the UI. Its `devtools`
 # feature stays off, so release builds have no web inspector (tech spec §12.1).
 tauri.workspace = true
@@ -26,12 +41,19 @@ tauri-plugin-opener.workspace = true
 tauri-plugin-single-instance.workspace = true
 # Remembers the window's size and place.
 tauri-plugin-window-state.workspace = true
+tauri-specta.workspace = true
+thiserror.workspace = true
+# The session runs on Tauri's Tokio runtime, and the simulated keyboard's unlock waits on
+# its timer.
+tokio = { workspace = true, features = ["rt", "sync", "time"] }
 
 [dev-dependencies]
 # Parses the menu shortcuts the way Tauri does, to check them.
 muda.workspace = true
-# Reads tauri.conf.json and the capabilities in the security tests.
+# Reads tauri.conf.json and the capabilities in the security tests, and checks payloads.
 serde_json.workspace = true
+# Runs the session in the tests; `test-util` pauses the clock.
+tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
 
 [lints]
 workspace = true

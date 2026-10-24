@@ -1,6 +1,7 @@
 import { I18nProvider } from "react-aria-components";
 
 import { LOCALE, useMessages } from "../i18n/messages.ts";
+import { useStore } from "./store.ts";
 
 import styles from "./App.module.css";
 
@@ -16,12 +17,18 @@ export function App() {
   );
 }
 
-/** A placeholder until the three-pane main window (design §3). */
+/**
+ * A placeholder until the three-pane main window (design §3): the keyboard's name, and
+ * what the session is doing, as the toolbar will show them.
+ */
 function MainWindow() {
   const messages = useMessages();
+  const session = useStore((store) => store.session);
   return (
     <main className={styles.main}>
-      <h1>{messages.format("app.name")}</h1>
+      <h1>{session?.keyboard ?? messages.format("app.name")}</h1>
+      {/* A live region (`output` has the status role), so VoiceOver says each new state. */}
+      <output>{session ? messages.format(`session.${session.state.kind}`) : ""}</output>
     </main>
   );
 }

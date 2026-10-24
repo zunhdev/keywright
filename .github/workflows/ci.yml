@@ -91,8 +91,9 @@ jobs:
       - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           minimum_release_age: 3d
-          # Bun builds the UI and runs Tauri's command-line tool.
-          install_args: bun
+          # Bun builds the UI and runs Tauri's command-line tool; nextest runs the bindings
+          # check.
+          install_args: bun github:nextest-rs/nextest
 
       - name: Install the Rust toolchain from rust-toolchain.toml
         run: rustup toolchain install
@@ -108,6 +109,10 @@ jobs:
 
       - name: Check that Cargo.lock is up to date
         run: cargo fetch --locked
+
+      # Regenerates the UI's IPC bindings, and fails if they differ from the committed ones.
+      - name: Check the UI's IPC bindings
+        run: mise run lint:bindings
 
       # Builds the UI, then the app around it, unoptimised and without bundling it.
       - name: Build the app (tauri build --debug --no-bundle)

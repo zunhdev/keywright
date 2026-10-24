@@ -4,6 +4,7 @@
   "ignorePatterns": [
     "bun.lock",
     "Cargo.lock",
+    "app/ui/src/ipc/bindings.ts",
     "scripts/key-tables/upstream/chromium",
     "scripts/key-tables/upstream/zmk"
   ]
