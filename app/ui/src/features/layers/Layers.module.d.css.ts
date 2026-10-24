@@ -24,5 +24,6 @@ declare const classes: {
   readonly sheetBody: string;
   readonly sheetButtons: string;
   readonly top: string;
+  readonly warned: string;
 };
 export default classes;

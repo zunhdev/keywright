@@ -1773,7 +1773,8 @@ export const sofleKeymap: Keymap = {
           "place": null
         }
       ],
-      "changed": false
+      "changed": false,
+      "warnings": []
     },
     {
       "id": 1,
@@ -2851,7 +2852,8 @@ export const sofleKeymap: Keymap = {
           "place": "Left half, row 5, key 4"
         }
       ],
-      "changed": false
+      "changed": false,
+      "warnings": []
     },
     {
       "id": 2,
@@ -3821,7 +3823,8 @@ export const sofleKeymap: Keymap = {
           "place": "Right half, row 5, key 2"
         }
       ],
-      "changed": false
+      "changed": false,
+      "warnings": []
     },
     {
       "id": 3,
@@ -4651,11 +4654,13 @@ export const sofleKeymap: Keymap = {
           "place": null
         }
       ],
-      "changed": false
+      "changed": false,
+      "warnings": []
     }
   ],
   "freeLayerSlots": 0,
   "layerNameMax": 18,
+  "unlockable": true,
   "choices": [
     {
       "category": "media",

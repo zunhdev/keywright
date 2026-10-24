@@ -71,6 +71,13 @@
   white-space: nowrap;
 }
 
+/* A layer with warnings (SAF-2). */
+.warned {
+  display: grid;
+  flex: none;
+  color: var(--warning);
+}
+
 /* Changed, as on a keycap (design §4.2): the accent's dot. */
 .changed {
   flex: none;

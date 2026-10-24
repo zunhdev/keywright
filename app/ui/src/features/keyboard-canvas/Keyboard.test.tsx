@@ -69,7 +69,7 @@ describe("the keyboard", () => {
     expect(calls).toEqual([
       {
         command: "set_keys",
-        args: { layer: 0, positions: [Q, W], action: "same-as-layer-below" },
+        args: { layer: 0, positions: [Q, W], action: "same-as-layer-below", force: false },
       },
     ]);
   });
@@ -102,7 +102,7 @@ describe("the keyboard", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(calls.at(-1)).toEqual({
       command: "set_keys",
-      args: { layer: 0, positions: [Q], action: "does-nothing" },
+      args: { layer: 0, positions: [Q], action: "does-nothing", force: false },
     });
   });
 });
@@ -141,7 +141,9 @@ describe("the pointer", () => {
 
       fireEvent.pointerUp(window, { clientX: 60, clientY: 0 });
       expect(keyAt(W).dataset["dropTarget"]).toBeUndefined();
-      expect(calls).toEqual([{ command: "swap_keys", args: { layer: 0, first: Q, second: W } }]);
+      expect(calls).toEqual([
+        { command: "swap_keys", args: { layer: 0, first: Q, second: W, force: false } },
+      ]);
     });
 
     test("with ⌥, copies it there", () => {
@@ -150,7 +152,9 @@ describe("the pointer", () => {
       dragOnto(Q, W, { copy: true, drop: false });
       expect(keyAt(W).dataset["dropTarget"]).toBe("copy");
       fireEvent.pointerUp(window, { clientX: 60, clientY: 0, altKey: true });
-      expect(calls).toEqual([{ command: "copy_key", args: { layer: 0, from: Q, to: W } }]);
+      expect(calls).toEqual([
+        { command: "copy_key", args: { layer: 0, from: Q, to: W, force: false } },
+      ]);
     });
 
     test("does nothing when dropped back on itself, or cancelled with Escape", () => {
@@ -190,7 +194,7 @@ describe("the keys' menu", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: /Paste Action/u }));
     expect(calls.at(-1)).toEqual({
       command: "paste_action",
-      args: { layer: 0, positions: [W, E] },
+      args: { layer: 0, positions: [W, E], force: false },
     });
   });
 
@@ -211,8 +215,14 @@ describe("the keys' menu", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: /Does Nothing/u }));
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(calls).toEqual([
-      { command: "set_keys", args: { layer: 0, positions: [Q], action: "same-as-layer-below" } },
-      { command: "set_keys", args: { layer: 0, positions: [Q], action: "does-nothing" } },
+      {
+        command: "set_keys",
+        args: { layer: 0, positions: [Q], action: "same-as-layer-below", force: false },
+      },
+      {
+        command: "set_keys",
+        args: { layer: 0, positions: [Q], action: "does-nothing", force: false },
+      },
     ]);
   });
 

@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.16 — for review                                                       |
+| **Status**    | Draft v0.17 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -254,6 +254,10 @@ If a change would remove the last _Unlock editing_ key, strand a layer, or trap 
 
 > ⚠ **This removes the only Unlock editing key.** Without it you can't make further changes until you reset the keyboard with the Firmware Update assistant.
 > [Keep the old action] [Change anyway]
+
+- Every change that can strand the user goes through the guard: the inspector's, T, ⌫, paste, dragging keys, and moving or removing layers. The warning shows at the top of the inspector, which opens if it's hidden. _Change anyway_ applies the change, which undo takes back; choosing another key or layer drops it.
+- The other two read: "This leaves no way to reach the raise layer. No key would turn it on, so its keys would be out of reach." and "This leaves no way back from the lower layer. Once it's on, no key would take you back to the base layer until the keyboard restarts."
+- The layer overview lists what's wrong as the keymap is (no key unlocks the keyboard, no key turns the layer on, no way back from it), with _Show Keys_ for the keys that leave no way back. The sidebar marks those layers with ⚠.
 
 ---
 
@@ -556,3 +560,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.14    | 2026-10-24 | Layer sidebar (§3.1, §5.1, KEY-45): what a row shows, renaming with a byte counter, reordering by a handle with the base layer first, add and remove with the capacity footer, and asking before removing a layer keys turn on.                                                            |
 | 0.15    | 2026-10-24 | Connection states (§7, KEY-46): the unsaved-changes card; when the unlock sheet opens and when the banner shows; Try Again on the cards; which keyboard the outline draws.                                                                                                                 |
 | 0.16    | 2026-10-24 | Changes (§6, KEY-50): Revert is a change undo undoes; layer rows; what opens the sheet; Undo and Redo name the change; the quit dialog's buttons, and closing the window asks too.                                                                                                         |
+| 0.17    | 2026-10-24 | Lockout guard (§5.1, §5.5, KEY-51): which changes go through it, the other warnings' words, the overview's warnings with Show Keys, and the sidebar's ⚠.                                                                                                                                   |

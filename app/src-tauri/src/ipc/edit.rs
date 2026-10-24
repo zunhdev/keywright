@@ -14,7 +14,7 @@ use serde::Deserialize;
 use specta::Type;
 
 use super::error::AppError;
-use super::{AppState, action};
+use super::{AppState, action, guard};
 
 /// What [`set_keys`] makes keys do.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Type)]
@@ -39,8 +39,11 @@ fn position(position: u32) -> usize {
 
 impl AppState {
     /// Carries out the edits `build` makes from the keymap the editor holds, as one change.
+    /// Unless `force`, a change that would strand the user isn't applied (SAF-2): it fails
+    /// with what it would break.
     pub(super) async fn change(
         &self,
+        force: bool,
         build: impl FnOnce(&Keymap, &BehaviorTable) -> Result<Vec<Edit>, AppError>,
     ) -> Result<(), AppError> {
         let snapshot = self.session.snapshot().await?;
@@ -48,12 +51,32 @@ impl AppState {
             return Err(AppError::NotReady);
         };
         let edits = build(editor.current(), &keyboard.behaviors)?;
+        if !force {
+            let conditional_layers = snapshot
+                .support_pack()
+                .map_or(&[][..], |pack| &pack.hints.conditional_layers);
+            let findings = guard::check(
+                editor.current(),
+                &edits,
+                &keyboard.behaviors,
+                conditional_layers,
+            );
+            if !findings.is_empty() {
+                return Err(AppError::WouldStrand { findings });
+            }
+        }
         Ok(self.session.apply(edits).await?)
     }
 
     /// Swaps what two keys do on a layer, as dragging one onto the other does.
-    pub async fn swap_keys(&self, layer: u32, first: u32, second: u32) -> Result<(), AppError> {
-        self.change(|keymap, _| {
+    pub async fn swap_keys(
+        &self,
+        layer: u32,
+        first: u32,
+        second: u32,
+        force: bool,
+    ) -> Result<(), AppError> {
+        self.change(force, |keymap, _| {
             Ok(Edit::swap_keys(
                 keymap,
                 LayerId(layer),
@@ -66,8 +89,14 @@ impl AppState {
 
     /// Makes the key at `to` do what the key at `from` does, on a layer, as ⌥-dragging
     /// does.
-    pub async fn copy_key(&self, layer: u32, from: u32, to: u32) -> Result<(), AppError> {
-        self.change(|keymap, _| {
+    pub async fn copy_key(
+        &self,
+        layer: u32,
+        from: u32,
+        to: u32,
+        force: bool,
+    ) -> Result<(), AppError> {
+        self.change(force, |keymap, _| {
             let layer = LayerId(layer);
             let binding = *keymap
                 .layer(layer)
@@ -97,15 +126,22 @@ impl AppState {
     }
 
     /// Makes keys on a layer do what the key last copied does.
-    pub async fn paste_action(&self, layer: u32, positions: Vec<u32>) -> Result<(), AppError> {
+    pub async fn paste_action(
+        &self,
+        layer: u32,
+        positions: Vec<u32>,
+        force: bool,
+    ) -> Result<(), AppError> {
         let copied = *self
             .clipboard
             .lock()
             .map_err(|_| AppError::SessionStopped)?;
         let binding = copied.ok_or(AppError::NothingToPaste)?;
         let positions: Vec<usize> = positions.into_iter().map(position).collect();
-        self.change(|keymap, _| Ok(Edit::set_keys(keymap, LayerId(layer), &positions, binding)?))
-            .await
+        self.change(force, |keymap, _| {
+            Ok(Edit::set_keys(keymap, LayerId(layer), &positions, binding)?)
+        })
+        .await
     }
 
     /// Makes keys on a layer do `action` (the inspector, EDIT-1).
@@ -114,9 +150,10 @@ impl AppState {
         layer: u32,
         positions: Vec<u32>,
         action: action::Action,
+        force: bool,
     ) -> Result<(), AppError> {
         let positions: Vec<usize> = positions.into_iter().map(position).collect();
-        self.change(|keymap, behaviors| {
+        self.change(force, |keymap, behaviors| {
             let binding = Action::from(action)
                 .to_binding(behaviors)
                 .map_err(|_| AppError::EditRefused)?;
@@ -131,9 +168,10 @@ impl AppState {
         layer: u32,
         positions: Vec<u32>,
         action: KeyAction,
+        force: bool,
     ) -> Result<(), AppError> {
         let positions: Vec<usize> = positions.into_iter().map(position).collect();
-        self.change(|keymap, behaviors| {
+        self.change(force, |keymap, behaviors| {
             let action = match action {
                 KeyAction::SameAsLayerBelow => Action::Transparent,
                 KeyAction::DoesNothing => Action::None,
@@ -147,12 +185,14 @@ impl AppState {
     }
 }
 
-/// Swaps what two keys do on a layer (dragging one onto the other).
+/// Swaps what two keys do on a layer (dragging one onto the other). Like every command
+/// that changes keys, it refuses a change that would strand the user unless `force`
+/// (SAF-2).
 ///
 /// # Errors
 ///
-/// Fails if the keymap can't be changed now, a key isn't there, or the keyboard doesn't
-/// carry out the change, which is then undone.
+/// Fails if the keymap can't be changed now, a key isn't there, the change would strand
+/// the user, or the keyboard doesn't carry out the change, which is then undone.
 #[tauri::command]
 #[specta::specta]
 pub async fn swap_keys(
@@ -160,8 +200,9 @@ pub async fn swap_keys(
     layer: u32,
     first: u32,
     second: u32,
+    force: bool,
 ) -> Result<(), AppError> {
-    app.swap_keys(layer, first, second).await
+    app.swap_keys(layer, first, second, force).await
 }
 
 /// Makes the key at `to` do what the key at `from` does, on a layer (⌥-dragging).
@@ -176,8 +217,9 @@ pub async fn copy_key(
     layer: u32,
     from: u32,
     to: u32,
+    force: bool,
 ) -> Result<(), AppError> {
-    app.copy_key(layer, from, to).await
+    app.copy_key(layer, from, to, force).await
 }
 
 /// Copies what a key does, to paste onto other keys (⌘C).
@@ -206,8 +248,9 @@ pub async fn paste_action(
     app: tauri::State<'_, AppState>,
     layer: u32,
     positions: Vec<u32>,
+    force: bool,
 ) -> Result<(), AppError> {
-    app.paste_action(layer, positions).await
+    app.paste_action(layer, positions, force).await
 }
 
 /// Makes keys "same as layer below" (T) or "does nothing" (⌫).
@@ -222,8 +265,9 @@ pub async fn set_keys(
     layer: u32,
     positions: Vec<u32>,
     action: KeyAction,
+    force: bool,
 ) -> Result<(), AppError> {
-    app.set_keys(layer, positions, action).await
+    app.set_keys(layer, positions, action, force).await
 }
 
 /// Makes keys on a layer do an action (the inspector).
@@ -238,8 +282,9 @@ pub async fn set_action(
     layer: u32,
     positions: Vec<u32>,
     action: action::Action,
+    force: bool,
 ) -> Result<(), AppError> {
-    app.set_action(layer, positions, action).await
+    app.set_action(layer, positions, action, force).await
 }
 
 /// Undoes the last change (⌘Z).
@@ -320,12 +365,12 @@ mod tests {
         let app = ready_sofle().await;
         let stock = bindings(&app, BASE, &[Q, W]).await;
 
-        app.swap_keys(BASE, Q, W).await.unwrap();
+        app.swap_keys(BASE, Q, W, false).await.unwrap();
         assert_eq!(bindings(&app, BASE, &[Q, W]).await, [stock[1], stock[0]]);
         app.session.undo().await.unwrap();
         assert_eq!(bindings(&app, BASE, &[Q, W]).await, stock);
 
-        app.copy_key(BASE, Q, W).await.unwrap();
+        app.copy_key(BASE, Q, W, false).await.unwrap();
         assert_eq!(bindings(&app, BASE, &[Q, W]).await, [stock[0], stock[0]]);
         app.session.undo().await.unwrap();
         assert_eq!(bindings(&app, BASE, &[Q, W]).await, stock);
@@ -336,14 +381,14 @@ mod tests {
     async fn a_copied_action_pastes_onto_several_keys_at_once() {
         let app = ready_sofle().await;
         assert_eq!(
-            app.paste_action(BASE, vec![W]).await,
+            app.paste_action(BASE, vec![W], false).await,
             Err(AppError::NothingToPaste)
         );
         let q = bindings(&app, BASE, &[Q]).await[0];
         let lower = bindings(&app, LOWER, &[Q, W]).await;
 
         app.copy_action(BASE, Q).await.unwrap();
-        app.paste_action(LOWER, vec![Q, W]).await.unwrap();
+        app.paste_action(LOWER, vec![Q, W], false).await.unwrap();
         assert_eq!(bindings(&app, LOWER, &[Q, W]).await, [q, q]);
         app.session.undo().await.unwrap();
         assert_eq!(bindings(&app, LOWER, &[Q, W]).await, lower);
@@ -353,14 +398,14 @@ mod tests {
     async fn keys_become_see_through_or_do_nothing() {
         let app = ready_sofle().await;
         let see_through = bindings(&app, LOWER, &[GRAVE]).await[0];
-        app.set_keys(BASE, vec![Q, W], KeyAction::SameAsLayerBelow)
+        app.set_keys(BASE, vec![Q, W], KeyAction::SameAsLayerBelow, false)
             .await
             .unwrap();
         assert_eq!(
             bindings(&app, BASE, &[Q, W]).await,
             [see_through, see_through]
         );
-        app.set_keys(LOWER, vec![GRAVE], KeyAction::DoesNothing)
+        app.set_keys(LOWER, vec![GRAVE], KeyAction::DoesNothing, false)
             .await
             .unwrap();
         assert_ne!(bindings(&app, LOWER, &[GRAVE]).await[0], see_through);
@@ -369,11 +414,17 @@ mod tests {
     #[tokio::test]
     async fn keys_that_arent_there_are_refused() {
         let app = ready_sofle().await;
-        assert_eq!(app.swap_keys(BASE, Q, 60).await, Err(AppError::EditRefused));
-        assert_eq!(app.copy_key(9, Q, W).await, Err(AppError::EditRefused));
+        assert_eq!(
+            app.swap_keys(BASE, Q, 60, false).await,
+            Err(AppError::EditRefused)
+        );
+        assert_eq!(
+            app.copy_key(9, Q, W, false).await,
+            Err(AppError::EditRefused)
+        );
         assert_eq!(app.copy_action(BASE, 60).await, Err(AppError::EditRefused));
         assert_eq!(
-            app.set_keys(BASE, vec![u32::MAX], KeyAction::DoesNothing)
+            app.set_keys(BASE, vec![u32::MAX], KeyAction::DoesNothing, false)
                 .await,
             Err(AppError::EditRefused)
         );
@@ -382,7 +433,10 @@ mod tests {
     #[tokio::test]
     async fn nothing_changes_without_a_keymap() {
         let app = AppState::new(Session::start());
-        assert_eq!(app.swap_keys(BASE, Q, W).await, Err(AppError::NotReady));
+        assert_eq!(
+            app.swap_keys(BASE, Q, W, false).await,
+            Err(AppError::NotReady)
+        );
         assert_eq!(app.copy_action(BASE, Q).await, Err(AppError::NotReady));
     }
 }

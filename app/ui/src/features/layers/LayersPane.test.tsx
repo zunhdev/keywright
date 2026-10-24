@@ -122,7 +122,7 @@ describe("removing a layer", () => {
     expect(within(sheet).getByText("Hold raise: Right half, row 5, key 2")).toBeDefined();
     expect(within(sheet).getByText("You can undo this with ⌘Z.")).toBeDefined();
     await userEvent.click(within(sheet).getByRole("button", { name: "Remove Layer" }));
-    expect(calls).toEqual([`remove_layer {"layer":2}`]);
+    expect(calls).toEqual([`remove_layer {"layer":2,"force":false}`]);
   });
 
   test("that only the firmware turns on goes straight away, and the base layer stays", async () => {
@@ -135,7 +135,7 @@ describe("removing a layer", () => {
     });
     await userEvent.click(screen.getByRole("button", { name: "Remove the adjust layer" }));
     expect(screen.queryByRole("dialog")).toBeNull();
-    expect(calls).toEqual([`remove_layer {"layer":3}`]);
+    expect(calls).toEqual([`remove_layer {"layer":3,"force":false}`]);
   });
 
   test("from its menu, which renames it too", async () => {
@@ -158,7 +158,7 @@ describe("removing a layer", () => {
     fireEvent.contextMenu(within(row("adjust")).getByText("adjust"), { clientX: 10, clientY: 10 });
     menu = screen.getByRole("menu", { name: "adjust layer" });
     await userEvent.click(within(menu).getByRole("menuitem", { name: "Remove" }));
-    expect(calls).toEqual([`remove_layer {"layer":3}`]);
+    expect(calls).toEqual([`remove_layer {"layer":3,"force":false}`]);
     expect(useStore.getState().layer).toBe(3);
 
     fireEvent.contextMenu(within(row("lower")).getByText("lower"), { clientX: 10, clientY: 10 });

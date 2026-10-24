@@ -6,9 +6,11 @@ use keywright_device::SessionError;
 use serde::Serialize;
 use specta::Type;
 
+use super::guard::GuardWarning;
+
 /// Why a command didn't do what it was asked. In TypeScript, `{ code: "not-ready" }` and
 /// so on: the codes are part of the IPC contract, so a code never changes meaning.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 #[serde(tag = "code", rename_all = "kebab-case")]
 pub enum AppError {
     /// The keymap can't be changed in the session's state, such as while it's locked.
@@ -34,6 +36,12 @@ pub enum AppError {
     /// A layer name the keyboard can't take: too long, or with a character it can't
     /// receive (`layer_name_problem` says which).
     InvalidLayerName,
+    /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
+    /// `force`, it is.
+    WouldStrand {
+        /// What it would break.
+        findings: Vec<GuardWarning>,
+    },
 }
 
 impl From<SessionError> for AppError {

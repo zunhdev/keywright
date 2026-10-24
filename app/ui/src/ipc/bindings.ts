@@ -34,6 +34,8 @@ export const commands = {
 	freeLayerSlots: number,
 	/**  The longest layer name, in bytes of UTF-8, for the rename field's counter (LAY-1). */
 	layerNameMax: number,
+	/**  Whether some key the user can reach unlocks the keyboard (SAF-2). */
+	unlockable: boolean,
 	/**  The actions the inspector lists as they are, which the firmware can do. */
 	choices: Choice[],
 	/**  The behaviors Keywright doesn't know, which the inspector edits by their parameters. */
@@ -62,16 +64,18 @@ export const commands = {
 	 * 
 	 *  As for [`swap_keys`], and if the keyboard's firmware has no behavior for the action.
 	 */
-	setAction: (layer: number, positions: number[], action: Action) => typedError<null, AppError>(__TAURI_INVOKE("set_action", { layer, positions, action })),
+	setAction: (layer: number, positions: number[], action: Action, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("set_action", { layer, positions, action, force })),
 	/**
-	 *  Swaps what two keys do on a layer (dragging one onto the other).
+	 *  Swaps what two keys do on a layer (dragging one onto the other). Like every command
+	 *  that changes keys, it refuses a change that would strand the user unless `force`
+	 *  (SAF-2).
 	 * 
 	 *  # Errors
 	 * 
-	 *  Fails if the keymap can't be changed now, a key isn't there, or the keyboard doesn't
-	 *  carry out the change, which is then undone.
+	 *  Fails if the keymap can't be changed now, a key isn't there, the change would strand
+	 *  the user, or the keyboard doesn't carry out the change, which is then undone.
 	 */
-	swapKeys: (layer: number, first: number, second: number) => typedError<null, AppError>(__TAURI_INVOKE("swap_keys", { layer, first, second })),
+	swapKeys: (layer: number, first: number, second: number, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("swap_keys", { layer, first, second, force })),
 	/**
 	 *  Makes the key at `to` do what the key at `from` does, on a layer (⌥-dragging).
 	 * 
@@ -79,7 +83,7 @@ export const commands = {
 	 * 
 	 *  As for [`swap_keys`].
 	 */
-	copyKey: (layer: number, from: number, to: number) => typedError<null, AppError>(__TAURI_INVOKE("copy_key", { layer, from, to })),
+	copyKey: (layer: number, from: number, to: number, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("copy_key", { layer, from, to, force })),
 	/**
 	 *  Copies what a key does, to paste onto other keys (⌘C).
 	 * 
@@ -95,7 +99,7 @@ export const commands = {
 	 * 
 	 *  As for [`swap_keys`], and if nothing has been copied.
 	 */
-	pasteAction: (layer: number, positions: number[]) => typedError<null, AppError>(__TAURI_INVOKE("paste_action", { layer, positions })),
+	pasteAction: (layer: number, positions: number[], force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("paste_action", { layer, positions, force })),
 	/**
 	 *  Makes keys "same as layer below" (T) or "does nothing" (⌫).
 	 * 
@@ -103,7 +107,7 @@ export const commands = {
 	 * 
 	 *  As for [`swap_keys`].
 	 */
-	setKeys: (layer: number, positions: number[], action: KeyAction) => typedError<null, AppError>(__TAURI_INVOKE("set_keys", { layer, positions, action })),
+	setKeys: (layer: number, positions: number[], action: KeyAction, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("set_keys", { layer, positions, action, force })),
 	/**
 	 *  Undoes the last change (⌘Z).
 	 * 
@@ -157,23 +161,25 @@ character: string } | null>("layer_name_problem", { name }),
 	 */
 	renameLayer: (layer: number, name: string) => typedError<null, AppError>(__TAURI_INVOKE("rename_layer", { layer, name })),
 	/**
-	 *  Moves a layer to another place in the order (LAY-2).
+	 *  Moves a layer to another place in the order (LAY-2), unless that would strand the user
+	 *  and not `force` (SAF-2).
 	 * 
 	 *  # Errors
 	 * 
-	 *  Fails if there's no such layer or place, the keymap can't be changed now, or the
-	 *  keyboard doesn't move it.
+	 *  Fails if there's no such layer or place, the keymap can't be changed now, the move
+	 *  would strand the user, or the keyboard doesn't move it.
 	 */
-	moveLayer: (layer: number, to: number) => typedError<null, AppError>(__TAURI_INVOKE("move_layer", { layer, to })),
+	moveLayer: (layer: number, to: number, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("move_layer", { layer, to, force })),
 	/**
-	 *  Removes a layer, which undo puts back (LAY-3, LAY-6).
+	 *  Removes a layer, which undo puts back (LAY-3, LAY-6), unless that would strand the
+	 *  user and not `force` (SAF-2).
 	 * 
 	 *  # Errors
 	 * 
-	 *  Fails if there's no such layer, the keymap can't be changed now, or the keyboard
-	 *  doesn't remove it.
+	 *  Fails if there's no such layer, the keymap can't be changed now, the removal would
+	 *  strand the user, or the keyboard doesn't remove it.
 	 */
-	removeLayer: (layer: number) => typedError<null, AppError>(__TAURI_INVOKE("remove_layer", { layer })),
+	removeLayer: (layer: number, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("remove_layer", { layer, force })),
 	/**
 	 *  Adds a layer, in the free slot the keyboard picks (LAY-3). Undo removes it again.
 	 * 
@@ -391,7 +397,14 @@ export type AppError =
  *  A layer name the keyboard can't take: too long, or with a character it can't
  *  receive (`layer_name_problem` says which).
  */
-{ code: "invalid-layer-name" };
+{ code: "invalid-layer-name" } | 
+/**
+ *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
+ *  `force`, it is.
+ */
+{ code: "would-strand"; 
+/**  What it would break. */
+findings: GuardWarning[] };
 
 /**  A Bluetooth command. */
 export type Bluetooth = 
@@ -483,6 +496,29 @@ export type Group =
 /**  Everything else. */
 "other";
 
+/**
+ *  What a change would break (SAF-2). In TypeScript, `{ kind: "last-unlock-key" }` and
+ *  so on.
+ */
+export type GuardWarning = 
+/**
+ *  No key could unlock the keyboard any more, so Keywright couldn't change it again
+ *  until it's reset.
+ */
+{ kind: "last-unlock-key" } | 
+/**  No key could turn the layer on any more. */
+{ kind: "layer-unreachable"; 
+/**  The layer, by ID. */
+layer: number; 
+/**  Its name. */
+name: string } | 
+/**  Once on the layer, there'd be no way back to the base layer. */
+{ kind: "no-way-back"; 
+/**  The layer, by ID. */
+layer: number; 
+/**  Its name. */
+name: string };
+
 /**  One key to press, in order (design §7: "① Hold Raise ② Tap B"). */
 export type GuideStep = {
 	/**  The key, by key position. */
@@ -557,6 +593,14 @@ export type KeyEntry = {
 	group: Group,
 };
 
+/**  A key on a layer. */
+export type KeyRef = {
+	/**  The layer, by ID. */
+	layer: number,
+	/**  The key, by key position. */
+	position: number,
+};
+
 /**
  *  What Keywright knows about a keyboard from its support pack, to show before the keyboard
  *  can say anything itself (design §7).
@@ -620,6 +664,8 @@ export type Keymap = {
 	freeLayerSlots: number,
 	/**  The longest layer name, in bytes of UTF-8, for the rename field's counter (LAY-1). */
 	layerNameMax: number,
+	/**  Whether some key the user can reach unlocks the keyboard (SAF-2). */
+	unlockable: boolean,
 	/**  The actions the inspector lists as they are, which the firmware can do. */
 	choices: Choice[],
 	/**  The behaviors Keywright doesn't know, which the inspector edits by their parameters. */
@@ -680,6 +726,8 @@ export type Layer = {
 	reach: Reach[],
 	/**  Whether it's being tried: added, renamed, or with keys that are. */
 	changed: boolean,
+	/**  What's wrong with it (SAF-2): no key turns it on, or there's no way back from it. */
+	warnings: LayerWarning[],
 };
 
 /**  How a layer key turns its layer on. */
@@ -692,6 +740,18 @@ export type LayerMode =
 "toggle" | 
 /**  For the next key only. */
 "next-key";
+
+/**  What's wrong with a layer as the keymap is now (design §5.1). */
+export type LayerWarning = 
+/**  No key can turn it on. */
+{ kind: "unreachable" } | 
+/**
+ *  Once on it, there's no way back to the base layer: these keys switch to it or
+ *  toggle it on, and leave it on.
+ */
+{ kind: "no-way-back"; 
+/**  The keys, to show. */
+keys: KeyRef[] };
 
 /**  A lighting command. */
 export type Lighting = 
