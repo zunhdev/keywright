@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.12 — for review                                                       |
+| **Status**    | Draft v0.13 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -168,10 +168,11 @@ Typing in the toolbar field filters across **all layers**: "copy", "⌘C", "volu
 
 - The canvas dims keys that don't match on the current layer.
 - Each sidebar row shows a match count badge.
-- ↩ / ⇧↩ jump to the next or previous match, switching layers as needed.
+- The field says how many keys match, on all layers ("12 keys", "No keys").
+- ↩ / ⇧↩ jump to the next or previous match, in the layers' order and then the keys', switching layers as needed and going round. The match is selected, focus stays in the field, and VoiceOver hears which match it is ("2 of 12: Left half, row 4, key 4, raise layer. Types Copy.").
 - Esc clears the search.
 
-Search matches the key's sentence, its key name, its Mac action name, and (with _Show ZMK names_ on) the raw binding.
+Search matches the key's sentence, its key name, its Mac action name, and (with _Show ZMK names_ on) the raw binding. It ignores case. A "same as layer below" key matches only on the layer it comes from.
 
 ### 4.7 Keyboard navigation
 
@@ -364,7 +365,7 @@ Following platform convention, it is a **menu**, not a popover:
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Keywright** | About Keywright · Settings… ⌘, · Services · Hide Keywright ⌘H · Hide Others ⌥⌘H · Show All · Quit Keywright ⌘Q                                                                                                                                                     |
 | **File**      | Import… ⌘O · Export… ⇧⌘E · Backups… ⇧⌘B · Update Firmware… · Close Window ⌘W                                                                                                                                                                                       |
-| **Edit**      | Undo ⌘Z · Redo ⇧⌘Z · Copy Action ⌘C · Paste Action ⌘V · Select All Keys ⌘A · Find ⌘F                                                                                                                                                                               |
+| **Edit**      | Undo ⌘Z · Redo ⇧⌘Z · Copy Action ⌘C · Paste Action ⌘V · Select All Keys ⌘A · Find ⌘F. While a text field has focus, such as search, they edit its text: Copy, Paste and Select All, and Undo and Redo of the typing.                                               |
 | **Keyboard**  | Save to Keyboard ⌘S · Review Changes ⇧⌘R · Discard Changes… · Record Shortcut ⌘R · Same as Layer Below · Does Nothing · Restore Stock for Key · Restore Stock Settings… (canvas-only single keys are listed in Help › Keyboard Shortcuts, not as menu equivalents) |
 | **View**      | Show/Hide Layers ⌃⌘S · Show/Hide Inspector ⌥⌘0 · Layer 1–9 ⌘1–⌘9 · Zoom In ⌘= · Zoom Out ⌘− · Actual Size ⌘0 (Zoom In is the + key: the menu shows ⌘=, since Tauri's menus name keys rather than characters)                                                       |
 | **Window**    | Minimize ⌘M · Zoom · Bring All to Front, and the open windows, which macOS adds                                                                                                                                                                                    |
@@ -536,3 +537,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.10    | 2026-10-24 | Inspector (§5.2, §5.4, KEY-43): the action picker is a button with a searchable menu, and the layer modes read as on layer keys: Hold, Switch, Toggle, Next key.                                                                                                                           |
 | 0.11    | 2026-10-24 | Shortcut recorder (§5.3, KEY-48): Record becomes Cancel while recording; Esc with a modifier is recorded; another selection stops recording, and recording shows the key editor; the menus give up their shortcuts meanwhile.                                                              |
 | 0.12    | 2026-10-24 | Mac actions (§5.4, KEY-49): only the presets verified on the Mac's macOS version, and no kind without any; which keys open with Mac actions.                                                                                                                                               |
+| 0.13    | 2026-10-24 | Search (§4.6, §9.6, KEY-44): the count in the field, the order of ↩ and ⇧↩, what VoiceOver hears, inherited keys; Edit's items edit a focused text field's text.                                                                                                                           |

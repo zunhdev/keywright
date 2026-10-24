@@ -1,0 +1,70 @@
+/* The toolbar's search field (design §4.6): ⌕, the text, then ⌘F, or the count and ✕. */
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  box-sizing: border-box;
+  width: 240px;
+  min-width: 140px;
+  height: var(--control-compact);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-control);
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+
+  &:has(input[data-focused]) {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.icon {
+  display: grid;
+  flex: none;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font: var(--type-body);
+  outline: none;
+
+  /* WebKit's own clear button: the field has its own. */
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.shortcut,
+.count {
+  flex: none;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.shortcut {
+  font-family: inherit;
+}
+
+.clear {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-secondary);
+}

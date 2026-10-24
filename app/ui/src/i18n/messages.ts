@@ -8,7 +8,7 @@ import { useLocale } from "react-aria-components";
 import { en } from "./en.ts";
 
 /** A string's key, such as `app.name`. */
-type MessageKey = keyof typeof en;
+export type MessageKey = keyof typeof en;
 
 /**
  * The only locale in v1. The app sets it for the whole UI, React Aria's own strings

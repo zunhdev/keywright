@@ -7,6 +7,7 @@ import { Segment, SegmentedControl } from "../design-system/SegmentedControl.tsx
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { Keycap, type KeycapProps, type KeycapState } from "../features/keyboard-canvas/Keycap.tsx";
+import { KeySearch } from "../features/search/KeySearch.tsx";
 import type { Key, Keycap as KeycapData } from "../ipc/bindings.ts";
 import { domCodes, keyCatalog, macActions, sofleKeymap } from "../test/sofle.ts";
 
@@ -96,26 +97,32 @@ export function Keycaps() {
   );
 }
 
-/** The Sofle's stock keymap on the canvas, unlocked, with its layers to pick from. */
+/**
+ * The Sofle's stock keymap on the canvas, unlocked, with its layers to pick from and the
+ * toolbar's search.
+ */
 export function Sofle() {
   const layer = useStore(shownLayer);
   const showLayer = useStore((store) => store.showLayer);
   return (
     <>
-      <SegmentedControl
-        aria-label="Layer"
-        selectedKeys={layer === null ? [] : [String(layer.id)]}
-        onSelectionChange={(keys) => {
-          const [id] = keys;
-          if (id !== undefined) showLayer(Number(id));
-        }}
-      >
-        {sofleKeymap.layers.map((each) => (
-          <Segment key={each.id} id={String(each.id)}>
-            {each.name}
-          </Segment>
-        ))}
-      </SegmentedControl>
+      <div className={styles.row}>
+        <SegmentedControl
+          aria-label="Layer"
+          selectedKeys={layer === null ? [] : [String(layer.id)]}
+          onSelectionChange={(keys) => {
+            const [id] = keys;
+            if (id !== undefined) showLayer(Number(id));
+          }}
+        >
+          {sofleKeymap.layers.map((each) => (
+            <Segment key={each.id} id={String(each.id)}>
+              {each.name}
+            </Segment>
+          ))}
+        </SegmentedControl>
+        <KeySearch />
+      </div>
       <div className={styles.window}>
         <div className={styles.board}>
           <KeyboardCanvas />

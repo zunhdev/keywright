@@ -12,6 +12,7 @@ import { useStore } from "../../app/store.ts";
 import { LOCALE, type Messages } from "../../i18n/messages.ts";
 import type { Keymap, Knob, Layer } from "../../ipc/bindings.ts";
 import { focusPicker } from "../inspector/focus.ts";
+import { keyMatches } from "../search/search.ts";
 import { setKeys } from "./edits.ts";
 import { bounds, keySize, place } from "./geometry.ts";
 import { positionOf, useKeyDrag } from "./interactions.ts";
@@ -65,6 +66,8 @@ export function Keyboard({
   const select = useStore((store) => store.select);
   const toggleKey = useStore((store) => store.toggleKey);
   const extendSelection = useStore((store) => store.extendSelection);
+  const search = useStore((store) => store.search);
+  const macActions = useStore((store) => store.macActions);
   const keyboard = useRef<HTMLDivElement>(null);
   const { drag, onPointerDownCapture } = useKeyDrag();
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
@@ -166,6 +169,13 @@ export function Keyboard({
           ].filter((words) => words !== null);
           const dropTarget =
             drag !== null && drag.to === position ? (drag.copy ? "copy" : "swap") : null;
+          // While searching, keys that don't match dim (design §4.6).
+          const found =
+            search.trim() === ""
+              ? null
+              : keyMatches(face, search, macActions)
+                ? "match"
+                : "no-match";
           return (
             // A key's position is what it is: the layout and every layer list keys by it.
             // oxlint-disable-next-line react/no-array-index-key
@@ -192,6 +202,7 @@ export function Keyboard({
                 dragged={drag?.from === position}
                 {...(state === null ? {} : { selected: state })}
                 {...(dropTarget === null ? {} : { dropTarget })}
+                {...(found === null ? {} : { search: found })}
                 style={box}
                 onPress={({ shift, command, enter }) => {
                   if (command) toggleKey(position);

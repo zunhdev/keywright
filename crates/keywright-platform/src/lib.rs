@@ -5,7 +5,7 @@
 //! - key labels for the current input source, and events when it changes;
 //! - detection of UF2 firmware volumes;
 //! - the login item;
-//! - the window's "edited" dot;
+//! - the window's "edited" dot, and the standard text-editing actions;
 //! - where Keywright keeps its files, such as automatic backups (`paths`);
 //! - the macOS version, for the Mac actions verified on it (`system`).
 //!

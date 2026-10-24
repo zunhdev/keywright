@@ -37,7 +37,11 @@ function rustSide(): string[] {
         calls.push(state);
         return null;
       }
-      calls.push(command);
+      calls.push(
+        command === "edit_text" && args !== undefined && "edit" in args
+          ? `edit_text: ${String(args["edit"])}`
+          : command,
+      );
       return null;
     },
     { shouldMockEvents: true },
@@ -85,9 +89,11 @@ describe("with no keymap", () => {
   test("the items for keys, layers and zoom are disabled", async () => {
     const calls = rustSide();
     const stop = await followMenu();
-    for (const item of ["copy-action", "select-all-keys", "zoom-in", "actual-size", "undo"]) {
+    for (const item of ["zoom-in", "actual-size", "undo"]) {
       expect(calls).toContain(`${item} (disabled): null`);
     }
+    expect(calls).toContain("copy-action (disabled): Copy Action");
+    expect(calls).toContain("select-all-keys (disabled): Select All Keys");
     expect(calls).toContain("layer-1 (disabled): Layer 1");
     stop();
   });
@@ -130,16 +136,17 @@ describe("with the Sofle's keymap", () => {
   test("the key items are enabled while keys are selected, and act on them", async () => {
     const { calls, stop } = await readySofle();
     useStore.getState().select([13]);
-    for (const item of ["copy-action", "same-as-layer-below", "does-nothing"]) {
+    for (const item of ["same-as-layer-below", "does-nothing"]) {
       expect(calls).toContain(`${item}: null`);
     }
-    expect(calls).not.toContain("paste-action: null");
+    expect(calls).toContain("copy-action: Copy Action");
+    expect(calls).not.toContain("paste-action: Paste Action");
 
     calls.length = 0;
     await emit("menu://item", "copy-action");
     await Bun.sleep(0);
     expect(calls).toContain("copy_action");
-    expect(calls).toContain("paste-action: null");
+    expect(calls).toContain("paste-action: Paste Action");
 
     await emit("menu://item", "paste-action");
     await emit("menu://item", "same-as-layer-below");
@@ -159,11 +166,41 @@ describe("with the Sofle's keymap", () => {
     await Bun.sleep(0);
     expect(useStore.getState().recording).toBe("key");
     // ⌘S, ⌘C or ⌃⌘S then reach the recorder, not the menus.
-    expect(menu.get("copy-action")).toBe("copy-action (disabled): null");
+    expect(menu.get("copy-action")).toBe("copy-action (disabled): Copy Action");
     expect(menu.get("toggle-layers")).toBe("toggle-layers (disabled): Hide Layers");
     useStore.getState().stopRecording();
     await Bun.sleep(0);
-    expect(menu.get("copy-action")).toBe("copy-action: null");
+    expect(menu.get("copy-action")).toBe("copy-action: Copy Action");
+    stop();
+  });
+
+  test("while a text field has focus, Edit's items edit its text, not keys", async () => {
+    const { calls, stop } = await readySofle();
+    expect(menu.get("find")).toBe("find: null");
+    useStore.setState({ textFocused: true, selection: [13] });
+    await Bun.sleep(0);
+    expect(menu.get("copy-action")).toBe("copy-action: Copy");
+    expect(menu.get("paste-action")).toBe("paste-action: Paste");
+    expect(menu.get("select-all-keys")).toBe("select-all-keys: Select All");
+    expect(menu.get("undo")).toBe("undo: null");
+    calls.length = 0;
+    await emit("menu://item", "undo");
+    await emit("menu://item", "redo");
+    await emit("menu://item", "copy-action");
+    await emit("menu://item", "paste-action");
+    await emit("menu://item", "select-all-keys");
+    expect(calls).toEqual([
+      "edit_text: undo",
+      "edit_text: redo",
+      "edit_text: copy",
+      "edit_text: paste",
+      "edit_text: select-all",
+    ]);
+    expect(useStore.getState().selection).toEqual([13]);
+    useStore.setState({ textFocused: false });
+    await Bun.sleep(0);
+    expect(menu.get("copy-action")).toBe("copy-action: Copy Action");
+    expect(menu.get("undo")).toBe("undo (disabled): null");
     stop();
   });
 
@@ -194,10 +231,11 @@ describe("with the Sofle's keymap", () => {
       selection: [13],
       copied: true,
     });
-    expect(menu.get("copy-action")).toBe("copy-action: null");
-    for (const item of ["same-as-layer-below", "does-nothing", "paste-action", "undo"]) {
+    expect(menu.get("copy-action")).toBe("copy-action: Copy Action");
+    for (const item of ["same-as-layer-below", "does-nothing", "undo"]) {
       expect(menu.get(item)).toBe(`${item} (disabled): null`);
     }
+    expect(menu.get("paste-action")).toBe("paste-action (disabled): Paste Action");
     stop();
   });
 });

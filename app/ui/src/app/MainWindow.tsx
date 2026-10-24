@@ -5,6 +5,7 @@ import { Inspector } from "../features/inspector/Inspector.tsx";
 import { switchLayer } from "../features/keyboard-canvas/edits.ts";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { LayerName } from "../features/keyboard-canvas/Keycap.tsx";
+import { findKeys } from "../features/search/search.ts";
 import { useMessages } from "../i18n/messages.ts";
 import type { Layer } from "../ipc/bindings.ts";
 import { inspectorPlacement } from "./layout.ts";
@@ -46,6 +47,11 @@ export function MainWindow() {
   const panels = useStore((store) => store.panels);
   const paneWidths = useStore((store) => store.paneWidths);
   const fitWindow = useStore((store) => store.fitWindow);
+  const keymap = useStore((store) => store.keymap);
+  const search = useStore((store) => store.search);
+  const macActions = useStore((store) => store.macActions);
+  const found =
+    keymap === null || search.trim() === "" ? null : findKeys(keymap, search, macActions);
   useEffect(() => {
     fitWindow(width, keyboard);
   }, [width, keyboard, fitWindow]);
@@ -66,6 +72,8 @@ export function MainWindow() {
           <List
             aria-label={messages.format("layers.title")}
             items={layers}
+            // The rows show the search's counts, which aren't in the layers themselves.
+            dependencies={[found]}
             selectionMode="single"
             disallowEmptySelection
             selectedKeys={shown === null ? [] : [shown.id]}
@@ -77,11 +85,26 @@ export function MainWindow() {
               <p className={styles.empty}>{messages.format("layers.empty")}</p>
             )}
           >
-            {(layer) => (
-              <ListItem id={layer.id} textValue={layer.name}>
-                <LayerName id={layer.id} name={layer.name} />
-              </ListItem>
-            )}
+            {(layer) => {
+              const count = found?.get(layer.id)?.length;
+              return (
+                <ListItem id={layer.id} textValue={layer.name}>
+                  <span className={styles.layerRow}>
+                    <LayerName id={layer.id} name={layer.name} />
+                    {/* While searching, each layer says how many keys it found (design §4.6). */}
+                    {count === undefined ? null : (
+                      <span
+                        className={styles.matches}
+                        data-none={count === 0 || undefined}
+                        aria-label={messages.format("layers.matches", { count })}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </span>
+                </ListItem>
+              );
+            }}
           </List>
           <Splitter panel="layers" />
         </aside>
