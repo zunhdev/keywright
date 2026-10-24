@@ -28,6 +28,12 @@ export interface SessionSlice {
   readonly battery: BatteryStatus | null;
   /** What macOS says about Keywright using Bluetooth, or `null` until it's been read. */
   readonly bluetoothPermission: BluetoothPermission | null;
+  /**
+   * Where the window's traffic lights end, in px from its left, for the toolbar to start
+   * after them (design §3.1): `null` while macOS hides them, as in full screen, and
+   * `undefined` until the Rust side has said.
+   */
+  readonly trafficLights: number | null | undefined;
   /** Every key ZMK names, for the inspector's key popup, once loaded. */
   readonly keyCatalog: readonly KeyEntry[];
   /** The key behind each `KeyboardEvent.code`, for the shortcut recorder, once loaded. */
@@ -134,6 +140,7 @@ const sessionSlice: StateCreator<Store, [], [], SessionSlice> = () => ({
   keymap: null,
   battery: null,
   bluetoothPermission: null,
+  trafficLights: undefined,
   keyCatalog: [],
   domCodes: [],
   macActions: [],

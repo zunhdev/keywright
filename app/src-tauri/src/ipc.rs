@@ -33,6 +33,7 @@ mod quit;
 mod review;
 mod session;
 mod stock;
+mod window;
 
 use std::sync::Mutex;
 
@@ -48,6 +49,7 @@ pub use self::quit::{QuitGuard, QuitRequested};
 pub use self::session::{
     SessionState, SessionStateChanged, SessionStatus, Transport, Update, follow,
 };
+pub use self::window::{TrafficLights, TrafficLightsMoved, follow as follow_traffic_lights};
 
 /// What the commands share.
 pub struct AppState {
@@ -114,14 +116,16 @@ pub fn builder() -> Builder<tauri::Wry> {
             quit::quit_now,
             stock::restore_stock_keys,
             stock::restore_stock_layer,
-            stock::restore_stock_settings
+            stock::restore_stock_settings,
+            window::traffic_lights
         ])
         .events(collect_events![
             SessionStateChanged,
             BatteryChanged,
             KeymapChanged,
             MenuItemChosen,
-            QuitRequested
+            QuitRequested,
+            TrafficLightsMoved
         ])
 }
 

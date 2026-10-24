@@ -363,6 +363,11 @@ character: string } | null>("layer_name_problem", { name }),
 	 *  nothing changes, or the keyboard doesn't reset.
 	 */
 	restoreStockSettings: () => typedError<null, AppError>(__TAURI_INVOKE("restore_stock_settings")),
+	/**
+	 *  Where the main window's traffic lights end, in points from its left edge, or `null`
+	 *  while they're hidden, as in full screen.
+	 */
+	trafficLights: () => __TAURI_INVOKE<number | null>("traffic_lights"),
 };
 
 /** Events */
@@ -372,6 +377,7 @@ export const events = {
 	sessionBattery: makeEvent<BatteryChanged>("session://battery"),
 	sessionKeymap: makeEvent<KeymapChanged>("session://keymap"),
 	sessionState: makeEvent<SessionStateChanged>("session://state"),
+	windowTrafficLights: makeEvent<TrafficLightsMoved>("window://traffic-lights"),
 };
 
 /* Types */
@@ -1234,6 +1240,12 @@ export type TextEdit =
 "paste" | 
 /**  Select All (⌘A). */
 "select-all";
+
+/**
+ *  `window://traffic-lights`: where the main window's traffic lights end moved, in points
+ *  from its left edge, or they're hidden (`null`).
+ */
+export type TrafficLightsMoved = number | null;
 
 /**  How the session reaches the keyboard. */
 export type Transport = 

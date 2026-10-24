@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.23 — for review                                                       |
+| **Status**    | Draft v0.24 — for review                                                       |
 | **Date**      | 2026-10-25                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -83,12 +83,12 @@ This document defines how Keywright looks, reads and behaves for v1.0: informati
 ├──────────────┴─────────────────────────────────────────────────┴──────────────────┤
 ```
 
-| Region            | Width                      | Behaviour                                                                                                                                      |
-| ----------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Toolbar**       | full, 52 px high           | Keyboard name, connection chip, search, changes button, Save. It is the window's drag area, and holds the window's traffic lights on its left. |
-| **Layer sidebar** | 220 px (180–280 resizable) | Collapsible (⌃⌘S). Collapses automatically when the window is narrower than 1100 px.                                                           |
-| **Canvas**        | flexible                   | Shows the selected layer's name and the keyboard, scaled to fit. Zoom with ⌘+ / ⌘− / ⌘0.                                                       |
-| **Inspector**     | 320 px (300–400 resizable) | Collapsible (⌥⌘0). Always shows something: the selected key, or the layer overview.                                                            |
+| Region            | Width                      | Behaviour                                                                                                                                                                                                                                                        |
+| ----------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Toolbar**       | full, 52 px high           | Keyboard name, connection chip, search, changes button, Save. It is the window's drag area, and holds the window's traffic lights on its left; the name starts 16 px after them. In full screen, where macOS hides them, it starts at the toolbar's usual 12 px. |
+| **Layer sidebar** | 220 px (180–280 resizable) | Collapsible (⌃⌘S). Collapses automatically when the window is narrower than 1100 px.                                                                                                                                                                             |
+| **Canvas**        | flexible                   | Shows the selected layer's name and the keyboard, scaled to fit. Zoom with ⌘+ / ⌘− / ⌘0.                                                                                                                                                                         |
+| **Inspector**     | 320 px (300–400 resizable) | Collapsible (⌥⌘0). Always shows something: the selected key, or the layer overview.                                                                                                                                                                              |
 
 **The layer sidebar's rows** (LAY-1–LAY-6) show the layer's colour and name, a changed dot (•) while it's being tried, how it's reached (the first way, such as "Hold lower"; the layer overview lists them all, with where each key is), and while searching, its match count.
 
@@ -571,3 +571,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.21    | 2026-10-24 | Connection chip (§3.2, KEY-56): its details give each half's battery, so the window shows it without the menu bar item.                                                                                                                                                                    |
 | 0.22    | 2026-10-25 | Connection states (§7, §8, KEY-101): a silent cable's card offers Bluetooth while Keywright may not use it.                                                                                                                                                                                |
 | 0.23    | 2026-10-25 | Review sheet (§6, KEY-102): as wide as its rows need within the window; columns sized to their content, long texts truncated with a tooltip; the rows scroll and the footer shows whole.                                                                                                   |
+| 0.24    | 2026-10-25 | Toolbar (§3.1, KEY-103): the name starts 16 px after the traffic lights, measured where macOS draws them, and at the usual inset in full screen.                                                                                                                                           |
