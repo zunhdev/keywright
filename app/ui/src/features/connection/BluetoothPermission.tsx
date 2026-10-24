@@ -3,6 +3,12 @@ import { Button } from "../../design-system/Button.tsx";
 import { useMessages } from "../../i18n/messages.ts";
 import { allowBluetooth, openBluetoothSettings } from "../../ipc/bluetooth.ts";
 
+/** Whether Keywright may not use Bluetooth, so the permission has something to say. */
+export const useBluetoothBarred = () =>
+  useStore(
+    (store) => store.bluetoothPermission !== null && store.bluetoothPermission !== "allowed",
+  );
+
 /**
  * What Keywright may do with Bluetooth, and how to change it (CON-6, design §8): asked for
  * in context, after one line saying why; if refused, how to allow it later. Nothing while

@@ -11,6 +11,7 @@ declare const classes: {
   readonly key: string;
   readonly mark: string;
   readonly number: string;
+  readonly permission: string;
   readonly placeholder: string;
   readonly progress: string;
   readonly progressBar: string;

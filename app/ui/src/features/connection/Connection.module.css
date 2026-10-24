@@ -225,3 +225,12 @@
     margin: 0;
   }
 }
+
+/* A silent cable's card offers Bluetooth: one line saying why, then the button. */
+.permission {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+}

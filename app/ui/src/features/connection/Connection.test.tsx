@@ -1,77 +1,13 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 
-import { mockIPC } from "@tauri-apps/api/mocks";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { I18nProvider } from "react-aria-components";
 
 import { useStore } from "../../app/store.ts";
 import { toasts } from "../../design-system/Toast.tsx";
-import { LOCALE } from "../../i18n/messages.ts";
-import type { SessionState, SessionStatus } from "../../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
-import { sofleGuide, sofleKeymap } from "../../test/sofle.ts";
-import { KeyboardCanvas } from "../keyboard-canvas/KeyboardCanvas.tsx";
-import { followConnection } from "./follow.ts";
-import { silence } from "./StateCard.tsx";
-import { UnlockSheet } from "./UnlockSheet.tsx";
-
-/** How long a silent port gets before its card shows, as the app has it. */
-const SILENCE_GRACE = silence.grace;
-
-/** Fakes the Rust side: answers `keyboard_guide` with the Sofle's, and records commands. */
-function rustSide(): string[] {
-  const calls: string[] = [];
-  mockIPC((command, args) => {
-    if (command === "keyboard_guide") {
-      const pack = args !== undefined && "pack" in args ? args["pack"] : null;
-      return pack === null || pack === "keebart-sofle-choc-pro-bt" ? sofleGuide : null;
-    }
-    calls.push(command);
-    return null;
-  });
-  return calls;
-}
-
-/** The Sofle over USB, in `state`. */
-function sofle(
-  state: SessionState,
-  changes = 0,
-  pack: string | null = "keebart-sofle-choc-pro-bt",
-): SessionStatus {
-  return {
-    state,
-    keyboard: "Sofle Choc BT",
-    pack,
-    transport: "usb",
-    changes,
-    canUndo: false,
-    canRedo: false,
-    undo: null,
-    redo: null,
-  };
-}
-
-/** Moves the session to `status`, as the Rust side reports it. */
-function report(status: SessionStatus | null) {
-  act(() => {
-    useStore.setState({ session: status });
-  });
-}
-
-/** Draws the canvas and the unlock sheet, following the session as the window does. */
-function drawWindow(status: SessionStatus | null) {
-  const calls = rustSide();
-  const stop = followConnection();
-  useStore.setState({ session: status });
-  const view = render(
-    <I18nProvider locale={LOCALE}>
-      <KeyboardCanvas />
-      <UnlockSheet />
-    </I18nProvider>,
-  );
-  return { calls, stop, ...view };
-}
+import { drawWindow, report, sofle } from "../../test/connection.tsx";
+import { sofleKeymap } from "../../test/sofle.ts";
 
 describe("with no keyboard", () => {
   test("shows the Sofle in outline, and how to connect it by cable or Bluetooth", async () => {
@@ -189,95 +125,6 @@ describe("once it could be edited", () => {
       "Now connected over Bluetooth. Unlock again to continue.",
     );
     for (const toast of toasts.visibleToasts) toasts.close(toast.key);
-    stop();
-  });
-});
-
-describe("a card says what's wrong, and what to do", () => {
-  // A silent port gets a moment before its card shows; these tests don't wait it out.
-  beforeEach(() => {
-    silence.grace = 0;
-  });
-  afterEach(() => {
-    silence.grace = SILENCE_GRACE;
-  });
-
-  test("for a silent port, only after a moment: a keyboard plugged back in may answer", async () => {
-    silence.grace = 300;
-    const { container, stop } = drawWindow(sofle({ kind: "no-live-editing" }));
-    expect(screen.queryByText(/live editing/u)).toBeNull();
-    await waitFor(() => {
-      expect(container.querySelector("[data-skeleton]")).not.toBeNull();
-    });
-    // It answers, locked, before the moment is up: no card ever shows.
-    report(sofle({ kind: "locked" }));
-    await new Promise((resolve) => {
-      setTimeout(resolve, 400);
-    });
-    expect(screen.queryByText(/live editing/u)).toBeNull();
-    report(sofle({ kind: "no-live-editing" }));
-    expect(await screen.findByText(/doesn't offer live editing/u)).toBeDefined();
-    stop();
-  });
-
-  test("the wrong half, and Try Again", async () => {
-    const { calls, stop } = drawWindow(sofle({ kind: "wrong-half" }));
-    expect(
-      await screen.findByText(
-        "This looks like the right half. Keywright talks to the left half; plug the cable in there.",
-      ),
-    ).toBeDefined();
-    await userEvent.click(screen.getByRole("button", { name: "Try Again" }));
-    expect(calls).toEqual(["session_retry"]);
-    stop();
-  });
-
-  test("the wrong half of a keyboard without a pack", async () => {
-    const { stop } = drawWindow(sofle({ kind: "wrong-half" }, 0, null));
-    expect(await screen.findByText(/the other half of your keyboard/u)).toBeDefined();
-    stop();
-  });
-
-  test("no live editing: firmware without it, or a keyboard typing over Bluetooth", async () => {
-    const { stop } = drawWindow(sofle({ kind: "no-live-editing" }));
-    expect(
-      await screen.findByText(/doesn't offer live editing over this connection/u),
-    ).toBeDefined();
-    act(() => {
-      useStore.setState({ keymap: sofleKeymap });
-    });
-    expect(screen.getByText(/typing over Bluetooth/u)).toBeDefined();
-    stop();
-  });
-
-  test("incompatible firmware", () => {
-    const { stop } = drawWindow(
-      sofle({ kind: "incompatible", problem: "no-answer", request: "get_keymap" }),
-    );
-    expect(screen.getByText(/not the way Keywright expects/u)).toBeDefined();
-    stop();
-  });
-
-  test("changes a restart lost: Re-apply or Discard", async () => {
-    const { calls, stop } = drawWindow(sofle({ kind: "changes-lost" }, 3));
-    act(() => {
-      useStore.setState({ keymap: sofleKeymap });
-    });
-    expect(screen.getByText("Your keyboard restarted and forgot 3 unsaved changes.")).toBeDefined();
-    await userEvent.click(screen.getByRole("button", { name: "Re-apply" }));
-    await userEvent.click(screen.getByRole("button", { name: "Discard" }));
-    expect(calls).toEqual(["reapply_changes", "discard_changes"]);
-    stop();
-  });
-
-  test("changes the keyboard had before: Keep Them or Discard", async () => {
-    const { calls, stop } = drawWindow(sofle({ kind: "unsaved-changes" }));
-    expect(
-      screen.getByText(/changes that weren't saved, from before Keywright connected/u),
-    ).toBeDefined();
-    await userEvent.click(screen.getByRole("button", { name: "Keep Them" }));
-    await userEvent.click(screen.getByRole("button", { name: "Discard" }));
-    expect(calls).toEqual(["keep_unsaved_changes", "discard_unsaved_changes"]);
     stop();
   });
 });

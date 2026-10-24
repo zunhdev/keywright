@@ -2,8 +2,8 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.21 — for review                                                       |
-| **Date**      | 2026-10-24                                                                     |
+| **Status**    | Draft v0.22 — for review                                                       |
+| **Date**      | 2026-10-25                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
 | **Companion** | [Tech spec](tech-spec.md)                                                      |
@@ -308,6 +308,7 @@ If a change would remove the last _Unlock editing_ key, strand a layer, or trap 
 - The unlock sheet opens when a keyboard connects locked. A keyboard that locks itself after it could be edited gets the banner instead, whose _Unlock…_ opens the sheet; so does the connection chip's.
 - The wrong-half and other-connection cards wait 3 seconds before they show, over the dimmed keyboard or the skeleton. A keyboard plugged back in while Bluetooth is on types over Bluetooth for a moment, then switches to the cable and locks: that shouldn't flash a card.
 - The cards for the wrong half, the other connection, no live editing and incompatible firmware have _Try Again_, once the cable is in the right half or the output is switched. "Talking over the other connection" is a keyboard that stopped answering after it could be edited; one that never answered gets the no-live-editing card.
+- A silent cable may mean the keyboard talks over Bluetooth instead, so while Keywright may not use Bluetooth, the cards for the wrong half, the other connection and no live editing also offer it, as the no-keyboard screen does (§8, CON-6). Not asked yet, one line says why, then _Allow Bluetooth…_; refused, _Open System Settings_. Once it's allowed, the line goes, and the keyboard connects over Bluetooth if it's there.
 - The no-keyboard outline and the unlock sheet's board are drawn from the support pack's layout; with no keyboard, it's the keyboard Keywright knows best. _Explore without a keyboard_ starts demo mode (DEV-6): a simulated Sofle, unlocked, on which everything works and saving changes only it. The toolbar labels it "Demo keyboard" beside its name, the chip reads "Demo · Unlocked", and the chip's details offer _Leave Demo_, after which a keyboard on USB connects.
 
 ---
@@ -322,7 +323,7 @@ The first run shows once, on first connect. Every step has _Skip_, and Help › 
 4. **Try it.** A coach mark points at the Tab-position key: "Click a key, then press any shortcut to put it there." After the first change, a second coach mark points at Save: "Changes work right away. Save to keep them when your keyboard restarts or sleeps."
 5. **Menu bar** (BAR-1, resolves product Q4). A sheet reads: "Show your keyboard's battery in the menu bar?" with a pre-checked box. If it stays on, closing the window keeps Keywright in the menu bar; if off, closing the window quits the app. It also states: "Your keyboard reports the left half's battery over Bluetooth only."
 
-macOS's Bluetooth permission is requested **in context**: the first time the user chooses _Use Bluetooth_, or when a paired keyboard is detected over USB and the user enables Bluetooth editing. It is preceded by a one-line explanation (CON-6).
+macOS's Bluetooth permission is requested **in context**: the first time the user chooses _Use Bluetooth_, or when a paired keyboard is detected over USB and the user enables Bluetooth editing: from the connection chip's details, or a silent cable's card (§7). It is preceded by a one-line explanation (CON-6).
 
 ---
 
@@ -566,3 +567,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.19    | 2026-10-24 | Restore stock (§5.2, KEY-52): when it's offered for keys and layers, and the words of the whole keyboard's confirmation.                                                                                                                                                                   |
 | 0.20    | 2026-10-24 | Connection states (§7): a silent port's card waits 3 seconds, since a keyboard plugged back in with Bluetooth on is silent for a moment.                                                                                                                                                   |
 | 0.21    | 2026-10-24 | Connection chip (§3.2, KEY-56): its details give each half's battery, so the window shows it without the menu bar item.                                                                                                                                                                    |
+| 0.22    | 2026-10-25 | Connection states (§7, §8, KEY-101): a silent cable's card offers Bluetooth while Keywright may not use it.                                                                                                                                                                                |
