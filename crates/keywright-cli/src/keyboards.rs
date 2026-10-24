@@ -2,8 +2,9 @@
 //!
 //! The CLI connects a session to every ZMK keyboard's USB port, and each session works out
 //! what's there: a keyboard, locked or not, the half of a split keyboard that doesn't talk
-//! to the computer, or firmware without live editing. Bluetooth comes with transport
-//! selection (tech spec §6.3).
+//! to the computer, or firmware without live editing. A keyboard serves Studio only over
+//! its output, USB or Bluetooth (tech spec §6.3), so if no port answers, the CLI connects
+//! to the keyboards macOS has connected over Bluetooth too.
 //!
 //! With `KEYWRIGHT_SIMULATOR` set, the CLI uses a simulated keyboard instead, as its tests
 //! do: see [`Scenario`]. Automatic backups then go to `KEYWRIGHT_BACKUPS_DIR`, or nowhere,
@@ -16,6 +17,7 @@ use std::time::Duration;
 use keywright_core::behavior::BehaviorTable;
 use keywright_core::editor::Editor;
 use keywright_core::keymap::Keymap;
+use keywright_device::bluetooth::Bluetooth;
 use keywright_device::usb;
 use keywright_device::{Backups, Connection, Peer, Session, SessionError, Snapshot, State};
 use keywright_sim::Simulator;
@@ -61,8 +63,8 @@ pub(crate) enum Changes {
 /// Where the CLI finds keyboards.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Source {
-    /// Every ZMK keyboard's USB port.
-    Usb,
+    /// The keyboards connected to this Mac, by USB or Bluetooth.
+    Connected,
     /// A simulated keyboard.
     Simulator(Scenario),
 }
@@ -102,21 +104,43 @@ pub(crate) enum Link {
         /// The port's path, such as `/dev/cu.usbmodem101`.
         port: String,
     },
+    /// Bluetooth.
+    Bluetooth {
+        /// The name macOS has for it, such as `Sofle Choc Pro`.
+        name: Option<String>,
+        /// macOS's identifier for it, a UUID.
+        id: String,
+    },
     /// A simulated keyboard.
     Simulated,
 }
 
-/// What the CLI found on one port.
+/// What the CLI found on one port, or over Bluetooth.
 pub(crate) enum Found {
     /// A keyboard, with a session that has worked out what it is.
     Keyboard(Box<Keyboard>),
-    /// A port the CLI couldn't open, such as one Keywright's app is using.
+    /// A keyboard the CLI couldn't connect to, such as one whose port Keywright's app is
+    /// using.
     Unavailable {
-        /// The port's path.
-        port: String,
-        /// Why not.
+        /// How the CLI tried to reach it.
+        link: Link,
+        /// Why it couldn't.
         error: String,
     },
+}
+
+impl Found {
+    /// Whether a keyboard answered here. Only one that doesn't may be talking over the
+    /// other transport.
+    fn answered(&self) -> bool {
+        match self {
+            Self::Keyboard(keyboard) => !matches!(
+                keyboard.snapshot.state,
+                State::WrongHalf | State::NoLiveEditing
+            ),
+            Self::Unavailable { .. } => false,
+        }
+    }
 }
 
 /// A keyboard with a session connected to it.
@@ -132,14 +156,14 @@ pub(crate) struct Keyboard {
 }
 
 impl Source {
-    /// USB, unless `KEYWRIGHT_SIMULATOR` names a simulated keyboard.
+    /// The keyboards connected, unless `KEYWRIGHT_SIMULATOR` names a simulated keyboard.
     ///
     /// # Errors
     ///
     /// Fails if the variable names no [`Scenario`].
     pub(crate) fn from_env() -> Result<Self, Failure> {
         let Some(name) = env::var_os(SIMULATOR) else {
-            return Ok(Self::Usb);
+            return Ok(Self::Connected);
         };
         Scenario::ALL
             .iter()
@@ -158,13 +182,14 @@ impl Source {
             return Some(dir.into());
         }
         match self {
-            Self::Usb => keywright_platform::paths::backups_dir(),
+            Self::Connected => keywright_platform::paths::backups_dir(),
             Self::Simulator(_) => None,
         }
     }
 
     /// Connects a session to every keyboard, and waits until each has worked out what it
-    /// is. Sessions keep automatic backups in `backups`, if given.
+    /// is: the keyboards on USB, then, if none answers there, those on Bluetooth. Sessions
+    /// keep automatic backups in `backups`, if given.
     ///
     /// # Errors
     ///
@@ -178,7 +203,13 @@ impl Source {
             None => Session::start(),
         };
         let scenario = match self {
-            Self::Usb => return connect_usb(session).await,
+            Self::Connected => {
+                let mut found = connect_usb(&session).await?;
+                if !found.iter().any(Found::answered) {
+                    found.extend(connect_bluetooth(&session).await?);
+                }
+                return Ok(found);
+            }
             Self::Simulator(scenario) => scenario,
         };
         let simulator = Simulator::sofle().map_err(|error| {
@@ -206,7 +237,7 @@ impl Source {
 }
 
 /// Connects a session to each ZMK keyboard's USB port.
-async fn connect_usb(session: impl Fn() -> Session) -> Result<Vec<Found>, Failure> {
+async fn connect_usb(session: &impl Fn() -> Session) -> Result<Vec<Found>, Failure> {
     let ports = usb::ports().map_err(|error| {
         Failure::new(
             Kind::NoKeyboard,
@@ -224,7 +255,35 @@ async fn connect_usb(session: impl Fn() -> Session) -> Result<Vec<Found>, Failur
                 found.push(Found::Keyboard(Box::new(keyboard)));
             }
             Err(error) => found.push(Found::Unavailable {
-                port: port.path.clone(),
+                link,
+                error: error.to_string(),
+            }),
+        }
+    }
+    Ok(found)
+}
+
+/// Connects a session to each keyboard macOS has connected over Bluetooth. With Bluetooth
+/// off, or not allowed for this program, there are none.
+async fn connect_bluetooth(session: &impl Fn() -> Session) -> Result<Vec<Found>, Failure> {
+    let Ok(bluetooth) = Bluetooth::open().await else {
+        return Ok(Vec::new());
+    };
+    // CoreBluetooth that fails to list them may as well have none.
+    let keyboards = bluetooth.keyboards().await.unwrap_or_default();
+    let mut found = Vec::with_capacity(keyboards.len());
+    for keyboard in keyboards {
+        let link = Link::Bluetooth {
+            name: keyboard.name.clone(),
+            id: keyboard.id.clone(),
+        };
+        match Connection::bluetooth(&keyboard).await {
+            Ok(connection) => {
+                let keyboard = connect(session(), connection, link).await?;
+                found.push(Found::Keyboard(Box::new(keyboard)));
+            }
+            Err(error) => found.push(Found::Unavailable {
+                link,
                 error: error.to_string(),
             }),
         }
@@ -385,8 +444,8 @@ fn only_keyboard(found: Vec<Found>) -> Result<Keyboard, Failure> {
                 None => keyboards.push(*keyboard),
                 Some(problem) => problems.push(problem),
             },
-            Found::Unavailable { port, error } => {
-                problems.push((Kind::NoKeyboard, words::unavailable(&port, &error)));
+            Found::Unavailable { link, error } => {
+                problems.push((Kind::NoKeyboard, words::unavailable(&link, &error)));
             }
         }
     }

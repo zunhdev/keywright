@@ -565,6 +565,72 @@ mod timeouts {
         assert_eq!(Instant::now() - start, timeout);
     }
 
+    /// Over Bluetooth, the keymap arrives 27 bytes at a time, for about 2 s (spike S2).
+    #[tokio::test(start_paused = true)]
+    async fn a_reply_that_is_still_arriving_doesnt_time_out() {
+        let (client, mut keyboard) = connect();
+        let start = Instant::now();
+        // Each byte comes within the timeout of the one before.
+        let gap = Duration::from_millis(1500);
+        let _keyboard = tokio::spawn(async move {
+            let request = keyboard.next_request().await;
+            let reply = message(&DeviceMessage::Response {
+                request_id: request.request_id,
+                response: lock_state(LockState::Unlocked),
+            });
+            for byte in reply {
+                tokio::time::sleep(gap).await;
+                keyboard.send(&[byte]);
+            }
+            keyboard
+        });
+        assert_eq!(client.get_lock_state().await.unwrap(), LockState::Unlocked);
+        assert!(Instant::now() - start > REQUEST_TIMEOUT * 2);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_reply_that_stops_arriving_times_out_after_its_last_bytes() {
+        let (client, mut keyboard) = connect();
+        let start = Instant::now();
+        let gap = Duration::from_millis(1500);
+        let _keyboard = tokio::spawn(async move {
+            let request = keyboard.next_request().await;
+            let reply = message(&DeviceMessage::Response {
+                request_id: request.request_id,
+                response: lock_state(LockState::Unlocked),
+            });
+            tokio::time::sleep(gap).await;
+            keyboard.send(&reply[..2]);
+            keyboard
+        });
+        assert!(matches!(
+            client.get_lock_state().await,
+            Err(RpcError::Timeout(REQUEST_TIMEOUT))
+        ));
+        assert_eq!(Instant::now() - start, gap + REQUEST_TIMEOUT);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_reply_that_never_ends_times_out_after_a_minute() {
+        let (client, mut keyboard) = connect();
+        let start = Instant::now();
+        let _keyboard = tokio::spawn(async move {
+            keyboard.next_request().await;
+            // Bytes outside any frame, every second, for ever.
+            loop {
+                tokio::time::sleep(Duration::from_secs(1)).await;
+                if keyboard.to_client.send(vec![0x01]).is_err() {
+                    break;
+                }
+            }
+        });
+        assert!(matches!(
+            client.get_lock_state().await,
+            Err(RpcError::Timeout(REQUEST_TIMEOUT))
+        ));
+        assert_eq!(Instant::now() - start, MAX_REPLY_TIME);
+    }
+
     /// A transport whose writes never finish, and which never receives anything.
     struct Stuck;
 

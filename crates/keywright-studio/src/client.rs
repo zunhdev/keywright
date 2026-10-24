@@ -10,7 +10,10 @@
 //!   takes at most one byte. A response with any other ID, such as a late answer to a
 //!   request that timed out, is logged and dropped.
 //! - Every request has a timeout: [`REQUEST_TIMEOUT`], or [`PROBE_TIMEOUT`] for
-//!   [`Client::probe`]. ZMK drops requests it can't decode without answering.
+//!   [`Client::probe`]. ZMK drops requests it can't decode without answering. The timeout
+//!   counts from the last bytes received, so a reply that is still arriving doesn't time
+//!   out: over Bluetooth, the keymap takes about 2 s (spike S2). No reply may take longer
+//!   than [`MAX_REPLY_TIME`] in all.
 //! - **ZMK v0.3's receive bugs** (spike S1). Its receive buffer holds 30 bytes, so the
 //!   client sends no frame longer than [`MAX_FRAME_LEN`]. A frame that lost bytes would
 //!   take the next request with it, so after a timeout the client sends a lone `EOF`,
@@ -54,8 +57,14 @@ use crate::message::{
 };
 use crate::transport::{Transport, TransportError, TransportKind};
 
-/// How long a request waits for its response, unless it says otherwise.
+/// How long a request waits for its response, unless it says otherwise. The wait starts
+/// again with every chunk of bytes received.
 pub const REQUEST_TIMEOUT: Duration = Duration::from_secs(2);
+
+/// The longest a reply may take in all, however steadily its bytes arrive, so a keyboard
+/// that never stops sending can't hold the queue forever. Over Bluetooth, the keyboard
+/// sends about 0.8 KB/s (spike S2), so this is time for a keymap many times the Sofle's.
+pub const MAX_REPLY_TIME: Duration = Duration::from_secs(60);
 
 /// How long [`Client::probe`] waits. A keyboard that serves Studio on this transport
 /// answers quickly. A silent one may be the half that isn't connected to the computer, or
@@ -220,7 +229,8 @@ impl Client {
         self.request_with_timeout(request, REQUEST_TIMEOUT).await
     }
 
-    /// Sends a request, and waits up to `timeout` for its response.
+    /// Sends a request, and waits up to `timeout` for its response, counted from the last
+    /// bytes received.
     ///
     /// # Errors
     ///
@@ -663,9 +673,7 @@ impl<T: Transport> Connection<T> {
             self.next_request_id = next_request_id(message.request_id);
             // The caller may stop waiting now, but the request is on its way, so the task
             // still waits for its response before sending the next one.
-            let exchanged = self
-                .exchange(message.request_id, &frame, Instant::now() + timeout)
-                .await;
+            let exchanged = self.exchange(message.request_id, &frame, timeout).await;
             match exchanged {
                 Ok(Some(response)) => {
                     self.shape.update(&message.request, &response);
@@ -713,14 +721,17 @@ impl<T: Transport> Connection<T> {
         sent
     }
 
-    /// Sends a request's frame, and waits until `deadline` for the response with its ID.
-    /// Returns `None` if the deadline passes first.
+    /// Sends a request's frame, and waits for the response with its ID: up to `timeout`
+    /// after sending, then up to `timeout` after each chunk received, and never longer than
+    /// [`MAX_REPLY_TIME`] in all. Returns `None` if it doesn't come in time.
     async fn exchange(
         &mut self,
         request_id: u32,
         frame: &[u8],
-        deadline: Instant,
+        timeout: Duration,
     ) -> Result<Option<Response>, TransportError> {
+        let start = Instant::now();
+        let mut deadline = start + timeout;
         match timeout_at(deadline, self.transport.send(frame)).await {
             Ok(sent) => sent?,
             Err(_) => return Ok(None),
@@ -733,6 +744,8 @@ impl<T: Transport> Connection<T> {
             if let Some(response) = self.read(&chunk, Some(request_id)) {
                 return Ok(Some(response));
             }
+            // The reply may be on its way, a chunk at a time.
+            deadline = (Instant::now() + timeout).min(start + MAX_REPLY_TIME);
         }
     }
 

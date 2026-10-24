@@ -72,16 +72,16 @@ pub(crate) async fn run(source: Source, json: bool) -> Result<Exit, Failure> {
 fn status(found: &Found) -> (Status, Option<Kind>) {
     let keyboard = match found {
         Found::Keyboard(keyboard) => keyboard,
-        Found::Unavailable { port, error } => {
+        Found::Unavailable { link, error } => {
             let status = Status {
                 name: None,
                 model: None,
-                connection: Link::Usb { port: port.clone() },
+                connection: link.clone(),
                 state: "unavailable",
                 changes: None,
                 battery: None,
                 unlock: None,
-                problem: Some(words::unavailable(port, error)),
+                problem: Some(words::unavailable(link, error)),
             };
             return (status, Some(Kind::NoKeyboard));
         }
@@ -123,12 +123,17 @@ fn text(status: &Status) -> String {
         .clone()
         .unwrap_or_else(|| match &status.connection {
             Link::Usb { port } => format!("Keyboard on {port}"),
+            Link::Bluetooth {
+                name: Some(name), ..
+            } => name.clone(),
+            Link::Bluetooth { name: None, .. } => "Keyboard on Bluetooth".to_owned(),
             Link::Simulated => "Simulated keyboard".to_owned(),
         });
     let mut lines = vec![(
         "Connection",
         match &status.connection {
             Link::Usb { port } => format!("USB, {port}"),
+            Link::Bluetooth { .. } => "Bluetooth".to_owned(),
             Link::Simulated => "Simulated".to_owned(),
         },
     )];
@@ -149,7 +154,7 @@ fn text(status: &Status) -> String {
         };
         let battery = match status.connection {
             Link::Usb { .. } => "Not reported over USB",
-            Link::Simulated => "Not reported",
+            Link::Bluetooth { .. } | Link::Simulated => "Not reported",
         };
         lines.extend([
             ("Lock", lock),
@@ -199,9 +204,46 @@ mod tests {
     }
 
     #[test]
+    fn a_keyboard_on_bluetooth_says_so() {
+        let status = Status {
+            connection: Link::Bluetooth {
+                name: Some("Sofle Choc Pro".to_owned()),
+                id: "6F1C5D2A-0000-4000-8000-000000000000".to_owned(),
+            },
+            ..unlocked(Changes::Saved)
+        };
+        assert!(
+            text(&status).contains("\n  Connection  Bluetooth\n"),
+            "{}",
+            text(&status)
+        );
+    }
+
+    #[test]
+    fn a_keyboard_on_bluetooth_that_cant_be_connected_is_named_by_macos_name() {
+        let (status, kind) = status(&Found::Unavailable {
+            link: Link::Bluetooth {
+                name: Some("Sofle Choc Pro".to_owned()),
+                id: "6F1C5D2A-0000-4000-8000-000000000000".to_owned(),
+            },
+            error: "the connection to the keyboard was closed".to_owned(),
+        });
+        assert_eq!(kind, Some(Kind::NoKeyboard));
+        assert_eq!(
+            text(&status),
+            "Sofle Choc Pro
+  Connection  Bluetooth
+  Problem     Couldn't connect to Sofle Choc Pro over Bluetooth: the connection to the \
+             keyboard was closed."
+        );
+    }
+
+    #[test]
     fn a_port_that_cant_be_opened_is_named_by_its_path() {
         let (status, kind) = status(&Found::Unavailable {
-            port: "/dev/cu.usbmodem101".to_owned(),
+            link: Link::Usb {
+                port: "/dev/cu.usbmodem101".to_owned(),
+            },
             error: "Resource busy".to_owned(),
         });
         assert_eq!(kind, Some(Kind::NoKeyboard));

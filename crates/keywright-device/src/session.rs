@@ -97,7 +97,8 @@ pub struct Connection {
 
 impl Connection {
     /// A connection over `transport`, such as a simulated keyboard's, in a task on the
-    /// current Tokio runtime. [`Connection::usb`] opens one over USB.
+    /// current Tokio runtime. [`Connection::usb`] opens one over USB, and
+    /// [`Connection::bluetooth`] over Bluetooth.
     ///
     /// # Panics
     ///

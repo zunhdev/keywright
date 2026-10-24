@@ -9,17 +9,30 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+# Bluetooth LE: finding the keyboards macOS has connected, and their Studio service (tech
+# spec §6.2, ADR-0009).
+bluest.workspace = true
+# Reading bluest's indications, which come as a `Stream`.
+futures-core.workspace = true
 # The `Transport` trait this crate implements.
 keywright-studio = { path = "../keywright-studio" }
 # Serial ports: listing them with their USB IDs, opening, reading and writing (tech spec §6.1).
 serialport.workspace = true
-# The reader and writer threads hand bytes over channels; the port watcher polls on a timer.
-tokio = { workspace = true, features = ["rt", "sync", "time"] }
+thiserror.workspace = true
+# The reader and writer threads and the indication task hand bytes over channels; the
+# port watcher polls on a timer, and Bluetooth's setup steps have timeouts.
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
 # Logs what the transport can't report as an error, such as a port list that failed.
 tracing.workspace = true
 
 [dev-dependencies]
+# Only to turn off objc2's signature check in debug builds, for the Bluetooth tests (the
+# workspace's Cargo.toml says why). The crate itself mustn't bind to the OS.
+objc2.workspace = true
 tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
 
 [lints]
 workspace = true
+
+[package.metadata.cargo-shear]
+ignored = ["objc2"]

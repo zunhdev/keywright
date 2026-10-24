@@ -189,7 +189,7 @@ fn automatic_backups(source: Source) -> Result<Option<Backups>, Failure> {
     match (source.backups_dir(), source) {
         (Some(dir), _) => Ok(Some(Backups::new(dir, Backups::DEFAULT_KEEP))),
         (None, Source::Simulator(_)) => Ok(None),
-        (None, Source::Usb) => Err(Failure::file(
+        (None, Source::Connected) => Err(Failure::file(
             "Keywright doesn't know where to keep automatic backups, so it can't back up the \
              keymap before restoring.",
         )),
