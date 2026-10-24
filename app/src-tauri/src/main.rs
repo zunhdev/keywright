@@ -18,6 +18,7 @@
 #![forbid(unsafe_code)]
 
 mod ipc;
+mod low_battery;
 mod menu;
 mod settings;
 mod simulator;
@@ -32,6 +33,7 @@ use keywright_device::{Backups, Session};
 use keywright_platform::bluetooth::{self, Permission};
 use tauri::menu::MenuEvent;
 use tauri::{App, AppHandle, Manager, RunEvent, Runtime, WindowEvent, Wry};
+use tauri_plugin_notification::NotificationExt;
 use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
 
@@ -39,6 +41,7 @@ use crate::ipc::{
     AppState, BatteryChanged, BatteryState, KeymapChanged, MenuItemChosen, QuitGuard,
     QuitRequested, SessionStateChanged, SessionStatus, Update,
 };
+use crate::low_battery::LowBattery;
 use crate::menu::MenuItem;
 use crate::settings::Settings;
 use crate::simulator::Scenario;
@@ -154,12 +157,16 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     app.manage(MenuBar(tray));
     if let Some(battery) = &battery {
         let handle = handle.clone();
+        let mut low = LowBattery::default();
         tauri::async_runtime::spawn(ipc::follow_battery(
             battery.clone(),
             state.session.clone(),
-            move |status| {
+            move |status, keyboard| {
                 if let Some(tray) = &handle.state::<MenuBar>().0 {
                     tray.battery_changed(status);
+                }
+                for (half, percent) in low.update(status, settings.low_battery) {
+                    notify(&handle, &low_battery::message(keyboard, half, percent));
                 }
                 let _ = BatteryChanged(status).emit(&handle);
             },
@@ -189,6 +196,13 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     app.manage(state);
     app.manage(BatteryState(battery));
     Ok(())
+}
+
+/// Shows a macOS notification saying `message` (BAR-3). The first one asks the person
+/// whether Keywright may.
+fn notify<R: Runtime>(app: &AppHandle<R>, message: &str) {
+    // If macOS doesn't show it, the menu bar's dot still says the battery is low.
+    let _ = app.notification().builder().title(message).show();
 }
 
 /// Whether the window shows its "edited" dot (design §3.2): while changes are being

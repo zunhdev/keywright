@@ -7,8 +7,8 @@
 //! has no battery.
 
 use keywright_core::support_packs::SupportPack;
-use keywright_device::Session;
 use keywright_device::battery::{Battery, BatteryWatch};
+use keywright_device::{Session, State};
 use serde::Serialize;
 use specta::Type;
 
@@ -67,11 +67,11 @@ pub async fn battery_levels(
 }
 
 /// Sends the battery's status each time it changes, with the halves put by the session's
-/// keyboard's pack, until the watch stops.
+/// keyboard's pack, and the keyboard's name if the session knows it, until the watch stops.
 pub async fn follow(
     watch: BatteryWatch,
     session: Session,
-    mut send: impl FnMut(BatteryStatus) + Send + 'static,
+    mut send: impl FnMut(BatteryStatus, Option<&str>) + Send + 'static,
 ) {
     let mut levels = watch.levels();
     let mut last = None;
@@ -81,7 +81,12 @@ pub async fn follow(
         };
         let status = BatteryStatus::of(*levels.borrow_and_update(), snapshot.support_pack());
         if last != Some(status) {
-            send(status);
+            let name = match (&snapshot.keyboard, &snapshot.state) {
+                (Some(keyboard), _) => Some(keyboard.identity.name.as_str()),
+                (None, State::Locked { device, .. }) => Some(device.name.as_str()),
+                (None, _) => None,
+            };
+            send(status, name);
             last = Some(status);
         }
         if levels.changed().await.is_err() {
