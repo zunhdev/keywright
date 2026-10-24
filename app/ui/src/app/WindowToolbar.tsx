@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import { Button } from "../design-system/Button.tsx";
 import { Toolbar } from "../design-system/Toolbar.tsx";
 import { KeySearch } from "../features/search/KeySearch.tsx";
@@ -12,6 +14,21 @@ function openReview(): void {
   useStore.setState({ review: true });
 }
 
+/** A style that sets CSS custom properties, which React's types don't name. */
+type CustomProperties = CSSProperties & Record<`--${string}`, string>;
+
+/**
+ * How the toolbar makes room for the traffic lights on its left (design §3.1): it starts
+ * where they end, measured, and at its usual inset while they're hidden, as in full
+ * screen. Until the window has said, the stylesheet guesses where they end.
+ */
+function trafficLightsInset(end: number | null | undefined) {
+  if (end === undefined) return {};
+  if (end === null) return { "data-traffic-lights": "hidden" };
+  const style: CustomProperties = { "--traffic-lights-end": `${end}px` };
+  return { style };
+}
+
 /**
  * The window's toolbar (design §3.2), which is also where the window is dragged: the
  * keyboard's name, the connection chip, search, the changes button, and Save.
@@ -19,9 +36,14 @@ function openReview(): void {
 export function WindowToolbar() {
   const messages = useMessages();
   const session = useStore((store) => store.session);
+  const trafficLights = useStore((store) => store.trafficLights);
   const changes = session?.changes ?? 0;
   return (
-    <header className={styles.toolbar} data-tauri-drag-region>
+    <header
+      className={styles.toolbar}
+      data-tauri-drag-region
+      {...trafficLightsInset(trafficLights)}
+    >
       <h1 className={styles.title} data-tauri-drag-region>
         {session?.keyboard ?? messages.format("app.name")}
       </h1>

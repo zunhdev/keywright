@@ -51,6 +51,7 @@ const COMMANDS: &[&str] = &[
     "restore_stock_keys",
     "restore_stock_layer",
     "restore_stock_settings",
+    "traffic_lights",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

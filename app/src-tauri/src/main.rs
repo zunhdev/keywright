@@ -39,7 +39,7 @@ use tauri_specta::Event;
 
 use crate::ipc::{
     AppState, BatteryChanged, BatteryState, KeymapChanged, MenuItemChosen, QuitGuard,
-    QuitRequested, SessionStateChanged, SessionStatus, SettingsState, Update,
+    QuitRequested, SessionStateChanged, SessionStatus, SettingsState, TrafficLights, Update,
 };
 use crate::low_battery::LowBattery;
 use crate::menu::MenuItem;
@@ -88,14 +88,20 @@ fn main() -> tauri::Result<()> {
         })
         .invoke_handler(ipc.invoke_handler())
         .manage(QuitGuard::default())
+        .manage(TrafficLights::default())
         .on_window_event(|window, event| {
-            // Other windows, such as Settings, just close.
+            if window.label() != MAIN_WINDOW {
+                // Other windows, such as Settings, just close.
+                return;
+            }
+            // Going full screen and back resizes the window too.
+            if let WindowEvent::Resized(_) = event {
+                ipc::follow_traffic_lights(window.app_handle());
+                return;
+            }
             let WindowEvent::CloseRequested { api, .. } = event else {
                 return;
             };
-            if window.label() != MAIN_WINDOW {
-                return;
-            }
             let app = window.app_handle();
             if in_menu_bar(app) {
                 // Keywright stays in the menu bar: the window and the Dock icon go.

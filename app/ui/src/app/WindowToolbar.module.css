@@ -1,12 +1,20 @@
-/* The toolbar holds the window's traffic lights on the left (tauri.conf.json). */
+/*
+ * The toolbar holds the window's traffic lights on the left (tauri.conf.json), and starts
+ * a gap after them (design §3.1). The app measures where they end; until it has, they end
+ * at about 78 px, where macOS puts them. In full screen, macOS hides them.
+ */
 .toolbar {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-3) 0 80px;
+  padding: 0 var(--space-3) 0 calc(var(--traffic-lights-end, 78px) + var(--space-4));
   border-bottom: 1px solid var(--border-subtle);
   background: var(--bg-window);
   user-select: none;
+
+  &[data-traffic-lights="hidden"] {
+    padding-inline-start: var(--space-3);
+  }
 
   & > [role="toolbar"] {
     flex: 1;
