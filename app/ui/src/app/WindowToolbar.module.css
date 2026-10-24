@@ -22,6 +22,16 @@
 }
 
 /* Search sits in the middle of the room left, which drags the window. */
+/* The demo keyboard's label, beside its name. */
+.demo {
+  flex: none;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-badge);
+  background: var(--accent-subtle);
+  color: var(--text-primary);
+  font: var(--type-caption);
+}
+
 .search {
   display: flex;
   flex: 1;

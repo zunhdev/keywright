@@ -28,6 +28,8 @@
     "allow-remove-layer",
     "allow-add-layer",
     "allow-keyboard-guide",
+    "allow-start-demo",
+    "allow-leave-demo",
     "allow-session-retry",
     "allow-keep-unsaved-changes",
     "allow-discard-unsaved-changes",

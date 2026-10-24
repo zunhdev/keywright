@@ -42,6 +42,9 @@ export const connectionStrings = {
   "connection.unsaved":
     "Your keyboard has changes that weren't saved, from before Keywright connected. Keep them to edit on from them, or discard them; Keywright backs them up first.",
   "connection.try-again": "Try Again",
+  "connection.demo": "Explore Without a Keyboard",
+  "connection.demo-label": "Demo keyboard",
+  "connection.leave-demo": "Leave Demo",
   "connection.reapply": "Re-apply",
   "connection.discard": "Discard",
   "connection.keep": "Keep Them",

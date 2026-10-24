@@ -1,7 +1,9 @@
 import { Bluetooth, Cable } from "lucide-react";
 
+import { Button } from "../../design-system/Button.tsx";
 import { Icon } from "../../design-system/Icon.tsx";
 import { useMessages } from "../../i18n/messages.ts";
+import { startDemo } from "./actions.ts";
 import { BoardOutline } from "./BoardOutline.tsx";
 import { useKeyboardGuide } from "./guide.ts";
 
@@ -9,7 +11,8 @@ import styles from "./Connection.module.css";
 
 /**
  * No keyboard connected (design §7): an outline of the keyboard Keywright knows best, with
- * how to connect it by cable or over Bluetooth.
+ * how to connect it by cable or over Bluetooth, and Explore Without a Keyboard, which
+ * starts the demo (DEV-6).
  */
 export function NoKeyboard() {
   const messages = useMessages();
@@ -47,6 +50,9 @@ export function NoKeyboard() {
           </p>
         </div>
       </div>
+      <Button variant="quiet" onPress={() => void startDemo()}>
+        {messages.format("connection.demo")}
+      </Button>
     </div>
   );
 }

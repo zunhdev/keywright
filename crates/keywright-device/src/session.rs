@@ -90,6 +90,9 @@ pub struct Connection {
     pub client: Client,
     /// The other end, which explains a keyboard that doesn't answer.
     pub peer: Peer,
+    /// Whether the session backs up the keyboard, if it keeps backups. A demo keyboard's
+    /// keymap isn't worth backing up ([`Connection::without_backups`]).
+    pub backed_up: bool,
 }
 
 impl Connection {
@@ -104,6 +107,17 @@ impl Connection {
         Self {
             client: Client::new(transport),
             peer,
+            backed_up: true,
+        }
+    }
+
+    /// The same connection, whose keyboard the session doesn't back up, such as the
+    /// simulated one demo mode shows (DEV-6).
+    #[must_use]
+    pub fn without_backups(self) -> Self {
+        Self {
+            backed_up: false,
+            ..self
         }
     }
 }

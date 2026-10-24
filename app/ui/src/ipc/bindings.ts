@@ -207,6 +207,23 @@ character: string } | null>("layer_name_problem", { name }),
 	bluetoothHold: string | null,
 } | null>("keyboard_guide", { pack }),
 	/**
+	 *  Explores Keywright without a keyboard (DEV-6, design §7): connects the demo keyboard,
+	 *  in place of whatever is connected.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the session has stopped.
+	 */
+	startDemo: () => typedError<null, AppError>(__TAURI_INVOKE("start_demo")),
+	/**
+	 *  Leaves the demo: disconnects the demo keyboard, so a keyboard on USB can connect.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the session has stopped.
+	 */
+	leaveDemo: () => typedError<null, AppError>(__TAURI_INVOKE("leave_demo")),
+	/**
 	 *  Tries the keyboard again, after it stopped answering (CON-4, design §7).
 	 * 
 	 *  # Errors

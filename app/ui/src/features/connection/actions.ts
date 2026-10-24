@@ -5,6 +5,16 @@
 import { commands } from "../../ipc/bindings.ts";
 import { run } from "../keyboard-canvas/edits.ts";
 
+/** Explores Keywright with the demo keyboard, a simulated Sofle (DEV-6). */
+export function startDemo(): Promise<boolean> {
+  return run(commands.startDemo());
+}
+
+/** Leaves the demo, so a keyboard on USB can connect. */
+export function leaveDemo(): Promise<boolean> {
+  return run(commands.leaveDemo());
+}
+
 /** Tries the keyboard again, once it's plugged in right or typing over this connection. */
 export function retry(): Promise<boolean> {
   return run(commands.sessionRetry());

@@ -1419,6 +1419,21 @@ mod automatic_backups {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn a_keyboard_connected_without_backups_isnt_backed_up() {
+        let folder = Folder::new();
+        let keyboard = Simulator::sofle().unwrap();
+        keyboard.press_unlock_key();
+        let session = Session::with_backups(folder.backups());
+        session
+            .connect(Connection::new(keyboard.connect(), Peer::Simulated).without_backups())
+            .await
+            .unwrap();
+        ready(&session).await;
+        assert_eq!(folder.read(), []);
+        assert_eq!(session.back_up(Reason::BeforeRestore).await.unwrap(), None);
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn each_keyboard_is_backed_up_the_first_time_its_keymap_is_read() {
         let folder = Folder::new();
         let keyboard = Simulator::sofle().unwrap();
