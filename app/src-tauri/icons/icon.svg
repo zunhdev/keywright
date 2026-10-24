@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- A placeholder until the app icon is designed (design spec D2): a keycap on the accent colour. -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="#4C5BD4"/>
+  <rect x="292" y="300" width="440" height="432" rx="72" fill="#C9CEF6"/>
+  <rect x="336" y="320" width="352" height="336" rx="48" fill="#FFFFFF"/>
+</svg>

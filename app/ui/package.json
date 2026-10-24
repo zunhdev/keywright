@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "bun dev.ts",
+    "build": "rm -rf dist && bun build ./src/index.html --outdir=dist --minify",
     "test": "bun test",
     "typecheck": "tsc --noEmit"
   },

@@ -5,5 +5,5 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "types": ["bun"]
   },
-  "include": ["src"]
+  "include": ["src", "dev.ts"]
 }

@@ -132,9 +132,25 @@ run = "bun audit"
 description = "Run everything CI requires"
 depends = ["lint", "test", "audit"]
 
+[tasks.dev]
+description = "Run the app, with the UI from Bun's dev server, which updates it as files change"
+depends = ["deps:ts"]
+# Tauri's tool starts the UI's dev server first (`beforeDevCommand` in tauri.conf.json).
+run = "bun run tauri dev"
+
 [tasks.build]
-description = "Build the release binaries"
-run = "cargo build --release --package keywright-cli"
+description = "Build the release binaries: the keywright CLI, and Keywright.app"
+depends = ["deps:ts"]
+# The app is signed ad hoc (`signingIdentity` in tauri.conf.json); releases are signed
+# with Keywright's own certificate instead (tech spec §17).
+run = ["cargo build --release --package keywright-cli", "bun run tauri build --bundles app"]
+
+[tasks."build:debug"]
+description = "Build the app quickly, unoptimised and without bundling it, as CI does"
+depends = ["deps:ts"]
+# Unlike `mise run dev`, this embeds the built UI and applies the release CSP, with the
+# web inspector on (right-click › Inspect Element): the way to check the CSP.
+run = "bun run tauri build --debug --no-bundle"
 
 [tasks.portable]
 description = "Build and test the crates that must stay portable (core, studio, sim), as CI does on Linux"

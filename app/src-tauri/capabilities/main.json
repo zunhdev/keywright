@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-window",
+  "description": "What the main window's UI may use: opening System Settings and Keywright's docs, and nothing else yet. Each feature adds the commands and events it uses.",
+  "windows": ["main"],
+  "permissions": [
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "x-apple.systempreferences:*" },
+        { "url": "https://github.com/zunhdev/keywright/blob/main/docs/user/*" }
+      ]
+    }
+  ]
+}

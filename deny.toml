@@ -47,6 +47,15 @@ exceptions = [
   # them unchanged, and their source stays available on crates.io and in Cargo.lock, so
   # Keywright can still be MIT OR Apache-2.0. Its credits must list serialport.
   { crate = "serialport", allow = ["MPL-2.0"] },
+  # Tauri (tech spec §12.1) depends on these MPL-2.0 crates, on the same terms as
+  # serialport: we use them unchanged, so Keywright stays MIT OR Apache-2.0, and the
+  # credits must list them. Its HTML handling uses Servo's CSS parser (cssparser,
+  # cssparser-macros, dtoa-short and selectors), and its app folders use option-ext.
+  { crate = "cssparser", allow = ["MPL-2.0"] },
+  { crate = "cssparser-macros", allow = ["MPL-2.0"] },
+  { crate = "dtoa-short", allow = ["MPL-2.0"] },
+  { crate = "option-ext", allow = ["MPL-2.0"] },
+  { crate = "selectors", allow = ["MPL-2.0"] },
 ]
 
 [bans]

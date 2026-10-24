@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.4 — for review                                                        |
+| **Status**    | Draft v0.5 — for review                                                        |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -360,12 +360,12 @@ Following platform convention, it is a **menu**, not a popover:
 
 | Menu          | Items                                                                                                                                                                                                                                                              |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Keywright** | About · Settings… ⌘, · Hide · Quit ⌘Q                                                                                                                                                                                                                              |
-| **File**      | Import… ⌘O · Export… ⇧⌘E · Backups… ⇧⌘B · Update Firmware…                                                                                                                                                                                                         |
+| **Keywright** | About Keywright · Settings… ⌘, · Services · Hide Keywright ⌘H · Hide Others ⌥⌘H · Show All · Quit Keywright ⌘Q                                                                                                                                                     |
+| **File**      | Import… ⌘O · Export… ⇧⌘E · Backups… ⇧⌘B · Update Firmware… · Close Window ⌘W                                                                                                                                                                                       |
 | **Edit**      | Undo ⌘Z · Redo ⇧⌘Z · Copy Action ⌘C · Paste Action ⌘V · Select All Keys ⌘A · Find ⌘F                                                                                                                                                                               |
 | **Keyboard**  | Save to Keyboard ⌘S · Review Changes ⇧⌘R · Discard Changes… · Record Shortcut ⌘R · Same as Layer Below · Does Nothing · Restore Stock for Key · Restore Stock Settings… (canvas-only single keys are listed in Help › Keyboard Shortcuts, not as menu equivalents) |
-| **View**      | Show/Hide Layers ⌃⌘S · Show/Hide Inspector ⌥⌘0 · Layer 1–9 ⌘1–⌘9 · Zoom In ⌘+ · Zoom Out ⌘− · Actual Size ⌘0                                                                                                                                                       |
-| **Window**    | Standard                                                                                                                                                                                                                                                           |
+| **View**      | Show/Hide Layers ⌃⌘S · Show/Hide Inspector ⌥⌘0 · Layer 1–9 ⌘1–⌘9 · Zoom In ⌘= · Zoom Out ⌘− · Actual Size ⌘0 (Zoom In is the + key: the menu shows ⌘=, since Tauri's menus name keys rather than characters)                                                       |
+| **Window**    | Minimize ⌘M · Zoom · Bring All to Front, and the open windows, which macOS adds                                                                                                                                                                                    |
 | **Help**      | Keywright Help · Keyboard Shortcuts ⌘/ · Run First-Time Setup · Report an Issue…                                                                                                                                                                                   |
 
 ---
@@ -517,3 +517,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.2     | 2026-10-24 | Wrong half (§7): when the left half answers over Bluetooth, Keywright edits there and says the cable is in the right half (spike S4).                                                                               |
 | 0.3     | 2026-10-24 | Firmware Update assistant (§9.3): the halves in the support pack's order, the macOS prompts explained beforehand, the drive checked against the step's half, success confirmed when the half comes back (spike S6). |
 | 0.4     | 2026-10-24 | Spike outcomes (KEY-19): the Globe helper makes a chosen key act as Globe (§5.4, §9.4; spike S7); the keyboard forgets unsaved changes when it sleeps, too (§6, §8; spike S5).                                      |
+| 0.5     | 2026-10-24 | App menus (§9.6, KEY-36): the items every Mac app has (Services, Hide Others, Show All, Close Window, the Window menu's), and Zoom In shown as ⌘=.                                                                  |

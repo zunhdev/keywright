@@ -1,0 +1,37 @@
+[package]
+name = "keywright-app"
+description = "Keywright's desktop app: the Tauri shell around the UI in app/ui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[build-dependencies]
+# Reads tauri.conf.json and the capabilities, and checks them while compiling.
+tauri-build.workspace = true
+
+[dependencies]
+# The app framework: windows, menus and the webview that runs the UI. Its `devtools`
+# feature stays off, so release builds have no web inspector (tech spec §12.1).
+tauri.workspace = true
+# Open and save panels.
+tauri-plugin-dialog.workspace = true
+# macOS notifications.
+tauri-plugin-notification.workspace = true
+# Opens System Settings and the docs, and nothing else (capabilities/main.json).
+tauri-plugin-opener.workspace = true
+# Brings the running app forward when Keywright is opened again.
+tauri-plugin-single-instance.workspace = true
+# Remembers the window's size and place.
+tauri-plugin-window-state.workspace = true
+
+[dev-dependencies]
+# Parses the menu shortcuts the way Tauri does, to check them.
+muda.workspace = true
+# Reads tauri.conf.json and the capabilities in the security tests.
+serde_json.workspace = true
+
+[lints]
+workspace = true

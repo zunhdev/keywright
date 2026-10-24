@@ -22,6 +22,8 @@ use crate::workspace::{
 /// - The CLI is thin: it reaches the keyboard only through the device session. It takes
 ///   the backups folder from `keywright-platform`, and has the simulated keyboard for its
 ///   tests, as the app's demo mode will.
+/// - The app shell is thin too: its commands send the device session commands or call
+///   the core, and it uses `keywright-platform` for macOS integration.
 const ALLOWED_WORKSPACE_DEPENDENCIES: &[(&str, &[&str])] = &[
     ("keywright-core", &[]),
     ("keywright-studio", &[]),
@@ -40,6 +42,10 @@ const ALLOWED_WORKSPACE_DEPENDENCIES: &[(&str, &[&str])] = &[
             "keywright-platform",
             "keywright-sim",
         ],
+    ),
+    (
+        "keywright-app",
+        &["keywright-core", "keywright-device", "keywright-platform"],
     ),
     ("architecture-tests", &[]),
 ];
@@ -79,9 +85,9 @@ const OS_BINDINGS: &[&str] = &[
     "windows",
 ];
 
-/// The crates that may depend on [`OS_BINDINGS`] directly. Tech spec §2 also allows the
-/// app shell, which joins this list when it joins the workspace.
-const OS_BINDING_USERS: &[&str] = &["keywright-platform"];
+/// The crates that may depend on [`OS_BINDINGS`] directly: the platform layer, and the app
+/// shell, which works with Tauri's native windows (tech spec §2).
+const OS_BINDING_USERS: &[&str] = &["keywright-platform", "keywright-app"];
 
 #[test]
 fn crates_depend_only_on_the_workspace_crates_the_architecture_allows() {
@@ -140,7 +146,7 @@ fn core_has_no_io_async_or_platform_dependencies() {
 }
 
 #[test]
-fn only_keywright_platform_binds_to_the_os() {
+fn only_the_platform_layer_and_the_app_bind_to_the_os() {
     let violations: Vec<String> = members()
         .filter(|package| !OS_BINDING_USERS.contains(&package.name.as_str()))
         .flat_map(|package| {
@@ -148,7 +154,7 @@ fn only_keywright_platform_binds_to_the_os() {
                 .filter(|dependency| in_any_family(&dependency.name, OS_BINDINGS))
                 .map(move |dependency| {
                     format!(
-                        "{} must not depend on {}; OS bindings belong in keywright-platform",
+                        "{} must not depend on {}; OS bindings belong in keywright-platform or the app",
                         package.name, dependency.name
                     )
                 })

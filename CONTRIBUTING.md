@@ -20,20 +20,22 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
    mise run check  # run everything CI requires
    ```
 
-| Command             | What it does                                                                                                                                                                                                                 |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mise run fmt`      | Formats all code: rustfmt for Rust, oxfmt for everything else.                                                                                                                                                               |
-| `mise run lint`     | Checks formatting, lints Rust (clippy) and TypeScript (oxlint, tsc), finds unused code and dependencies (cargo-shear, knip), checks workflows (actionlint, zizmor), spelling (typos), and that generated code is up to date. |
-| `mise run test`     | Runs all tests: Rust with nextest, TypeScript with `bun test`.                                                                                                                                                               |
-| `mise run audit`    | Checks dependencies for known vulnerabilities (cargo-deny, `bun audit`), and Rust crates for their licences and sources.                                                                                                     |
-| `mise run check`    | Runs `lint`, `test` and `audit`: everything CI requires.                                                                                                                                                                     |
-| `mise run build`    | Builds the release `keywright` CLI into `target/release/`.                                                                                                                                                                   |
-| `mise run generate` | Regenerates the checked-in generated code: `keywright-core`'s key tables, from the upstream files in [`scripts/key-tables/upstream/`](scripts/key-tables/upstream/). Needs macOS.                                            |
-| `mise run portable` | Builds and tests the crates that must stay portable (core, studio, sim), as CI does on Linux.                                                                                                                                |
-| `mise run coverage` | Measures Rust test coverage, and fails if `keywright-core` drops below 80% of lines, as CI does.                                                                                                                             |
-| `mise run mutants`  | Mutation-tests `keywright-core`, as CI does weekly. The first run also builds cargo-mutants.                                                                                                                                 |
-| `mise run fuzz`     | Fuzzes each target in `fuzz/` for a minute, as CI does when the fuzzed code changes, starting from the inputs in `fuzz/seeds/`. Set `FUZZ_SECONDS` to fuzz for longer. The first run also builds cargo-fuzz.                 |
-| `mise run hardware` | Runs the tests that need a ZMK keyboard, which the other tasks skip. Plug the keyboard's left half in by USB first.                                                                                                          |
+| Command                | What it does                                                                                                                                                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mise run fmt`         | Formats all code: rustfmt for Rust, oxfmt for everything else.                                                                                                                                                               |
+| `mise run lint`        | Checks formatting, lints Rust (clippy) and TypeScript (oxlint, tsc), finds unused code and dependencies (cargo-shear, knip), checks workflows (actionlint, zizmor), spelling (typos), and that generated code is up to date. |
+| `mise run test`        | Runs all tests: Rust with nextest, TypeScript with `bun test`.                                                                                                                                                               |
+| `mise run audit`       | Checks dependencies for known vulnerabilities (cargo-deny, `bun audit`), and Rust crates for their licences and sources.                                                                                                     |
+| `mise run check`       | Runs `lint`, `test` and `audit`: everything CI requires.                                                                                                                                                                     |
+| `mise run dev`         | Runs the app, with the UI from Bun's dev server: UI changes show at once, and Rust changes rebuild and restart the app.                                                                                                      |
+| `mise run build`       | Builds the release `keywright` CLI into `target/release/`, and `Keywright.app` into `target/release/bundle/macos/`.                                                                                                          |
+| `mise run build:debug` | Builds the app quickly, unoptimised and without bundling it, as CI does. It loads the built UI under the release Content Security Policy, with the web inspector on: use it to check the CSP.                                |
+| `mise run generate`    | Regenerates the checked-in generated code: `keywright-core`'s key tables, from the upstream files in [`scripts/key-tables/upstream/`](scripts/key-tables/upstream/). Needs macOS.                                            |
+| `mise run portable`    | Builds and tests the crates that must stay portable (core, studio, sim), as CI does on Linux.                                                                                                                                |
+| `mise run coverage`    | Measures Rust test coverage, and fails if `keywright-core` drops below 80% of lines, as CI does.                                                                                                                             |
+| `mise run mutants`     | Mutation-tests `keywright-core`, as CI does weekly. The first run also builds cargo-mutants.                                                                                                                                 |
+| `mise run fuzz`        | Fuzzes each target in `fuzz/` for a minute, as CI does when the fuzzed code changes, starting from the inputs in `fuzz/seeds/`. Set `FUZZ_SECONDS` to fuzz for longer. The first run also builds cargo-fuzz.                 |
+| `mise run hardware`    | Runs the tests that need a ZMK keyboard, which the other tasks skip. Plug the keyboard's left half in by USB first.                                                                                                          |
 
 Each task runs its parts for every area, such as `lint:rust` and `lint:ts`, which you can also run on their own. The TypeScript tasks install the Bun packages from `bun.lock` first. `mise tasks` lists them all. CI runs the same tasks, split into jobs (`.github/workflows/ci.yml`). To use the pinned tools outside tasks, [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
 
@@ -46,7 +48,7 @@ If [typos](https://github.com/crate-ci/typos) flags a word that is spelled corre
 1. Create a branch from `main`, e.g. `fix/reconnect-after-sleep` or `docs/unlock-guide`.
 2. **Sign your commits**: unsigned commits can't be merged. See GitHub's guide to [signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
 3. Open a pull request and fill in the template. Keep each PR focused on one change.
-4. Before you open the pull request, run `mise run check` and `mise run coverage`, plus `mise run fuzz` if you changed `keywright-studio`, the backup format (`keywright-core`'s `backup` module) or `fuzz/`. CI doesn't run all of these for now (see [Paused CI checks](#paused-ci-checks)). All checks must pass, and all review conversations must be resolved.
+4. Before you open the pull request, run `mise run check` and `mise run coverage`, plus `mise run fuzz` if you changed `keywright-studio`, the backup format (`keywright-core`'s `backup` module) or `fuzz/`, and `mise run build:debug` if you changed the app (`app/`). CI doesn't run all of these for now (see [Paused CI checks](#paused-ci-checks)). All checks must pass, and all review conversations must be resolved.
 5. PRs are **squash-merged**. The PR title becomes the commit title on `main`, so write it in the imperative mood ("Add Bluetooth reconnect", not "Added…"). The PR description becomes the commit body.
 
 History on `main` is linear, and force-pushes to it are blocked. Merged branches are deleted automatically.
@@ -60,11 +62,12 @@ Paused until main development is finished ([KEY-94](https://linear.app/zunhdev/i
 | Paused                                                                                                | Run it locally with                                                  |
 | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | **Rust (macOS)** in `ci.yml`: rustfmt, clippy, nextest, coverage, cargo-deny, cargo-shear, key tables | `mise run check` and `mise run coverage`                             |
+| **App (macOS)** in `ci.yml`: builds the app                                                           | `mise run build:debug`                                               |
 | **Fuzz smoke** (`fuzz.yml`), when the fuzzed code changes                                             | `mise run fuzz`                                                      |
 | Nightly fuzzing and weekly mutation testing (`scheduled.yml`)                                         | `mise run fuzz` with a larger `FUZZ_SECONDS`, and `mise run mutants` |
 | CodeQL (a repository setting)                                                                         | —                                                                    |
 
-The paused jobs still run when you run their workflow by hand (_Actions › Run workflow_, or `gh workflow run ci.yml --ref <branch>`). Setting the repository variable `FULL_CI` to `true` turns them back on for every run. The required check _Rust (macOS)_ passes when its job is skipped.
+The paused jobs still run when you run their workflow by hand (_Actions › Run workflow_, or `gh workflow run ci.yml --ref <branch>`). Setting the repository variable `FULL_CI` to `true` turns them back on for every run. The required checks _Rust (macOS)_ and _App (macOS)_ pass when their jobs are skipped.
 
 ## Adding a keyboard
 

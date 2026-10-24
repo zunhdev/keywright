@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.34 — for review                                        |
+| **Status**    | Draft v0.35 — for review                                        |
 | **Date**      | 2026-10-23                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -548,7 +548,7 @@ support-packs/keebart-sofle-choc-pro-bt/
 - **Plugins**, kept minimal: `dialog` (open/save panels), `notification`, `opener` (scoped to `x-apple.systempreferences:` and the docs URL), `single-instance`, `window-state`. The tray and menus use Tauri core APIs.
 - **Security**:
   - Capability files grant each window only the commands it uses.
-  - Strict CSP: `default-src 'self'`; no remote origins; `connect-src` limited to IPC.
+  - Strict CSP: `default-src 'self'`; no remote origins; `connect-src` limited to IPC. Tauri applies it to the bundled UI, so `mise run dev`, which loads the UI from Bun's dev server, runs without it; `mise run build:debug` runs the bundled UI under it, with the web inspector. `app/src-tauri/tests/security.rs` fails if the CSP or a capability loosens.
   - Devtools are disabled in release builds.
   - No remote content is loaded, ever.
 
@@ -585,17 +585,18 @@ app/ui/src/
 
 `mise.toml` pins **every tool**: Bun, cargo-nextest, cargo-deny, cargo-shear, cargo-llvm-cov, typos, zizmor, actionlint and others. It also defines the tasks that local development and CI both run, so "works on my machine" equals "passes CI".
 
-| Task                | Runs                                                        |
-| ------------------- | ----------------------------------------------------------- |
-| `mise run dev`      | Tauri dev (Bun dev server + Rust app)                       |
-| `mise run fmt`      | `cargo fmt` + `oxfmt`                                       |
-| `mise run lint`     | §13.2 and §13.3 linters                                     |
-| `mise run test`     | `cargo nextest run` + `bun test`                            |
-| `mise run audit`    | `cargo deny check` + `bun audit`                            |
-| `mise run check`    | fmt check + lint + test + audits: everything CI requires    |
-| `mise run build`    | Release build of app + CLI                                  |
-| `mise run generate` | Regenerate checked-in generated code: the key tables (§8.2) |
-| `mise run fuzz`     | Each fuzz target for `FUZZ_SECONDS` (60 by default)         |
+| Task                   | Runs                                                               |
+| ---------------------- | ------------------------------------------------------------------ |
+| `mise run dev`         | Tauri dev (Bun dev server + Rust app)                              |
+| `mise run fmt`         | `cargo fmt` + `oxfmt`                                              |
+| `mise run lint`        | §13.2 and §13.3 linters                                            |
+| `mise run test`        | `cargo nextest run` + `bun test`                                   |
+| `mise run audit`       | `cargo deny check` + `bun audit`                                   |
+| `mise run check`       | fmt check + lint + test + audits: everything CI requires           |
+| `mise run build`       | Release build of app + CLI                                         |
+| `mise run build:debug` | Unoptimised, unbundled app build, as CI's **app** job runs (§13.5) |
+| `mise run generate`    | Regenerate checked-in generated code: the key tables (§8.2)        |
+| `mise run fuzz`        | Each fuzz target for `FUZZ_SECONDS` (60 by default)                |
 
 Contributors install the toolchain with `mise install` (the Rust toolchain itself comes from `rust-toolchain.toml` via rustup).
 
@@ -650,7 +651,7 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 
 All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The rust job's coverage step also gates the core: it fails below 80% of `keywright-core`'s lines. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
 
-**Paused during main development (KEY-93; KEY-94 re-enables them before v1.0).** To save Actions minutes, the expensive jobs only run when the repository variable `FULL_CI` is `true`, or when their workflow is run by hand: the **rust** job in `ci.yml` (a skipped job still satisfies its required check), `fuzz.yml`, and the nightly fuzzing and weekly mutation testing in `scheduled.yml`. CodeQL default setup is turned off. Contributors run `mise run check` and `mise run coverage` locally before opening a pull request, plus `mise run fuzz` when the fuzzed code changes. Pull requests still run the **rust-portable**, **ui** and **repo** jobs and `lint-workflows.yml`, and the daily advisory checks still run.
+**Paused during main development (KEY-93; KEY-94 re-enables them before v1.0).** To save Actions minutes, the expensive jobs only run when the repository variable `FULL_CI` is `true`, or when their workflow is run by hand: the **rust** and **app** jobs in `ci.yml` (a skipped job still satisfies its required check), `fuzz.yml`, and the nightly fuzzing and weekly mutation testing in `scheduled.yml`. CodeQL default setup is turned off. Contributors run `mise run check` and `mise run coverage` locally before opening a pull request, plus `mise run fuzz` when the fuzzed code changes and `mise run build:debug` when the app does. Pull requests still run the **rust-portable**, **ui** and **repo** jobs and `lint-workflows.yml`, and the daily advisory checks still run.
 
 ---
 
@@ -830,3 +831,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.32    | 2026-10-24 | Spike S8 (§15, §17, KEY-15): releases are signed with a stable self-signed certificate instead of ad-hoc, which keeps Bluetooth and removable-drive permissions across updates; the release notes template.                                                                                                                                                        |
 | 0.33    | 2026-10-24 | Spike S9 (§11.3, §15, KEY-16): how _Open at login_ registers, shows its status and falls back to System Settings.                                                                                                                                                                                                                                                  |
 | 0.34    | 2026-10-24 | Spike outcomes (§11.3, §15, §17, KEY-19): S1–S9 are recorded. The owner accepted self-signed release signing (§17), and chose a Globe key that Keywright maps itself (§11.3). Product spec v0.5 and design spec v0.4 record the rest.                                                                                                                              |
+| 0.35    | 2026-10-24 | App shell (§12.1, §13.1, §13.5, KEY-36): the CSP applies to the bundled UI, which `mise run build:debug` builds as CI's paused **app** job does; tests guard the CSP and capabilities.                                                                                                                                                                             |
