@@ -40,6 +40,7 @@ fn port(path: &str, serial_number: &str, product: Option<&str>) -> UsbPort {
         path: path.to_owned(),
         serial_number: Some(serial_number.to_owned()),
         product: product.map(str::to_owned),
+        keyboard_interface: None,
     }
 }
 
@@ -153,6 +154,54 @@ mod matching {
             ..left()
         };
         assert!(!none.is_device(&SERIAL_NUMBER));
+    }
+}
+
+mod interfaces {
+    use super::*;
+
+    /// What `nusb` listed in spike S4, with both halves plugged in.
+    fn sofle_devices() -> HashMap<String, Device> {
+        HashMap::from([
+            (
+                "9CAD9FB5AF677D89".to_owned(),
+                Device {
+                    product: Some("Sofle Choc Pro".to_owned()),
+                    keyboard_interface: true,
+                },
+            ),
+            (
+                "8BC278624254AB1C".to_owned(),
+                Device {
+                    product: Some("Generic CDC".to_owned()),
+                    keyboard_interface: false,
+                },
+            ),
+        ])
+    }
+
+    #[test]
+    fn the_half_that_types_over_the_cable_has_a_keyboard_interface_and_the_other_doesnt() {
+        let ports = with_devices(vec![left(), right()], &sofle_devices());
+        assert_eq!(ports[0].keyboard_interface, Some(true));
+        assert_eq!(ports[1].keyboard_interface, Some(false));
+    }
+
+    /// `serialport` reads the product from the serial interface, which the right half's
+    /// lacks; the device has one.
+    #[test]
+    fn a_product_the_serial_interface_lacks_comes_from_the_device() {
+        let ports = with_devices(vec![left(), right()], &sofle_devices());
+        assert_eq!(ports[0].product.as_deref(), Some("Sofle Choc Pro"));
+        assert_eq!(ports[1].product.as_deref(), Some("Generic CDC"));
+    }
+
+    #[test]
+    fn a_port_whose_device_wasnt_listed_says_nothing_about_its_interfaces() {
+        assert_eq!(with_devices(vec![left()], &HashMap::new()), [left()]);
+        let lowercase = port("/dev/cu.usbmodem101", "9cad9fb5af677d89", None);
+        let matched = with_devices(vec![lowercase], &sofle_devices());
+        assert_eq!(matched[0].keyboard_interface, Some(true));
     }
 }
 

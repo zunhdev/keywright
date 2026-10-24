@@ -128,9 +128,12 @@ impl Connection {
 pub enum Peer {
     /// A USB serial port.
     Usb {
-        /// Its USB product string. The half of a split keyboard that doesn't serve Studio
-        /// reports `Generic CDC`, as spike S1 found on the Sofle.
+        /// Its USB product string, such as `Sofle Choc Pro`.
         product: Option<String>,
+        /// Whether its USB device has a keyboard interface, if known. Without one, it's the
+        /// half of a split keyboard that doesn't talk to the computer, which never answers
+        /// (spike S4), so the session says so without asking it.
+        keyboard_interface: Option<bool>,
     },
     /// Bluetooth LE.
     Bluetooth,

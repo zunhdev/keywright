@@ -14,6 +14,15 @@ use crate::keyboards::Link;
 pub(crate) const NO_KEYBOARD: &str = "No keyboard found. Plug the left half into this Mac \
      with a cable, or pair it in System Settings › Bluetooth.";
 
+/// Why the right half's port isn't used while the left half answers over Bluetooth (design
+/// §7, "Wrong half").
+pub(crate) const OTHER_HALF_WHILE_BLUETOOTH: &str = "The cable is in the right half, so \
+     Keywright edits over Bluetooth. To edit over the cable, plug it into the left half.";
+
+/// What the right half's port is while the left half answers over its own cable.
+pub(crate) const OTHER_HALF_PLUGGED_IN_TOO: &str =
+    "The right half is plugged in too. Keywright edits through the left half.";
+
 /// Why the CLI couldn't connect to a keyboard, and what to do.
 pub(crate) fn unavailable(link: &Link, error: &str) -> String {
     match link {

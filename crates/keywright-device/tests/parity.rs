@@ -35,7 +35,10 @@ const KEY: usize = 3;
 /// What `KEYWRIGHT_PARITY` names.
 fn wanted() -> Peer {
     match std::env::var("KEYWRIGHT_PARITY").as_deref() {
-        Ok("usb") => Peer::Usb { product: None },
+        Ok("usb") => Peer::Usb {
+            product: None,
+            keyboard_interface: None,
+        },
         Ok("bluetooth") => Peer::Bluetooth,
         _ => panic!("set KEYWRIGHT_PARITY to usb or bluetooth"),
     }

@@ -38,6 +38,7 @@ impl Connection {
             transport,
             Peer::Usb {
                 product: port.product.clone(),
+                keyboard_interface: port.keyboard_interface,
             },
         ))
     }

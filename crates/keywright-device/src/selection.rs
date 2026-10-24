@@ -9,8 +9,10 @@
 //! - **While the session has no connection that answers** (no keyboard, the wrong half, or
 //!   no live editing), selection probes each connection it hasn't tried, USB first, the
 //!   port that answered last before the others, and gives the session the first that
-//!   answers. If none does, a session without a connection gets the first, so it can say
-//!   what's wrong (design §7). One that didn't answer is tried again after [`RETRY_AFTER`],
+//!   answers. A port whose USB device has no keyboard interface is the half that doesn't
+//!   talk to the computer, which never answers (spike S4), so it isn't probed. If none
+//!   answers, a session without a connection gets the first, a silent keyboard's port
+//!   before the other half's, so it can say what's wrong (design §7). One that didn't answer is tried again after [`RETRY_AFTER`],
 //!   since the keyboard takes a moment to move: unplugged, it goes on over Bluetooth, but
 //!   not at once. They're all tried again at once when the connections change, or the
 //!   session's connection stops answering.
@@ -237,7 +239,10 @@ impl Selector {
     fn arrivals(&mut self, ports: &[UsbPort], now: Instant) {
         let on_bluetooth = self.working && matches!(self.current, Some(Candidate::Bluetooth(_)));
         if on_bluetooth {
-            for port in ports.iter().filter(|port| !self.ports.contains(port)) {
+            let new = ports
+                .iter()
+                .filter(|port| !self.ports.contains(port) && !is_other_half(port));
+            for port in new {
                 self.arriving.push((port.clone(), now + ARRIVAL_WINDOW));
             }
         }
@@ -322,20 +327,21 @@ impl Selector {
     }
 
     /// The connections, in the order to try them: USB first, the port that answered last
-    /// before the others, then Bluetooth.
+    /// before the others, and the other half's after them, then Bluetooth.
     fn in_order(&self, candidates: &[Candidate]) -> Vec<Candidate> {
         let mut ordered = candidates.to_vec();
         // A stable sort keeps each kind in its own order.
         ordered.sort_by_key(|candidate| match candidate {
             Candidate::Usb(port) if self.answered.as_ref() == Some(&port.path) => 0,
+            Candidate::Usb(port) if is_other_half(port) => 2,
             Candidate::Usb(_) => 1,
-            Candidate::Bluetooth(_) => 2,
+            Candidate::Bluetooth(_) => 3,
         });
         ordered
     }
 
-    /// The connections not tried in the [`RETRY_AFTER`] before `now`, in order, without the
-    /// session's own.
+    /// The connections worth probing that weren't tried in the [`RETRY_AFTER`] before
+    /// `now`, in order, without the session's own: the other half never answers.
     fn untried(&self, candidates: &[Candidate], now: Instant) -> Vec<Candidate> {
         let lately = |candidate: &Candidate| {
             self.tried
@@ -344,9 +350,16 @@ impl Selector {
         };
         self.in_order(candidates)
             .into_iter()
+            .filter(|candidate| !matches!(candidate, Candidate::Usb(port) if is_other_half(port)))
             .filter(|candidate| !lately(candidate) && self.current.as_ref() != Some(candidate))
             .collect()
     }
+}
+
+/// Whether a port is the half of a split keyboard that doesn't talk to the computer: its
+/// USB device has no keyboard interface (spike S4).
+const fn is_other_half(port: &UsbPort) -> bool {
+    matches!(port.keyboard_interface, Some(false))
 }
 
 /// Whether the session's connection answers: the keyboard is there, locked or not.

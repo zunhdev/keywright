@@ -3,9 +3,12 @@
 //!
 //! A ZMK keyboard enumerates a USB serial port (CDC ACM) with ZMK's VID and PID. On a split
 //! keyboard both halves do, but only the half connected to the computer serves Studio; the
-//! other never answers, so the session tells them apart by probing. A port belongs to the
-//! keyboard whose `get_device_info` reports the serial number the port has, in hex
-//! ([`UsbPort::is_device`]). Spike S1 checked all of this on the Sofle.
+//! other never answers. That half types over the same cable, so its USB device has a
+//! keyboard (HID) interface, and the other half's doesn't ([`UsbPort::keyboard_interface`],
+//! spike S4): `serialport` sees only the serial interface, so [`ports`] reads the devices'
+//! interfaces with `nusb`, matched by USB serial number. A port belongs to the keyboard
+//! whose `get_device_info` reports the serial number the port has, in hex
+//! ([`UsbPort::is_device`]). Spikes S1 and S4 checked all of this on the Sofle.
 //!
 //! [`UsbTransport`] reads on a thread of its own, which hands chunks to
 //! [`Transport::recv`] over a channel, so `recv` is cancel-safe. Writes go to a second
@@ -16,7 +19,7 @@
 #[cfg(test)]
 mod tests;
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Write as _;
 use std::io::{self, Read as _, Write as _};
 use std::sync::mpsc as std_mpsc;
@@ -24,6 +27,7 @@ use std::thread;
 use std::time::Duration;
 
 use keywright_studio::transport::{Transport, TransportError, TransportKind};
+use nusb::MaybeFuture as _;
 use serialport::{ClearBuffer, SerialPort, SerialPortInfo, SerialPortType};
 use tokio::sync::{mpsc, oneshot};
 
@@ -32,6 +36,9 @@ pub const ZMK_VID: u16 = 0x1D50;
 
 /// ZMK's USB product ID.
 pub const ZMK_PID: u16 = 0x615E;
+
+/// The USB interface class of a keyboard, and of HID devices in general.
+const HID_CLASS: u8 = 0x03;
 
 /// How long a read waits for bytes before checking that the transport is still wanted.
 const READ_POLL: Duration = Duration::from_millis(50);
@@ -52,6 +59,10 @@ pub struct UsbPort {
     /// The USB product string: the board's name, such as `Sofle Choc Pro`. The half of a
     /// split keyboard that doesn't serve Studio may have another, such as `Generic CDC`.
     pub product: Option<String>,
+    /// Whether the port's USB device has a keyboard (HID) interface, which the half of a
+    /// split keyboard that talks to the computer always has: it types over the same cable.
+    /// The other half's has only the serial ones (spike S4). `None` if it couldn't be read.
+    pub keyboard_interface: Option<bool>,
 }
 
 impl UsbPort {
@@ -72,13 +83,67 @@ impl UsbPort {
     }
 }
 
-/// The serial ports of the ZMK keyboards connected now, in order of path.
+/// The serial ports of the ZMK keyboards connected now, in order of path, with whether
+/// each one's USB device has a keyboard interface. Listing blocks for a moment.
 ///
 /// # Errors
 ///
-/// Fails if the system can't list its serial ports.
+/// Fails if the system can't list its serial ports. If it can't list the USB devices, the
+/// ports say nothing about their interfaces.
 pub fn ports() -> io::Result<Vec<UsbPort>> {
-    Ok(zmk_ports(serialport::available_ports()?))
+    let ports = zmk_ports(serialport::available_ports()?);
+    Ok(with_devices(ports, &zmk_devices()))
+}
+
+/// What a ZMK keyboard's USB device says about itself, beyond its serial port.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Device {
+    product: Option<String>,
+    keyboard_interface: bool,
+}
+
+/// The USB devices with ZMK's IDs, by serial number, or none if they can't be listed.
+fn zmk_devices() -> HashMap<String, Device> {
+    let devices = match nusb::list_devices().wait() {
+        Ok(devices) => devices,
+        Err(error) => {
+            tracing::warn!(%error, "couldn't list the USB devices");
+            return HashMap::new();
+        }
+    };
+    devices
+        .filter(|device| (device.vendor_id(), device.product_id()) == (ZMK_VID, ZMK_PID))
+        .filter_map(|device| {
+            let serial_number = device.serial_number()?.to_ascii_uppercase();
+            let found = Device {
+                product: device.product_string().map(str::to_owned),
+                keyboard_interface: device
+                    .interfaces()
+                    .any(|interface| interface.class() == HID_CLASS),
+            };
+            Some((serial_number, found))
+        })
+        .collect()
+}
+
+/// The ports, with what their USB devices, by serial number, say: whether they have a
+/// keyboard interface, and the product, where the serial interface has none.
+fn with_devices(ports: Vec<UsbPort>, devices: &HashMap<String, Device>) -> Vec<UsbPort> {
+    ports
+        .into_iter()
+        .map(|port| {
+            let device = (port.serial_number.as_deref())
+                .and_then(|serial| devices.get(&serial.to_ascii_uppercase()));
+            let Some(device) = device else {
+                return port;
+            };
+            UsbPort {
+                product: port.product.or_else(|| device.product.clone()),
+                keyboard_interface: Some(device.keyboard_interface),
+                ..port
+            }
+        })
+        .collect()
 }
 
 /// Keeps the USB ports with ZMK's IDs, in order of path. Of a callout device
@@ -104,6 +169,7 @@ fn zmk_ports(ports: Vec<SerialPortInfo>) -> Vec<UsbPort> {
                 path: port.port_name,
                 serial_number: usb.serial_number,
                 product: usb.product,
+                keyboard_interface: None,
             })
         })
         .collect();

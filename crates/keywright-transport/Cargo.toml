@@ -14,6 +14,8 @@ publish.workspace = true
 bluest.workspace = true
 # Reading bluest's indications, which come as a `Stream`.
 futures-core.workspace = true
+# USB devices' interfaces, to tell the halves of a split keyboard apart (spike S4).
+nusb.workspace = true
 # The `Transport` trait this crate implements.
 keywright-studio = { path = "../keywright-studio" }
 # Serial ports: listing them with their USB IDs, opening, reading and writing (tech spec §6.1).

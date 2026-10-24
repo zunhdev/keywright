@@ -58,8 +58,17 @@ pub(crate) async fn run(source: Source, json: bool) -> Result<Exit, Failure> {
         Source::Connected if !found.is_empty() => Battery::read().await,
         Source::Connected | Source::Simulator(_) => Battery::default(),
     };
-    let (statuses, kinds): (Vec<Status>, Vec<Option<Kind>>) =
-        found.iter().map(|found| status(found, battery)).unzip();
+    // A keyboard that answers explains the other half's port (tech spec §6.3).
+    let answered = found.iter().find_map(|found| match found {
+        Found::Keyboard(keyboard) if words::problem(&keyboard.snapshot.state).is_none() => {
+            Some(&keyboard.link)
+        }
+        _ => None,
+    });
+    let (statuses, kinds): (Vec<Status>, Vec<Option<Kind>>) = found
+        .iter()
+        .map(|found| status(found, battery, answered))
+        .unzip();
     if json {
         print_json(&Report {
             keyboards: &statuses,
@@ -84,8 +93,9 @@ pub(crate) async fn run(source: Source, json: bool) -> Result<Exit, Failure> {
 }
 
 /// A keyboard's status, with the `battery` read over Bluetooth if it answered, and the kind
-/// of problem that stops Keywright editing it, if any.
-fn status(found: &Found, battery: Battery) -> (Status, Option<Kind>) {
+/// of problem that stops Keywright editing it, if any. With a keyboard that `answered`, the
+/// other half's port says why it isn't used, rather than to move the cable.
+fn status(found: &Found, battery: Battery, answered: Option<&Link>) -> (Status, Option<Kind>) {
     let keyboard = match found {
         Found::Keyboard(keyboard) => keyboard,
         Found::Unavailable { link, error } => {
@@ -104,7 +114,17 @@ fn status(found: &Found, battery: Battery) -> (Status, Option<Kind>) {
     };
     let snapshot = &keyboard.snapshot;
     let state = &snapshot.state;
-    let problem = words::problem(state);
+    let problem = match (state, answered) {
+        (State::WrongHalf, Some(Link::Bluetooth { .. })) => Some((
+            Kind::NoKeyboard,
+            words::OTHER_HALF_WHILE_BLUETOOTH.to_owned(),
+        )),
+        (State::WrongHalf, Some(_)) => Some((
+            Kind::NoKeyboard,
+            words::OTHER_HALF_PLUGGED_IN_TOO.to_owned(),
+        )),
+        _ => words::problem(state),
+    };
     let (left, right) = match problem {
         None => battery.halves(snapshot.support_pack()),
         Some(_) => (None, None),
@@ -279,6 +299,7 @@ mod tests {
                 error: "the connection to the keyboard was closed".to_owned(),
             },
             Battery::default(),
+            None,
         );
         assert_eq!(kind, Some(Kind::NoKeyboard));
         assert_eq!(
@@ -300,6 +321,7 @@ mod tests {
                 error: "Resource busy".to_owned(),
             },
             Battery::default(),
+            None,
         );
         assert_eq!(kind, Some(Kind::NoKeyboard));
         assert_eq!(

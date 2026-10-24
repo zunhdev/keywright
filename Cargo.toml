@@ -48,6 +48,9 @@ objc2-app-kit = { version = "0.3.2", default-features = false, features = [
   "NSView",
   "NSWindow",
 ] }
+# USB devices' interfaces, to tell the half of a split keyboard that talks to the computer
+# from the other (spike S4): `serialport` sees only the serial interface.
+nusb = "0.2.8"
 # The menu library Tauri uses, for the app's tests of its menu shortcuts. Keep it at the
 # version in Cargo.lock that `tauri` depends on.
 muda = { version = "0.20.0", default-features = false }
