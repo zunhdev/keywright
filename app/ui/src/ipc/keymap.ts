@@ -1,6 +1,11 @@
 import { useStore } from "../app/store.ts";
 import { commands, events } from "./bindings.ts";
 
+/** Loads every key ZMK names, for the inspector's key popup. It doesn't change. */
+export async function loadKeyCatalog(): Promise<void> {
+  useStore.setState({ keyCatalog: await commands.keyCatalog() });
+}
+
 /**
  * Keeps the store's `keymap` in step with the Rust side: asks for the keymap once, then
  * follows `session://keymap`. Resolves, once listening, to a function that stops

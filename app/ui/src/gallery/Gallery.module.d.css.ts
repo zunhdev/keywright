@@ -6,6 +6,7 @@ declare const classes: {
   readonly gallery: string;
   readonly ghost: string;
   readonly header: string;
+  readonly inspector: string;
   readonly key: string;
   readonly keyCaption: string;
   readonly keySample: string;
@@ -16,5 +17,6 @@ declare const classes: {
   readonly section: string;
   readonly swatch: string;
   readonly swatches: string;
+  readonly window: string;
 };
 export default classes;

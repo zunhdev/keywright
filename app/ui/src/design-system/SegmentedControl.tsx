@@ -27,7 +27,17 @@ export function SegmentedControl(
   );
 }
 
-/** One option of a `SegmentedControl`, with the `id` its selection uses. */
+/**
+ * Options side by side that are each on or off, such as the modifiers ⌃ ⌥ ⇧ ⌘ (design
+ * §5.4). It needs an `aria-label`.
+ */
+export function ToggleGroup(
+  props: Omit<ToggleButtonGroupProps, "className" | "style" | "selectionMode">,
+) {
+  return <ToggleButtonGroup {...props} selectionMode="multiple" className={styles.group} />;
+}
+
+/** One option of a `SegmentedControl` or a `ToggleGroup`, with the `id` its selection uses. */
 export function Segment(props: Omit<ToggleButtonProps, "className" | "style"> & { id: string }) {
   return <ToggleButton {...props} className={styles.segment} />;
 }

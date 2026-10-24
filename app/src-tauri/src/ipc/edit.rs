@@ -1,6 +1,6 @@
-//! Changing keys from the canvas (design §4.5, §4.7, EDIT-5, EDIT-7): swapping and copying
-//! keys, copying and pasting actions, "same as layer below" and "does nothing", and undo
-//! and redo.
+//! Changing keys from the canvas and the inspector (design §4.5, §4.7, §5.4, EDIT-1,
+//! EDIT-5, EDIT-7): setting an action, swapping and copying keys, copying and pasting
+//! actions, "same as layer below" and "does nothing", and undo and redo.
 //!
 //! The core builds each change's edits from the keymap the editor holds, and the session
 //! carries them out as one change, which one undo undoes. Keys are named by layer ID and
@@ -13,8 +13,8 @@ use keywright_core::keymap::{Keymap, LayerId};
 use serde::Deserialize;
 use specta::Type;
 
-use super::AppState;
 use super::error::AppError;
+use super::{AppState, action};
 
 /// What [`set_keys`] makes keys do.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Type)]
@@ -106,6 +106,23 @@ impl AppState {
         let positions: Vec<usize> = positions.into_iter().map(position).collect();
         self.change(|keymap, _| Ok(Edit::set_keys(keymap, LayerId(layer), &positions, binding)?))
             .await
+    }
+
+    /// Makes keys on a layer do `action` (the inspector, EDIT-1).
+    pub async fn set_action(
+        &self,
+        layer: u32,
+        positions: Vec<u32>,
+        action: action::Action,
+    ) -> Result<(), AppError> {
+        let positions: Vec<usize> = positions.into_iter().map(position).collect();
+        self.change(|keymap, behaviors| {
+            let binding = Action::from(action)
+                .to_binding(behaviors)
+                .map_err(|_| AppError::EditRefused)?;
+            Ok(Edit::set_keys(keymap, LayerId(layer), &positions, binding)?)
+        })
+        .await
     }
 
     /// Makes keys on a layer "same as layer below" or "does nothing".
@@ -207,6 +224,22 @@ pub async fn set_keys(
     action: KeyAction,
 ) -> Result<(), AppError> {
     app.set_keys(layer, positions, action).await
+}
+
+/// Makes keys on a layer do an action (the inspector).
+///
+/// # Errors
+///
+/// As for [`swap_keys`], and if the keyboard's firmware has no behavior for the action.
+#[tauri::command]
+#[specta::specta]
+pub async fn set_action(
+    app: tauri::State<'_, AppState>,
+    layer: u32,
+    positions: Vec<u32>,
+    action: action::Action,
+) -> Result<(), AppError> {
+    app.set_action(layer, positions, action).await
 }
 
 /// Undoes the last change (⌘Z).

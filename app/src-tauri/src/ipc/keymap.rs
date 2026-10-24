@@ -8,6 +8,7 @@
 
 use std::collections::HashSet;
 
+use keywright_core::action as core;
 use keywright_core::editor::Change;
 use keywright_core::keycap;
 use keywright_core::keymap::LayerId;
@@ -17,6 +18,7 @@ use serde::Serialize;
 use specta::Type;
 
 use super::AppState;
+use super::action::{Action, Choice, Kind, OtherBehavior, choices, kinds, other_behaviors};
 use super::error::AppError;
 
 /// The keymap the canvas draws: the keyboard's keys, its knobs, and its layers.
@@ -28,6 +30,12 @@ pub struct Keymap {
     pub knobs: Vec<Knob>,
     /// The layers, in order: the base layer first.
     pub layers: Vec<Layer>,
+    /// The actions the inspector lists as they are, which the firmware can do.
+    pub choices: Vec<Choice>,
+    /// The behaviors Keywright doesn't know, which the inspector edits by their parameters.
+    pub others: Vec<OtherBehavior>,
+    /// The kinds of action the inspector edits that the firmware can do.
+    pub kinds: Vec<Kind>,
 }
 
 /// A key's place, size and rotation, as the keyboard reports them. Lengths are in
@@ -79,6 +87,9 @@ pub struct Layer {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Key {
+    /// What it does, for the inspector's editors. A "same as layer below" key is that,
+    /// whatever it inherits.
+    pub action: Action,
     /// What its keycap shows. For a "same as layer below" key, what it inherits.
     pub keycap: Keycap,
     /// Whether the key is "same as layer below": its keycap is drawn faded, with a ▽.
@@ -201,8 +212,13 @@ impl Keymap {
                 name: keycap::layer_name(keymap, layer.id),
                 keys: keys
                     .into_iter()
+                    .zip(&layer.bindings)
                     .enumerate()
-                    .map(|(position, key)| Key {
+                    .map(|(position, (key, binding))| Key {
+                        action: Action::of(
+                            core::Action::from_binding(*binding, &keyboard.behaviors),
+                            &keyboard.behaviors,
+                        ),
                         keycap: key.keycap.into(),
                         inherited: key.inherited,
                         sentence: key.sentence,
@@ -244,6 +260,9 @@ impl Keymap {
                     .collect()
             }),
             layers,
+            choices: choices(keymap, &keyboard.behaviors),
+            others: other_behaviors(&keyboard.behaviors),
+            kinds: kinds(&keyboard.behaviors),
         })
     }
 }
@@ -309,7 +328,7 @@ mod tests {
     use serde_json::json;
     use tokio::sync::mpsc;
 
-    use super::{Hold, Key, Keycap, Keymap, LayerMode};
+    use super::{Action, Hold, Key, Keycap, Keymap, LayerMode};
     use crate::ipc::{Update, follow};
 
     /// The simulated Sofle, unlocked and ready, and the keymaps the UI hears from then on.
@@ -463,6 +482,7 @@ mod tests {
     #[test]
     fn keys_reach_the_ui_tagged_by_kind_in_camel_case() {
         let key = Key {
+            action: Action::Nothing,
             keycap: Keycap::TapHold {
                 tap: "⎋ Esc".to_owned(),
                 hold: Hold::Key {
@@ -478,6 +498,7 @@ mod tests {
         assert_eq!(
             serde_json::to_value(key).unwrap(),
             json!({
+                "action": { "kind": "nothing" },
                 "keycap": { "kind": "tap-hold", "tap": "⎋ Esc", "hold": { "kind": "key", "text": "⌃" } },
                 "inherited": false,
                 "sentence": "Tap for Escape, hold for ⌃ Control.",

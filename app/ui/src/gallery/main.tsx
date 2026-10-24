@@ -3,6 +3,8 @@
  * it at /gallery, outside the app, so it opens in Safari too. The release build has only
  * the app.
  */
+// First, before React loads.
+import "../no-performance-tracks.ts";
 import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
 import "../design-system/tokens.css";

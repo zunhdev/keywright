@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { List, ListItem } from "../design-system/List.tsx";
+import { Inspector } from "../features/inspector/Inspector.tsx";
 import { switchLayer } from "../features/keyboard-canvas/edits.ts";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { LayerName } from "../features/keyboard-canvas/Keycap.tsx";
@@ -34,7 +35,7 @@ function useWindowWidth(): number {
 /**
  * The main window (design §3): the toolbar over three panes, the layers, the keyboard
  * canvas and the inspector, in that order on the page, so keyboard focus moves through
- * them in that order. The inspector shows a placeholder until it's built.
+ * them in that order.
  */
 export function MainWindow() {
   const messages = useMessages();
@@ -95,7 +96,7 @@ export function MainWindow() {
           data-placement={inspector}
           style={{ width: paneWidths.inspector }}
         >
-          <p className={styles.empty}>{messages.format("inspector.empty")}</p>
+          <Inspector />
           <Splitter panel="inspector" />
         </aside>
       )}

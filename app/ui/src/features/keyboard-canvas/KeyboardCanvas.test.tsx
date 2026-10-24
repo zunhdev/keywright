@@ -9,7 +9,7 @@ import { LOCALE } from "../../i18n/messages.ts";
 import type { Layer } from "../../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
 import { drawSofle, keys, status } from "../../test/canvas.tsx";
-import { sofleKeymap } from "../../test/sofle-keymap.ts";
+import { sofleKeymap } from "../../test/sofle.ts";
 import { switchLayer } from "./edits.ts";
 import { KeyboardCanvas } from "./KeyboardCanvas.tsx";
 

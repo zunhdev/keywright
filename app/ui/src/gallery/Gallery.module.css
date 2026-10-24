@@ -120,12 +120,25 @@
   flex: none;
 }
 
+/* The canvas and the inspector side by side, as in the window. */
+.window {
+  display: flex;
+  height: 520px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+.inspector {
+  flex: none;
+  width: 320px;
+  border-inline-start: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+}
+
 /* The canvas, in a box of its own, as it fills its pane in the window. */
 .board {
   position: relative;
-  height: 460px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-panel);
+  flex: 1;
   background: var(--bg-canvas);
-  overflow: hidden;
 }

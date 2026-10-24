@@ -43,8 +43,11 @@ export interface KeycapProps extends KeycapState {
   readonly dragged?: boolean;
   /** Where it sits, rotated, on the canvas. */
   readonly style?: CSSProperties;
-  /** Says that it was clicked or pressed, and whether with ⇧ or ⌘, to extend a selection. */
-  readonly onPress?: (modifiers: { shift: boolean; command: boolean }) => void;
+  /**
+   * Says that it was clicked or pressed: with ⇧ or ⌘, to extend a selection, or with ↩, to
+   * go to the inspector.
+   */
+  readonly onPress?: (press: { shift: boolean; command: boolean; enter: boolean }) => void;
 }
 
 /** How many characters a layer's colour square and its gap take, about. */
@@ -102,7 +105,11 @@ export function Keycap({
           ? {}
           : {
               onPress: (event: PressEvent) => {
-                onPress({ shift: event.shiftKey, command: event.metaKey });
+                onPress({
+                  shift: event.shiftKey,
+                  command: event.metaKey,
+                  enter: event.pointerType === "keyboard" && event.key === "Enter",
+                });
               },
             })}
       >

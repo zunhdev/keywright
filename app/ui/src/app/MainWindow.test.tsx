@@ -5,7 +5,7 @@ import { userEvent } from "@testing-library/user-event";
 
 import type { SessionState, SessionStatus } from "../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../test/axe.ts";
-import { sofleKeymap } from "../test/sofle-keymap.ts";
+import { sofleKeymap } from "../test/sofle.ts";
 import { App } from "./App.tsx";
 import { useStore } from "./store.ts";
 
@@ -174,6 +174,39 @@ describe("the panes", () => {
     );
     await userEvent.tab();
     expect(canvas.contains(document.activeElement)).toBe(false);
+  });
+});
+
+/** Waits for the next frame, when a pane just shown has rendered. */
+function nextFrame(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      resolve();
+    });
+  });
+}
+
+describe("the inspector", () => {
+  test("shows the selected key, and ↩ or a double-click on a key goes to its action picker", async () => {
+    renderAt(1728);
+    readySofle();
+    const inspector = screen.getByRole("complementary", { name: "Inspector" });
+    expect(within(inspector).getByText("60 keys, 0 changed")).toBeDefined();
+
+    const q = screen.getByRole("button", { name: "Left half, row 2, key 2. Types Q." });
+    await userEvent.click(q);
+    expect(within(inspector).getByText("Types Q.")).toBeDefined();
+    await userEvent.keyboard("{Enter}");
+    await nextFrame();
+    expect(document.activeElement?.getAttribute("aria-label")).toBe("Action: Key or shortcut");
+
+    act(() => {
+      useStore.getState().togglePanel("inspector");
+    });
+    await userEvent.dblClick(q);
+    await nextFrame();
+    expect(useStore.getState().panels.inspector).toBe(true);
+    expect(document.activeElement?.getAttribute("aria-label")).toBe("Action: Key or shortcut");
   });
 });
 

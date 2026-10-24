@@ -4,7 +4,7 @@ import { emit } from "@tauri-apps/api/event";
 import { mockIPC } from "@tauri-apps/api/mocks";
 
 import { useStore } from "../app/store.ts";
-import { sofleKeymap } from "../test/sofle-keymap.ts";
+import { sofleKeymap } from "../test/sofle.ts";
 import type { SessionStatus } from "./bindings.ts";
 import { followMenu } from "./menu.ts";
 

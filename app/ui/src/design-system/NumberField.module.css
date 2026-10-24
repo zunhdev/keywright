@@ -1,0 +1,23 @@
+/* The − and + of a number field: the field's own look comes from ComboBox's. */
+.step {
+  display: grid;
+  place-items: center;
+  width: var(--control-compact);
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+
+  &[data-hovered] {
+    color: var(--text-primary);
+  }
+
+  &[data-disabled] {
+    opacity: 0.4;
+  }
+}
+
+.input {
+  text-align: center;
+  font-feature-settings: var(--font-features-numbers);
+}

@@ -9,7 +9,7 @@ import { useStore } from "../app/store.ts";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { LOCALE } from "../i18n/messages.ts";
 import type { SessionStatus } from "../ipc/bindings.ts";
-import { sofleKeymap } from "./sofle-keymap.ts";
+import { sofleKeymap } from "./sofle.ts";
 
 /** The Sofle's status over USB, in `kind`, with nothing to undo. */
 export function status(kind: "ready" | "locked" | "no-device"): SessionStatus {

@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": ["app/ui/src/ipc/bindings.ts", "app/ui/src/test/sofle-keymap.ts"],
+  "ignorePatterns": ["app/ui/src/ipc/bindings.ts", "app/ui/src/test/sofle.ts"],
   "plugins": ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import", "promise"],
   "categories": {
     "correctness": "error",
@@ -13,7 +13,10 @@
     "eslint/no-inline-comments": "off",
     "eslint/no-warning-comments": "off",
     "import/max-dependencies": "off",
-    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
+    "import/no-unassigned-import": [
+      "error",
+      { "allow": ["**/*.css", "**/no-performance-tracks.ts"] }
+    ],
     "react/react-in-jsx-scope": "off",
     "typescript/no-confusing-void-expression": ["warn", { "ignoreArrowShorthand": true }],
     "typescript/prefer-readonly-parameter-types": "off"

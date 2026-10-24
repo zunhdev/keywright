@@ -2,7 +2,7 @@ import { type StateCreator, create } from "zustand";
 
 import { bounds, zoomIn, zoomOut } from "../features/keyboard-canvas/geometry.ts";
 import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
-import type { Keymap, SessionStatus } from "../ipc/bindings.ts";
+import type { KeyEntry, Keymap, SessionStatus } from "../ipc/bindings.ts";
 import { clampWidth, isCrowded, PANES, type Panel } from "./layout.ts";
 
 /**
@@ -14,6 +14,8 @@ export interface SessionSlice {
   readonly session: SessionStatus | null;
   /** The keymap the canvas draws, or `null` until the session has read one. */
   readonly keymap: Keymap | null;
+  /** Every key ZMK names, for the inspector's key popup, once loaded. */
+  readonly keyCatalog: readonly KeyEntry[];
 }
 
 /** What the UI itself decides: the layer shown, what's selected, the zoom, and the panes. */
@@ -71,6 +73,7 @@ export type Store = SessionSlice & UiSlice;
 const sessionSlice: StateCreator<Store, [], [], SessionSlice> = () => ({
   session: null,
   keymap: null,
+  keyCatalog: [],
 });
 
 /** How wide the keyboard is, in key units: 0 before there's a keymap to draw. */

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { sofleKeymap } from "../../test/sofle-keymap.ts";
+import { sofleKeymap } from "../../test/sofle.ts";
 import { keysBetween, nearestKey } from "./navigation.ts";
 
 const keys = sofleKeymap.keys;

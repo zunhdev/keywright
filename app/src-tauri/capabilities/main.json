@@ -8,6 +8,8 @@
     "core:event:allow-unlisten",
     "allow-session-state",
     "allow-session-keymap",
+    "allow-key-catalog",
+    "allow-set-action",
     "allow-swap-keys",
     "allow-copy-key",
     "allow-copy-action",

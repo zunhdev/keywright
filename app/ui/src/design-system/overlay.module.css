@@ -55,6 +55,13 @@
   }
 }
 
+/* A group's title in a list of options. */
+.header {
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
 .collection {
   padding: var(--space-1);
   outline: none;
@@ -64,4 +71,10 @@
   height: 1px;
   margin: var(--space-1) var(--space-2);
   background: var(--border-subtle);
+}
+
+/* An option's second line, such as what an action does. */
+.description {
+  color: var(--text-secondary);
+  font: var(--type-caption);
 }

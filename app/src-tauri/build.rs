@@ -9,6 +9,8 @@ use tauri_build::{AppManifest, Attributes};
 const COMMANDS: &[&str] = &[
     "session_state",
     "session_keymap",
+    "key_catalog",
+    "set_action",
     "swap_keys",
     "copy_key",
     "copy_action",
