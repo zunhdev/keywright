@@ -19,7 +19,7 @@
 //! keyboard is "locked", and changes are "trying" until saved.
 //!
 //! **Testing.** With `KEYWRIGHT_SIMULATOR` set, the CLI talks to a simulated keyboard
-//! rather than USB ([`keyboards::Scenario`]). The snapshot tests in `tests/cmd` use it.
+//! rather than a real one ([`keyboards::Scenario`]). The snapshot tests in `tests/cmd` use it.
 //!
 //! Tech spec §4 describes the design.
 

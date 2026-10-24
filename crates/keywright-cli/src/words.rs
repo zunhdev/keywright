@@ -8,17 +8,25 @@ use keywright_core::support_packs::SupportPack;
 use keywright_device::{Incompatibility, State};
 
 use crate::failure::Kind;
+use crate::keyboards::Link;
 
 /// What to do when no keyboard is connected (design §7, "No keyboard").
-pub(crate) const NO_KEYBOARD: &str =
-    "No keyboard found. Plug the left half into this Mac with a cable.";
+pub(crate) const NO_KEYBOARD: &str = "No keyboard found. Plug the left half into this Mac \
+     with a cable, or pair it in System Settings › Bluetooth.";
 
-/// Why a keyboard's port couldn't be opened, and what to do.
-pub(crate) fn unavailable(port: &str, error: &str) -> String {
-    format!(
-        "Couldn't open the keyboard on {port}: {error}. If Keywright's app is open, quit it \
-         and try again."
-    )
+/// Why the CLI couldn't connect to a keyboard, and what to do.
+pub(crate) fn unavailable(link: &Link, error: &str) -> String {
+    match link {
+        Link::Usb { port } => format!(
+            "Couldn't open the keyboard on {port}: {error}. If Keywright's app is open, quit \
+             it and try again."
+        ),
+        Link::Bluetooth { name, .. } => format!(
+            "Couldn't connect to {} over Bluetooth: {error}.",
+            name.as_deref().unwrap_or("the keyboard")
+        ),
+        Link::Simulated => format!("Couldn't connect to the simulated keyboard: {error}."),
+    }
 }
 
 /// Where a key is: its row and its place in the row, counting from 1, as people count,
