@@ -96,6 +96,9 @@ export function Keyboard({
       if (next === null) return;
       select([next]);
       focusKey(next);
+    } else if (event.key.toLowerCase() === "r") {
+      event.preventDefault();
+      useStore.getState().startRecording();
     } else if (event.key.toLowerCase() === "t") {
       event.preventDefault();
       void setKeys("same-as-layer-below");

@@ -2,7 +2,7 @@
  * The fields the inspector's editors share (design §5.4): a key or shortcut, with its
  * modifiers; a modifier on its own; and a layer.
  */
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { useStore } from "../../app/store.ts";
 import { Button } from "../../design-system/Button.tsx";
@@ -11,6 +11,7 @@ import { Segment, SegmentedControl, ToggleGroup } from "../../design-system/Segm
 import { useMessages } from "../../i18n/messages.ts";
 import type { Group, KeyEntry, Layer, Shortcut } from "../../ipc/bindings.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
+import { RecorderField } from "./RecorderField.tsx";
 
 import styles from "./Inspector.module.css";
 
@@ -106,20 +107,24 @@ function KeyPicker({
 }
 
 /**
- * A key or shortcut (design §5.4): the key, from the key popup, and the modifiers held
- * with it, ⌃ ⌥ ⇧ ⌘, left-hand unless Details says otherwise. Each change goes to `onChange`
- * once there's a key.
+ * A key or shortcut (design §5.3, §5.4): the shortcut, with Record to press it on the
+ * keyboard; the key, from the key popup; and the modifiers held with it, ⌃ ⌥ ⇧ ⌘,
+ * left-hand unless Details says otherwise. Each change goes to `onChange` once there's a
+ * key. `recorder` names its recorder, such as `KEY_RECORDER` for the one ⌘R starts.
  */
 export function ShortcutField({
   label,
   value,
   onChange,
+  recorder,
 }: {
   label: string;
   value: Shortcut | null;
   onChange: (shortcut: Shortcut) => void;
+  recorder?: string;
 }) {
   const messages = useMessages();
+  const ownRecorder = useId();
   const keys = useStore((store) => store.keyCatalog);
   const mods = value?.mods ?? 0;
   const [right, setRight] = useState(mods > 0x0f);
@@ -132,6 +137,7 @@ export function ShortcutField({
   };
   return (
     <div className={styles.fields}>
+      <RecorderField value={value} recorder={recorder ?? ownRecorder} onRecord={onChange} />
       <KeyPicker
         label={label}
         value={value}

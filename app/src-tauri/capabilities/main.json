@@ -9,6 +9,8 @@
     "allow-session-state",
     "allow-session-keymap",
     "allow-key-catalog",
+    "allow-dom-codes",
+    "allow-shortcut-words",
     "allow-set-action",
     "allow-swap-keys",
     "allow-copy-key",

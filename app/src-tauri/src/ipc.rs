@@ -60,6 +60,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             session::session_state,
             keymap::session_keymap,
             action::key_catalog,
+            action::dom_codes,
+            action::shortcut_words,
             edit::set_action,
             edit::swap_keys,
             edit::copy_key,
@@ -143,15 +145,19 @@ mod tests {
         let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
         let generated = format!(
             "// The simulated Sofle's stock keymap, as `session_keymap` gives it, and the key\n\
-             // catalog, as `key_catalog` does, generated from keywright-app (src/ipc.rs) for the\n\
-             // UI's tests and gallery. Don't edit it: run `mise run generate:bindings`.\n\
-             import type {{ KeyEntry, Keymap }} from \"../ipc/bindings.ts\";\n\
+             // tables, as `key_catalog` and `dom_codes` do, generated from keywright-app\n\
+             // (src/ipc.rs) for the UI's tests and gallery. Don't edit it: run\n\
+             // `mise run generate:bindings`.\n\
+             import type {{ DomCode, KeyEntry, Keymap }} from \"../ipc/bindings.ts\";\n\
              \n\
              export const sofleKeymap: Keymap = {};\n\
              \n\
-             export const keyCatalog: KeyEntry[] = {};\n",
+             export const keyCatalog: KeyEntry[] = {};\n\
+             \n\
+             export const domCodes: DomCode[] = {};\n",
             serde_json::to_string_pretty(&keymap).unwrap(),
-            serde_json::to_string_pretty(&super::action::key_catalog()).unwrap()
+            serde_json::to_string_pretty(&super::action::key_catalog()).unwrap(),
+            serde_json::to_string_pretty(&super::action::dom_codes()).unwrap()
         );
 
         let committed = ui_file("test/sofle.ts");

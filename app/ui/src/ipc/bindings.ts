@@ -42,6 +42,10 @@ export const commands = {
 	 *  modifiers are left out: the modifier toggles choose a side.
 	 */
 	keyCatalog: () => __TAURI_INVOKE<KeyEntry[]>("key_catalog"),
+	/**  Every `KeyboardEvent.code` value the recorder knows, with the key it stands for. */
+	domCodes: () => __TAURI_INVOKE<DomCode[]>("dom_codes"),
+	/**  What a key or shortcut is called, and the Mac action it is, for the recorder. */
+	shortcutWords: (shortcut: Shortcut) => __TAURI_INVOKE<ShortcutWords>("shortcut_words", { shortcut }),
 	/**
 	 *  Makes keys on a layer do an action (the inspector).
 	 * 
@@ -270,6 +274,19 @@ export type Choice = {
 	sentence: string,
 	/**  The action. */
 	action: Action,
+};
+
+/**
+ *  A physical key, by its `KeyboardEvent.code`, for the shortcut recorder (MAC-2, tech
+ *  spec §11.2): what the key is, whatever the input source makes it type.
+ */
+export type DomCode = {
+	/**  The `KeyboardEvent.code` value, such as `KeyA` or `ShiftRight`. */
+	code: string,
+	/**  The key's usage page. */
+	page: Page,
+	/**  The key's usage ID. */
+	id: number,
 };
 
 /**  A group of keys in the key popup. */
@@ -677,6 +694,19 @@ export type Shortcut = {
 	page: Page,
 	/**  The key's usage ID on its page. */
 	id: number,
+};
+
+/**
+ *  What a key or shortcut is called (design §5.3): on a keycap, in text, and the Mac
+ *  action it is, if it's one.
+ */
+export type ShortcutWords = {
+	/**  As a keycap shows it, such as `⇧⌘4`. */
+	label: string,
+	/**  As text calls it, such as `Escape`. */
+	name: string,
+	/**  The Mac action preset it is, such as `Screenshot of an area`, if it's one. */
+	preset: string | null,
 };
 
 /**  How the session reaches the keyboard. */

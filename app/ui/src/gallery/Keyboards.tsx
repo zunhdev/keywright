@@ -8,7 +8,7 @@ import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { Keycap, type KeycapProps, type KeycapState } from "../features/keyboard-canvas/Keycap.tsx";
 import type { Key, Keycap as KeycapData } from "../ipc/bindings.ts";
-import { keyCatalog, sofleKeymap } from "../test/sofle.ts";
+import { domCodes, keyCatalog, sofleKeymap } from "../test/sofle.ts";
 
 import styles from "./Gallery.module.css";
 
@@ -141,4 +141,5 @@ useStore.setState({
   },
   keymap: sofleKeymap,
   keyCatalog,
+  domCodes,
 });

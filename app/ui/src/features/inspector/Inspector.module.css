@@ -133,3 +133,44 @@
   color: var(--text-primary);
   font: var(--type-body);
 }
+
+/* The shortcut recorder (design §5.3): the shortcut, or "Press a shortcut…", and Record. */
+.recorder {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.recorded {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  box-sizing: border-box;
+  min-width: 0;
+  height: var(--control-default);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-control);
+  font: var(--type-body-strong);
+
+  /* While recording, a pulsing accent border; with Reduce Motion, a still one. */
+  &[data-recording] {
+    border-color: var(--accent);
+    font: var(--type-body);
+    animation: recording 1.2s var(--ease-out) infinite;
+  }
+}
+
+@keyframes recording {
+  50% {
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recorded[data-recording] {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--accent-subtle);
+  }
+}

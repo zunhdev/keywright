@@ -1,7 +1,8 @@
 // The simulated Sofle's stock keymap, as `session_keymap` gives it, and the key
-// catalog, as `key_catalog` does, generated from keywright-app (src/ipc.rs) for the
-// UI's tests and gallery. Don't edit it: run `mise run generate:bindings`.
-import type { KeyEntry, Keymap } from "../ipc/bindings.ts";
+// tables, as `key_catalog` and `dom_codes` do, generated from keywright-app
+// (src/ipc.rs) for the UI's tests and gallery. Don't edit it: run
+// `mise run generate:bindings`.
+import type { DomCode, KeyEntry, Keymap } from "../ipc/bindings.ts";
 
 export const sofleKeymap: Keymap = {
   "keys": [
@@ -7437,5 +7438,923 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Input Assist Cancel",
     "name": "Keyboard Input Assist Cancel",
     "group": "other"
+  }
+];
+
+export const domCodes: DomCode[] = [
+  {
+    "code": "KeyA",
+    "page": "keyboard",
+    "id": 4
+  },
+  {
+    "code": "KeyB",
+    "page": "keyboard",
+    "id": 5
+  },
+  {
+    "code": "KeyC",
+    "page": "keyboard",
+    "id": 6
+  },
+  {
+    "code": "KeyD",
+    "page": "keyboard",
+    "id": 7
+  },
+  {
+    "code": "KeyE",
+    "page": "keyboard",
+    "id": 8
+  },
+  {
+    "code": "KeyF",
+    "page": "keyboard",
+    "id": 9
+  },
+  {
+    "code": "KeyG",
+    "page": "keyboard",
+    "id": 10
+  },
+  {
+    "code": "KeyH",
+    "page": "keyboard",
+    "id": 11
+  },
+  {
+    "code": "KeyI",
+    "page": "keyboard",
+    "id": 12
+  },
+  {
+    "code": "KeyJ",
+    "page": "keyboard",
+    "id": 13
+  },
+  {
+    "code": "KeyK",
+    "page": "keyboard",
+    "id": 14
+  },
+  {
+    "code": "KeyL",
+    "page": "keyboard",
+    "id": 15
+  },
+  {
+    "code": "KeyM",
+    "page": "keyboard",
+    "id": 16
+  },
+  {
+    "code": "KeyN",
+    "page": "keyboard",
+    "id": 17
+  },
+  {
+    "code": "KeyO",
+    "page": "keyboard",
+    "id": 18
+  },
+  {
+    "code": "KeyP",
+    "page": "keyboard",
+    "id": 19
+  },
+  {
+    "code": "KeyQ",
+    "page": "keyboard",
+    "id": 20
+  },
+  {
+    "code": "KeyR",
+    "page": "keyboard",
+    "id": 21
+  },
+  {
+    "code": "KeyS",
+    "page": "keyboard",
+    "id": 22
+  },
+  {
+    "code": "KeyT",
+    "page": "keyboard",
+    "id": 23
+  },
+  {
+    "code": "KeyU",
+    "page": "keyboard",
+    "id": 24
+  },
+  {
+    "code": "KeyV",
+    "page": "keyboard",
+    "id": 25
+  },
+  {
+    "code": "KeyW",
+    "page": "keyboard",
+    "id": 26
+  },
+  {
+    "code": "KeyX",
+    "page": "keyboard",
+    "id": 27
+  },
+  {
+    "code": "KeyY",
+    "page": "keyboard",
+    "id": 28
+  },
+  {
+    "code": "KeyZ",
+    "page": "keyboard",
+    "id": 29
+  },
+  {
+    "code": "Digit1",
+    "page": "keyboard",
+    "id": 30
+  },
+  {
+    "code": "Digit2",
+    "page": "keyboard",
+    "id": 31
+  },
+  {
+    "code": "Digit3",
+    "page": "keyboard",
+    "id": 32
+  },
+  {
+    "code": "Digit4",
+    "page": "keyboard",
+    "id": 33
+  },
+  {
+    "code": "Digit5",
+    "page": "keyboard",
+    "id": 34
+  },
+  {
+    "code": "Digit6",
+    "page": "keyboard",
+    "id": 35
+  },
+  {
+    "code": "Digit7",
+    "page": "keyboard",
+    "id": 36
+  },
+  {
+    "code": "Digit8",
+    "page": "keyboard",
+    "id": 37
+  },
+  {
+    "code": "Digit9",
+    "page": "keyboard",
+    "id": 38
+  },
+  {
+    "code": "Digit0",
+    "page": "keyboard",
+    "id": 39
+  },
+  {
+    "code": "Enter",
+    "page": "keyboard",
+    "id": 40
+  },
+  {
+    "code": "Escape",
+    "page": "keyboard",
+    "id": 41
+  },
+  {
+    "code": "Backspace",
+    "page": "keyboard",
+    "id": 42
+  },
+  {
+    "code": "Tab",
+    "page": "keyboard",
+    "id": 43
+  },
+  {
+    "code": "Space",
+    "page": "keyboard",
+    "id": 44
+  },
+  {
+    "code": "Minus",
+    "page": "keyboard",
+    "id": 45
+  },
+  {
+    "code": "Equal",
+    "page": "keyboard",
+    "id": 46
+  },
+  {
+    "code": "BracketLeft",
+    "page": "keyboard",
+    "id": 47
+  },
+  {
+    "code": "BracketRight",
+    "page": "keyboard",
+    "id": 48
+  },
+  {
+    "code": "Backslash",
+    "page": "keyboard",
+    "id": 49
+  },
+  {
+    "code": "Semicolon",
+    "page": "keyboard",
+    "id": 51
+  },
+  {
+    "code": "Quote",
+    "page": "keyboard",
+    "id": 52
+  },
+  {
+    "code": "Backquote",
+    "page": "keyboard",
+    "id": 53
+  },
+  {
+    "code": "Comma",
+    "page": "keyboard",
+    "id": 54
+  },
+  {
+    "code": "Period",
+    "page": "keyboard",
+    "id": 55
+  },
+  {
+    "code": "Slash",
+    "page": "keyboard",
+    "id": 56
+  },
+  {
+    "code": "CapsLock",
+    "page": "keyboard",
+    "id": 57
+  },
+  {
+    "code": "F1",
+    "page": "keyboard",
+    "id": 58
+  },
+  {
+    "code": "F2",
+    "page": "keyboard",
+    "id": 59
+  },
+  {
+    "code": "F3",
+    "page": "keyboard",
+    "id": 60
+  },
+  {
+    "code": "F4",
+    "page": "keyboard",
+    "id": 61
+  },
+  {
+    "code": "F5",
+    "page": "keyboard",
+    "id": 62
+  },
+  {
+    "code": "F6",
+    "page": "keyboard",
+    "id": 63
+  },
+  {
+    "code": "F7",
+    "page": "keyboard",
+    "id": 64
+  },
+  {
+    "code": "F8",
+    "page": "keyboard",
+    "id": 65
+  },
+  {
+    "code": "F9",
+    "page": "keyboard",
+    "id": 66
+  },
+  {
+    "code": "F10",
+    "page": "keyboard",
+    "id": 67
+  },
+  {
+    "code": "F11",
+    "page": "keyboard",
+    "id": 68
+  },
+  {
+    "code": "F12",
+    "page": "keyboard",
+    "id": 69
+  },
+  {
+    "code": "PrintScreen",
+    "page": "keyboard",
+    "id": 70
+  },
+  {
+    "code": "ScrollLock",
+    "page": "keyboard",
+    "id": 71
+  },
+  {
+    "code": "Pause",
+    "page": "keyboard",
+    "id": 72
+  },
+  {
+    "code": "Insert",
+    "page": "keyboard",
+    "id": 73
+  },
+  {
+    "code": "Home",
+    "page": "keyboard",
+    "id": 74
+  },
+  {
+    "code": "PageUp",
+    "page": "keyboard",
+    "id": 75
+  },
+  {
+    "code": "Delete",
+    "page": "keyboard",
+    "id": 76
+  },
+  {
+    "code": "End",
+    "page": "keyboard",
+    "id": 77
+  },
+  {
+    "code": "PageDown",
+    "page": "keyboard",
+    "id": 78
+  },
+  {
+    "code": "ArrowRight",
+    "page": "keyboard",
+    "id": 79
+  },
+  {
+    "code": "ArrowLeft",
+    "page": "keyboard",
+    "id": 80
+  },
+  {
+    "code": "ArrowDown",
+    "page": "keyboard",
+    "id": 81
+  },
+  {
+    "code": "ArrowUp",
+    "page": "keyboard",
+    "id": 82
+  },
+  {
+    "code": "NumLock",
+    "page": "keyboard",
+    "id": 83
+  },
+  {
+    "code": "NumpadDivide",
+    "page": "keyboard",
+    "id": 84
+  },
+  {
+    "code": "NumpadMultiply",
+    "page": "keyboard",
+    "id": 85
+  },
+  {
+    "code": "NumpadSubtract",
+    "page": "keyboard",
+    "id": 86
+  },
+  {
+    "code": "NumpadAdd",
+    "page": "keyboard",
+    "id": 87
+  },
+  {
+    "code": "NumpadEnter",
+    "page": "keyboard",
+    "id": 88
+  },
+  {
+    "code": "Numpad1",
+    "page": "keyboard",
+    "id": 89
+  },
+  {
+    "code": "Numpad2",
+    "page": "keyboard",
+    "id": 90
+  },
+  {
+    "code": "Numpad3",
+    "page": "keyboard",
+    "id": 91
+  },
+  {
+    "code": "Numpad4",
+    "page": "keyboard",
+    "id": 92
+  },
+  {
+    "code": "Numpad5",
+    "page": "keyboard",
+    "id": 93
+  },
+  {
+    "code": "Numpad6",
+    "page": "keyboard",
+    "id": 94
+  },
+  {
+    "code": "Numpad7",
+    "page": "keyboard",
+    "id": 95
+  },
+  {
+    "code": "Numpad8",
+    "page": "keyboard",
+    "id": 96
+  },
+  {
+    "code": "Numpad9",
+    "page": "keyboard",
+    "id": 97
+  },
+  {
+    "code": "Numpad0",
+    "page": "keyboard",
+    "id": 98
+  },
+  {
+    "code": "NumpadDecimal",
+    "page": "keyboard",
+    "id": 99
+  },
+  {
+    "code": "IntlBackslash",
+    "page": "keyboard",
+    "id": 100
+  },
+  {
+    "code": "ContextMenu",
+    "page": "keyboard",
+    "id": 101
+  },
+  {
+    "code": "Power",
+    "page": "keyboard",
+    "id": 102
+  },
+  {
+    "code": "NumpadEqual",
+    "page": "keyboard",
+    "id": 103
+  },
+  {
+    "code": "F13",
+    "page": "keyboard",
+    "id": 104
+  },
+  {
+    "code": "F14",
+    "page": "keyboard",
+    "id": 105
+  },
+  {
+    "code": "F15",
+    "page": "keyboard",
+    "id": 106
+  },
+  {
+    "code": "F16",
+    "page": "keyboard",
+    "id": 107
+  },
+  {
+    "code": "F17",
+    "page": "keyboard",
+    "id": 108
+  },
+  {
+    "code": "F18",
+    "page": "keyboard",
+    "id": 109
+  },
+  {
+    "code": "F19",
+    "page": "keyboard",
+    "id": 110
+  },
+  {
+    "code": "F20",
+    "page": "keyboard",
+    "id": 111
+  },
+  {
+    "code": "F21",
+    "page": "keyboard",
+    "id": 112
+  },
+  {
+    "code": "F22",
+    "page": "keyboard",
+    "id": 113
+  },
+  {
+    "code": "F23",
+    "page": "keyboard",
+    "id": 114
+  },
+  {
+    "code": "F24",
+    "page": "keyboard",
+    "id": 115
+  },
+  {
+    "code": "Open",
+    "page": "keyboard",
+    "id": 116
+  },
+  {
+    "code": "Help",
+    "page": "keyboard",
+    "id": 117
+  },
+  {
+    "code": "Select",
+    "page": "keyboard",
+    "id": 119
+  },
+  {
+    "code": "Again",
+    "page": "keyboard",
+    "id": 121
+  },
+  {
+    "code": "Undo",
+    "page": "keyboard",
+    "id": 122
+  },
+  {
+    "code": "Cut",
+    "page": "keyboard",
+    "id": 123
+  },
+  {
+    "code": "Copy",
+    "page": "keyboard",
+    "id": 124
+  },
+  {
+    "code": "Paste",
+    "page": "keyboard",
+    "id": 125
+  },
+  {
+    "code": "Find",
+    "page": "keyboard",
+    "id": 126
+  },
+  {
+    "code": "AudioVolumeMute",
+    "page": "keyboard",
+    "id": 127
+  },
+  {
+    "code": "AudioVolumeUp",
+    "page": "keyboard",
+    "id": 128
+  },
+  {
+    "code": "AudioVolumeDown",
+    "page": "keyboard",
+    "id": 129
+  },
+  {
+    "code": "NumpadComma",
+    "page": "keyboard",
+    "id": 133
+  },
+  {
+    "code": "IntlRo",
+    "page": "keyboard",
+    "id": 135
+  },
+  {
+    "code": "KanaMode",
+    "page": "keyboard",
+    "id": 136
+  },
+  {
+    "code": "IntlYen",
+    "page": "keyboard",
+    "id": 137
+  },
+  {
+    "code": "Convert",
+    "page": "keyboard",
+    "id": 138
+  },
+  {
+    "code": "NonConvert",
+    "page": "keyboard",
+    "id": 139
+  },
+  {
+    "code": "Lang1",
+    "page": "keyboard",
+    "id": 144
+  },
+  {
+    "code": "Lang2",
+    "page": "keyboard",
+    "id": 145
+  },
+  {
+    "code": "Lang3",
+    "page": "keyboard",
+    "id": 146
+  },
+  {
+    "code": "Lang4",
+    "page": "keyboard",
+    "id": 147
+  },
+  {
+    "code": "Lang5",
+    "page": "keyboard",
+    "id": 148
+  },
+  {
+    "code": "Abort",
+    "page": "keyboard",
+    "id": 155
+  },
+  {
+    "code": "Props",
+    "page": "keyboard",
+    "id": 163
+  },
+  {
+    "code": "NumpadParenLeft",
+    "page": "keyboard",
+    "id": 182
+  },
+  {
+    "code": "NumpadParenRight",
+    "page": "keyboard",
+    "id": 183
+  },
+  {
+    "code": "NumpadClear",
+    "page": "keyboard",
+    "id": 216
+  },
+  {
+    "code": "ControlLeft",
+    "page": "keyboard",
+    "id": 224
+  },
+  {
+    "code": "ShiftLeft",
+    "page": "keyboard",
+    "id": 225
+  },
+  {
+    "code": "AltLeft",
+    "page": "keyboard",
+    "id": 226
+  },
+  {
+    "code": "MetaLeft",
+    "page": "keyboard",
+    "id": 227
+  },
+  {
+    "code": "ControlRight",
+    "page": "keyboard",
+    "id": 228
+  },
+  {
+    "code": "ShiftRight",
+    "page": "keyboard",
+    "id": 229
+  },
+  {
+    "code": "AltRight",
+    "page": "keyboard",
+    "id": 230
+  },
+  {
+    "code": "MetaRight",
+    "page": "keyboard",
+    "id": 231
+  },
+  {
+    "code": "BrightnessUp",
+    "page": "consumer",
+    "id": 111
+  },
+  {
+    "code": "BrightnessDown",
+    "page": "consumer",
+    "id": 112
+  },
+  {
+    "code": "MediaPlay",
+    "page": "consumer",
+    "id": 176
+  },
+  {
+    "code": "MediaPause",
+    "page": "consumer",
+    "id": 177
+  },
+  {
+    "code": "MediaRecord",
+    "page": "consumer",
+    "id": 178
+  },
+  {
+    "code": "MediaFastForward",
+    "page": "consumer",
+    "id": 179
+  },
+  {
+    "code": "MediaRewind",
+    "page": "consumer",
+    "id": 180
+  },
+  {
+    "code": "MediaTrackNext",
+    "page": "consumer",
+    "id": 181
+  },
+  {
+    "code": "MediaTrackPrevious",
+    "page": "consumer",
+    "id": 182
+  },
+  {
+    "code": "MediaStop",
+    "page": "consumer",
+    "id": 183
+  },
+  {
+    "code": "Eject",
+    "page": "consumer",
+    "id": 184
+  },
+  {
+    "code": "MediaPlayPause",
+    "page": "consumer",
+    "id": 205
+  },
+  {
+    "code": "MediaSelect",
+    "page": "consumer",
+    "id": 387
+  },
+  {
+    "code": "LaunchMail",
+    "page": "consumer",
+    "id": 394
+  },
+  {
+    "code": "LaunchApp2",
+    "page": "consumer",
+    "id": 402
+  },
+  {
+    "code": "LaunchApp1",
+    "page": "consumer",
+    "id": 404
+  },
+  {
+    "code": "LaunchControlPanel",
+    "page": "consumer",
+    "id": 415
+  },
+  {
+    "code": "SelectTask",
+    "page": "consumer",
+    "id": 418
+  },
+  {
+    "code": "LaunchScreenSaver",
+    "page": "consumer",
+    "id": 433
+  },
+  {
+    "code": "BrowserSearch",
+    "page": "consumer",
+    "id": 545
+  },
+  {
+    "code": "BrowserHome",
+    "page": "consumer",
+    "id": 547
+  },
+  {
+    "code": "BrowserBack",
+    "page": "consumer",
+    "id": 548
+  },
+  {
+    "code": "BrowserForward",
+    "page": "consumer",
+    "id": 549
+  },
+  {
+    "code": "BrowserStop",
+    "page": "consumer",
+    "id": 550
+  },
+  {
+    "code": "BrowserRefresh",
+    "page": "consumer",
+    "id": 551
+  },
+  {
+    "code": "BrowserFavorites",
+    "page": "consumer",
+    "id": 554
+  },
+  {
+    "code": "ZoomToggle",
+    "page": "consumer",
+    "id": 562
+  },
+  {
+    "code": "MailReply",
+    "page": "consumer",
+    "id": 649
+  },
+  {
+    "code": "MailForward",
+    "page": "consumer",
+    "id": 651
+  },
+  {
+    "code": "MailSend",
+    "page": "consumer",
+    "id": 652
+  },
+  {
+    "code": "KeyboardLayoutSelect",
+    "page": "consumer",
+    "id": 669
+  },
+  {
+    "code": "ShowAllWindows",
+    "page": "consumer",
+    "id": 671
+  },
+  {
+    "code": "ControlRight",
+    "page": "keyboard",
+    "id": 228
+  },
+  {
+    "code": "ShiftRight",
+    "page": "keyboard",
+    "id": 229
+  },
+  {
+    "code": "AltRight",
+    "page": "keyboard",
+    "id": 230
+  },
+  {
+    "code": "MetaRight",
+    "page": "keyboard",
+    "id": 231
   }
 ];

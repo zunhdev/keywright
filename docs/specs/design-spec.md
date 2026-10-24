@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.10 — for review                                                       |
+| **Status**    | Draft v0.11 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -214,12 +214,14 @@ From top to bottom:
 
 ```
  Idle         [ ⇧⌘4                      ] [Record]
- Recording    [ Press a shortcut…  ⎋ cancel ]           ← pulsing accent border
+ Recording    [ Press a shortcut…  ⎋ cancels ] [Cancel]  ← pulsing accent border
  Done         [ ⇧⌘4 · Screenshot area     ] [Record]   ← preset name if it matches one
 ```
 
 - _Record_ (⌘R, or **R** on the canvas) starts capture. The next key-down, with any modifiers held, is recorded by **physical key**. Releasing a lone modifier records just that modifier (e.g. ⌥).
-- **Esc** cancels. To bind Esc itself, pick it from the key list or type "esc" in the picker.
+- **Esc** cancels, and so does Cancel, which Record becomes while recording. Esc with a modifier, such as ⌥⌘Esc, is recorded. To bind Esc itself, pick it from the key list or type "esc" in the picker.
+- Recording is for the selected keys: selecting another key or layer stops it. On a key of another kind, recording switches the inspector to _Key or shortcut_.
+- While recording, the menus give up their shortcuts, so ⌘S records ⌘S rather than saving.
 - A recorded shortcut that matches a Mac action preset shows that preset's name.
 - A fixed hint below the field: _"Some shortcuts, like ⌘Tab or ⌘Space, are used by macOS before Keywright can see them. Find them under Mac actions or search their name."_
 
@@ -532,3 +534,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.8     | 2026-10-24 | Keyboard canvas (§4.1, §4.2, §11.3, KEY-41): key sizes and zoom steps, the knobs' line, words on two lines, what a "same as layer below" key inherits, the top-left badges, and key names in sentences as §11.2 has them.                                                                  |
 | 0.9     | 2026-10-24 | Canvas operation (§4.5, §12, KEY-42): ⇧-click selects the keys between by where they are, Esc cancels a drag, and a key's VoiceOver label is its place, its sentence with keys named, and its state.                                                                                       |
 | 0.10    | 2026-10-24 | Inspector (§5.2, §5.4, KEY-43): the action picker is a button with a searchable menu, and the layer modes read as on layer keys: Hold, Switch, Toggle, Next key.                                                                                                                           |
+| 0.11    | 2026-10-24 | Shortcut recorder (§5.3, KEY-48): Record becomes Cancel while recording; Esc with a modifier is recorded; another selection stops recording, and recording shows the key editor; the menus give up their shortcuts meanwhile.                                                              |

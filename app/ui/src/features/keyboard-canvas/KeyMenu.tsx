@@ -8,9 +8,8 @@ import { copyAction, pasteAction, setKeys } from "./edits.ts";
 import styles from "./KeyMenu.module.css";
 
 /**
- * The selected keys' context menu (design §4.5). Recording a shortcut, restoring stock and
- * showing a key in Review come with the recorder (KEY-48), stock keys (KEY-52) and the
- * review sheet (KEY-50).
+ * The selected keys' context menu (design §4.5). Restoring stock and showing a key in
+ * Review come with stock keys (KEY-52) and the review sheet (KEY-50).
  */
 export function KeyMenu({
   point,
@@ -31,13 +30,14 @@ export function KeyMenu({
       point={point}
       onClose={onClose}
       onAction={(item) => {
+        if (item === "record") useStore.getState().startRecording();
         if (item === "copy") void copyAction();
         if (item === "paste") void pasteAction();
         if (item === "same-as-layer-below") void setKeys("same-as-layer-below");
         if (item === "does-nothing") void setKeys("does-nothing");
       }}
     >
-      <MenuItem id="record" shortcut="R" isDisabled>
+      <MenuItem id="record" shortcut="R">
         {messages.format("key-menu.record")}
       </MenuItem>
       <MenuItem id="copy" shortcut="⌘C">

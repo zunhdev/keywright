@@ -2,7 +2,7 @@ import { type StateCreator, create } from "zustand";
 
 import { bounds, zoomIn, zoomOut } from "../features/keyboard-canvas/geometry.ts";
 import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
-import type { KeyEntry, Keymap, SessionStatus } from "../ipc/bindings.ts";
+import type { DomCode, KeyEntry, Keymap, SessionStatus } from "../ipc/bindings.ts";
 import { clampWidth, isCrowded, PANES, type Panel } from "./layout.ts";
 
 /**
@@ -16,6 +16,8 @@ export interface SessionSlice {
   readonly keymap: Keymap | null;
   /** Every key ZMK names, for the inspector's key popup, once loaded. */
   readonly keyCatalog: readonly KeyEntry[];
+  /** The key behind each `KeyboardEvent.code`, for the shortcut recorder, once loaded. */
+  readonly domCodes: readonly DomCode[];
 }
 
 /** What the UI itself decides: the layer shown, what's selected, the zoom, and the panes. */
@@ -31,6 +33,11 @@ export interface UiSlice {
   readonly copied: boolean;
   /** What VoiceOver says next, politely, such as the layer just shown (design §12). */
   readonly announcement: string;
+  /**
+   * The shortcut recorder waiting for a shortcut for the selected keys, if one is:
+   * `KEY_RECORDER`, the key or shortcut field that ⌘R starts, or another field's ID.
+   */
+  readonly recording: string | null;
   /** The canvas's zoom, one of `ZOOMS`: 1 is actual size. */
   readonly zoom: number;
   /** Whether each side pane shows. */
@@ -51,6 +58,13 @@ export interface UiSlice {
   readonly extendSelection: (position: number) => void;
   /** Selects every key (⌘A). */
   readonly selectAll: () => void;
+  /**
+   * Starts a recorder recording a shortcut for the selected keys: by default the key or
+   * shortcut field's, as ⌘R and R on the canvas do, which the inspector then shows.
+   */
+  readonly startRecording: (recorder?: string) => void;
+  /** Stops recording, whether it recorded or was cancelled. */
+  readonly stopRecording: () => void;
   /** Zooms the canvas in a step (⌘+), out a step (⌘−), or back to actual size (⌘0). */
   readonly zoomCanvas: (to: "in" | "out" | "actual-size") => void;
   /** Shows or hides a side pane, by choice. */
@@ -74,11 +88,24 @@ const sessionSlice: StateCreator<Store, [], [], SessionSlice> = () => ({
   session: null,
   keymap: null,
   keyCatalog: [],
+  domCodes: [],
 });
 
 /** How wide the keyboard is, in key units: 0 before there's a keymap to draw. */
 export function keyboardWidth(keymap: Keymap | null): number {
   return keymap === null ? 0 : bounds(keymap.keys).width;
+}
+
+/** The recorder of the selected keys' key or shortcut field, which ⌘R starts. */
+export const KEY_RECORDER = "key";
+
+/**
+ * The shortcut recorder that records, if one does: one was asked to, and the selected keys
+ * can be changed. While the keyboard is locked, none does.
+ */
+export function activeRecorder(store: Store): string | null {
+  const editable = store.selection.length > 0 && store.session?.state.kind === "ready";
+  return editable ? store.recording : null;
 }
 
 /** The layer the canvas shows: the one chosen, or the first if it's gone or none was. */
@@ -92,15 +119,18 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   selection: [],
   copied: false,
   announcement: "",
+  recording: null,
   zoom: 1,
   panels: { layers: true, inspector: true },
   paneWidths: { layers: PANES.layers.width, inspector: PANES.inspector.width },
   crowded: false,
   layersCollapsedForWidth: false,
-  showLayer: (id) => set({ layer: id }),
-  select: (positions) => set({ selection: positions }),
+  // Another layer or selection stops the recorder, which records for the keys selected.
+  showLayer: (id) => set({ layer: id, recording: null }),
+  select: (positions) => set({ selection: positions, recording: null }),
   toggleKey: (position) =>
     set((store) => ({
+      recording: null,
       selection: store.selection.includes(position)
         ? store.selection.filter((selected) => selected !== position)
         : [...store.selection, position],
@@ -109,9 +139,23 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
     set((store) => {
       const [anchor = position] = store.selection;
       const between = keysBetween(store.keymap?.keys ?? [], anchor, position);
-      return { selection: [anchor, ...between.filter((key) => key !== anchor)] };
+      return {
+        recording: null,
+        selection: [anchor, ...between.filter((key) => key !== anchor)],
+      };
     }),
-  selectAll: () => set((store) => ({ selection: store.keymap?.keys.map((_, key) => key) ?? [] })),
+  selectAll: () =>
+    set((store) => ({
+      recording: null,
+      selection: store.keymap?.keys.map((_, key) => key) ?? [],
+    })),
+  startRecording: (recorder = KEY_RECORDER) =>
+    set((store) =>
+      store.selection.length === 0
+        ? {}
+        : { recording: recorder, panels: { ...store.panels, inspector: true } },
+    ),
+  stopRecording: () => set({ recording: null }),
   zoomCanvas: (to) =>
     set((store) => ({
       zoom: to === "in" ? zoomIn(store.zoom) : to === "out" ? zoomOut(store.zoom) : 1,

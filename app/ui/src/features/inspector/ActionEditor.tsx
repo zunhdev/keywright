@@ -1,3 +1,4 @@
+import { KEY_RECORDER } from "../../app/store.ts";
 import { useMessages } from "../../i18n/messages.ts";
 import type { Action, Choice } from "../../ipc/bindings.ts";
 import type { CategoryId } from "./categories.ts";
@@ -32,6 +33,7 @@ export function ActionEditor({
         value={
           current?.kind === "key-press" && current.key.page === "keyboard" ? current.key : null
         }
+        recorder={KEY_RECORDER}
         onChange={(key) => {
           onChange({ kind: "key-press", key });
         }}

@@ -1,9 +1,14 @@
 import { useStore } from "../app/store.ts";
 import { commands, events } from "./bindings.ts";
 
-/** Loads every key ZMK names, for the inspector's key popup. It doesn't change. */
-export async function loadKeyCatalog(): Promise<void> {
-  useStore.setState({ keyCatalog: await commands.keyCatalog() });
+/**
+ * Loads the key tables from the core: every key ZMK names, for the inspector's key popup,
+ * and the key behind each `KeyboardEvent.code`, for the shortcut recorder. They don't
+ * change.
+ */
+export async function loadKeyTables(): Promise<void> {
+  const [keyCatalog, domCodes] = await Promise.all([commands.keyCatalog(), commands.domCodes()]);
+  useStore.setState({ keyCatalog, domCodes });
 }
 
 /**
