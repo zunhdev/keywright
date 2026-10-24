@@ -4,6 +4,7 @@
 //! check every shortcut. Items that macOS provides, such as Hide, Minimize or Quit, work
 //! from the start. Keywright's own items, each a [`MenuItem`], start disabled. The UI
 //! enables and renames them (`menu_set`), and hears when one is chosen (`menu://item`).
+//! Settings… is the exception: the shell opens its window, so it works from the start.
 
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -70,6 +71,12 @@ impl MenuItem {
             Ok(serde_json::Value::String(id)) => id,
             _ => unreachable!("a unit variant serializes to its name"),
         }
+    }
+
+    /// Whether the shell handles the item itself, so it works from the start: Settings…,
+    /// which opens its own window.
+    pub const fn handled_by_the_shell(self) -> bool {
+        matches!(self, Self::Settings)
     }
 
     /// The item with this ID, or `None` for one of macOS's own items.
@@ -278,7 +285,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
                     app,
                     item.id(),
                     label,
-                    false,
+                    item.handled_by_the_shell(),
                     shortcut,
                 )?)?,
                 Entry::System { item, label } => submenu.append(&system_item(app, item, label)?)?,
@@ -440,6 +447,16 @@ mod tests {
         for (item, _, _) in items() {
             assert!(seen.insert(item), "{item:?} is in the menus twice");
         }
+    }
+
+    /// The UI enables the items it handles; the shell's work without it.
+    #[test]
+    fn only_settings_works_without_the_ui() {
+        let shells: Vec<MenuItem> = items()
+            .map(|(item, _, _)| item)
+            .filter(|item| item.handled_by_the_shell())
+            .collect();
+        assert_eq!(shells, [MenuItem::Settings]);
     }
 
     /// The UI names items as their IDs, so an ID must lead back to its item.

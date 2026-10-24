@@ -42,6 +42,9 @@ pub enum AppError {
     ResetFailed,
     /// System Settings didn't open.
     SettingsNotOpened,
+    /// A setting didn't change: the menu bar didn't take the item, or the setting couldn't
+    /// be saved.
+    SettingNotChanged,
     /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
     /// `force`, it is.
     WouldStrand {

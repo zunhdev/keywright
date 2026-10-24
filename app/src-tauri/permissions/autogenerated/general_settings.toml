@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-general-settings"
+description = "Enables the general_settings command without any pre-configured scope."
+commands.allow = ["general_settings"]
+
+[[permission]]
+identifier = "deny-general-settings"
+description = "Denies the general_settings command without any pre-configured scope."
+commands.deny = ["general_settings"]

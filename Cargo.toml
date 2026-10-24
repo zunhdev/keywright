@@ -30,6 +30,13 @@ objc2-core-bluetooth = { version = "0.3.2", default-features = false, features =
   "std",
   "CBManager",
 ] }
+# ServiceManagement's `SMAppService`, for opening Keywright at login (BAR-5).
+objc2-service-management = { version = "0.3.2", default-features = false, features = [
+  "std",
+  "objc2",
+  "objc2-foundation",
+  "SMAppService",
+] }
 objc2-foundation = { version = "0.3.2", default-features = false, features = [
   "std",
   "NSProcessInfo",

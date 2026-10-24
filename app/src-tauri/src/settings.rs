@@ -1,14 +1,20 @@
 //! Keywright's own settings (design §9.4): `settings.json` in its Application Support
-//! folder. Each setting has a default, which a missing file, or a setting missing from it,
-//! gets; a file that doesn't read gets the defaults too, and stays as it is.
+//! folder, and the Settings window that changes them.
 //!
-//! The Settings window (KEY-67) and the first run's menu bar step (design §8) change them.
-//! Until then, they're the defaults.
+//! Each setting has a default, which a missing file, or a setting missing from it, gets; a
+//! file that doesn't read gets the defaults too, and stays as it is until a setting
+//! changes. The window has the General tab so far: _Show in menu bar_ and _Open at login_.
+//! The other tabs come with KEY-67, and the first run's menu bar step with KEY-72.
 
 use std::fs;
+use std::io;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
+
+/// The Settings window's label.
+pub const WINDOW: &str = "settings";
 
 /// The file's name, in Keywright's folder.
 const FILE: &str = "settings.json";
@@ -47,6 +53,51 @@ impl Settings {
         };
         serde_json::from_str(&text).unwrap_or_default()
     }
+
+    /// Saves the settings in Keywright's folder.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the home folder isn't known, or the file can't be written.
+    pub fn save(self) -> io::Result<()> {
+        let path = path().ok_or_else(|| io::Error::other("the home folder isn't known"))?;
+        self.write(&path)
+    }
+
+    /// Writes the settings to `path`, whole or not at all: to a hidden file first, then
+    /// renamed over it.
+    fn write(self, path: &Path) -> io::Result<()> {
+        if let Some(folder) = path.parent() {
+            fs::create_dir_all(folder)?;
+        }
+        let text = serde_json::to_string_pretty(&self).map_err(io::Error::other)?;
+        let hidden = path.with_file_name(format!(".{FILE}.new"));
+        fs::write(&hidden, text + "\n")?;
+        fs::rename(&hidden, path)
+    }
+}
+
+/// Opens the Settings window, or brings it to the front if it's open (⌘,, design §9.4).
+///
+/// # Errors
+///
+/// Fails if the window can't be made.
+pub fn open_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
+    if let Some(window) = app.get_webview_window(WINDOW) {
+        window.unminimize()?;
+        window.show()?;
+        return window.set_focus();
+    }
+    // The bundled UI, which draws the Settings window for this address.
+    WebviewWindowBuilder::new(app, WINDOW, WebviewUrl::App("index.html#settings".into()))
+        .title("Settings")
+        .inner_size(560.0, 340.0)
+        .resizable(false)
+        .minimizable(false)
+        .center()
+        .focused(true)
+        .build()?;
+    Ok(())
 }
 
 /// Where the settings file is, if the home folder is known.
@@ -93,6 +144,17 @@ mod tests {
                 low_battery: 15,
             }
         );
+    }
+
+    #[test]
+    fn saved_settings_read_back() {
+        let file = File::with("saved", "");
+        let settings = Settings {
+            menu_bar: false,
+            low_battery: 20,
+        };
+        settings.write(&file.0).unwrap();
+        assert_eq!(Settings::read(&file.0), settings);
     }
 
     #[test]
