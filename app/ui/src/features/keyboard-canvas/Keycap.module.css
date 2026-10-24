@@ -1,0 +1,216 @@
+/*
+ * A key on the canvas (design §4.2, §4.3). The button is the key's slot on the keyboard;
+ * the keycap inside it leaves a gap to its neighbours. Sizes follow the key size, --unit,
+ * so that the keyboard zooms as one.
+ */
+.key {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  cursor: default;
+  transition: opacity var(--motion-hover) var(--ease-out);
+
+  /* Searching: keys that don't match fade (design §4.6). */
+  &[data-search="no-match"] {
+    opacity: 0.3;
+  }
+}
+
+.cap {
+  position: absolute;
+  inset: var(--gap);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: 1px solid var(--border-key);
+  border-radius: calc(var(--unit) / 7);
+  /* The keycap's fill, which the dash of "does nothing" shares. */
+  --fill: var(--surface-key);
+  background: var(--fill);
+  box-shadow: var(--shadow-key);
+  transition: background var(--motion-hover) var(--ease-out);
+
+  /* A knob's press: round, inside its ring. */
+  .key[data-round] & {
+    border-radius: 50%;
+  }
+
+  .key[data-hovered] & {
+    --fill: var(--surface-hover);
+  }
+
+  .key[data-selected] & {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .key[data-selected="multiple"] & {
+    --fill: var(--accent-subtle);
+  }
+
+  .key[data-drop-target] & {
+    outline: var(--focus-ring-width) dashed var(--accent);
+    outline-offset: 2px;
+  }
+
+  .key[data-search="match"] & {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+}
+
+/* What the key does. A "same as layer below" key shows what it inherits, faded. */
+.face {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: inherit;
+
+  &[data-inherited] {
+    opacity: var(--ghost-opacity);
+  }
+}
+
+.label,
+.layer,
+.nothing,
+.other,
+.preview {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0 calc(var(--unit) * 0.08);
+  text-align: center;
+}
+
+.label {
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.line {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dual-role keys: what holding does, under a hairline (design §4.2). */
+.strip {
+  display: flex;
+  flex: 0 0 30%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+  min-width: 0;
+  padding: 0 calc(var(--unit) * 0.06);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: calc(var(--unit) * 0.17);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Layer keys: the layer's square and name, then how the key turns it on. */
+.layer {
+  font-weight: 600;
+}
+
+.layerName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.square {
+  flex: none;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 2px;
+}
+
+.mode {
+  padding-bottom: calc(var(--unit) * 0.08);
+  color: var(--text-secondary);
+  font-size: calc(var(--unit) * 0.17);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* "Does nothing": a faint diagonal hatch and a dash, never like "same as layer below". */
+.nothing {
+  position: relative;
+  color: var(--text-secondary);
+  font-size: calc(var(--unit) * 0.3);
+}
+
+/* The dash sits clear of the hatch, so it reads as a dash. */
+.dash {
+  position: relative;
+  padding: 0 0.15em;
+  border-radius: 2px;
+  background: var(--fill);
+  line-height: 1;
+}
+
+.hatch {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 calc(var(--unit) * 0.1),
+    var(--border-subtle) calc(var(--unit) * 0.1) calc(var(--unit) * 0.1 + 1px)
+  );
+}
+
+/* An action Keywright doesn't know: the firmware's name, small. */
+.other {
+  overflow: hidden;
+  font-size: calc(var(--unit) * 0.17);
+  font-weight: 500;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* While dragging (design §4.5): what dropping here would do. */
+.preview {
+  color: var(--accent);
+  font-size: calc(var(--unit) * 0.2);
+  font-weight: 600;
+}
+
+/* Badges (design §4.2): ⚠, ▽ or ⋯ top left, and • top right. */
+.badge {
+  position: absolute;
+  top: calc(var(--unit) * 0.03);
+  font-size: calc(var(--unit) * 0.18);
+  font-weight: 600;
+  line-height: 1;
+
+  &[data-corner="top-left"] {
+    left: calc(var(--unit) * 0.06);
+    color: var(--text-secondary);
+  }
+
+  &[data-corner="top-right"] {
+    right: calc(var(--unit) * 0.06);
+    color: var(--accent);
+  }
+
+  &[data-badge="⚠"] {
+    color: var(--warning);
+  }
+}

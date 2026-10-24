@@ -113,3 +113,19 @@
 .mono {
   font-family: var(--font-mono);
 }
+
+/* A keycap on its own: keys are placed absolutely, as on the canvas. */
+.keySample {
+  position: relative;
+  flex: none;
+}
+
+/* The canvas, in a box of its own, as it fills its pane in the window. */
+.board {
+  position: relative;
+  height: 460px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--bg-canvas);
+  overflow: hidden;
+}

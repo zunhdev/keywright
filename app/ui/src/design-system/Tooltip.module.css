@@ -1,0 +1,25 @@
+/* A tooltip (design §4.3): a short line of text, floating over the window. */
+.tooltip {
+  box-sizing: border-box;
+  max-width: 280px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-badge);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-overlay);
+  color: var(--text-primary);
+  font: var(--type-body);
+
+  &[data-entering] {
+    animation: tooltip-in var(--motion-hover) var(--ease-out);
+  }
+
+  &[data-exiting] {
+    animation: tooltip-in var(--motion-hover) var(--ease-out) reverse;
+  }
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+  }
+}

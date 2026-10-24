@@ -1,6 +1,6 @@
 /**
- * The UI's entry point, which index.html loads: it follows the session and the menu bar,
- * and renders the app into the page (tech spec §12.2).
+ * The UI's entry point, which index.html loads: it follows the session, its keymap and the
+ * menu bar, and renders the app into the page (tech spec §12.2).
  */
 import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
@@ -10,6 +10,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { App } from "./app/App.tsx";
+import { followKeymap } from "./ipc/keymap.ts";
 import { followMenu } from "./ipc/menu.ts";
 import { followSession } from "./ipc/session.ts";
 
@@ -19,6 +20,7 @@ if (!root) {
 }
 // For as long as the page is open.
 void followSession();
+void followKeymap();
 void followMenu();
 createRoot(root).render(
   <StrictMode>

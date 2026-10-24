@@ -60,8 +60,20 @@ export const en = {
   "layers.title": "Layers",
   "layers.empty": "The layers show once your keyboard is unlocked.",
   "canvas.label": "Keyboard",
+  "canvas.knob": (args) => `Turning: ${text(args, "turn")}. Can't be changed yet.`,
+  "canvas.knobs": (args) => `Turning the knobs: ${text(args, "turns")}. Can't be changed yet.`,
   "inspector.label": "Inspector",
   "inspector.empty": "Select a key to see what it does.",
+
+  // Keycaps (design §4.2): what holding a key does, how a layer key turns its layer on,
+  // and what dropping a dragged key would do.
+  "keycap.hold": "hold",
+  "keycap.mode.hold": "hold",
+  "keycap.mode.switch": "switch",
+  "keycap.mode.toggle": "toggle",
+  "keycap.mode.next-key": "next key",
+  "keycap.drop.swap": "Swap",
+  "keycap.drop.copy": "Copy here",
 
   // Menu items the window renames (design §9.6).
   "menu.hide-layers": "Hide Layers",

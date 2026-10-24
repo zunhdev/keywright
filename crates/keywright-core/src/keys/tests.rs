@@ -101,6 +101,107 @@ mod hid_names {
     }
 }
 
+mod us_labels {
+    use super::*;
+
+    fn cap(usage: HidUsage) -> &'static str {
+        us::label(usage).unwrap().cap
+    }
+
+    fn name(usage: HidUsage) -> &'static str {
+        us::label(usage).unwrap().name
+    }
+
+    #[test]
+    fn keys_have_the_mac_labels_and_names_of_design_11_2() {
+        let expected = [
+            (key(0xE3), "⌘", "Command"),
+            (key(0xE2), "⌥", "Option"),
+            (key(0xE0), "⌃", "Control"),
+            (key(0xE1), "⇧", "Shift"),
+            (consumer(0x29D), "🌐", "Globe"),
+            (key(0x28), "↩", "Return"),
+            (key(0x2A), "⌫", "Delete"),
+            (key(0x4C), "⌦", "Forward Delete"),
+            (key(0x29), "⎋ Esc", "Escape"),
+            (key(0x2B), "⇥", "Tab"),
+            (key(0x2C), "␣", "Space"),
+            (key(0x39), "⇪", "Caps Lock"),
+        ];
+        for (usage, keycap, text) in expected {
+            assert_eq!((cap(usage), name(usage)), (keycap, text), "{usage:?}");
+        }
+    }
+
+    #[test]
+    fn right_modifiers_look_like_left_ones() {
+        for (left, right) in (0xE0..=0xE3).zip(0xE4..=0xE7) {
+            assert_eq!(us::label(key(left)), us::label(key(right)));
+        }
+    }
+
+    #[test]
+    fn letters_numbers_and_function_keys_are_what_their_keycaps_say() {
+        assert_eq!(cap(key(0x04)), "A");
+        assert_eq!(cap(key(0x1D)), "Z");
+        assert_eq!(cap(key(0x1E)), "1");
+        assert_eq!(cap(key(0x27)), "0");
+        assert_eq!(cap(key(0x3A)), "F1");
+        assert_eq!(cap(key(0x45)), "F12");
+        assert_eq!(cap(key(0x68)), "F13");
+        assert_eq!(cap(key(0x73)), "F24");
+    }
+
+    #[test]
+    fn keys_that_type_another_character_with_shift_say_which() {
+        let shifted = |usage| us::label(usage).unwrap().shifted;
+        assert_eq!(shifted(key(0x1E)), Some("!"));
+        assert_eq!(shifted(key(0x27)), Some(")"));
+        assert_eq!(shifted(key(0x35)), Some("~"));
+        assert_eq!(shifted(key(0x38)), Some("?"));
+        // Letters type their capitals, which the keycap already shows.
+        assert_eq!(shifted(key(0x04)), None);
+    }
+
+    #[test]
+    fn other_keys_are_called_by_their_hid_name_without_its_prefix() {
+        assert_eq!(cap(key(0x7A)), "Undo");
+        assert_eq!(cap(key(0x49)), "Insert");
+        assert_eq!(cap(consumer(0x192)), "Calculator");
+        assert_eq!(cap(consumer(0x22D)), "Zoom In");
+        assert_eq!(cap(consumer(0x30)), "Power");
+        // Without the explanation in brackets.
+        assert_eq!(cap(key(0x85)), "Keypad ,");
+    }
+
+    #[test]
+    fn media_keys_have_the_names_the_mac_gives_them() {
+        assert_eq!(cap(consumer(0xE9)), "Volume Up");
+        assert_eq!(cap(consumer(0xCD)), "Play/Pause");
+        assert_eq!(cap(consumer(0x29F)), "Mission Control");
+    }
+
+    #[test]
+    fn every_key_zmk_names_has_a_label_in_mac_terms() {
+        for usage in named_usages() {
+            let label = us::label(usage).unwrap();
+            assert!(!label.cap.is_empty() && !label.name.is_empty(), "{usage:?}");
+            for text in [label.cap, label.name] {
+                let firmware = text
+                    .split(|c: char| !c.is_alphanumeric())
+                    .any(|word| ["GUI", "Alt", "Win", "Meta", "Super"].contains(&word));
+                assert!(!firmware, "{usage:?}: {text}");
+            }
+        }
+    }
+
+    #[test]
+    fn usages_without_a_name_have_no_label() {
+        assert_eq!(us::label(key(0x01)), None);
+        assert_eq!(us::label(consumer(0x01)), None);
+    }
+}
+
 mod categories {
     use super::*;
 

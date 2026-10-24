@@ -1,7 +1,8 @@
 //! The session as the UI sees it: what it's doing, and which keyboard it's connected to.
 //!
 //! The UI asks once, with [`session_state`], then follows [`SessionStateChanged`]
-//! (`session://state`), which [`follow`] sends each time the state changes.
+//! (`session://state`), which [`follow`] sends each time the state changes. [`follow`]
+//! sends the keymap too, when it changes ([`super::keymap`]).
 
 use keywright_device::{Incompatibility, Peer, Session, SessionEvent, Snapshot, State};
 use serde::Serialize;
@@ -10,6 +11,7 @@ use tokio::sync::broadcast::error::RecvError;
 
 use super::AppState;
 use super::error::AppError;
+use super::keymap::Keymap;
 
 /// The session's status: its state, the keyboard it's connected to and how, and how
 /// many changes are being tried.
@@ -141,16 +143,28 @@ pub async fn session_state(app: tauri::State<'_, AppState>) -> Result<SessionSta
     Ok(Tracker::default().status(&snapshot.state, Some(&snapshot)))
 }
 
-/// Calls `send` with the session's status each time its state or its changes change,
-/// until the session stops. It listens from the moment it's called, so the returned
-/// future can be spawned later without missing a state.
+/// What [`follow`] sends the UI.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Update {
+    /// The session's status, with each new state, and each change to the changes being
+    /// tried.
+    Status(SessionStatus),
+    /// The keymap the canvas draws, when it changes: `None` once the session forgets it.
+    Keymap(Option<Keymap>),
+}
+
+/// Calls `send` with the session's status each time its state or its changes change, and
+/// with the keymap each time it changes, until the session stops. It listens from the
+/// moment it's called, so the returned future can be spawned later without missing a
+/// state.
 pub fn follow(
     session: Session,
-    mut send: impl FnMut(SessionStatus) + Send + 'static,
+    mut send: impl FnMut(Update) + Send + 'static,
 ) -> impl Future<Output = ()> + Send + 'static {
     let mut events = session.subscribe();
     async move {
         let mut tracker = Tracker::default();
+        let mut keymap = None;
         loop {
             let state = match events.recv().await {
                 Ok(SessionEvent::State(state)) => state,
@@ -171,7 +185,14 @@ pub fn follow(
                     Err(_) => return,
                 }
             };
-            send(tracker.status(&state, snapshot.as_ref()));
+            send(Update::Status(tracker.status(&state, snapshot.as_ref())));
+            if let Some(snapshot) = &snapshot {
+                let now = Keymap::of(snapshot);
+                if now != keymap {
+                    keymap.clone_from(&now);
+                    send(Update::Keymap(now));
+                }
+            }
         }
     }
 }
@@ -225,7 +246,18 @@ mod tests {
     use serde_json::json;
     use tokio::sync::mpsc;
 
-    use super::{SessionState, SessionStatus, Transport, follow};
+    use super::{SessionState, SessionStatus, Transport, Update, follow};
+
+    /// Follows the session, and hears its statuses only.
+    fn statuses(session: &Session) -> mpsc::UnboundedReceiver<SessionStatus> {
+        let (sender, statuses) = mpsc::unbounded_channel();
+        tokio::spawn(follow(session.clone(), move |update| {
+            if let Update::Status(status) = update {
+                sender.send(status).unwrap();
+            }
+        }));
+        statuses
+    }
 
     /// The status of the simulated Sofle, connected, in `state`.
     fn sofle(state: SessionState) -> SessionStatus {
@@ -253,10 +285,7 @@ mod tests {
     #[tokio::test]
     async fn the_ui_follows_a_keyboard_from_connecting_to_ready() {
         let session = Session::start();
-        let (sender, mut statuses) = mpsc::unbounded_channel();
-        tokio::spawn(follow(session.clone(), move |status| {
-            sender.send(status).unwrap();
-        }));
+        let mut statuses = statuses(&session);
         let keyboard = Simulator::sofle().unwrap();
 
         session
@@ -295,10 +324,7 @@ mod tests {
             .wait_for(|state| *state == State::Ready)
             .await
             .unwrap();
-        let (sender, mut statuses) = mpsc::unbounded_channel();
-        tokio::spawn(follow(session.clone(), move |status| {
-            sender.send(status).unwrap();
-        }));
+        let mut statuses = statuses(&session);
 
         let editor = session.snapshot().await.unwrap().editor.unwrap();
         let base = &editor.current().layers[0];

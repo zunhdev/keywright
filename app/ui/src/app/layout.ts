@@ -5,6 +5,8 @@
  * canvas instead of beside it.
  */
 
+import { MIN_KEY } from "../features/keyboard-canvas/geometry.ts";
+
 /** A side pane of the main window. */
 export type Panel = "layers" | "inspector";
 
@@ -17,31 +19,29 @@ export const PANES: Readonly<Record<Panel, { width: number; min: number; max: nu
 /** Below this window width, the layers collapse. */
 const NARROW = 1100;
 
-/** The smallest a key is drawn, in px. */
-const MIN_KEY = 36;
-
 /** The canvas's padding, on each side, in px. */
-const CANVAS_PADDING = 24;
+export const CANVAS_PADDING = 24;
 
 /**
- * The keyboard's width, in keys. It's the Sofle's, from its support pack's layout, until
- * the canvas measures the keyboard it shows.
+ * Whether a keyboard `keyboard` key units wide fits at the smallest key size, in what
+ * `panes` px leave of `width`. With no keyboard to draw, anything fits.
  */
-const KEYBOARD_KEYS = 15;
-
-/** How big a key is drawn when the canvas gets what `panes` px leave of `width`. */
-function keySize(width: number, panes: number): number {
-  return (width - panes - 2 * CANVAS_PADDING) / KEYBOARD_KEYS;
+function fits(width: number, panes: number, keyboard: number): boolean {
+  return width - panes - 2 * CANVAS_PADDING >= keyboard * MIN_KEY;
 }
 
-/** Whether the window is too narrow to show the layers beside the canvas. */
+/**
+ * Whether the window is too narrow to show the layers beside the canvas, which draws a
+ * keyboard `keyboard` key units wide.
+ */
 export function isCrowded(
   width: number,
   widths: Readonly<Record<Panel, number>>,
   inspectorShown: boolean,
+  keyboard: number,
 ): boolean {
   const inspector = inspectorShown ? widths.inspector : 0;
-  return width < NARROW || keySize(width, widths.layers + inspector) < MIN_KEY;
+  return width < NARROW || !fits(width, widths.layers + inspector, keyboard);
 }
 
 /** Where the inspector goes: beside the canvas while the keys fit, over it when not. */
@@ -49,9 +49,10 @@ export function inspectorPlacement(
   width: number,
   widths: Readonly<Record<Panel, number>>,
   layersShown: boolean,
+  keyboard: number,
 ): "docked" | "overlay" {
   const layers = layersShown ? widths.layers : 0;
-  return keySize(width, layers + widths.inspector) >= MIN_KEY ? "docked" : "overlay";
+  return fits(width, layers + widths.inspector, keyboard) ? "docked" : "overlay";
 }
 
 /** `width`, kept within the pane's range. */

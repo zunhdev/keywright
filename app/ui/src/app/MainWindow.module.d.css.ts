@@ -5,7 +5,6 @@ declare const classes: {
   readonly empty: string;
   readonly inspector: string;
   readonly layers: string;
-  readonly state: string;
   readonly toolbar: string;
   readonly window: string;
 };

@@ -1,10 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 
 import type { SessionState, SessionStatus } from "../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../test/axe.ts";
+import { sofleKeymap } from "../test/sofle-keymap.ts";
 import { App } from "./App.tsx";
 import { useStore } from "./store.ts";
 
@@ -22,6 +23,13 @@ function sofle(state: Exclude<SessionState["kind"], "incompatible">, changes = 0
 function report(session: SessionStatus | null) {
   act(() => {
     useStore.setState({ session });
+  });
+}
+
+/** The Sofle's stock keymap, read and ready to change. */
+function readySofle() {
+  act(() => {
+    useStore.setState({ session: sofle("ready"), keymap: sofleKeymap });
   });
 }
 
@@ -115,6 +123,7 @@ describe("the panes", () => {
   test("when the keys would draw too small, the inspector floats over the canvas", () => {
     useStore.getState().resizePanel("inspector", 400);
     renderAt(960);
+    readySofle();
     expect(screen.getByRole("complementary", { name: "Inspector" }).dataset["placement"]).toBe(
       "overlay",
     );
@@ -147,10 +156,48 @@ describe("the panes", () => {
     await userEvent.tab();
     expect(regions[1]?.contains(document.activeElement)).toBe(true);
   });
+
+  test("with a keymap, Tab reaches a layer, then one key of the canvas, then leaves it", async () => {
+    renderAt(1728);
+    readySofle();
+    const layers = screen.getByRole("complementary", { name: "Layers" });
+    const canvas = screen.getByRole("main", { name: "Keyboard" });
+    await userEvent.tab();
+    await userEvent.tab();
+    expect(layers.contains(document.activeElement)).toBe(true);
+    await userEvent.tab();
+    expect(canvas.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement?.getAttribute("aria-label")).toBe("Types `.");
+    await userEvent.tab();
+    expect(canvas.contains(document.activeElement)).toBe(false);
+  });
+});
+
+describe("the layers", () => {
+  test("are listed with their colours and names, and choosing one shows it on the canvas", async () => {
+    renderAt(1728);
+    readySofle();
+    const list = screen.getByRole("grid", { name: "Layers" });
+    const rows = screen.getAllByRole("row").filter((row) => list.contains(row));
+    expect(rows.map((row) => row.textContent)).toEqual(["default", "lower", "raise", "adjust"]);
+    const canvas = screen.getByRole("main", { name: "Keyboard" });
+    const title = () => within(canvas).getByRole("heading", { level: 2 }).textContent;
+    expect(title()).toBe("default");
+
+    await userEvent.click(screen.getByRole("gridcell", { name: "raise" }));
+    expect(title()).toBe("raise");
+    expect(screen.getByRole("button", { name: "Uses Bluetooth device 1." })).toBeDefined();
+  });
 });
 
 test("the window has no accessibility problems", async () => {
   const { container } = renderAt(1728);
   report(sofle("ready", 2));
+  await expectNoAxeViolations(container);
+});
+
+test("with the Sofle's keymap, the window has no accessibility problems either", async () => {
+  const { container } = renderAt(1728);
+  readySofle();
   await expectNoAxeViolations(container);
 });

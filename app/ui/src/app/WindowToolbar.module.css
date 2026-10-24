@@ -1,6 +1,5 @@
 /* The toolbar holds the window's traffic lights on the left (tauri.conf.json). */
 .toolbar {
-  grid-area: toolbar;
   display: flex;
   align-items: center;
   gap: var(--space-3);
