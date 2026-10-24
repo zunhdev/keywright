@@ -1174,14 +1174,29 @@ mod locking_again {
         ready(&session).await;
         set_key(&session, 3, KEY_A).await.unwrap();
         let before = requests.load(Ordering::Relaxed);
+        let idle = tokio::time::Instant::now();
 
-        tokio::time::sleep(Duration::from_secs(3600)).await;
+        // Unlocked and idle, the session sends nothing, so the keyboard locks itself after
+        // its 10 minutes, as it would without Keywright (ADR-0006).
+        wait_until(&session, is_locked).await;
         assert_eq!(
             requests.load(Ordering::Relaxed),
             before,
             "an idle session sent requests"
         );
+        assert!(
+            idle.elapsed() >= Duration::from_secs(600),
+            "{:?}",
+            idle.elapsed()
+        );
+        // Locked, it asks whether it's unlocked yet, every 2 s, which can't unlock it.
+        tokio::time::sleep(Duration::from_secs(3600)).await;
         assert!(is_locked(&session.state()));
+        let asked = requests.load(Ordering::Relaxed) - before;
+        assert!(
+            (1700..=1801).contains(&asked),
+            "{asked} requests in an hour"
+        );
         let editor = snapshot(&session).await.editor.unwrap();
         assert!(editor.can_undo());
         assert_eq!(editor.current().layers[1].bindings[3].param1, KEY_A);
@@ -1192,6 +1207,38 @@ mod locking_again {
         assert!(editor.can_undo());
         session.undo().await.unwrap();
         assert_ne!(keyboard_key(&keyboard, 3).await.param1, KEY_A);
+    }
+
+    /// Spike S5 saw an unlock notification lost once in eight. The session asks a locked
+    /// keyboard whether it's unlocked, so it loads all the same, within 2 s (KEY-97).
+    #[tokio::test(start_paused = true)]
+    async fn a_lost_unlock_notification_still_loads_the_keymap() {
+        let keyboard = Simulator::sofle().unwrap();
+        let session = Session::start();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        wait_until(&session, is_locked).await;
+
+        keyboard.drop_notifications(1);
+        keyboard.press_unlock_key();
+        let unlocked = tokio::time::Instant::now();
+        ready(&session).await;
+        assert!(
+            unlocked.elapsed() <= Duration::from_secs(3),
+            "loaded {:?} after the unlock",
+            unlocked.elapsed()
+        );
+    }
+
+    /// A locked keyboard that stops answering may have moved to another connection: the
+    /// session probes again, and says so.
+    #[tokio::test(start_paused = true)]
+    async fn a_locked_keyboard_that_goes_quiet_is_probed_again() {
+        let keyboard = Simulator::sofle().unwrap();
+        let session = Session::start();
+        connect(&session, keyboard.connect(), Peer::Simulated).await;
+        wait_until(&session, is_locked).await;
+        keyboard.switch_transport();
+        wait_until(&session, |state| *state == State::NoLiveEditing).await;
     }
 
     #[tokio::test(start_paused = true)]

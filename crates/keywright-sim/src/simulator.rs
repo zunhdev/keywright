@@ -12,6 +12,8 @@
 //! - **Faults**, for testing how Keywright copes:
 //!   - latency before everything the keyboard sends ([`Simulator::set_latency`]);
 //!   - responses that never arrive ([`Simulator::drop_responses`]);
+//!   - notifications that never arrive, as spike S5 saw an unlock notification lost
+//!     ([`Simulator::drop_notifications`]);
 //!   - requests that arrive without their end ([`Simulator::drop_received`]);
 //!   - bytes that aren't messages ([`Simulator::inject_garbage`]);
 //!   - the keyboard's output moving to another transport, which locks it and leaves this
@@ -72,6 +74,7 @@ enum Event {
     Restart,
     SetLatency(Duration),
     DropResponses(usize),
+    DropNotifications(usize),
     DropReceived(usize),
     InjectGarbage(Vec<u8>),
     SwitchTransport {
@@ -153,6 +156,12 @@ impl Simulator {
         self.send(Event::DropResponses(count));
     }
 
+    /// Loses the next `count` notifications the keyboard sends, such as the one saying it
+    /// was unlocked. The keyboard changes all the same.
+    pub fn drop_notifications(&self, count: usize) {
+        self.send(Event::DropNotifications(count));
+    }
+
     /// Loses the last `count` bytes of the next write the keyboard receives, as when its
     /// receive buffer overflows. A frame that loses its end takes the next frame with it,
     /// unless a lone `EOF` comes first.
@@ -231,6 +240,7 @@ struct Device {
     lock_at: Option<Instant>,
     latency: Duration,
     responses_to_drop: usize,
+    notifications_to_drop: usize,
     received_to_drop: usize,
     garbage: Vec<u8>,
     transport_away: bool,
@@ -251,6 +261,7 @@ impl Device {
             lock_at: None,
             latency: Duration::ZERO,
             responses_to_drop: 0,
+            notifications_to_drop: 0,
             received_to_drop: 0,
             garbage: Vec::new(),
             transport_away: false,
@@ -306,6 +317,7 @@ impl Device {
             }
             Event::SetLatency(latency) => self.latency = latency,
             Event::DropResponses(count) => self.responses_to_drop = count,
+            Event::DropNotifications(count) => self.notifications_to_drop = count,
             Event::DropReceived(count) => self.received_to_drop = count,
             Event::InjectGarbage(bytes) => self.garbage.extend(bytes),
             Event::SwitchTransport { away } => {
@@ -352,10 +364,18 @@ impl Device {
 
     /// Sends messages, after any garbage, on this connection, unless the keyboard serves
     /// another transport, or this connection reaches the wrong half.
-    async fn output(&mut self, messages: Vec<DeviceMessage>) {
+    async fn output(&mut self, mut messages: Vec<DeviceMessage>) {
         if self.transport_away || self.wrong_half {
             return;
         }
+        messages.retain(|message| {
+            let lost =
+                matches!(message, DeviceMessage::Notification(_)) && self.notifications_to_drop > 0;
+            if lost {
+                self.notifications_to_drop -= 1;
+            }
+            !lost
+        });
         let Some(to_client) = self
             .connection
             .as_ref()

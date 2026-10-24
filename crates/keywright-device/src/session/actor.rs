@@ -3,7 +3,7 @@
 use std::future::{self, Future};
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime};
 
 use keywright_core::backup::Reason;
 use keywright_core::edit::{Edit, Operation};
@@ -24,6 +24,11 @@ use super::{
 };
 use crate::backups::{self, Backups};
 use crate::convert;
+
+/// How often the session asks a locked keyboard whether it's unlocked yet, in case the
+/// notification that says so is lost, as spike S5 saw once in eight. A locked keyboard
+/// can't be kept unlocked by requests, so this isn't a keep-alive (ADR-0006).
+const LOCK_CHECK: Duration = Duration::from_secs(2);
 
 /// How many rounds of operations bringing the keyboard in step with the editor may take.
 /// Two are enough, unless the keyboard refuses something ([`reconcile::operations`]).
@@ -94,6 +99,8 @@ enum Input {
     Command(Command),
     Notification(Notification),
     ConnectionLost,
+    /// Time to ask a locked keyboard whether it's unlocked.
+    CheckLock,
     Nothing,
 }
 
@@ -124,11 +131,13 @@ impl Actor {
                     None => return,
                 },
                 input = listen(&mut self.link) => input,
+                () = tokio::time::sleep(LOCK_CHECK), if self.is_locked() => Input::CheckLock,
             };
             match input {
                 Input::Command(command) => self.command(command).await,
                 Input::Notification(notification) => self.notification(notification).await,
                 Input::ConnectionLost => self.lost(),
+                Input::CheckLock => self.check_lock().await,
                 Input::Nothing => {}
             }
         }
@@ -234,6 +243,25 @@ impl Actor {
             Notification::Keymap(KeymapNotification::UnsavedChangesStatusChanged {
                 unsaved_changes,
             }) => self.set_unsaved(unsaved_changes),
+        }
+    }
+
+    /// Whether the keyboard is locked, as far as the session knows.
+    fn is_locked(&self) -> bool {
+        matches!(*self.state.borrow(), State::Locked { .. })
+    }
+
+    /// Asks a locked keyboard whether it's unlocked, and loads it if it is. A keyboard that
+    /// doesn't answer may have moved to another connection, so the session probes again.
+    async fn check_lock(&mut self) {
+        let Some(link) = &self.link else {
+            return;
+        };
+        match link.client.get_lock_state().await {
+            Ok(LockState::Unlocked) if self.is_locked() => self.load().await,
+            Ok(_) => {}
+            Err(RpcError::Timeout(_)) => self.probe().await,
+            Err(error) => self.interrupted(&error),
         }
     }
 
