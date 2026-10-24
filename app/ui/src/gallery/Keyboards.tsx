@@ -13,7 +13,15 @@ import styles from "./Gallery.module.css";
 
 /** A key that shows `keycap`, named for what it shows. */
 function face(name: string, keycap: KeycapData, more: Partial<Key> = {}): Key {
-  return { keycap, inherited: false, sentence: name, changed: false, macWarning: false, ...more };
+  return {
+    keycap,
+    inherited: false,
+    sentence: name,
+    spoken: name,
+    changed: false,
+    macWarning: false,
+    ...more,
+  };
 }
 
 const label = (text: string): KeycapData => ({ kind: "label", text });
@@ -121,6 +129,8 @@ useStore.setState({
     pack: "keebart-sofle-choc-pro-bt",
     transport: "simulated",
     changes: 0,
+    canUndo: false,
+    canRedo: false,
   },
   keymap: sofleKeymap,
 });

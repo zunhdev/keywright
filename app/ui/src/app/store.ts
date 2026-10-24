@@ -1,6 +1,7 @@
 import { type StateCreator, create } from "zustand";
 
 import { bounds, zoomIn, zoomOut } from "../features/keyboard-canvas/geometry.ts";
+import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
 import type { Keymap, SessionStatus } from "../ipc/bindings.ts";
 import { clampWidth, isCrowded, PANES, type Panel } from "./layout.ts";
 
@@ -19,8 +20,15 @@ export interface SessionSlice {
 export interface UiSlice {
   /** The ID of the layer the canvas shows, or `null` for the first. */
   readonly layer: number | null;
-  /** The keys selected on the canvas, by key position. */
+  /**
+   * The keys selected on the canvas, by key position. The first is where ⇧-click extends
+   * the selection from, and the one ⌘C copies.
+   */
   readonly selection: readonly number[];
+  /** Whether a key's action has been copied, so it can be pasted. */
+  readonly copied: boolean;
+  /** What VoiceOver says next, politely, such as the layer just shown (design §12). */
+  readonly announcement: string;
   /** The canvas's zoom, one of `ZOOMS`: 1 is actual size. */
   readonly zoom: number;
   /** Whether each side pane shows. */
@@ -35,6 +43,12 @@ export interface UiSlice {
   readonly showLayer: (id: number) => void;
   /** Selects these keys, and only them. */
   readonly select: (positions: readonly number[]) => void;
+  /** Adds a key to the selection, or takes it out (⌘-click). */
+  readonly toggleKey: (position: number) => void;
+  /** Selects the keys between the first selected and this one (⇧-click). */
+  readonly extendSelection: (position: number) => void;
+  /** Selects every key (⌘A). */
+  readonly selectAll: () => void;
   /** Zooms the canvas in a step (⌘+), out a step (⌘−), or back to actual size (⌘0). */
   readonly zoomCanvas: (to: "in" | "out" | "actual-size") => void;
   /** Shows or hides a side pane, by choice. */
@@ -73,6 +87,8 @@ export function shownLayer(store: Store) {
 const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   layer: null,
   selection: [],
+  copied: false,
+  announcement: "",
   zoom: 1,
   panels: { layers: true, inspector: true },
   paneWidths: { layers: PANES.layers.width, inspector: PANES.inspector.width },
@@ -80,6 +96,19 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   layersCollapsedForWidth: false,
   showLayer: (id) => set({ layer: id }),
   select: (positions) => set({ selection: positions }),
+  toggleKey: (position) =>
+    set((store) => ({
+      selection: store.selection.includes(position)
+        ? store.selection.filter((selected) => selected !== position)
+        : [...store.selection, position],
+    })),
+  extendSelection: (position) =>
+    set((store) => {
+      const [anchor = position] = store.selection;
+      const between = keysBetween(store.keymap?.keys ?? [], anchor, position);
+      return { selection: [anchor, ...between.filter((key) => key !== anchor)] };
+    }),
+  selectAll: () => set((store) => ({ selection: store.keymap?.keys.map((_, key) => key) ?? [] })),
   zoomCanvas: (to) =>
     set((store) => ({
       zoom: to === "in" ? zoomIn(store.zoom) : to === "out" ? zoomOut(store.zoom) : 1,

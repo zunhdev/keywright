@@ -413,6 +413,56 @@ impl SupportPack {
             _ => None,
         }
     }
+
+    /// Where the key at `position` is, in words, for VoiceOver (design §12): `Left half,
+    /// row 3, key 1`, counting rows from the top and keys from the left of each half, or
+    /// `Left knob` for a knob's press. A key is on the half its centre is on. `None` for a
+    /// position past the layout's keys.
+    #[must_use]
+    pub fn key_place(&self, position: usize) -> Option<String> {
+        let keys = &self.layout.keys;
+        let key = keys.get(position)?;
+        let left_edge = keys.iter().map(|key| key.x).min()?;
+        let right_edge = keys.iter().map(|key| key.x + key.width).max()?;
+        let middle = i64::from(left_edge) + i64::from(right_edge);
+        // Twice the centre, against the sum of the edges, to stay in whole numbers.
+        let centre = |key: &PhysicalKey| i64::from(key.x) * 2 + i64::from(key.width);
+        let left = centre(key) < middle;
+        let half = if left { "Left" } else { "Right" };
+        if self
+            .hints
+            .knobs
+            .iter()
+            .any(|knob| knob.position == position)
+        {
+            return Some(format!("{half} knob"));
+        }
+        // The row: the last that starts at or before the key.
+        let (row, start) = self
+            .rows
+            .iter()
+            .enumerate()
+            .filter(|(_, row)| row.position <= position)
+            .max_by_key(|(_, row)| row.position)
+            .map(|(index, row)| (index, row.position))?;
+        let end = self
+            .rows
+            .iter()
+            .map(|row| row.position)
+            .filter(|&next| next > start)
+            .min()
+            .unwrap_or(keys.len());
+        let before = (start..end)
+            .filter(|&other| self.hints.knobs.iter().all(|knob| knob.position != other))
+            .filter_map(|other| keys.get(other))
+            .filter(|other| (centre(other) < middle) == left && other.x < key.x)
+            .count();
+        Some(format!(
+            "{half} half, row {}, key {}",
+            row.saturating_add(1),
+            before.saturating_add(1)
+        ))
+    }
 }
 
 /// `pack.toml`.

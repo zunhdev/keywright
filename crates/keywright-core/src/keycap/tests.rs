@@ -146,6 +146,20 @@ mod shortcuts {
     }
 
     #[test]
+    fn voiceover_hears_names_rather_than_symbols() {
+        let shift_command = Mods::LEFT_SHIFT | Mods::LEFT_COMMAND;
+        assert_eq!(shortcut_spoken(with(shift_command, N4)), "Shift-Command-4");
+        assert_eq!(shortcut_spoken(with(Mods::LEFT_COMMAND, C)), "Command-C");
+        assert_eq!(shortcut_spoken(plain(RIGHT_CONTROL)), "Control");
+        assert_eq!(
+            shortcut_spoken(with(Mods::LEFT_SHIFT, LEFT_CONTROL)),
+            "Control-Shift"
+        );
+        assert_eq!(shortcut_spoken(with(Mods::LEFT_SHIFT, N1)), "!");
+        assert_eq!(shortcut_spoken(plain(ESCAPE)), "Escape");
+    }
+
+    #[test]
     fn a_key_without_a_name_shows_its_usage() {
         let unnamed = plain(key(0xA5));
         assert_eq!(shortcut_label(unnamed), "Key 07:00A5");
@@ -189,6 +203,7 @@ mod actions {
             escape_control.sentence,
             "Tap for Escape, hold for ⌃ Control."
         );
+        assert_eq!(escape_control.spoken, "Tap for Escape, hold for Control.");
 
         let space_nav = one(Action::LayerTap {
             layer: LayerId(7),
@@ -357,6 +372,7 @@ mod same_as_layer_below {
         assert_eq!(grave.keycap, label("`"));
         assert!(grave.inherited);
         assert_eq!(grave.sentence, "Same as the layer below: types `.");
+        assert_eq!(grave.spoken, "Same as the layer below: types `.");
     }
 
     #[test]
@@ -498,7 +514,10 @@ proptest! {
             Keycap::TapHold { tap, .. } => vec![tap.clone()],
             Keycap::Layer { .. } | Keycap::Nothing => vec![],
         };
-        for text in caps.iter().chain([&key.sentence]) {
+        for symbol in ['⌃', '⌥', '⇧', '⌘'] {
+            prop_assert!(!key.spoken.contains(symbol), "{}", key.spoken);
+        }
+        for text in caps.iter().chain([&key.sentence, &key.spoken]) {
             prop_assert!(!text.is_empty());
             prop_assert!(!has_firmware_words(text), "{text:?}");
         }

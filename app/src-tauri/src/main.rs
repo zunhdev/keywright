@@ -76,14 +76,12 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     let state = tauri::async_runtime::block_on(async {
         let Some(scenario) = scenario else {
             // Keyboards on USB come with the connection states (design §7).
-            return Ok::<_, simulator::Error>(AppState {
-                session: session_with_backups(),
-            });
+            return Ok::<_, simulator::Error>(AppState::new(session_with_backups()));
         };
         // Like the CLI, a simulated keyboard's backups go nowhere.
         let session = Session::start();
         scenario.connect(&session).await?;
-        Ok(AppState { session })
+        Ok(AppState::new(session))
     })?;
     let handle = app.handle().clone();
     let mut edited = false;

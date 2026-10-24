@@ -400,6 +400,30 @@ mod the_sofle_pack {
         assert_eq!(pack.key_name(53).as_deref(), Some("lower"));
         assert_eq!(pack.key_name(60), None, "there are 60 keys");
     }
+
+    #[test]
+    fn says_where_keys_are_by_half_row_and_place_in_the_row() {
+        let pack = sofle();
+        let place = |position| pack.key_place(position);
+        let cases = [
+            (0, "Left half, row 1, key 1"),
+            (12, "Left half, row 2, key 1"),
+            (6, "Right half, row 1, key 1"),
+            (11, "Right half, row 1, key 6"),
+            // Row 4 has the knob presses in its middle, which aren't counted.
+            (41, "Left half, row 4, key 6"),
+            (44, "Right half, row 4, key 1"),
+            (42, "Left knob"),
+            (43, "Right knob"),
+            // The thumbs, the inner ones rotated.
+            (53, "Left half, row 5, key 4"),
+            (55, "Right half, row 5, key 1"),
+        ];
+        for (position, words) in cases {
+            assert_eq!(place(position).as_deref(), Some(words), "key {position}");
+        }
+        assert_eq!(place(60), None, "there are 60 keys");
+    }
 }
 
 /// What following the stock keymap's keys gives, which the hints are checked with.

@@ -6,7 +6,7 @@
 //! below fails when that file is out of date; `mise run generate:bindings` rewrites it.
 //!
 //! - **Commands** are thin: each sends the session a command, or asks the core, and holds
-//!   no logic of its own.
+//!   no logic of its own. Those that change keys are in [`edit`].
 //! - **Events** carry snapshots of what the UI shows, such as `session://state`, and
 //!   `session://keymap` for the canvas.
 //! - **Errors** are codes with data, never English text ([`AppError`]): the UI words them.
@@ -18,11 +18,15 @@
 //! gives it, from `app/ui/src/test/sofle-keymap.ts`. A test below keeps that file up to
 //! date too, and `tsc` checks it against the bindings.
 
+mod edit;
 mod error;
 mod keymap;
 mod menu;
 mod session;
 
+use std::sync::Mutex;
+
+use keywright_core::keymap::Binding;
 use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
 
@@ -34,6 +38,18 @@ pub use self::session::{SessionStateChanged, SessionStatus, Update, follow};
 pub struct AppState {
     /// The device session.
     pub session: Session,
+    /// What the key last copied does, to paste (⌘C, ⌘V).
+    clipboard: Mutex<Option<Binding>>,
+}
+
+impl AppState {
+    /// The commands' state, around a session, with nothing copied.
+    pub const fn new(session: Session) -> Self {
+        Self {
+            session,
+            clipboard: Mutex::new(None),
+        }
+    }
 }
 
 /// The commands and events the UI can use.
@@ -42,6 +58,13 @@ pub fn builder() -> Builder<tauri::Wry> {
         .commands(collect_commands![
             session::session_state,
             keymap::session_keymap,
+            edit::swap_keys,
+            edit::copy_key,
+            edit::copy_action,
+            edit::paste_action,
+            edit::set_keys,
+            edit::undo,
+            edit::redo,
             menu::menu_set
         ])
         .events(collect_events![

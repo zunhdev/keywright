@@ -1,0 +1,11 @@
+/* ⌫'s one-time hint (design §4.7): its explanation, then Cancel and Does Nothing. */
+.body {
+  margin: 0;
+  max-width: 420px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

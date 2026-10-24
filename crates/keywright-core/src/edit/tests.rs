@@ -144,6 +144,24 @@ proptest! {
     }
 
     #[test]
+    fn swapping_twice_changes_nothing(
+        original in keymap(),
+        index in any::<prop::sample::Index>(),
+        first in 0..4_usize,
+        second in 0..4_usize,
+    ) {
+        let layer = original.layers[index.index(original.layers.len())].id;
+        let keys = original.layers[0].bindings.len();
+        let (first, second) = (first % keys, second % keys);
+        let mut keymap = original.clone();
+        for _ in 0..2 {
+            let edits = Edit::swap_keys(&keymap, layer, first, second).unwrap();
+            apply_all(&mut keymap, &edits);
+        }
+        prop_assert_eq!(keymap, original);
+    }
+
+    #[test]
     fn every_edit_but_an_added_layer_needs_one_operation((_, edit) in keymap_and_edit()) {
         let operation = edit.operation();
         prop_assert_eq!(operation.is_none(), matches!(edit, Edit::AddLayer { .. }));
@@ -194,6 +212,65 @@ fn a_binding_is_set_on_the_layer_with_that_id() {
             binding: key(9),
         })
     );
+}
+
+/// Applies `edits` in order, as one group.
+fn apply_all(keymap: &mut Keymap, edits: &[Edit]) {
+    for edit in edits {
+        edit.apply(keymap).unwrap();
+    }
+}
+
+#[test]
+fn setting_keys_edits_only_the_keys_that_change_each_once() {
+    let mut keymap = three_layers();
+    let edits = Edit::set_keys(&keymap, LayerId(2), &[0, 1, 0], key(2)).unwrap();
+    // Key 1 already does it, and key 0 is named twice.
+    assert_eq!(
+        edits,
+        [Edit::SetBinding {
+            layer: LayerId(2),
+            position: 0,
+            before: key(1),
+            after: key(2),
+        }]
+    );
+    apply_all(&mut keymap, &edits);
+    assert_eq!(keymap.layers[1].bindings, [key(2), key(2)]);
+}
+
+#[test]
+fn swapping_keys_is_two_edits_or_none() {
+    let mut keymap = three_layers();
+    let edits = Edit::swap_keys(&keymap, LayerId(7), 0, 1).unwrap();
+    assert_eq!(edits.len(), 2);
+    apply_all(&mut keymap, &edits);
+    assert_eq!(keymap.layers[2].bindings, [key(2), key(1)]);
+    // The other layers keep theirs.
+    assert_eq!(keymap.layers[0].bindings, [key(1), key(2)]);
+    assert_eq!(Edit::swap_keys(&keymap, LayerId(7), 1, 1).unwrap(), []);
+}
+
+#[test]
+fn setting_and_swapping_keys_name_what_doesnt_fit() {
+    let keymap = three_layers();
+    let past = EditError::PositionOutOfRange {
+        position: 2,
+        keys: 2,
+    };
+    assert_eq!(
+        Edit::set_keys(&keymap, LayerId(9), &[0], key(1)),
+        Err(EditError::UnknownLayer(LayerId(9)))
+    );
+    assert_eq!(
+        Edit::set_keys(&keymap, LayerId(5), &[1, 2], key(1)),
+        Err(past.clone())
+    );
+    assert_eq!(
+        Edit::swap_keys(&keymap, LayerId(9), 0, 1),
+        Err(EditError::UnknownLayer(LayerId(9)))
+    );
+    assert_eq!(Edit::swap_keys(&keymap, LayerId(5), 0, 2), Err(past));
 }
 
 #[test]

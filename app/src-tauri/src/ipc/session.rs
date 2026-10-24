@@ -4,6 +4,7 @@
 //! (`session://state`), which [`follow`] sends each time the state changes. [`follow`]
 //! sends the keymap too, when it changes ([`super::keymap`]).
 
+use keywright_core::editor::Editor;
 use keywright_device::{Incompatibility, Peer, Session, SessionEvent, Snapshot, State};
 use serde::Serialize;
 use specta::Type;
@@ -16,6 +17,7 @@ use super::keymap::Keymap;
 /// The session's status: its state, the keyboard it's connected to and how, and how
 /// many changes are being tried.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct SessionStatus {
     /// What the session is doing.
     pub state: SessionState,
@@ -27,6 +29,10 @@ pub struct SessionStatus {
     pub transport: Option<Transport>,
     /// How many changes are being tried and not saved: the rows of the review list.
     pub changes: u32,
+    /// Whether there's a change to undo.
+    pub can_undo: bool,
+    /// Whether there's a change undone to redo.
+    pub can_redo: bool,
 }
 
 /// How the session reaches the keyboard.
@@ -205,6 +211,8 @@ struct Tracker {
     pack: Option<String>,
     transport: Option<Transport>,
     changes: u32,
+    can_undo: bool,
+    can_redo: bool,
 }
 
 impl Tracker {
@@ -212,9 +220,12 @@ impl Tracker {
         if let Some(snapshot) = snapshot {
             self.transport = snapshot.peer.as_ref().map(Transport::from);
             self.pack.clone_from(&snapshot.pack);
-            self.changes = snapshot.editor.as_ref().map_or(0, |editor| {
+            let editor = snapshot.editor.as_ref();
+            self.changes = editor.map_or(0, |editor| {
                 u32::try_from(editor.changes().len()).unwrap_or(u32::MAX)
             });
+            self.can_undo = editor.is_some_and(Editor::can_undo);
+            self.can_redo = editor.is_some_and(Editor::can_redo);
             if let Some(keyboard) = &snapshot.keyboard {
                 self.keyboard = Some(keyboard.identity.name.clone());
             }
@@ -234,6 +245,8 @@ impl Tracker {
             pack: self.pack.clone(),
             transport: self.transport,
             changes: self.changes,
+            can_undo: self.can_undo,
+            can_redo: self.can_redo,
         }
     }
 }
@@ -267,6 +280,8 @@ mod tests {
             pack: Some("keebart-sofle-choc-pro-bt".to_owned()),
             transport: Some(Transport::Simulated),
             changes: 0,
+            can_undo: false,
+            can_redo: false,
         }
     }
 
@@ -277,6 +292,8 @@ mod tests {
             pack: None,
             transport: None,
             changes: 0,
+            can_undo: false,
+            can_redo: false,
         }
     }
 
@@ -310,7 +327,7 @@ mod tests {
     }
 
     /// Each change tried, or undone, updates the count, for the toolbar and the window's
-    /// edited dot.
+    /// edited dot, and what can be undone or redone, for the Edit menu.
     #[tokio::test]
     async fn the_ui_hears_how_many_changes_are_being_tried() {
         let session = Session::start();
@@ -336,10 +353,18 @@ mod tests {
             }])
             .await
             .unwrap();
-        assert_eq!(statuses.recv().await.unwrap().changes, 1);
+        let tried = statuses.recv().await.unwrap();
+        assert_eq!(
+            (tried.changes, tried.can_undo, tried.can_redo),
+            (1, true, false)
+        );
 
         session.undo().await.unwrap();
-        assert_eq!(statuses.recv().await.unwrap().changes, 0);
+        let undone = statuses.recv().await.unwrap();
+        assert_eq!(
+            (undone.changes, undone.can_undo, undone.can_redo),
+            (0, false, true)
+        );
     }
 
     #[test]

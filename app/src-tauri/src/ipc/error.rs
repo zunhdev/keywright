@@ -19,6 +19,8 @@ pub enum AppError {
     NothingToUndo,
     /// There's nothing to redo.
     NothingToRedo,
+    /// Nothing has been copied to paste.
+    NothingToPaste,
     /// The editor refused an edit that doesn't fit the keymap.
     EditRefused,
     /// The keyboard didn't carry out a request, so the session rolled the change back.

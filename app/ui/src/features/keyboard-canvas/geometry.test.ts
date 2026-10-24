@@ -14,6 +14,7 @@ function key(x: number, y: number, rotation = 0, pivot: [number, number] = [x, y
     rotation,
     rotationX: pivot[0],
     rotationY: pivot[1],
+    place: "",
   };
 }
 
