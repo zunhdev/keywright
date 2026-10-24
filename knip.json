@@ -1,4 +1,5 @@
 {
   "$schema": "./node_modules/knip/schema.json",
-  "ignoreBinaries": ["rustfmt"]
+  "ignoreBinaries": ["rustfmt"],
+  "ignoreDependencies": ["react-refresh"]
 }

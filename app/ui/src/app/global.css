@@ -1,0 +1,5 @@
+/* Page-wide rules. The design tokens and fonts replace these (design §10). */
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
