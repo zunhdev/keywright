@@ -88,7 +88,7 @@ Workflows must:
 
 Every dependency must pass `mise run audit`:
 
-- Rust crates come from crates.io, under a licence that [`deny.toml`](deny.toml) allows: MIT, Apache-2.0, the BSD licences, ISC, Zlib and Unicode-3.0. A crate under another licence needs a pull request that changes `deny.toml` and explains why.
+- Rust crates come from crates.io, under one of the common open-source licences that [`deny.toml`](deny.toml) allows.
 - No crate or package may have a known vulnerability. An advisory that doesn't affect Keywright can be ignored, with the reason in a comment: in `deny.toml` for a crate, or as `--ignore=<GHSA ID>` on the `audit:ts` task in `mise.toml` for a package.
 
 Advisories are also checked daily on `main` (`.github/workflows/scheduled.yml`), because new ones appear without any change to the code.

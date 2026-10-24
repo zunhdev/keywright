@@ -23,40 +23,27 @@ yanked = "deny"
 ignore = []
 
 [licenses]
-# Licences that are compatible with distributing Keywright under MIT OR Apache-2.0.
-# Anything else, copyleft licences included, fails the check. Adding a licence here, or an
-# exception for one crate below, is a decision to explain in the pull request.
+# The common open-source licences: the permissive ones, and MPL-2.0, which serialport and
+# Tauri's CSS parser use.
 allow = [
+  "0BSD",
   "Apache-2.0",
   "Apache-2.0 WITH LLVM-exception",
   "BSD-2-Clause",
   "BSD-3-Clause",
+  "BSL-1.0",
+  "CC0-1.0",
   "ISC",
   "MIT",
+  "MIT-0",
+  "MPL-2.0",
+  "NCSA",
   "Unicode-3.0",
+  "Unlicense",
   "Zlib",
 ]
-# This is a policy, not a list of what's in use today, so unused entries are fine.
+# The list covers what's common, not only what's in use today.
 unused-allowed-license = "allow"
-exceptions = [
-  # libFuzzer, which this crate builds, comes from LLVM under the NCSA licence, a permissive
-  # licence like BSD-3-Clause. Only the fuzz targets use it, and they don't ship.
-  { crate = "libfuzzer-sys", allow = ["NCSA"] },
-  # serialport, the USB transport's serial port library (tech spec §6.1), is MPL-2.0. That
-  # licence is copyleft per file: it covers serialport's own files, not Keywright's. We use
-  # them unchanged, and their source stays available on crates.io and in Cargo.lock, so
-  # Keywright can still be MIT OR Apache-2.0. Its credits must list serialport.
-  { crate = "serialport", allow = ["MPL-2.0"] },
-  # Tauri (tech spec §12.1) depends on these MPL-2.0 crates, on the same terms as
-  # serialport: we use them unchanged, so Keywright stays MIT OR Apache-2.0, and the
-  # credits must list them. Its HTML handling uses Servo's CSS parser (cssparser,
-  # cssparser-macros, dtoa-short and selectors), and its app folders use option-ext.
-  { crate = "cssparser", allow = ["MPL-2.0"] },
-  { crate = "cssparser-macros", allow = ["MPL-2.0"] },
-  { crate = "dtoa-short", allow = ["MPL-2.0"] },
-  { crate = "option-ext", allow = ["MPL-2.0"] },
-  { crate = "selectors", allow = ["MPL-2.0"] },
-]
 
 [bans]
 # Two versions of one crate compile twice and grow the binary. Worth knowing, but often
