@@ -369,6 +369,20 @@ mod faults {
         assert_eq!(keymap.layers[1].bindings[3], kp_a());
     }
 
+    /// Spike S5 saw an unlock notification lost: the keyboard unlocked all the same.
+    #[tokio::test(start_paused = true)]
+    async fn a_dropped_notification_never_arrives_but_the_change_happens() {
+        let (keyboard, client) = sofle();
+        let mut notifications = client.notifications();
+        keyboard.drop_notifications(1);
+        keyboard.press_unlock_key();
+        assert_eq!(
+            within(client.get_lock_state()).await.unwrap(),
+            LockState::Unlocked
+        );
+        assert!(notifications.try_recv().is_err());
+    }
+
     #[tokio::test(start_paused = true)]
     async fn garbage_before_a_response_is_skipped() {
         let (keyboard, client) = sofle();
