@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.60 — for review                                        |
+| **Status**    | Draft v0.61 — for review                                        |
 | **Date**      | 2026-10-24                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -696,6 +696,8 @@ All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Eac
 
 There is no automated end-to-end test of the packaged app in v1: Tauri's WebDriver isn't supported on macOS. This is revisited with Tauri 3 (Q-T3).
 
+**On the real keyboard** (`docs/contributing/release-checklist.md`): tests ignored by default drive it. `mise run hardware` runs those for USB, and `mise run hardware:bluetooth` those for Bluetooth. Others need someone to do something, so they run on their own: switching the keyboard off (`keywright-transport`), a battery notification, moving the cable mid-session (`keywright-device`'s `switching.rs`), and **wireless parity** (`parity.rs`, KEY-60), which runs every editing operation over the connection `KEYWRIGHT_PARITY` names and leaves the keymap as it found it.
+
 ### 14.2 Simulated keyboard (`keywright-sim`)
 
 It plays the keyboard's side of every RPC Keywright uses, with **ZMK v0.3 semantics**, in three parts:
@@ -883,3 +885,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.58    | 2026-10-24 | Bluetooth permission (§12.1, KEY-55): asked in context, read without asking, and System Settings for a refusal.                                                                                                                                                                                                                                                    |
 | 0.59    | 2026-10-24 | Low-battery notifications (§12.1, KEY-58): once per crossing below the level, with 5 points of hysteresis.                                                                                                                                                                                                                                                         |
 | 0.60    | 2026-10-24 | The Settings window's General tab (§12.1, KEY-59): Show in menu bar and Open at login, `settings.json` saved, and the login item over `SMAppService`.                                                                                                                                                                                                              |
+| 0.61    | 2026-10-24 | Hardware tests (§14.1, KEY-60): the release checklist's wireless parity, and the tests that run on their own.                                                                                                                                                                                                                                                      |
