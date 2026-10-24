@@ -9,6 +9,9 @@ use tauri_build::{AppManifest, Attributes};
 const COMMANDS: &[&str] = &[
     "session_state",
     "battery_levels",
+    "bluetooth_permission",
+    "allow_bluetooth",
+    "open_bluetooth_settings",
     "session_keymap",
     "key_catalog",
     "dom_codes",

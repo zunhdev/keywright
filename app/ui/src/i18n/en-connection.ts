@@ -25,6 +25,14 @@ export const connectionStrings = {
   "connection.bluetooth-keys": (args) =>
     `Pair it in System Settings, then hold ${text(args, "key")} and tap 1–5 to pick its slot.`,
   "connection.bluetooth-any": "Pair it in System Settings.",
+  "bluetooth.why":
+    "Keywright edits your keyboard and reads its battery over Bluetooth, which macOS asks you to allow.",
+  "bluetooth.allow": "Allow Bluetooth…",
+  "bluetooth.denied":
+    "Keywright isn't allowed to use Bluetooth, so it edits over the cable only. You can allow it in System Settings.",
+  "bluetooth.open-settings": "Open System Settings",
+  "bluetooth.restricted":
+    "This Mac doesn't let apps use Bluetooth, so Keywright edits over the cable only.",
   "connection.wrong-half": (args) =>
     `This looks like the ${text(args, "half")} half. Keywright talks to the ${text(args, "usb")} half; plug the cable in there.`,
   "connection.wrong-half-any":

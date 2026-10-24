@@ -25,6 +25,22 @@ export const commands = {
 	 *  Fails if the session has stopped.
 	 */
 	batteryLevels: () => typedError<BatteryStatus, AppError>(__TAURI_INVOKE("battery_levels")),
+	/**  What macOS says about Keywright using Bluetooth now. It asks nobody. */
+	bluetoothPermission: () => __TAURI_INVOKE<BluetoothPermission>("bluetooth_permission"),
+	/**
+	 *  Uses Bluetooth, so that macOS asks whether Keywright may, if nobody has been asked yet.
+	 *  Returns the permission after waiting a few seconds for Bluetooth: the person may still
+	 *  be answering, so the UI looks again until it changes.
+	 */
+	allowBluetooth: () => __TAURI_INVOKE<BluetoothPermission>("allow_bluetooth"),
+	/**
+	 *  Opens System Settings at the apps that may use Bluetooth, where a refusal can be changed.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if System Settings doesn't open.
+	 */
+	openBluetoothSettings: () => typedError<null, AppError>(__TAURI_INVOKE("open_bluetooth_settings")),
 	/**
 	 *  The keymap the canvas draws, or `null` before the session has read one.
 	 * 
@@ -456,6 +472,8 @@ export type AppError =
 { code: "no-stock-keymap" } | 
 /**  The keyboard said it couldn't restore its stock settings. */
 { code: "reset-failed" } | 
+/**  System Settings didn't open. */
+{ code: "settings-not-opened" } | 
 /**
  *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
  *  `force`, it is.
@@ -492,6 +510,17 @@ export type Bluetooth =
 "clear-all" | 
 /**  Disconnects a device, by `profile`. */
 "disconnect";
+
+/**  What macOS says about Keywright using Bluetooth. */
+export type BluetoothPermission = 
+/**  Nobody has been asked yet. */
+"not-asked" | 
+/**  Keywright may use Bluetooth. */
+"allowed" | 
+/**  The person said no. System Settings can change it. */
+"denied" | 
+/**  A profile on this Mac doesn't let apps use Bluetooth. */
+"restricted";
 
 /**  A group of actions in the action picker (EDIT-1). */
 export type Category = 

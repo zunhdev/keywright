@@ -16,6 +16,7 @@ import { followTextFocus } from "./app/text-focus.ts";
 import { followQuit } from "./features/changes/QuitDialog.tsx";
 import { followConnection } from "./features/connection/follow.ts";
 import { followBattery } from "./ipc/battery.ts";
+import { followBluetoothPermission } from "./ipc/bluetooth.ts";
 import { followKeymap, loadKeyTables } from "./ipc/keymap.ts";
 import { followMenu } from "./ipc/menu.ts";
 import { followSession } from "./ipc/session.ts";
@@ -28,6 +29,7 @@ if (!root) {
 void followSession();
 void followKeymap();
 void followBattery();
+void followBluetoothPermission();
 void loadKeyTables();
 void followMenu();
 followTextFocus();

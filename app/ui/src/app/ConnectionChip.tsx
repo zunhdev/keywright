@@ -5,6 +5,7 @@ import { Button } from "../design-system/Button.tsx";
 import { Icon } from "../design-system/Icon.tsx";
 import { Popover } from "../design-system/Popover.tsx";
 import { leaveDemo } from "../features/connection/actions.ts";
+import { BluetoothPermission } from "../features/connection/BluetoothPermission.tsx";
 import { type Messages, useMessages } from "../i18n/messages.ts";
 import type { BatteryStatus, SessionState, SessionStatus, Transport } from "../ipc/bindings.ts";
 import { useStore } from "./store.ts";
@@ -65,7 +66,8 @@ function batteryLine(battery: BatteryStatus, messages: Messages): string {
 /**
  * The connection chip (design §3.2): how the keyboard is connected and whether it's
  * locked. It opens the details: the transport, the firmware, the battery, the idle lock,
- * and Unlock… while locked, which opens the unlock sheet (design §7).
+ * and Unlock… while locked, which opens the unlock sheet (design §7). Over the cable, they
+ * offer Bluetooth if it isn't allowed yet (CON-6).
  */
 export function ConnectionChip() {
   const messages = useMessages();
@@ -94,6 +96,7 @@ export function ConnectionChip() {
               {battery === null || transport === "simulated" ? null : (
                 <p>{batteryLine(battery, messages)}</p>
               )}
+              {transport === "usb" ? <BluetoothPermission /> : null}
               <p className={styles.note}>{messages.format("chip.auto-lock")}</p>
             </>
           )}

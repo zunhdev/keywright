@@ -4,6 +4,7 @@ import { bounds, zoomIn, zoomOut } from "../features/keyboard-canvas/geometry.ts
 import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
 import type {
   BatteryStatus,
+  BluetoothPermission,
   Choice,
   DomCode,
   GuardWarning,
@@ -25,6 +26,8 @@ export interface SessionSlice {
   readonly keymap: Keymap | null;
   /** The keyboard's battery levels, or `null` until the Rust side has reported them. */
   readonly battery: BatteryStatus | null;
+  /** What macOS says about Keywright using Bluetooth, or `null` until it's been read. */
+  readonly bluetoothPermission: BluetoothPermission | null;
   /** Every key ZMK names, for the inspector's key popup, once loaded. */
   readonly keyCatalog: readonly KeyEntry[];
   /** The key behind each `KeyboardEvent.code`, for the shortcut recorder, once loaded. */
@@ -130,6 +133,7 @@ const sessionSlice: StateCreator<Store, [], [], SessionSlice> = () => ({
   session: null,
   keymap: null,
   battery: null,
+  bluetoothPermission: null,
   keyCatalog: [],
   domCodes: [],
   macActions: [],
