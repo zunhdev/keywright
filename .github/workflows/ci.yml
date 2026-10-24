@@ -174,6 +174,12 @@ jobs:
       - name: Lint (oxfmt, oxlint, tsc, knip)
         run: mise run lint:ts
 
+      - name: Check the design tokens' contrast
+        run: mise run lint:contrast
+
+      - name: Check the CSS Modules' typings
+        run: mise run lint:css-types
+
       - name: Test (bun test)
         run: mise run test:ts
 

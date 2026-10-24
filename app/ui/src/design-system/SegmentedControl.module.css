@@ -1,0 +1,29 @@
+.group {
+  display: inline-flex;
+  box-sizing: border-box;
+  height: var(--control-default);
+  padding: 2px;
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-control);
+  background: var(--bg-canvas);
+}
+
+.segment {
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: var(--radius-badge);
+  background: transparent;
+  color: var(--text-secondary);
+  font: var(--type-body-strong);
+  transition: background-color var(--motion-hover) var(--ease-out);
+
+  &[data-hovered] {
+    color: var(--text-primary);
+  }
+
+  &[data-selected] {
+    background: var(--surface-key);
+    box-shadow: var(--shadow-key);
+    color: var(--text-primary);
+  }
+}

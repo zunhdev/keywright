@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.5 — for review                                                        |
+| **Status**    | Draft v0.6 — for review                                                        |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -138,7 +138,7 @@ Knob push-keys are drawn as **round keys** with a thin ring that stands for rota
 
 | State                            | Treatment                                                                                           |
 | -------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Default                          | `surface-key` fill, 1 px `border-subtle`, a soft bottom shadow (1 px) for a little depth.           |
+| Default                          | `surface-key` fill, 1 px `border-key`, a soft bottom shadow (1 px) for a little depth.              |
 | Hover                            | Fill lightens or darkens one step. Shows a tooltip after 600 ms with the key's full sentence.       |
 | Selected                         | 2 px accent ring with a 2 px offset, and the inspector follows the selection.                       |
 | Multi-selected (EDIT-7)          | Accent ring plus a light accent fill. The inspector shows "5 keys selected" with the shared editor. |
@@ -376,7 +376,7 @@ Following platform convention, it is a **menu**, not a popover:
 
 - **UI font:** Inter (variable, bundled, OFL). Its `tnum` and `cv11` features are used for numbers.
 - **Mono:** JetBrains Mono (bundled, OFL), only for ZMK names and diagnostics.
-- **Symbols:** ⌃⌥⇧⌘⎋⇥↩⌫⌦␣ come from Inter where available, with a fallback to the system font, and must be checked visually at every key size.
+- **Symbols:** ⌃⌥⇧⌘⎋⇥↩⌫⌦␣ come from Inter where available, with a fallback to the system font, and must be checked visually at every key size. The bundled Inter (`@fontsource-variable`) has none of them, so all come from the system font, SF Pro on the Mac. The gallery shows them at 36, 44, 56 and 72 px.
 
 | Token              | Size / line height | Weight | Use                          |
 | ------------------ | ------------------ | ------ | ---------------------------- |
@@ -389,25 +389,34 @@ Following platform convention, it is a **menu**, not a popover:
 
 ### 10.2 Colour
 
-Colours are CSS custom properties with **light** and **dark** values. The theme follows `prefers-color-scheme` unless overridden in Settings. The values below are a starting palette. Every text/background pair must meet **WCAG AA** (4.5:1 for text, 3:1 for key outlines and icons), checked in CI (tech spec §13).
+Colours are CSS custom properties with **light** and **dark** values. The theme follows `prefers-color-scheme` unless overridden in Settings. The values below are the palette in `tokens.css`. Every text/background pair must meet **WCAG AA** (4.5:1 for text, 3:1 for key outlines and icons), checked in CI (tech spec §13).
 
-| Token               | Light                                                                    | Dark      | Use                                      |
-| ------------------- | ------------------------------------------------------------------------ | --------- | ---------------------------------------- |
-| `bg-window`         | `#F7F7F8`                                                                | `#141416` | Window background                        |
-| `bg-panel`          | `#FFFFFF`                                                                | `#1B1B1F` | Sidebar, inspector, sheets               |
-| `bg-canvas`         | `#EFEFF2`                                                                | `#101012` | Area behind the keyboard                 |
-| `surface-key`       | `#FFFFFF`                                                                | `#26262C` | Keycaps                                  |
-| `border-subtle`     | `#E2E2E7`                                                                | `#2E2E35` | Dividers, key outlines                   |
-| `text-primary`      | `#16161A`                                                                | `#EDEDF0` | Main text, key labels                    |
-| `text-secondary`    | `#5D5D66`                                                                | `#A0A0AB` | Captions, hold strip                     |
-| `accent`            | `#4C5BD4`                                                                | `#8B96FF` | Selection, primary button, changed badge |
-| `accent-contrast`   | `#FFFFFF`                                                                | `#0E0E2A` | Text on accent                           |
-| `warning`           | `#B25E00`                                                                | `#F2A541` | Mac compatibility, lockout warnings      |
-| `danger`            | `#C2333B`                                                                | `#FF6B70` | Destructive actions                      |
-| `success`           | `#1F7A4D`                                                                | `#4CC38A` | Saved confirmation                       |
-| `layer-1 … layer-8` | Distinct hues at matched lightness, tuned for colour-vision deficiencies |           | Layer chips and layer keys               |
+| Token               | Light                                                                           | Dark                                                                            | Use                                      |
+| ------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------- |
+| `bg-window`         | `#F7F7F8`                                                                       | `#141416`                                                                       | Window background                        |
+| `bg-panel`          | `#FFFFFF`                                                                       | `#1B1B1F`                                                                       | Sidebar, inspector, sheets               |
+| `bg-canvas`         | `#EFEFF2`                                                                       | `#101012`                                                                       | Area behind the keyboard                 |
+| `surface-key`       | `#FFFFFF`                                                                       | `#26262C`                                                                       | Keycaps                                  |
+| `border-subtle`     | `#E2E2E7`                                                                       | `#2E2E35`                                                                       | Dividers                                 |
+| `border-key`        | `#898992`                                                                       | `#6F6F78`                                                                       | Key outlines and control borders (3:1)   |
+| `text-primary`      | `#16161A`                                                                       | `#EDEDF0`                                                                       | Main text, key labels                    |
+| `text-secondary`    | `#5D5D66`                                                                       | `#A0A0AB`                                                                       | Captions, hold strip                     |
+| `accent`            | `#4C5BD4`                                                                       | `#8B96FF`                                                                       | Selection, primary button, changed badge |
+| `accent-contrast`   | `#FFFFFF`                                                                       | `#0E0E2A`                                                                       | Text on accent                           |
+| `accent-hover`      | `#4251C7`                                                                       | `#A0A9FF`                                                                       | Primary button, hovered                  |
+| `accent-subtle`     | `#E7E9FB`                                                                       | `#2B2E52`                                                                       | Multi-selection, highlighted menu items  |
+| `surface-hover`     | `#F0F0F3`                                                                       | `#2A2A31`                                                                       | Hovered keys, rows and buttons           |
+| `surface-pressed`   | `#E7E7EC`                                                                       | `#33333B`                                                                       | Pressed buttons                          |
+| `warning`           | `#A65800`                                                                       | `#F2A541`                                                                       | Mac compatibility, lockout warnings      |
+| `danger`            | `#C2333B`                                                                       | `#FF6B70`                                                                       | Destructive actions                      |
+| `success`           | `#1F7A4D`                                                                       | `#4CC38A`                                                                       | Saved confirmation                       |
+| `layer-1 … layer-8` | `#C8536C` `#928103` `#0A938E` `#AC5DB1` `#7173D7` `#3A9742` `#C16302` `#068BC0` | `#F97F95` `#C1AC15` `#10C4BC` `#DA87DE` `#9BA0FF` `#68C36D` `#F28E42` `#22B8FB` | Layer chips and layer keys               |
 
-With `prefers-contrast: more`, borders move up two steps, ghosted "same as layer below" labels rise from 35% to 55% opacity, and the selection ring becomes 3 px.
+With `prefers-contrast: more`, borders move up two steps, ghosted "same as layer below" labels rise from 35% to 55% opacity, and the selection ring becomes 3 px. Secondary text darkens too, so all text reaches 7:1: `border-subtle` `#8E8E97` / `#66666F`, `border-key` `#6C6C75` / `#8C8C95`, `text-secondary` `#4F4F58` / `#B1B1BA`.
+
+- **Layer colours** have matched lightness (OKLCH L 0.60 in light, 0.74 in dark). Their hues are ordered so that the first four, which most keymaps use, stay apart from each other and from the accent under simulated protanopia, deuteranopia and tritanopia. The contrast check enforces this. Layers 5 to 8 resemble earlier ones for some people with colour-vision deficiencies, which is why a layer's name is always written next to its colour (§4.4).
+- **Key outlines** use `border-key`, which meets 3:1 against keys and the canvas. `border-subtle` is for dividers only.
+- **`warning`** in light is `#A65800`, a little darker than the first draft's `#B25E00`, which was 4.4:1 on the window background.
 
 ### 10.3 Space, shape, depth, motion
 
@@ -500,21 +509,22 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 
 ## 14. Open design questions
 
-| ID  | Question                                                                                                                              | Resolve by              |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| D1  | Final accent colour and layer palette, validated for contrast and colour-vision deficiencies.                                         | Visual design pass (M2) |
-| D2  | App icon.                                                                                                                             | Before v1.0             |
-| D3  | Illustration style for the empty state and firmware steps (line art vs. filled).                                                      | M4                      |
-| D4  | Should a click open an editor directly for "Key or shortcut" keys (fast assign) or only select? Validate in the first usability test. | M2 usability test       |
+| ID  | Question                                                                                                                                                                                      | Resolve by              |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| D1  | ~~Final accent colour and layer palette, validated for contrast and colour-vision deficiencies.~~ Resolved in v0.6 (§10.2): the accent stays, and the layer palette is set and checked in CI. | Visual design pass (M2) |
+| D2  | App icon.                                                                                                                                                                                     | Before v1.0             |
+| D3  | Illustration style for the empty state and firmware steps (line art vs. filled).                                                                                                              | M4                      |
+| D4  | Should a click open an editor directly for "Key or shortcut" keys (fast assign) or only select? Validate in the first usability test.                                                         | M2 usability test       |
 
 ---
 
 ## 15. Revision history
 
-| Version | Date       | Changes                                                                                                                                                                                                             |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.1     | 2026-10-21 | First draft                                                                                                                                                                                                         |
-| 0.2     | 2026-10-24 | Wrong half (§7): when the left half answers over Bluetooth, Keywright edits there and says the cable is in the right half (spike S4).                                                                               |
-| 0.3     | 2026-10-24 | Firmware Update assistant (§9.3): the halves in the support pack's order, the macOS prompts explained beforehand, the drive checked against the step's half, success confirmed when the half comes back (spike S6). |
-| 0.4     | 2026-10-24 | Spike outcomes (KEY-19): the Globe helper makes a chosen key act as Globe (§5.4, §9.4; spike S7); the keyboard forgets unsaved changes when it sleeps, too (§6, §8; spike S5).                                      |
-| 0.5     | 2026-10-24 | App menus (§9.6, KEY-36): the items every Mac app has (Services, Hide Others, Show All, Close Window, the Window menu's), and Zoom In shown as ⌘=.                                                                  |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                    |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0.1     | 2026-10-21 | First draft                                                                                                                                                                                                                                                                                |
+| 0.2     | 2026-10-24 | Wrong half (§7): when the left half answers over Bluetooth, Keywright edits there and says the cable is in the right half (spike S4).                                                                                                                                                      |
+| 0.3     | 2026-10-24 | Firmware Update assistant (§9.3): the halves in the support pack's order, the macOS prompts explained beforehand, the drive checked against the step's half, success confirmed when the half comes back (spike S6).                                                                        |
+| 0.4     | 2026-10-24 | Spike outcomes (KEY-19): the Globe helper makes a chosen key act as Globe (§5.4, §9.4; spike S7); the keyboard forgets unsaved changes when it sleeps, too (§6, §8; spike S5).                                                                                                             |
+| 0.5     | 2026-10-24 | App menus (§9.6, KEY-36): the items every Mac app has (Services, Hide Others, Show All, Close Window, the Window menu's), and Zoom In shown as ⌘=.                                                                                                                                         |
+| 0.6     | 2026-10-24 | Design system (§4.3, §10, §14, KEY-39): the layer palette, chosen for colour-vision deficiencies (resolves D1); `border-key` for key outlines at 3:1; hover, pressed and subtle-accent tokens; Increase Contrast values; `warning` darkened for AA; the symbols come from the system font. |

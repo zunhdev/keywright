@@ -2,7 +2,7 @@
 
 The React and TypeScript UI that runs in the app's window (tech spec §12.2). It never talks to the keyboard: it shows what the Rust side reports, and sends it commands.
 
-`mise run dev` runs it inside the app, and updates it as you edit. With `KEYWRIGHT_SIMULATOR=sofle mise run dev`, the app connects to a simulated Sofle, which unlocks itself after a few seconds (`sofle-unlocked` starts unlocked). `mise run test:ts` runs the tests, and `mise run build:debug` checks the UI under the app's Content Security Policy.
+`mise run dev` runs it inside the app, and updates it as you edit. With `KEYWRIGHT_SIMULATOR=sofle mise run dev`, the app connects to a simulated Sofle, which unlocks itself after a few seconds (`sofle-unlocked` starts unlocked). `mise run test:ts` runs the tests, and `mise run build:debug` checks the UI under the app's Content Security Policy. While `mise run dev` runs, the design system's gallery is at <http://127.0.0.1:1420/gallery>: every token and primitive on one page, in any browser.
 
 ## Layout
 
@@ -16,7 +16,8 @@ app/ui/
     ├── main.tsx        # renders the app
     ├── app/            # the app shell, its layout and providers, and the store
     ├── features/       # one folder per feature: keyboard canvas, inspector, layers, review…
-    ├── design-system/  # tokens, fonts, icons and the primitives built on React Aria
+    ├── design-system/  # tokens.css, the icon wrapper, and the primitives built on React Aria
+    ├── gallery/        # the design system's gallery, for development only
     ├── ipc/            # the generated bindings to the Rust side, and what follows its events
     ├── i18n/           # the string catalogues and `useMessages`
     └── test/           # test setup and helpers
@@ -26,7 +27,10 @@ A folder appears with its first file.
 
 ## Conventions
 
-- **Components** come from [React Aria Components](https://react-spectrum.adobe.com/react-aria/components.html), styled with CSS Modules (`Name.module.css` next to `Name.tsx`).
+- **Components** are built from the design system's primitives (`Button`, `Toolbar`, `MenuButton`, `ComboBox`, `Sheet`, `Popover`, `List`, `SegmentedControl`, toasts), which wrap [React Aria Components](https://react-spectrum.adobe.com/react-aria/components.html). Style with CSS Modules (`Name.module.css` next to `Name.tsx`), and only with the tokens in `design-system/tokens.css`. Run `mise run generate:css-types` after changing a CSS Module's classes: its typings name them, so `tsc` catches a class that doesn't exist.
+- **Colours** are checked: `mise run lint:contrast` fails if a token pair the UI draws drops below WCAG AA. A new pairing gets a rule in `scripts/contrast/rules.ts`.
+- **Motion** moves by multiples of `--motion-distance`, which Reduce Motion sets to 0, so animations become fades.
+- **Icons** come from Lucide, through `<Icon icon={…} />`, which sizes them and hides them from VoiceOver: label the button or text they sit in.
 - **Strings** live in `i18n/en.ts`, never in components: `useMessages().format("app.name")`. Keys are typed, so a missing string fails `tsc`.
 - **The React Compiler** memoizes components in the build, so code doesn't need `useMemo` or `useCallback` for speed.
 - **State** is one Zustand store (`app/store.ts`). Its `session` mirrors the Rust side, which `ipc/` keeps in step: components only read it. The UI's own state, such as the selection or the zoom, has actions. Domain logic stays in Rust.

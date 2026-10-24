@@ -1,0 +1,67 @@
+/* What floats over the window: popovers, menus and the combobox's list (design §10.3). */
+.popover {
+  box-sizing: border-box;
+  min-width: 180px;
+  border-radius: var(--radius-control);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-overlay);
+  color: var(--text-primary);
+  outline: none;
+
+  &[data-entering] {
+    animation: popover-in var(--motion-hover) var(--ease-out);
+  }
+
+  &[data-exiting] {
+    animation: popover-in var(--motion-hover) var(--ease-out) reverse;
+  }
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-4px * var(--motion-distance)));
+  }
+}
+
+/* A row in a menu or a list box. */
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-compact);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-badge);
+  outline: none;
+
+  &[data-focused],
+  &[data-hovered] {
+    background: var(--accent-subtle);
+  }
+
+  &[data-selected] {
+    font: var(--type-body-strong);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+
+  & kbd {
+    margin-inline-start: auto;
+    padding-inline-start: var(--space-4);
+    color: var(--text-secondary);
+    font: inherit;
+  }
+}
+
+.collection {
+  padding: var(--space-1);
+  outline: none;
+}
+
+.separator {
+  height: 1px;
+  margin: var(--space-1) var(--space-2);
+  background: var(--border-subtle);
+}

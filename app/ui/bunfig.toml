@@ -6,9 +6,11 @@
 preload = ["./src/test/happy-dom.ts", "./src/test/setup.ts"]
 # Tests run in a random order, so they can't depend on each other.
 randomize = true
-# The UI's tests must cover at least 70% of its lines (tech spec §13.3).
+# The UI's tests must cover at least 70% of its lines (tech spec §13.3), and of its
+# functions. Both are given: with only `lines`, Bun holds functions to a stricter default,
+# and fails without saying so.
 coverage = true
-coverageThreshold = { lines = 0.7 }
+coverageThreshold = { lines = 0.7, functions = 0.7 }
 coverageSkipTestFiles = true
 # Test helpers, and the generated IPC bindings.
 coveragePathIgnorePatterns = ["src/test/**", "src/ipc/bindings.ts"]

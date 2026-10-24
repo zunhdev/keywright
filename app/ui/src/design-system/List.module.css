@@ -1,0 +1,44 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--space-1);
+  outline: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-default);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  outline: none;
+
+  &[data-hovered] {
+    background: var(--surface-hover);
+  }
+
+  &[data-selected] {
+    background: var(--accent-subtle);
+    font: var(--type-body-strong);
+  }
+
+  &[data-focus-visible] {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+}
+
+/* Row actions show when the row is hovered, focused or selected. */
+.actions {
+  display: flex;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+  opacity: 0;
+  transition: opacity var(--motion-hover) var(--ease-out);
+
+  .item:is([data-hovered], [data-selected], [data-focus-within]) & {
+    opacity: 1;
+  }
+}

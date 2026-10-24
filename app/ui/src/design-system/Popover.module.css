@@ -1,0 +1,5 @@
+.dialog {
+  max-width: 320px;
+  padding: var(--space-3) var(--space-4);
+  outline: none;
+}

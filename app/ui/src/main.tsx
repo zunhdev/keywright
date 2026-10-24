@@ -2,6 +2,9 @@
  * The UI's entry point, which index.html loads: it follows the session, and renders the
  * app into the page (tech spec §12.2).
  */
+import "@fontsource-variable/inter/wght.css";
+import "@fontsource-variable/jetbrains-mono/wght.css";
+import "./design-system/tokens.css";
 import "./app/global.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
