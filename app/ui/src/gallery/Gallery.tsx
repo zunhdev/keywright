@@ -13,7 +13,7 @@ import { Sheet } from "../design-system/Sheet.tsx";
 import { ToastRegion, toasts } from "../design-system/Toast.tsx";
 import { Toolbar, ToolbarSeparator } from "../design-system/Toolbar.tsx";
 import { LOCALE } from "../i18n/messages.ts";
-import { Keycaps, Sofle } from "./Keyboards.tsx";
+import { Connection, Keycaps, Sofle } from "./Keyboards.tsx";
 
 import styles from "./Gallery.module.css";
 
@@ -160,6 +160,8 @@ export function Gallery() {
           <h2>Keyboard</h2>
           <Sofle />
         </section>
+
+        <Connection />
 
         <section className={styles.section}>
           <h2>Icons</h2>

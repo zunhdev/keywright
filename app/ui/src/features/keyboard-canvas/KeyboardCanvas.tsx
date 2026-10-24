@@ -2,6 +2,10 @@ import { type RefObject, useLayoutEffect, useRef, useState } from "react";
 
 import { shownLayer, useStore } from "../../app/store.ts";
 import { useMessages } from "../../i18n/messages.ts";
+import { Connecting } from "../connection/Connecting.tsx";
+import { NoKeyboard } from "../connection/NoKeyboard.tsx";
+import { hasCard, StateCard } from "../connection/StateCard.tsx";
+import { RelockBanner } from "../connection/UnlockSheet.tsx";
 import { Keyboard } from "./Keyboard.tsx";
 
 import styles from "./KeyboardCanvas.module.css";
@@ -31,6 +35,10 @@ function useSize(ref: RefObject<HTMLElement | null>): { width: number; height: n
  * its own layout, with what each key does on that layer. Keys are drawn as big as fits,
  * from 36 px up to 56 px, then zoomed. While the keymap can't be changed, such as when the
  * keyboard is locked, the canvas shows under a scrim that says why.
+ *
+ * Before there's a keymap, it shows the connection's state (design §7): how to connect a
+ * keyboard, or a skeleton while one connects. A card says what's wrong and what to do,
+ * and a banner says when the keyboard locked itself.
  */
 export function KeyboardCanvas() {
   const messages = useMessages();
@@ -40,8 +48,11 @@ export function KeyboardCanvas() {
   const keymap = useStore((store) => store.keymap);
   const layer = useStore(shownLayer);
   const announcement = useStore((store) => store.announcement);
+  const relocked = useStore((store) => store.relocked);
   const editable = session?.state.kind === "ready";
   const drawn = keymap !== null && layer !== null;
+  const kind = session?.state.kind ?? "no-device";
+  const card = session !== null && hasCard(session);
   return (
     <div ref={viewport} className={styles.viewport}>
       {drawn ? (
@@ -52,7 +63,13 @@ export function KeyboardCanvas() {
           space={space}
           messages={messages}
         />
-      ) : null}
+      ) : kind === "no-device" ? (
+        <NoKeyboard />
+      ) : card ? null : (
+        <Connecting />
+      )}
+      {drawn && relocked && kind === "locked" ? <RelockBanner /> : null}
+      {card ? <StateCard session={session} /> : null}
       {/* What VoiceOver says when it can, such as the layer just shown (design §12). */}
       <div className={styles.announcement} aria-live="polite">
         {announcement}
@@ -61,7 +78,10 @@ export function KeyboardCanvas() {
           Over a keyboard that can't be changed, it's the scrim's message. */}
       <output
         className={styles.state}
-        data-over={drawn && !editable ? "keyboard" : drawn ? "nothing" : undefined}
+        data-over={
+          drawn && !editable ? "keyboard" : drawn || kind !== "probing" ? "nothing" : undefined
+        }
+        data-scrim-only={(drawn && (card || relocked)) || undefined}
       >
         {session ? messages.format(`session.${session.state.kind}`) : ""}
       </output>

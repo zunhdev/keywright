@@ -16,8 +16,11 @@ declare const classes: {
   readonly panel: string;
   readonly row: string;
   readonly section: string;
+  readonly state: string;
+  readonly states: string;
   readonly swatch: string;
   readonly swatches: string;
+  readonly unlock: string;
   readonly window: string;
 };
 export default classes;

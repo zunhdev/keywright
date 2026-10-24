@@ -152,3 +152,30 @@
   flex: 1;
   background: var(--bg-canvas);
 }
+
+/* The window before the keyboard can be edited: each state in a box of its own. */
+.states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.state {
+  position: relative;
+  width: 720px;
+  height: 520px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  background: var(--bg-canvas);
+}
+
+.unlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--bg-panel);
+}

@@ -19,6 +19,7 @@
 //! that file up to date too, and `tsc` checks it against the bindings.
 
 mod action;
+mod connection;
 mod edit;
 mod error;
 mod keymap;
@@ -78,7 +79,13 @@ pub fn builder() -> Builder<tauri::Wry> {
             layers::rename_layer,
             layers::move_layer,
             layers::remove_layer,
-            layers::add_layer
+            layers::add_layer,
+            connection::keyboard_guide,
+            connection::session_retry,
+            connection::keep_unsaved_changes,
+            connection::discard_unsaved_changes,
+            connection::reapply_changes,
+            connection::discard_changes
         ])
         .events(collect_events![
             SessionStateChanged,
@@ -153,10 +160,11 @@ mod tests {
         let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
         let generated = format!(
             "// The simulated Sofle's stock keymap, as `session_keymap` gives it, the key\n\
-             // tables, as `key_catalog` and `dom_codes` do, and the Mac actions on macOS 27,\n\
-             // as `mac_actions` does there, generated from keywright-app (src/ipc.rs) for the\n\
-             // UI's tests and gallery. Don't edit it: run `mise run generate:bindings`.\n\
-             import type {{ Choice, DomCode, KeyEntry, Keymap }} from \"../ipc/bindings.ts\";\n\
+             // tables, as `key_catalog` and `dom_codes` do, the Mac actions on macOS 27, as\n\
+             // `mac_actions` does there, and its guide, as `keyboard_guide` does, generated\n\
+             // from keywright-app (src/ipc.rs) for the UI's tests and gallery. Don't edit it:\n\
+             // run `mise run generate:bindings`.\n\
+             import type {{ Choice, DomCode, KeyboardGuide, KeyEntry, Keymap }} from \"../ipc/bindings.ts\";\n\
              \n\
              export const sofleKeymap: Keymap = {};\n\
              \n\
@@ -164,12 +172,18 @@ mod tests {
              \n\
              export const domCodes: DomCode[] = {};\n\
              \n\
-             export const macActions: Choice[] = {};\n",
+             export const macActions: Choice[] = {};\n\
+             \n\
+             export const sofleGuide: KeyboardGuide = {};\n",
             serde_json::to_string_pretty(&keymap).unwrap(),
             serde_json::to_string_pretty(&super::action::key_catalog()).unwrap(),
             serde_json::to_string_pretty(&super::action::dom_codes()).unwrap(),
             serde_json::to_string_pretty(&super::action::mac_choices(Some(
                 keywright_core::mac::presets::MacOsVersion(27)
+            )))
+            .unwrap(),
+            serde_json::to_string_pretty(&super::connection::keyboard_guide(Some(
+                "keebart-sofle-choc-pro-bt".to_owned()
             )))
             .unwrap()
         );

@@ -68,6 +68,7 @@ enum Event {
         bytes: Vec<u8>,
     },
     PressUnlockKey,
+    Lock,
     Restart,
     SetLatency(Duration),
     DropResponses(usize),
@@ -128,6 +129,11 @@ impl Simulator {
     /// Someone presses the unlock key.
     pub fn press_unlock_key(&self) {
         self.send(Event::PressUnlockKey);
+    }
+
+    /// The keyboard locks itself, as it does after being idle, and says so.
+    pub fn lock(&self) {
+        self.send(Event::Lock);
     }
 
     /// The keyboard restarts, as when its battery runs out: it forgets unsaved changes,
@@ -285,6 +291,11 @@ impl Device {
             Event::PressUnlockKey => {
                 let notification = self.keyboard.unlock();
                 self.lock_at = Some(Instant::now() + IDLE_LOCK_TIMEOUT);
+                self.output(notification.into_iter().collect()).await;
+            }
+            Event::Lock => {
+                let notification = self.keyboard.lock();
+                self.lock_at = None;
                 self.output(notification.into_iter().collect()).await;
             }
             Event::Restart => {

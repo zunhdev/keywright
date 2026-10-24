@@ -1,5 +1,9 @@
 //! A simulated keyboard in place of a real one, for working on the UI without hardware:
 //! `KEYWRIGHT_SIMULATOR=sofle mise run dev`. Demo mode (DEV-6) will offer one in the app.
+//!
+//! Some scenarios go wrong on purpose, so each of the window's connection states can be
+//! seen (design §7): the keyboard locks itself, restarts, is the wrong half, or starts
+//! typing over another connection.
 
 use std::env;
 use std::ffi::OsStr;
@@ -11,8 +15,15 @@ use keywright_sim::{FirmwareError, Simulator};
 /// The variable that picks a simulated keyboard.
 const VARIABLE: &str = "KEYWRIGHT_SIMULATOR";
 
-/// How long after connecting someone presses the unlock keys, in the `sofle` scenario.
+/// How long after connecting someone presses the unlock keys, in the `sofle` scenario, and
+/// after the keyboard reconnects in `sofle-restarts`.
 const UNLOCKED_AFTER: Duration = Duration::from_secs(3);
+
+/// How long after connecting a scenario's fault happens: time to try a change first.
+const FAULT_AFTER: Duration = Duration::from_secs(20);
+
+/// How long a restarted keyboard takes to come back.
+const RESTART_TAKES: Duration = Duration::from_secs(1);
 
 /// A simulated keyboard, which `KEYWRIGHT_SIMULATOR` names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -22,12 +33,29 @@ pub enum Scenario {
     Sofle,
     /// `sofle-unlocked`: a Sofle that's unlocked already.
     SofleUnlocked,
+    /// `sofle-relocks`: an unlocked Sofle that locks itself a while later, as after being
+    /// idle.
+    SofleRelocks,
+    /// `sofle-restarts`: an unlocked Sofle that restarts a while later, as when its battery
+    /// runs out, forgetting the changes being tried, and comes back. Someone unlocks it
+    /// again.
+    SofleRestarts,
+    /// `sofle-wrong-half`: the cable is in the half that doesn't talk to the computer, whose
+    /// USB port has no keyboard interface.
+    SofleWrongHalf,
+    /// `sofle-other-connection`: an unlocked Sofle whose output moves to Bluetooth a while
+    /// later, so it stops answering over the cable.
+    SofleOtherConnection,
 }
 
 impl Scenario {
-    const ALL: [(&str, Self); 2] = [
+    const ALL: [(&str, Self); 6] = [
         ("sofle", Self::Sofle),
         ("sofle-unlocked", Self::SofleUnlocked),
+        ("sofle-relocks", Self::SofleRelocks),
+        ("sofle-restarts", Self::SofleRestarts),
+        ("sofle-wrong-half", Self::SofleWrongHalf),
+        ("sofle-other-connection", Self::SofleOtherConnection),
     ];
 
     /// The scenario `KEYWRIGHT_SIMULATOR` names, or `None` if it isn't set.
@@ -61,18 +89,57 @@ impl Scenario {
     /// Fails if the simulator doesn't start, or the session has stopped.
     pub async fn connect(self, session: &Session) -> Result<(), Error> {
         let simulator = Simulator::sofle()?;
-        if self == Self::SofleUnlocked {
-            simulator.press_unlock_key();
+        match self {
+            Self::Sofle => {}
+            Self::SofleWrongHalf => simulator.set_wrong_half(true),
+            _ => simulator.press_unlock_key(),
         }
+        // The wrong half is told apart by its USB port, which has no keyboard interface
+        // (tech spec §6.3), so that scenario poses as the right half's port.
+        let peer = if self == Self::SofleWrongHalf {
+            Peer::Usb {
+                product: Some("Generic CDC".to_owned()),
+            }
+        } else {
+            Peer::Simulated
+        };
         session
-            .connect(Connection::new(simulator.connect(), Peer::Simulated))
+            .connect(Connection::new(simulator.connect(), peer))
             .await?;
-        if self == Self::Sofle {
-            let keyboard = simulator.clone();
-            tokio::spawn(async move {
-                tokio::time::sleep(UNLOCKED_AFTER).await;
-                keyboard.press_unlock_key();
-            });
+        let keyboard = simulator.clone();
+        let session = session.clone();
+        match self {
+            Self::Sofle => {
+                tokio::spawn(async move {
+                    tokio::time::sleep(UNLOCKED_AFTER).await;
+                    keyboard.press_unlock_key();
+                });
+            }
+            Self::SofleRelocks => {
+                tokio::spawn(async move {
+                    tokio::time::sleep(FAULT_AFTER).await;
+                    keyboard.lock();
+                });
+            }
+            Self::SofleRestarts => {
+                tokio::spawn(async move {
+                    tokio::time::sleep(FAULT_AFTER).await;
+                    keyboard.restart();
+                    tokio::time::sleep(RESTART_TAKES).await;
+                    let connection = Connection::new(keyboard.connect(), Peer::Simulated);
+                    if session.connect(connection).await.is_ok() {
+                        tokio::time::sleep(UNLOCKED_AFTER).await;
+                        keyboard.press_unlock_key();
+                    }
+                });
+            }
+            Self::SofleOtherConnection => {
+                tokio::spawn(async move {
+                    tokio::time::sleep(FAULT_AFTER).await;
+                    keyboard.switch_transport();
+                });
+            }
+            Self::SofleUnlocked | Self::SofleWrongHalf => {}
         }
         Ok(())
     }
@@ -93,6 +160,7 @@ pub enum Error {
 mod tests {
     use std::ffi::OsStr;
 
+    use keywright_core::edit::Edit;
     use keywright_device::{Session, State};
 
     use super::Scenario;
@@ -105,8 +173,16 @@ mod tests {
             Ok(Scenario::SofleUnlocked)
         );
         assert_eq!(
+            Scenario::named(OsStr::new("sofle-wrong-half")),
+            Ok(Scenario::SofleWrongHalf)
+        );
+        assert_eq!(
             Scenario::named(OsStr::new("corne")),
-            Err("KEYWRIGHT_SIMULATOR must be one of: sofle, sofle-unlocked.".to_owned())
+            Err(
+                "KEYWRIGHT_SIMULATOR must be one of: sofle, sofle-unlocked, sofle-relocks, \
+                 sofle-restarts, sofle-wrong-half, sofle-other-connection."
+                    .to_owned()
+            )
         );
     }
 
@@ -132,6 +208,79 @@ mod tests {
             .unwrap();
         session
             .wait_for(|state| *state == State::Ready)
+            .await
+            .unwrap();
+    }
+
+    /// A change to try, so there's one to lose: row 2's Q types A.
+    async fn try_a_change(session: &Session) -> Result<(), keywright_device::SessionError> {
+        let editor = session.snapshot().await?.editor.unwrap();
+        let base = &editor.current().layers[0];
+        session
+            .apply(vec![Edit::SetBinding {
+                layer: base.id,
+                position: 13,
+                before: base.bindings[13],
+                after: base.bindings[14],
+            }])
+            .await
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_sofle_that_relocks_locks_after_being_ready() {
+        let session = Session::start();
+        Scenario::SofleRelocks.connect(&session).await.unwrap();
+        session
+            .wait_for(|state| *state == State::Ready)
+            .await
+            .unwrap();
+        session
+            .wait_for(|state| matches!(state, State::Locked { .. }))
+            .await
+            .unwrap();
+        assert!(session.snapshot().await.unwrap().editor.is_some());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_sofle_that_restarts_loses_the_changes_being_tried() {
+        let session = Session::start();
+        Scenario::SofleRestarts.connect(&session).await.unwrap();
+        session
+            .wait_for(|state| *state == State::Ready)
+            .await
+            .unwrap();
+        try_a_change(&session).await.unwrap();
+        session
+            .wait_for(|state| *state == State::ChangesLost)
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn the_wrong_half_says_so() {
+        let session = Session::start();
+        Scenario::SofleWrongHalf.connect(&session).await.unwrap();
+        session
+            .wait_for(|state| *state == State::WrongHalf)
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn a_sofle_typing_over_another_connection_stops_answering() {
+        let session = Session::start();
+        Scenario::SofleOtherConnection
+            .connect(&session)
+            .await
+            .unwrap();
+        session
+            .wait_for(|state| *state == State::Ready)
+            .await
+            .unwrap();
+        tokio::time::sleep(super::FAULT_AFTER).await;
+        assert!(try_a_change(&session).await.is_err());
+        session
+            .wait_for(|state| *state == State::NoLiveEditing)
             .await
             .unwrap();
     }

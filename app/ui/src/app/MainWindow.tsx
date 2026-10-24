@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { UnlockSheet } from "../features/connection/UnlockSheet.tsx";
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { LayersPane } from "../features/layers/LayersPane.tsx";
@@ -61,6 +62,7 @@ export function MainWindow() {
       <main className={styles.canvas} aria-label={messages.format("canvas.label")}>
         <KeyboardCanvas />
       </main>
+      <UnlockSheet />
       {inspector === null ? null : (
         <aside
           className={styles.inspector}

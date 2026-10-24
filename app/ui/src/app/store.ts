@@ -2,7 +2,14 @@ import { type StateCreator, create } from "zustand";
 
 import { bounds, zoomIn, zoomOut } from "../features/keyboard-canvas/geometry.ts";
 import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
-import type { Choice, DomCode, KeyEntry, Keymap, SessionStatus } from "../ipc/bindings.ts";
+import type {
+  Choice,
+  DomCode,
+  KeyboardGuide,
+  KeyEntry,
+  Keymap,
+  SessionStatus,
+} from "../ipc/bindings.ts";
 import { clampWidth, isCrowded, PANES, type Panel } from "./layout.ts";
 
 /**
@@ -20,6 +27,11 @@ export interface SessionSlice {
   readonly domCodes: readonly DomCode[];
   /** The Mac actions this Mac's macOS version offers, once loaded (MAC-4). */
   readonly macActions: readonly Choice[];
+  /**
+   * What the support packs say about keyboards, by pack ID, or `""` for the best-known
+   * keyboard's, once asked for: `null` for one without a pack (design §7).
+   */
+  readonly guides: Readonly<Record<string, KeyboardGuide | null>>;
 }
 
 /** What the UI itself decides: the layer shown, what's selected, the zoom, and the panes. */
@@ -40,6 +52,10 @@ export interface UiSlice {
    * `KEY_RECORDER`, the key or shortcut field that ⌘R starts, or another field's ID.
    */
   readonly recording: string | null;
+  /** Whether the unlock sheet shows (design §7): when locked, until unlocked or cancelled. */
+  readonly unlockSheet: boolean;
+  /** Whether the keyboard locked itself after it could be edited, so a banner says so. */
+  readonly relocked: boolean;
   /** What the toolbar's search looks for across layers (design §4.6), or `""`. */
   readonly search: string;
   /** Whether a text field has keyboard focus, so Edit's items edit its text. */
@@ -96,6 +112,7 @@ const sessionSlice: StateCreator<Store, [], [], SessionSlice> = () => ({
   keyCatalog: [],
   domCodes: [],
   macActions: [],
+  guides: {},
 });
 
 /** How wide the keyboard is, in key units: 0 before there's a keymap to draw. */
@@ -127,6 +144,8 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   copied: false,
   announcement: "",
   recording: null,
+  unlockSheet: false,
+  relocked: false,
   search: "",
   textFocused: false,
   zoom: 1,

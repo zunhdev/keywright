@@ -155,7 +155,8 @@ test("before a keymap is read, the canvas says what the session is doing", () =>
   );
   const state = screen.getByRole("status");
   expect(state.textContent).toBe("Not connected");
-  expect(state.dataset["over"]).toBeUndefined();
+  // The canvas shows how to connect one; the state is for VoiceOver.
+  expect(state.dataset["over"]).toBe("nothing");
   expect(within(document.body).queryByRole("button")).toBeNull();
 });
 

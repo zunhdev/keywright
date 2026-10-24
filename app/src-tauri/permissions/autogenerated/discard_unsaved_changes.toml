@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-discard-unsaved-changes"
+description = "Enables the discard_unsaved_changes command without any pre-configured scope."
+commands.allow = ["discard_unsaved_changes"]
+
+[[permission]]
+identifier = "deny-discard-unsaved-changes"
+description = "Denies the discard_unsaved_changes command without any pre-configured scope."
+commands.deny = ["discard_unsaved_changes"]

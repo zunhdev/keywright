@@ -22,6 +22,11 @@
     font: var(--type-title);
   }
 
+  /* A card or banner says it: the scrim stays, and the words are for VoiceOver. */
+  &[data-scrim-only] {
+    color: transparent;
+  }
+
   &[data-over="nothing"] {
     clip-path: inset(50%);
     width: 1px;

@@ -13,6 +13,7 @@ import { createRoot } from "react-dom/client";
 
 import { App } from "./app/App.tsx";
 import { followTextFocus } from "./app/text-focus.ts";
+import { followConnection } from "./features/connection/follow.ts";
 import { followKeymap, loadKeyTables } from "./ipc/keymap.ts";
 import { followMenu } from "./ipc/menu.ts";
 import { followSession } from "./ipc/session.ts";
@@ -27,6 +28,7 @@ void followKeymap();
 void loadKeyTables();
 void followMenu();
 followTextFocus();
+followConnection();
 createRoot(root).render(
   <StrictMode>
     <App />

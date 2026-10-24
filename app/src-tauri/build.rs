@@ -28,6 +28,12 @@ const COMMANDS: &[&str] = &[
     "move_layer",
     "remove_layer",
     "add_layer",
+    "keyboard_guide",
+    "session_retry",
+    "keep_unsaved_changes",
+    "discard_unsaved_changes",
+    "reapply_changes",
+    "discard_changes",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
