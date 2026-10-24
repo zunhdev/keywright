@@ -7,6 +7,7 @@
     "core:event:allow-listen",
     "core:event:allow-unlisten",
     "allow-session-state",
+    "allow-battery-levels",
     "allow-session-keymap",
     "allow-key-catalog",
     "allow-dom-codes",

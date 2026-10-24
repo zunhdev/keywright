@@ -1,6 +1,6 @@
 /**
- * The UI's entry point, which index.html loads: it follows the session, its keymap and the
- * menu bar, and renders the app into the page (tech spec §12.2).
+ * The UI's entry point, which index.html loads: it follows the session, its keymap, the
+ * keyboard's battery and the menu bar, and renders the app into the page (tech spec §12.2).
  */
 // First, before React loads.
 import "./no-performance-tracks.ts";
@@ -15,6 +15,7 @@ import { App } from "./app/App.tsx";
 import { followTextFocus } from "./app/text-focus.ts";
 import { followQuit } from "./features/changes/QuitDialog.tsx";
 import { followConnection } from "./features/connection/follow.ts";
+import { followBattery } from "./ipc/battery.ts";
 import { followKeymap, loadKeyTables } from "./ipc/keymap.ts";
 import { followMenu } from "./ipc/menu.ts";
 import { followSession } from "./ipc/session.ts";
@@ -26,6 +27,7 @@ if (!root) {
 // For as long as the page is open.
 void followSession();
 void followKeymap();
+void followBattery();
 void loadKeyTables();
 void followMenu();
 followTextFocus();

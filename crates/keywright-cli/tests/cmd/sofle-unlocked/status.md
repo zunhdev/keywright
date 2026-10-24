@@ -23,7 +23,10 @@ $ keywright --json status
       },
       "state": "unlocked",
       "changes": "saved",
-      "battery": null,
+      "battery": {
+        "left": null,
+        "right": null
+      },
       "unlock": null,
       "problem": null
     }

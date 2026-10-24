@@ -17,6 +17,15 @@ export const commands = {
 	 */
 	sessionState: () => typedError<SessionStatus, AppError>(__TAURI_INVOKE("session_state")),
 	/**
+	 *  The battery's levels now, which it reads again too: an update follows on
+	 *  `session://battery` if they changed.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the session has stopped.
+	 */
+	batteryLevels: () => typedError<BatteryStatus, AppError>(__TAURI_INVOKE("battery_levels")),
+	/**
 	 *  The keymap the canvas draws, or `null` before the session has read one.
 	 * 
 	 *  # Errors
@@ -328,6 +337,7 @@ character: string } | null>("layer_name_problem", { name }),
 export const events = {
 	appQuitRequested: makeEvent<QuitRequested>("app://quit-requested"),
 	menuItem: makeEvent<MenuItemChosen>("menu://item"),
+	sessionBattery: makeEvent<BatteryChanged>("session://battery"),
 	sessionKeymap: makeEvent<KeymapChanged>("session://keymap"),
 	sessionState: makeEvent<SessionStateChanged>("session://state"),
 };
@@ -453,6 +463,20 @@ export type AppError =
 { code: "would-strand"; 
 /**  What it would break. */
 findings: GuardWarning[] };
+
+/**  `session://battery`: a half's battery level changed, or went unreported. */
+export type BatteryChanged = BatteryStatus;
+
+/**
+ *  Each half's battery level, in percent, or `null`: not reported (BAR-2). Keywright never
+ *  estimates one.
+ */
+export type BatteryStatus = {
+	/**  The left half's. */
+	left: number | null,
+	/**  The right half's. */
+	right: number | null,
+};
 
 /**  A Bluetooth command. */
 export type Bluetooth = 

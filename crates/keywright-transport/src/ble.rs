@@ -16,7 +16,10 @@
 //!   an error, which closes the transport, even while it's only listening.
 //! - Each transport has a connection of its own, which closes when the transport is
 //!   dropped. macOS keeps its own, so the keyboard goes on typing, and stays unlocked.
+//!
+//! [`battery`] reads the keyboard's battery levels, on a connection of its own too.
 
+pub mod battery;
 #[cfg(test)]
 mod tests;
 
@@ -179,12 +182,9 @@ impl BleTransport {
     }
 }
 
-/// Connects to the keyboard, and finds the Studio service's RPC characteristic, and only
-/// that.
-async fn rpc_characteristic(
-    adapter: &Adapter,
-    keyboard: &BlePeripheral,
-) -> Result<(Device, Characteristic), TransportError> {
+/// Connects to the keyboard, which macOS has connected: a connection of Keywright's own,
+/// on `adapter`.
+async fn connect(adapter: &Adapter, keyboard: &BlePeripheral) -> Result<Device, TransportError> {
     let device = adapter
         .connected_devices_with_services(&[STUDIO_SERVICE])
         .await
@@ -196,6 +196,26 @@ async fn rpc_characteristic(
         .connect_device(&device)
         .await
         .map_err(transport_error)?;
+    Ok(device)
+}
+
+/// Closes Keywright's connection to the keyboard. macOS keeps its own, and the keyboard
+/// stays unlocked.
+async fn disconnect(adapter: &Adapter, device: &Device) {
+    match timeout(CLOSE_TIMEOUT, adapter.disconnect_device(device)).await {
+        Ok(Ok(())) => {}
+        Ok(Err(error)) => tracing::debug!(%error, "couldn't close the Bluetooth connection"),
+        Err(_) => tracing::debug!("closing the Bluetooth connection took too long"),
+    }
+}
+
+/// Connects to the keyboard, and finds the Studio service's RPC characteristic, and only
+/// that.
+async fn rpc_characteristic(
+    adapter: &Adapter,
+    keyboard: &BlePeripheral,
+) -> Result<(Device, Characteristic), TransportError> {
+    let device = connect(adapter, keyboard).await?;
     let service = device
         .discover_services_with_uuid(STUDIO_SERVICE)
         .await
@@ -227,7 +247,7 @@ async fn listen(
         Ok(Ok(indications)) => {
             // `open` may have stopped waiting.
             if subscribed.send(Ok(())).is_ok() {
-                forward(indications, &to_client).await;
+                forward(indications, &to_client, |indication| indication).await;
             }
         }
         Ok(Err(error)) => {
@@ -237,19 +257,15 @@ async fn listen(
             let _ = subscribed.send(Err(timed_out()));
         }
     }
-    // macOS keeps its own connection, and the keyboard stays unlocked.
-    match timeout(CLOSE_TIMEOUT, adapter.disconnect_device(&device)).await {
-        Ok(Ok(())) => {}
-        Ok(Err(error)) => tracing::debug!(%error, "couldn't close the Bluetooth connection"),
-        Err(_) => tracing::debug!("closing the Bluetooth connection took too long"),
-    }
+    disconnect(&adapter, &device).await;
 }
 
-/// Hands each indication to the client, until one is an error, the indications end, or
-/// the client's end is dropped.
-async fn forward(
+/// Hands each indication to `to_client`, made into what it takes by `tag`, until one is an
+/// error, the indications end, or the client's end is dropped.
+async fn forward<T>(
     mut indications: impl Stream<Item = bluest::Result<Vec<u8>>> + Unpin,
-    to_client: &mpsc::UnboundedSender<Result<Vec<u8>, TransportError>>,
+    to_client: &mpsc::UnboundedSender<T>,
+    tag: impl Fn(Result<Vec<u8>, TransportError>) -> T,
 ) {
     loop {
         let indication = tokio::select! {
@@ -260,7 +276,11 @@ async fn forward(
             return;
         };
         let failed = indication.is_err();
-        if to_client.send(indication.map_err(transport_error)).is_err() || failed {
+        if to_client
+            .send(tag(indication.map_err(transport_error)))
+            .is_err()
+            || failed
+        {
             return;
         }
     }

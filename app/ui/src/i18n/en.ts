@@ -52,6 +52,9 @@ export const en = {
     "A demo keyboard, simulated in Keywright: everything works, and saving changes only it.",
   "chip.firmware": (args) => `Firmware: ${text(args, "name")}`,
   "chip.auto-lock": "Your keyboard locks itself after 10 minutes idle.",
+  "chip.battery": (args) => `Battery: Left ${text(args, "left")} · Right ${text(args, "right")}`,
+  "battery.percent": (args) => `${text(args, "percent")}%`,
+  "battery.not-reported": "not reported",
   "chip.unlock": "Unlock…",
 
   // The unlock sheet, as for keyboards without a diagram (design §7).

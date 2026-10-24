@@ -6,7 +6,7 @@ import { Icon } from "../design-system/Icon.tsx";
 import { Popover } from "../design-system/Popover.tsx";
 import { leaveDemo } from "../features/connection/actions.ts";
 import { type Messages, useMessages } from "../i18n/messages.ts";
-import type { SessionState, SessionStatus, Transport } from "../ipc/bindings.ts";
+import type { BatteryStatus, SessionState, SessionStatus, Transport } from "../ipc/bindings.ts";
 import { useStore } from "./store.ts";
 
 import styles from "./ConnectionChip.module.css";
@@ -47,10 +47,25 @@ function describe(
   return { icon: TRANSPORT_ICONS[transport], text: messages.format(CHIP[kind], variables) };
 }
 
+/** A battery level as the details say it: a percentage, or "not reported" (BAR-2). */
+function level(percent: number | null, messages: Messages): string {
+  return percent === null
+    ? messages.format("battery.not-reported")
+    : messages.format("battery.percent", { percent: String(percent) });
+}
+
+/** The battery line of the details, for a real keyboard. */
+function batteryLine(battery: BatteryStatus, messages: Messages): string {
+  return messages.format("chip.battery", {
+    left: level(battery.left, messages),
+    right: level(battery.right, messages),
+  });
+}
+
 /**
  * The connection chip (design §3.2): how the keyboard is connected and whether it's
- * locked. It opens the details: the transport, the firmware, the idle lock, and Unlock…
- * while locked, which opens the unlock sheet (design §7).
+ * locked. It opens the details: the transport, the firmware, the battery, the idle lock,
+ * and Unlock… while locked, which opens the unlock sheet (design §7).
  */
 export function ConnectionChip() {
   const messages = useMessages();
@@ -59,6 +74,7 @@ export function ConnectionChip() {
   const transport = session?.state.kind === "no-device" ? null : (session?.transport ?? null);
   const keyboard = session?.keyboard ?? null;
   const locked = session?.state.kind === "locked";
+  const battery = useStore((store) => store.battery);
   return (
     <DialogTrigger>
       <Button variant="quiet" size="compact">
@@ -74,6 +90,9 @@ export function ConnectionChip() {
               <p>{messages.format(`chip.over.${transport}`)}</p>
               {keyboard === null ? null : (
                 <p>{messages.format("chip.firmware", { name: keyboard })}</p>
+              )}
+              {battery === null || transport === "simulated" ? null : (
+                <p>{batteryLine(battery, messages)}</p>
               )}
               <p className={styles.note}>{messages.format("chip.auto-lock")}</p>
             </>
