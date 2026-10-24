@@ -4,16 +4,18 @@
  */
 import { shownLayer, useStore } from "../app/store.ts";
 import { Segment, SegmentedControl } from "../design-system/SegmentedControl.tsx";
+import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { Keycap, type KeycapProps, type KeycapState } from "../features/keyboard-canvas/Keycap.tsx";
 import type { Key, Keycap as KeycapData } from "../ipc/bindings.ts";
-import { sofleKeymap } from "../test/sofle-keymap.ts";
+import { keyCatalog, sofleKeymap } from "../test/sofle.ts";
 
 import styles from "./Gallery.module.css";
 
 /** A key that shows `keycap`, named for what it shows. */
 function face(name: string, keycap: KeycapData, more: Partial<Key> = {}): Key {
   return {
+    action: { kind: "nothing" },
     keycap,
     inherited: false,
     sentence: name,
@@ -114,8 +116,13 @@ export function Sofle() {
           </Segment>
         ))}
       </SegmentedControl>
-      <div className={styles.board}>
-        <KeyboardCanvas />
+      <div className={styles.window}>
+        <div className={styles.board}>
+          <KeyboardCanvas />
+        </div>
+        <aside className={styles.inspector} aria-label="Inspector">
+          <Inspector />
+        </aside>
       </div>
     </>
   );
@@ -133,4 +140,5 @@ useStore.setState({
     canRedo: false,
   },
   keymap: sofleKeymap,
+  keyCatalog,
 });

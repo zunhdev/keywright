@@ -6,7 +6,7 @@ import { userEvent } from "@testing-library/user-event";
 
 import { useStore } from "../../app/store.ts";
 import { drawSofle, keyAt } from "../../test/canvas.tsx";
-import { sofleKeymap } from "../../test/sofle-keymap.ts";
+import { sofleKeymap } from "../../test/sofle.ts";
 
 /** Fakes the Rust side, and records each command it's asked for, with its arguments. */
 function rustSide(): Array<{ command: string; args: unknown }> {

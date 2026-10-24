@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-key-catalog"
+description = "Enables the key_catalog command without any pre-configured scope."
+commands.allow = ["key_catalog"]
+
+[[permission]]
+identifier = "deny-key-catalog"
+description = "Denies the key_catalog command without any pre-configured scope."
+commands.deny = ["key_catalog"]

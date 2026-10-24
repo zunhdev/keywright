@@ -30,7 +30,26 @@ export const commands = {
 	knobs: Knob[],
 	/**  The layers, in order: the base layer first. */
 	layers: Layer[],
+	/**  The actions the inspector lists as they are, which the firmware can do. */
+	choices: Choice[],
+	/**  The behaviors Keywright doesn't know, which the inspector edits by their parameters. */
+	others: OtherBehavior[],
+	/**  The kinds of action the inspector edits that the firmware can do. */
+	kinds: Kind[],
 } | null, AppError>(__TAURI_INVOKE("session_keymap")),
+	/**
+	 *  Every key ZMK names, with its US labels and group, for the key popup. Right-hand
+	 *  modifiers are left out: the modifier toggles choose a side.
+	 */
+	keyCatalog: () => __TAURI_INVOKE<KeyEntry[]>("key_catalog"),
+	/**
+	 *  Makes keys on a layer do an action (the inspector).
+	 * 
+	 *  # Errors
+	 * 
+	 *  As for [`swap_keys`], and if the keyboard's firmware has no behavior for the action.
+	 */
+	setAction: (layer: number, positions: number[], action: Action) => typedError<null, AppError>(__TAURI_INVOKE("set_action", { layer, positions, action })),
 	/**
 	 *  Swaps what two keys do on a layer (dragging one onto the other).
 	 * 
@@ -107,6 +126,85 @@ export const events = {
 };
 
 /* Types */
+/**  What a key does (tech spec §8.1). In TypeScript, `{ kind: "key-press", key }` and so on. */
+export type Action = 
+/**  Types a key or shortcut. */
+{ kind: "key-press"; 
+/**  The key or shortcut. */
+key: Shortcut } | 
+/**  A key on tap, another on hold. */
+{ kind: "mod-tap"; 
+/**  What holding it holds. */
+hold: Shortcut; 
+/**  What tapping it types. */
+tap: Shortcut } | 
+/**  A key on tap, a layer on hold. */
+{ kind: "layer-tap"; 
+/**  The layer, by ID. */
+layer: number; 
+/**  What tapping it types. */
+tap: Shortcut } | 
+/**  A layer while held. */
+{ kind: "momentary"; 
+/**  The layer, by ID. */
+layer: number } | 
+/**  Switches to a layer. */
+{ kind: "to-layer"; 
+/**  The layer, by ID. */
+layer: number } | 
+/**  Turns a layer on or off. */
+{ kind: "toggle"; 
+/**  The layer, by ID. */
+layer: number } | 
+/**  A layer for the next key only. */
+{ kind: "sticky-layer"; 
+/**  The layer, by ID. */
+layer: number } | 
+/**  A key, usually a modifier, held for the next key only. */
+{ kind: "sticky-key"; 
+/**  The key. */
+key: Shortcut } | 
+/**  Same as the layer below. */
+{ kind: "transparent" } | 
+/**  Nothing. */
+{ kind: "nothing" } | 
+/**  A Bluetooth command. */
+{ kind: "bluetooth"; 
+/**  The command. */
+command: Bluetooth; 
+/**  The device it's about, from 0, for `select` and `disconnect`; otherwise 0. */
+profile: number } | 
+/**  Where the keyboard types. */
+{ kind: "output"; 
+/**  Where. */
+command: Output } | 
+/**  A lighting command. */
+{ kind: "lighting"; 
+/**  The command. */
+command: Lighting } | 
+/**  Power to the lights and display. */
+{ kind: "external-power"; 
+/**  The command. */
+command: Power } | 
+/**  Capitals until the end of the word. */
+{ kind: "caps-word" } | 
+/**  Repeats the last key. */
+{ kind: "key-repeat" } | 
+/**  Unlocks the keyboard for editing. */
+{ kind: "unlock" } | 
+/**  Puts the half into update mode. */
+{ kind: "bootloader" } | 
+/**  Restarts the half. */
+{ kind: "reset" } | 
+/**  A behavior Keywright doesn't know, with its parameters. */
+{ kind: "other"; 
+/**  The behavior's ID on this keyboard. */
+behavior: number; 
+/**  The first parameter. */
+param1: Param; 
+/**  The second parameter. */
+param2: Param };
+
 /**
  *  Why a command didn't do what it was asked. In TypeScript, `{ code: "not-ready" }` and
  *  so on: the codes are part of the IPC contract, so a code never changes meaning.
@@ -133,6 +231,74 @@ export type AppError =
 /**  The menu bar didn't take a change to one of its items. */
 { code: "menu-failed" };
 
+/**  A Bluetooth command. */
+export type Bluetooth = 
+/**  Forgets the pairing of the device in use. */
+"clear" | 
+/**  The next device. */
+"next" | 
+/**  The previous device. */
+"previous" | 
+/**  A device, by `profile`. */
+"select" | 
+/**  Forgets every pairing. */
+"clear-all" | 
+/**  Disconnects a device, by `profile`. */
+"disconnect";
+
+/**  A group of actions in the action picker (EDIT-1). Mac actions come with KEY-49. */
+export type Category = 
+/**  Media & system: playback, volume and brightness. */
+"media" | 
+/**  Bluetooth & connection. */
+"bluetooth" | 
+/**  Lighting. */
+"lighting" | 
+/**  Special: Caps Word, Repeat, Unlock editing, Update mode, Restart. */
+"special";
+
+/**
+ *  An action the inspector offers as it is, such as Play/Pause or Bluetooth device 1, in
+ *  the words the keycap and the inspector use.
+ */
+export type Choice = {
+	/**  The group it's listed in. */
+	category: Category,
+	/**  What a keycap shows for it, such as `Play/Pause` or `ᛒ 1`. */
+	label: string,
+	/**  What it does, in one sentence. */
+	sentence: string,
+	/**  The action. */
+	action: Action,
+};
+
+/**  A group of keys in the key popup. */
+export type Group = 
+/**  A to Z. */
+"letter" | 
+/**  1 to 0. */
+"number" | 
+/**  Punctuation. */
+"symbol" | 
+/**  Return, Escape, Delete, Tab, Space and the like. */
+"editing" | 
+/**  Arrows, Home, End, Page Up and Page Down. */
+"navigation" | 
+/**  F1 to F24. */
+"function" | 
+/**  The numeric keypad. */
+"numpad" | 
+/**  The keys of Japanese, Korean and other keyboards. */
+"international" | 
+/**  Control, Shift, Option, Command and Caps Lock. */
+"modifier" | 
+/**  Playback, volume and brightness. */
+"media" | 
+/**  Keys that open an app or act in one. */
+"application" | 
+/**  Everything else. */
+"other";
+
 /**  What holding a tap-and-hold key does. */
 export type Hold = 
 /**  Holds a modifier or a key, such as `⌃`. */
@@ -148,6 +314,11 @@ name: string };
 
 /**  What a key shows and does on a layer. */
 export type Key = {
+	/**
+	 *  What it does, for the inspector's editors. A "same as layer below" key is that,
+	 *  whatever it inherits.
+	 */
+	action: Action,
 	/**  What its keycap shows. For a "same as layer below" key, what it inherits. */
 	keycap: Keycap,
 	/**  Whether the key is "same as layer below": its keycap is drawn faded, with a ▽. */
@@ -168,6 +339,20 @@ export type KeyAction =
 "same-as-layer-below" | 
 /**  Nothing (⌫ on the canvas). */
 "does-nothing";
+
+/**  A key the key popup offers (design §5.4), in its group. */
+export type KeyEntry = {
+	/**  The key's usage page. */
+	page: Page,
+	/**  The key's usage ID. */
+	id: number,
+	/**  What its keycap shows, such as `⌫`. */
+	cap: string,
+	/**  What text calls it, such as `Delete`. */
+	name: string,
+	/**  Its group. */
+	group: Group,
+};
 
 /**
  *  What a keycap shows (design §4.2). In TypeScript, `{ kind: "label", text: "A" }` and so
@@ -211,10 +396,42 @@ export type Keymap = {
 	knobs: Knob[],
 	/**  The layers, in order: the base layer first. */
 	layers: Layer[],
+	/**  The actions the inspector lists as they are, which the firmware can do. */
+	choices: Choice[],
+	/**  The behaviors Keywright doesn't know, which the inspector edits by their parameters. */
+	others: OtherBehavior[],
+	/**  The kinds of action the inspector edits that the firmware can do. */
+	kinds: Kind[],
 };
 
 /**  `session://keymap`: the keymap the canvas draws changed, or the session has none. */
 export type KeymapChanged = Keymap | null;
+
+/**
+ *  A kind of action the keyboard's firmware has a behavior for (EDIT-2): the inspector
+ *  offers only those.
+ */
+export type Kind = 
+/**  Types a key or shortcut. */
+"key-press" | 
+/**  A key on tap, a modifier on hold. */
+"mod-tap" | 
+/**  A key on tap, a layer on hold. */
+"layer-tap" | 
+/**  A layer while held. */
+"momentary" | 
+/**  Switches to a layer. */
+"to-layer" | 
+/**  Turns a layer on or off. */
+"toggle" | 
+/**  A layer for the next key. */
+"sticky-layer" | 
+/**  A modifier for the next key. */
+"sticky-key" | 
+/**  Same as the layer below. */
+"transparent" | 
+/**  Nothing. */
+"nothing";
 
 /**
  *  A knob: pressing it is the key at `position`, and turning it does what the support pack
@@ -248,6 +465,35 @@ export type LayerMode =
 /**  For the next key only. */
 "next-key";
 
+/**  A lighting command. */
+export type Lighting = 
+/**  Turns the lights on or off. */
+"toggle" | 
+/**  Turns them on. */
+"on" | 
+/**  Turns them off. */
+"off" | 
+/**  Shifts their colour one way. */
+"hue-up" | 
+/**  Shifts their colour the other way. */
+"hue-down" | 
+/**  Makes their colour stronger. */
+"saturation-up" | 
+/**  Makes their colour paler. */
+"saturation-down" | 
+/**  Makes them brighter. */
+"brightness-up" | 
+/**  Makes them dimmer. */
+"brightness-down" | 
+/**  Speeds up their effect. */
+"speed-up" | 
+/**  Slows down their effect. */
+"speed-down" | 
+/**  The next effect. */
+"next-effect" | 
+/**  The previous effect. */
+"previous-effect";
+
 /**
  *  One of Keywright's own menu items. In TypeScript, its kebab-case name, such as
  *  `"toggle-layers"`, which is also its ID in the menu.
@@ -256,6 +502,65 @@ export type MenuItem = "settings" | "import" | "export" | "backups" | "update-fi
 
 /**  `menu://item`: someone chose one of Keywright's own menu items. */
 export type MenuItemChosen = MenuItem;
+
+/**
+ *  A behavior Keywright doesn't know, which the inspector edits by its parameters
+ *  (EDIT-2).
+ */
+export type OtherBehavior = {
+	/**  Its ID on this keyboard. */
+	id: number,
+	/**  The firmware's name for it. */
+	name: string,
+	/**  The combinations of parameters it accepts: a binding must match one. */
+	parameters: ParameterSet[],
+};
+
+/**  Where the keyboard types. */
+export type Output = 
+/**  Switches between USB and Bluetooth. */
+"toggle" | 
+/**  USB. */
+"usb" | 
+/**  Bluetooth. */
+"bluetooth";
+
+/**  A usage page ZMK can send. */
+export type Page = 
+/**  Keyboard keys. */
+"keyboard" | 
+/**  Consumer controls, such as media keys. */
+"consumer";
+
+/**
+ *  A parameter of a behavior Keywright doesn't know: a number, or a key where the
+ *  behavior's metadata says it takes one, so the UI never encodes keys itself.
+ */
+export type Param = 
+/**  A number: a named constant, a number in a range, or a layer's ID. */
+{ kind: "number"; 
+/**  The number. */
+value: number } | 
+/**  A key or shortcut. */
+{ kind: "key"; 
+/**  The key or shortcut. */
+key: Shortcut };
+
+/**  Values a behavior's two parameters accept together. */
+export type ParameterSet = {
+	/**  What the first accepts: any one of them. None means it must be 0. */
+	param1: ParameterValue[],
+	/**  What the second accepts, as for the first. */
+	param2: ParameterValue[],
+};
+
+/**  A value, or a kind of value, a parameter accepts. */
+export type ParameterValue = {
+	/**  What the firmware calls it. It can be empty. */
+	name: string,
+	/**  The values it covers. */
+	value: Value,
+};
 
 /**
  *  A key's place, size and rotation, as the keyboard reports them. Lengths are in
@@ -282,6 +587,15 @@ export type PhysicalKey = {
 	 */
 	place: string,
 };
+
+/**  A command for the power to the lights and display. */
+export type Power = 
+/**  Turns it on or off. */
+"toggle" | 
+/**  Turns it on. */
+"on" | 
+/**  Turns it off. */
+"off";
 
 /**  Why a keyboard is incompatible. */
 export type Problem = 
@@ -352,6 +666,19 @@ export type SessionStatus = {
 	canRedo: boolean,
 };
 
+/**  A key or shortcut: a key, with modifiers held. */
+export type Shortcut = {
+	/**
+	 *  The modifiers held, as ZMK's bits: 1 left Control, 2 left Shift, 4 left Option, 8
+	 *  left Command, then 16 to 128 for the right ones.
+	 */
+	mods: number,
+	/**  The key's usage page. */
+	page: Page,
+	/**  The key's usage ID on its page. */
+	id: number,
+};
+
 /**  How the session reaches the keyboard. */
 export type Transport = 
 /**  A USB cable. */
@@ -360,6 +687,28 @@ export type Transport =
 "bluetooth" | 
 /**  A simulated keyboard, in the same process. */
 "simulated";
+
+/**
+ *  The values a parameter value covers. In TypeScript, `{ kind: "range", min, max }` and so
+ *  on.
+ */
+export type Value = 
+/**  Only 0. */
+{ kind: "nil" } | 
+/**  Exactly this number. */
+{ kind: "constant"; 
+/**  The number. */
+value: number } | 
+/**  Any number from `min` to `max`. */
+{ kind: "range"; 
+/**  The smallest. */
+min: number; 
+/**  The largest. */
+max: number } | 
+/**  A key or shortcut. */
+{ kind: "key" } | 
+/**  A layer, by ID. */
+{ kind: "layer" };
 
 /* Tauri Specta runtime */
 async function typedError<T, E>(result: Promise<T>): Promise<{ status: "ok"; data: T } | { status: "error"; error: E }> {

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import type { PhysicalKey } from "../../ipc/bindings.ts";
-import { sofleKeymap } from "../../test/sofle-keymap.ts";
+import { sofleKeymap } from "../../test/sofle.ts";
 import { bounds, keySize, MAX_KEY, MIN_KEY, place, zoomIn, zoomOut, ZOOMS } from "./geometry.ts";
 
 /** A 1u key at (x, y), in hundredths of a key unit, rotated `rotation` around `pivot`. */

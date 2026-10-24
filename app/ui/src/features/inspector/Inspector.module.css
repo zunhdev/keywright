@@ -1,0 +1,135 @@
+/* The inspector (design §5): a column of the key's header, the picker and its editor. */
+.pane {
+  height: 100%;
+  overflow: auto;
+  transition: opacity var(--motion-panel) var(--ease-out);
+
+  /* While the keymap can't be changed, as the canvas (design §4.3). */
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.inspector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--space-4);
+  color: var(--text-secondary);
+}
+
+/* Where the key is, its layer, and what it does in 18 px (design §5.2). */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.place {
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+.title {
+  margin: 0;
+  font: var(--type-title);
+}
+
+.sentence {
+  margin: var(--space-1) 0 0;
+  font: var(--type-sentence);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+.note {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.list {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+}
+
+/* An action in a list: what it's called, then what it does. */
+.choice {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-1) 0;
+
+  &[data-destructive] {
+    color: var(--danger);
+  }
+}
+
+.description {
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+/* Details: the modifiers' side (design §5.4). */
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.sheetBody {
+  margin: 0;
+  max-width: 420px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* The action picker: a button naming the kind of action, and its search menu. */
+.pickerLabel {
+  flex: 1;
+  text-align: start;
+}
+
+.pickerPopover {
+  width: 300px;
+  max-height: 420px;
+  overflow: auto;
+}
+
+.search {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.searchInput {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--control-compact);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-control);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font: var(--type-body);
+}

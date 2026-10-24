@@ -1,0 +1,78 @@
+import { useState } from "react";
+
+import { useMessages } from "../../i18n/messages.ts";
+import type { Action, Keymap, Layer } from "../../ipc/bindings.ts";
+import { setAction } from "../keyboard-canvas/edits.ts";
+import { LayerName } from "../keyboard-canvas/Keycap.tsx";
+import { ActionEditor } from "./ActionEditor.tsx";
+import { ActionPicker } from "./ActionPicker.tsx";
+import { availableCategories, type CategoryId, categoryOf } from "./categories.ts";
+import { type Recent, rememberAction } from "./recents.ts";
+
+import styles from "./Inspector.module.css";
+
+/** Kinds of action with nothing to choose: picking one sets it. */
+const IMMEDIATE: Partial<Record<CategoryId, Action>> = {
+  "same-as-below": { kind: "transparent" },
+  "does-nothing": { kind: "nothing" },
+};
+
+/**
+ * The inspector for the selected keys (design §5.2): where the key is and on which layer,
+ * what it does in a sentence, the action picker, and the editor for its kind of action.
+ * Several keys share the editor, and a change sets them all (EDIT-7).
+ */
+export function KeyInspector({
+  keymap,
+  layer,
+  positions,
+}: {
+  keymap: Keymap;
+  layer: Layer;
+  positions: readonly number[];
+}) {
+  const messages = useMessages();
+  const [first = 0] = positions;
+  const key = layer.keys[first];
+  const [category, setCategory] = useState<CategoryId>(
+    key === undefined ? "key" : categoryOf(key.action),
+  );
+  if (key === undefined) return null;
+  const apply = async (action: Action, recent?: Recent) => {
+    setCategory(categoryOf(action));
+    if ((await setAction(action)) && recent !== undefined) rememberAction(recent);
+  };
+  return (
+    <div className={styles.inspector}>
+      <header className={styles.header}>
+        <p className={styles.place}>
+          {positions.length > 1
+            ? messages.format("inspector.selected", { count: positions.length })
+            : keymap.keys[first]?.place}
+        </p>
+        <LayerName id={layer.id} name={layer.name} />
+        {positions.length > 1 ? null : <p className={styles.sentence}>{key.sentence}</p>}
+      </header>
+      <ActionPicker
+        category={category}
+        categories={availableCategories(keymap)}
+        onCategory={(next) => {
+          setCategory(next);
+          const immediate = IMMEDIATE[next];
+          if (immediate !== undefined) void apply(immediate);
+        }}
+        onAction={(action, recent) => {
+          void apply(action, { label: recent.label, sentence: recent.sentence, action });
+        }}
+      />
+      <ActionEditor
+        key={category}
+        category={category}
+        current={key.action}
+        onChange={(action, choice) => {
+          void apply(action, choice);
+        }}
+      />
+    </div>
+  );
+}

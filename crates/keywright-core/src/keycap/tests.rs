@@ -335,6 +335,16 @@ mod actions {
     }
 
     #[test]
+    fn an_action_on_its_own_says_what_it_does() {
+        let keymap = one_key_each(&[Action::None]);
+        let key = describe_action(&keymap, &zmk_v0_3_table(), Action::Momentary(LayerId(7)));
+        assert_eq!(key.sentence, "Hold to use the nav layer.");
+        let see_through = describe_action(&keymap, &zmk_v0_3_table(), Action::Transparent);
+        assert_eq!(see_through.sentence, "Same as the layer below.");
+        assert_eq!(see_through.keycap, Keycap::Nothing);
+    }
+
+    #[test]
     fn nothing_shows_as_nothing() {
         let nothing = one(Action::None);
         assert_eq!(nothing.keycap, Keycap::Nothing);

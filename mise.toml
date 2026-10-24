@@ -111,7 +111,7 @@ description = "Regenerate the typings of the UI's CSS Modules (*.module.d.css.ts
 run = "bun scripts/generate-css-types.ts"
 
 [tasks."generate:bindings"]
-description = "Regenerate the UI's IPC bindings (app/ui/src/ipc/bindings.ts) from the app's commands, events and payloads, and the Sofle keymap its tests draw (app/ui/src/test/sofle-keymap.ts)"
+description = "Regenerate the UI's IPC bindings (app/ui/src/ipc/bindings.ts) from the app's commands, events and payloads, and the Sofle keymap and key catalog its tests use (app/ui/src/test/sofle.ts)"
 env = { KEYWRIGHT_UPDATE_BINDINGS = "1" }
 run = "cargo nextest run --package keywright-app up_to_date"
 

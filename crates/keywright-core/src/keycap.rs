@@ -152,6 +152,27 @@ pub fn describe(
         .collect()
 }
 
+/// What a key that does `action` shows and says, such as an action the inspector offers
+/// (design §5.4). "Same as layer below" isn't resolved: it says so, and shows nothing.
+#[must_use]
+pub fn describe_action(keymap: &Keymap, behaviors: &BehaviorTable, action: Action) -> Key {
+    let words = Words {
+        keymap,
+        behaviors,
+        shortcut: shortcut_name,
+    };
+    let spoken = Words {
+        shortcut: shortcut_spoken,
+        ..words
+    };
+    Key {
+        keycap: words.keycap(action),
+        inherited: false,
+        sentence: words.sentence(action),
+        spoken: spoken.sentence(action),
+    }
+}
+
 /// The layers a key on the layer at `index` falls through to, from the nearest: those
 /// below it, down to the base layer, that are on whenever it is.
 fn layers_below(

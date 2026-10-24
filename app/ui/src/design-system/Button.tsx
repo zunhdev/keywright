@@ -1,3 +1,4 @@
+import type { Ref } from "react";
 import { Button as AriaButton, type ButtonProps as AriaButtonProps } from "react-aria-components";
 
 import styles from "./Button.module.css";
@@ -10,6 +11,8 @@ export interface ButtonProps extends Omit<AriaButtonProps, "className" | "style"
   variant?: "primary" | "secondary" | "quiet" | "danger";
   /** 32 px high, or 28 px in dense places such as toolbars (design §10.3). */
   size?: "default" | "compact";
+  /** The button element, to focus it from elsewhere. */
+  ref?: Ref<HTMLButtonElement>;
 }
 
 /** A button. One with only an icon needs an `aria-label`. */

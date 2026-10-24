@@ -11,6 +11,7 @@ import { CANVAS_PADDING } from "../../app/layout.ts";
 import { useStore } from "../../app/store.ts";
 import { LOCALE, type Messages } from "../../i18n/messages.ts";
 import type { Keymap, Knob, Layer } from "../../ipc/bindings.ts";
+import { focusPicker } from "../inspector/focus.ts";
 import { setKeys } from "./edits.ts";
 import { bounds, keySize, place } from "./geometry.ts";
 import { positionOf, useKeyDrag } from "./interactions.ts";
@@ -138,6 +139,9 @@ export function Keyboard({
         inert={!editable}
         onKeyDown={onKeyDown}
         onContextMenu={onContextMenu}
+        onDoubleClick={(event) => {
+          if (positionOf(event.target) !== null) focusPicker();
+        }}
         onPointerDownCapture={onPointerDownCapture}
       >
         {keymap.keys.map((key, position) => {
@@ -186,10 +190,12 @@ export function Keyboard({
                 {...(state === null ? {} : { selected: state })}
                 {...(dropTarget === null ? {} : { dropTarget })}
                 style={box}
-                onPress={({ shift, command }) => {
+                onPress={({ shift, command, enter }) => {
                   if (command) toggleKey(position);
                   else if (shift) extendSelection(position);
                   else select([position]);
+                  // ↩ goes on to the inspector's action picker (design §4.7).
+                  if (enter) focusPicker();
                 }}
               />
             </Fragment>

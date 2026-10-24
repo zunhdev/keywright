@@ -7,7 +7,7 @@
 import { shownLayer, useStore } from "../../app/store.ts";
 import { toasts } from "../../design-system/Toast.tsx";
 import { messages } from "../../i18n/messages.ts";
-import { type AppError, commands, type KeyAction } from "../../ipc/bindings.ts";
+import { type Action, type AppError, commands, type KeyAction } from "../../ipc/bindings.ts";
 
 /** How long a toast about a failed change stays, in ms. */
 const TOAST = 5000;
@@ -52,6 +52,14 @@ export async function pasteAction(): Promise<void> {
   const id = layer();
   const { selection } = useStore.getState();
   if (id !== null && selection.length > 0) await run(commands.pasteAction(id, [...selection]));
+}
+
+/** Makes the selected keys do `action` (the inspector). Resolves to whether it worked. */
+export function setAction(action: Action): Promise<boolean> {
+  const id = layer();
+  const { selection } = useStore.getState();
+  if (id === null || selection.length === 0) return Promise.resolve(false);
+  return run(commands.setAction(id, [...selection], action));
 }
 
 /** Makes the selected keys "same as layer below" or "does nothing". */

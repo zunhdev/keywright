@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { sofleKeymap } from "../test/sofle-keymap.ts";
+import { sofleKeymap } from "../test/sofle.ts";
 import { keyboardWidth, shownLayer, useStore } from "./store.ts";
 
 const store = () => useStore.getState();

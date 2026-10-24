@@ -11,8 +11,9 @@ import { ComboBox, ComboBoxItem } from "./ComboBox.tsx";
 import { Icon } from "./Icon.tsx";
 import { List, ListItem } from "./List.tsx";
 import { MenuButton, MenuItem, MenuSeparator } from "./Menu.tsx";
+import { NumberField } from "./NumberField.tsx";
 import { Popover } from "./Popover.tsx";
-import { Segment, SegmentedControl } from "./SegmentedControl.tsx";
+import { Segment, SegmentedControl, ToggleGroup } from "./SegmentedControl.tsx";
 import { Sheet } from "./Sheet.tsx";
 import { ToastRegion, toasts } from "./Toast.tsx";
 import { Toolbar, ToolbarSeparator } from "./Toolbar.tsx";
@@ -196,4 +197,32 @@ test("a toast says what happened, and can be closed", async () => {
   await expectNoAxeViolations(document.body);
   await userEvent.click(screen.getByRole("button", { name: "Close" }));
   expect(screen.queryByRole("alertdialog")).toBeNull();
+});
+
+test("a number field steps within its range, and says each number", async () => {
+  const onChange = mock<(value: number) => void>();
+  render(
+    <NumberField label="Profile" minValue={0} maxValue={1} defaultValue={0} onChange={onChange} />,
+  );
+  const field = screen.getByRole("textbox", { name: "Profile" });
+  await userEvent.click(screen.getByRole("button", { name: /^Increase/u }));
+  expect(onChange).toHaveBeenLastCalledWith(1);
+  expect(screen.getByRole("button", { name: /^Increase/u }).hasAttribute("disabled")).toBe(true);
+  expect(field).toHaveProperty("value", "1");
+});
+
+test("a toggle group's options are each on or off", async () => {
+  let selected: Set<Key> = new Set();
+  const onSelectionChange = (keys: Set<Key>) => {
+    selected = keys;
+  };
+  render(
+    <ToggleGroup aria-label="Modifiers" onSelectionChange={onSelectionChange}>
+      <Segment id="control">⌃</Segment>
+      <Segment id="shift">⇧</Segment>
+    </ToggleGroup>,
+  );
+  await userEvent.click(screen.getByRole("button", { name: "⌃" }));
+  await userEvent.click(screen.getByRole("button", { name: "⇧" }));
+  expect([...selected]).toEqual(["control", "shift"]);
 });

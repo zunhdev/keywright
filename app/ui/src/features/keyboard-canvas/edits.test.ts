@@ -4,7 +4,7 @@ import { mockIPC } from "@tauri-apps/api/mocks";
 
 import { useStore } from "../../app/store.ts";
 import { toasts } from "../../design-system/Toast.tsx";
-import { sofleKeymap } from "../../test/sofle-keymap.ts";
+import { sofleKeymap } from "../../test/sofle.ts";
 import { copyAction, pasteAction, redo, setKeys, swapKeys, undo } from "./edits.ts";
 
 afterEach(() => {

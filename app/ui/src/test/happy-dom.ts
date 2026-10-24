@@ -5,3 +5,5 @@
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
 GlobalRegistrator.register();
+// As the app does, before anything loads React.
+await import("../no-performance-tracks.ts");

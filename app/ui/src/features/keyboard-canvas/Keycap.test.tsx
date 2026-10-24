@@ -10,6 +10,7 @@ import { Keycap, type KeycapState } from "./Keycap.tsx";
 /** A key that shows `keycap`, with nothing else to say about it. */
 function face(keycap: KeycapData, more: Partial<Key> = {}): Key {
   return {
+    action: { kind: "nothing" },
     keycap,
     inherited: false,
     sentence: "Does something.",

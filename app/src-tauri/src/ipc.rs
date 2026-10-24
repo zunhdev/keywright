@@ -15,9 +15,10 @@
 //! commands, and `capabilities/` grants them.
 //!
 //! The UI's tests and design gallery draw the simulated Sofle's keymap, as `session_keymap`
-//! gives it, from `app/ui/src/test/sofle-keymap.ts`. A test below keeps that file up to
-//! date too, and `tsc` checks it against the bindings.
+//! gives it, and use the key catalog, from `app/ui/src/test/sofle.ts`. A test below keeps
+//! that file up to date too, and `tsc` checks it against the bindings.
 
+mod action;
 mod edit;
 mod error;
 mod keymap;
@@ -58,6 +59,8 @@ pub fn builder() -> Builder<tauri::Wry> {
         .commands(collect_commands![
             session::session_state,
             keymap::session_keymap,
+            action::key_catalog,
+            edit::set_action,
             edit::swap_keys,
             edit::copy_key,
             edit::copy_action,
@@ -139,16 +142,19 @@ mod tests {
             .unwrap();
         let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
         let generated = format!(
-            "// The simulated Sofle's stock keymap, as `session_keymap` gives it, generated from\n\
-             // keywright-app (src/ipc.rs) for the UI's tests and gallery. Don't edit it: run\n\
-             // `mise run generate:bindings`.\n\
-             import type {{ Keymap }} from \"../ipc/bindings.ts\";\n\
+            "// The simulated Sofle's stock keymap, as `session_keymap` gives it, and the key\n\
+             // catalog, as `key_catalog` does, generated from keywright-app (src/ipc.rs) for the\n\
+             // UI's tests and gallery. Don't edit it: run `mise run generate:bindings`.\n\
+             import type {{ KeyEntry, Keymap }} from \"../ipc/bindings.ts\";\n\
              \n\
-             export const sofleKeymap: Keymap = {};\n",
-            serde_json::to_string_pretty(&keymap).unwrap()
+             export const sofleKeymap: Keymap = {};\n\
+             \n\
+             export const keyCatalog: KeyEntry[] = {};\n",
+            serde_json::to_string_pretty(&keymap).unwrap(),
+            serde_json::to_string_pretty(&super::action::key_catalog()).unwrap()
         );
 
-        let committed = ui_file("test/sofle-keymap.ts");
+        let committed = ui_file("test/sofle.ts");
         if std::env::var_os(UPDATE).is_some() {
             fs::write(&committed, generated).unwrap();
             return;
@@ -156,7 +162,7 @@ mod tests {
         let current = fs::read_to_string(&committed).unwrap_or_default();
         assert!(
             generated == current,
-            "app/ui/src/test/sofle-keymap.ts is out of date: run `mise run generate:bindings`"
+            "app/ui/src/test/sofle.ts is out of date: run `mise run generate:bindings`"
         );
     }
 }
