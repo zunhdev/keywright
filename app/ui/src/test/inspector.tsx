@@ -7,7 +7,7 @@ import { useStore } from "../app/store.ts";
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { LOCALE } from "../i18n/messages.ts";
 import { status } from "./canvas.tsx";
-import { domCodes, keyCatalog, sofleKeymap } from "./sofle.ts";
+import { domCodes, keyCatalog, macActions, sofleKeymap } from "./sofle.ts";
 
 /** The actions the fake Rust side has been asked to set, in this test. */
 let recorded: Array<{ positions: unknown; action: unknown }> | null = null;
@@ -57,6 +57,7 @@ export function inspect(
     keymap,
     keyCatalog,
     domCodes,
+    macActions,
     selection,
   });
   return render(

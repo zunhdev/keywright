@@ -506,10 +506,12 @@ pub fn kinds(behaviors: &BehaviorTable) -> Vec<Kind> {
     .collect()
 }
 
-/// A group of actions in the action picker (EDIT-1). Mac actions come with KEY-49.
+/// A group of actions in the action picker (EDIT-1).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "kebab-case")]
 pub enum Category {
+    /// Mac actions: Mission Control, Spotlight, Lock Screen and the like (MAC-4).
+    Mac,
     /// Media & system: playback, volume and brightness.
     Media,
     /// Bluetooth & connection.
@@ -523,6 +525,7 @@ pub enum Category {
 /// An action the inspector offers as it is, such as Play/Pause or Bluetooth device 1, in
 /// the words the keycap and the inspector use.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct Choice {
     /// The group it's listed in.
     pub category: Category,
@@ -532,6 +535,11 @@ pub struct Choice {
     pub sentence: String,
     /// The action.
     pub action: Action,
+    /// The name of its icon in the UI's icon set, for a Mac action.
+    pub icon: Option<String>,
+    /// For a Mac action that relies on a default macOS shortcut, which people can change,
+    /// that shortcut, such as `⌃⌘Q` for Lock Screen (design §5.4).
+    pub default_shortcut: Option<String>,
 }
 
 /// The media keys the inspector lists (design §5.4): play/pause, next, previous, volume
@@ -591,9 +599,42 @@ pub fn choices(keymap: &Keymap, behaviors: &BehaviorTable) -> Vec<Choice> {
                 },
                 sentence: key.sentence,
                 action: action.into(),
+                icon: None,
+                default_shortcut: None,
             }
         })
         .collect()
+}
+
+/// The Mac actions to offer on a macOS version: those verified on it (MAC-4, tech spec
+/// §8.2). On another system, or a version they weren't verified on, there are none.
+#[must_use]
+pub fn mac_choices(version: Option<presets::MacOsVersion>) -> Vec<Choice> {
+    version
+        .into_iter()
+        .flat_map(presets::offered)
+        .map(|preset| Choice {
+            category: Category::Mac,
+            label: preset.name.to_owned(),
+            sentence: preset.effect.to_owned(),
+            action: Action::KeyPress {
+                key: preset.shortcut.into(),
+            },
+            icon: Some(preset.icon.to_owned()),
+            default_shortcut: preset
+                .uses_default_shortcut
+                .then(|| keycap::shortcut_label(preset.shortcut)),
+        })
+        .collect()
+}
+
+/// The Mac actions this Mac's macOS version offers, for the action picker. They don't
+/// depend on the keyboard, so the UI asks once.
+#[tauri::command]
+#[specta::specta]
+#[must_use]
+pub fn mac_actions() -> Vec<Choice> {
+    mac_choices(keywright_platform::system::macos_version().map(presets::MacOsVersion))
 }
 
 /// A behavior Keywright doesn't know, which the inspector edits by its parameters
@@ -845,10 +886,11 @@ mod tests {
 
     use super::{
         Action, Category, LIGHTING, Page, Param, Shortcut, Value, dom_codes, key_catalog,
-        shortcut_words,
+        mac_choices, shortcut_words,
     };
     use crate::ipc::AppState;
     use crate::ipc::keymap::Keymap;
+    use keywright_core::mac::presets::MacOsVersion;
 
     fn shortcut(mods: Mods, page: UsagePage, id: u16) -> hid::Shortcut {
         hid::Shortcut {
@@ -1058,6 +1100,78 @@ mod tests {
                 .iter()
                 .all(|choice| !matches!(choice.action, Action::ExternalPower { .. }))
         );
+    }
+
+    /// On macOS 27, every preset S7 verified is offered, each with its icon, and those that
+    /// rely on a default shortcut name it. On a version they weren't verified on, or
+    /// another system, none is.
+    #[test]
+    fn mac_actions_are_offered_on_the_versions_they_were_verified_on() {
+        let offered = mac_choices(Some(MacOsVersion(27)));
+        assert_eq!(offered.len(), 24);
+        assert!(
+            offered
+                .iter()
+                .all(|choice| choice.category == Category::Mac)
+        );
+        let find = |name: &str| offered.iter().find(|choice| choice.label == name).unwrap();
+        let lock = find("Lock Screen");
+        assert_eq!(
+            (lock.icon.as_deref(), lock.default_shortcut.as_deref()),
+            (Some("lock"), Some("⌃⌘Q"))
+        );
+        assert_eq!(
+            lock.action,
+            Action::KeyPress {
+                key: Shortcut {
+                    mods: 0x09,
+                    page: Page::Keyboard,
+                    id: 0x14
+                }
+            }
+        );
+        let mission_control = find("Mission Control");
+        assert_eq!(mission_control.default_shortcut, None);
+        assert_eq!(
+            mission_control.action,
+            Action::KeyPress {
+                key: Shortcut {
+                    mods: 0,
+                    page: Page::Consumer,
+                    id: 0x29F
+                }
+            }
+        );
+        assert_eq!(find("Copy").default_shortcut, None);
+        assert_eq!(mac_choices(Some(MacOsVersion(14))), vec![]);
+        assert_eq!(mac_choices(None), vec![]);
+    }
+
+    /// MAC-1: the words the UI shows for keys and actions say Command, Option, Control and
+    /// Shift, never GUI, Win, Meta, Super or Alt, and modifiers go in the order ⌃⌥⇧⌘.
+    #[tokio::test]
+    async fn the_words_for_keys_and_actions_are_the_macs() {
+        let (_, keymap) = ready_sofle().await;
+        let catalog = key_catalog();
+        let all_mods = shortcut_words(Shortcut {
+            mods: 0x0F,
+            page: Page::Keyboard,
+            id: 0x04,
+        });
+        assert_eq!(all_mods.label, "⌃⌥⇧⌘A");
+        let words = serde_json::to_string(&(
+            &keymap,
+            &catalog,
+            mac_choices(Some(MacOsVersion(27))),
+            all_mods,
+        ))
+        .unwrap();
+        for word in words.split(|c: char| !c.is_alphanumeric()) {
+            assert!(
+                !["GUI", "Win", "Meta", "Super", "Alt"].contains(&word),
+                "{word} is shown"
+            );
+        }
     }
 
     /// The Sofle's firmware has three behaviors Keywright doesn't know: Grave/Escape, Key

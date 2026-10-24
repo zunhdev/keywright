@@ -1,10 +1,11 @@
 /**
  * The kinds of action the inspector offers (design §5.4, EDIT-1), with their icons, and
- * which of them a keyboard's firmware can do (EDIT-2). Mac actions come with KEY-49.
+ * which of them a keyboard's firmware and this Mac can do (EDIT-2, MAC-4).
  */
 import {
   Ban,
   Bluetooth,
+  Command,
   Keyboard,
   Layers,
   Lightbulb,
@@ -16,11 +17,12 @@ import {
   Timer,
 } from "lucide-react";
 
-import type { Action, Keymap } from "../../ipc/bindings.ts";
+import type { Action, Choice, Keymap } from "../../ipc/bindings.ts";
 
 /** A kind of action, in the order the picker lists them. */
 export type CategoryId =
   | "key"
+  | "mac"
   | "media"
   | "tap-hold"
   | "layers"
@@ -34,6 +36,7 @@ export type CategoryId =
 /** Each kind of action's icon, in the picker's order. */
 export const CATEGORIES: ReadonlyArray<readonly [CategoryId, LucideIcon]> = [
   ["key", Keyboard],
+  ["mac", Command],
   ["media", Music],
   ["tap-hold", Timer],
   ["layers", Layers],
@@ -68,19 +71,47 @@ const CATEGORY_OF: Readonly<Record<Exclude<Action["kind"], "key-press">, Categor
   other: "other",
 };
 
-/** The kind of an action, which picks its editor: a media key is media's. */
-export function categoryOf(action: Action): CategoryId {
-  if (action.kind === "key-press") return action.key.page === "consumer" ? "media" : "key";
-  return CATEGORY_OF[action.kind];
+/** Whether two actions are the same. */
+export const sameAction = (a: Action | null, b: Action) => JSON.stringify(a) === JSON.stringify(b);
+
+/**
+ * The ready-made actions to offer: the keyboard's, and this Mac's Mac actions if the
+ * firmware can press keys.
+ */
+export function choicesOf(keymap: Keymap | null, macActions: readonly Choice[]): Choice[] {
+  if (keymap === null) return [];
+  return keymap.kinds.includes("key-press") ? [...keymap.choices, ...macActions] : keymap.choices;
 }
 
-/** The kinds of action this keyboard's firmware can do, in the picker's order. */
-export function availableCategories(keymap: Keymap): CategoryId[] {
+/**
+ * The kind of an action, which picks its editor. A key or shortcut is a key's, and a
+ * media key is its list's: Media & system, or Mac actions for one such as Mission Control.
+ */
+export function categoryOf(action: Action, choices: readonly Choice[]): CategoryId {
+  if (action.kind !== "key-press") return CATEGORY_OF[action.kind];
+  if (action.key.page !== "consumer") return "key";
+  return choices.find((choice) => sameAction(choice.action, action))?.category ?? "media";
+}
+
+/**
+ * Whether an action belongs with a kind of action, so its editor stays: as Lock Screen,
+ * which is ⌃⌘Q, does with Mac actions.
+ */
+export function belongsTo(action: Action, category: CategoryId, choices: readonly Choice[]) {
+  return (
+    categoryOf(action, choices) === category ||
+    choices.some((choice) => choice.category === category && sameAction(choice.action, action))
+  );
+}
+
+/** The kinds of action this keyboard's firmware and this Mac can do, in the picker's order. */
+export function availableCategories(keymap: Keymap, macActions: readonly Choice[]): CategoryId[] {
   const has = (...kinds: Keymap["kinds"]) => kinds.some((kind) => keymap.kinds.includes(kind));
   const listed = (category: string) =>
-    keymap.choices.some((choice) => choice.category === category);
+    choicesOf(keymap, macActions).some((choice) => choice.category === category);
   const available: Record<CategoryId, boolean> = {
     key: has("key-press"),
+    mac: listed("mac"),
     media: listed("media"),
     "tap-hold": has("mod-tap", "layer-tap"),
     layers: has("momentary", "to-layer", "toggle", "sticky-layer"),

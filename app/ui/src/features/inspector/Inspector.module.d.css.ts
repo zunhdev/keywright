@@ -2,6 +2,8 @@
 declare const classes: {
   readonly buttons: string;
   readonly choice: string;
+  readonly choiceIcon: string;
+  readonly choiceRow: string;
   readonly description: string;
   readonly details: string;
   readonly empty: string;

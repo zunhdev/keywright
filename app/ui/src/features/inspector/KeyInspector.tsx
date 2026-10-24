@@ -7,7 +7,13 @@ import { setAction } from "../keyboard-canvas/edits.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { ActionEditor } from "./ActionEditor.tsx";
 import { ActionPicker } from "./ActionPicker.tsx";
-import { availableCategories, type CategoryId, categoryOf } from "./categories.ts";
+import {
+  availableCategories,
+  belongsTo,
+  type CategoryId,
+  categoryOf,
+  choicesOf,
+} from "./categories.ts";
 import { type Recent, rememberAction } from "./recents.ts";
 
 import styles from "./Inspector.module.css";
@@ -35,15 +41,18 @@ export function KeyInspector({
   const messages = useMessages();
   const [first = 0] = positions;
   const key = layer.keys[first];
+  const macActions = useStore((store) => store.macActions);
+  const choices = choicesOf(keymap, macActions);
   const [category, setCategory] = useState<CategoryId>(
-    key === undefined ? "key" : categoryOf(key.action),
+    key === undefined ? "key" : categoryOf(key.action, choices),
   );
   const recording = useStore((store) => activeRecorder(store) === KEY_RECORDER);
   // ⌘R records a key or shortcut, so that editor shows while it records.
   const shown = recording ? "key" : category;
   if (key === undefined) return null;
   const apply = async (action: Action, recent?: Recent) => {
-    setCategory(categoryOf(action));
+    // An action from the editor shown keeps it: Lock Screen stays with Mac actions.
+    if (!belongsTo(action, shown, choices)) setCategory(categoryOf(action, choices));
     if ((await setAction(action)) && recent !== undefined) rememberAction(recent);
   };
   return (
@@ -59,7 +68,7 @@ export function KeyInspector({
       </header>
       <ActionPicker
         category={shown}
-        categories={availableCategories(keymap)}
+        categories={availableCategories(keymap, macActions)}
         onCategory={(next) => {
           setCategory(next);
           const immediate = IMMEDIATE[next];

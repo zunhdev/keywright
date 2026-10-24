@@ -124,6 +124,9 @@ export const en = {
   "inspector.kinds": "Kinds of action",
   "inspector.matches": "Actions",
   "category.key": "Key or shortcut",
+  "category.mac": "Mac actions",
+  "mac.default-shortcut": (args) =>
+    `Uses ${text(args, "shortcut")}, the default ${text(args, "name")} shortcut.`,
   "category.media": "Media & system",
   "category.tap-hold": "Tap & hold",
   "category.layers": "Layers",

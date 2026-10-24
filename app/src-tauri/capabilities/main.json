@@ -11,6 +11,7 @@
     "allow-key-catalog",
     "allow-dom-codes",
     "allow-shortcut-words",
+    "allow-mac-actions",
     "allow-set-action",
     "allow-swap-keys",
     "allow-copy-key",

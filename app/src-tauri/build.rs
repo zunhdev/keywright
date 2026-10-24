@@ -12,6 +12,7 @@ const COMMANDS: &[&str] = &[
     "key_catalog",
     "dom_codes",
     "shortcut_words",
+    "mac_actions",
     "set_action",
     "swap_keys",
     "copy_key",

@@ -17,8 +17,13 @@ cargo_metadata = "0.23.1"
 clap = { version = "4.6.7", features = ["derive"] }
 insta = { version = "1.49.0", default-features = false }
 # AppKit, for the macOS integration in keywright-platform (tech spec §11), at the versions
-# Tauri uses: objc2 calls Objective-C, and objc2-app-kit has the AppKit classes.
+# Tauri uses: objc2 calls Objective-C, objc2-app-kit has the AppKit classes, and
+# objc2-foundation the Foundation ones.
 objc2 = "0.6.5"
+objc2-foundation = { version = "0.3.2", default-features = false, features = [
+  "std",
+  "NSProcessInfo",
+] }
 objc2-app-kit = { version = "0.3.2", default-features = false, features = [
   "std",
   "NSResponder",

@@ -1,8 +1,8 @@
-// The simulated Sofle's stock keymap, as `session_keymap` gives it, and the key
-// tables, as `key_catalog` and `dom_codes` do, generated from keywright-app
-// (src/ipc.rs) for the UI's tests and gallery. Don't edit it: run
-// `mise run generate:bindings`.
-import type { DomCode, KeyEntry, Keymap } from "../ipc/bindings.ts";
+// The simulated Sofle's stock keymap, as `session_keymap` gives it, the key
+// tables, as `key_catalog` and `dom_codes` do, and the Mac actions on macOS 27,
+// as `mac_actions` does there, generated from keywright-app (src/ipc.rs) for the
+// UI's tests and gallery. Don't edit it: run `mise run generate:bindings`.
+import type { Choice, DomCode, KeyEntry, Keymap } from "../ipc/bindings.ts";
 
 export const sofleKeymap: Keymap = {
   "keys": [
@@ -4633,7 +4633,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 205
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "media",
@@ -4646,7 +4648,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 181
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "media",
@@ -4659,7 +4663,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 182
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "media",
@@ -4672,7 +4678,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 233
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "media",
@@ -4685,7 +4693,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 234
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "media",
@@ -4698,7 +4708,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 226
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "media",
@@ -4711,7 +4723,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 111
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "media",
@@ -4724,7 +4738,9 @@ export const sofleKeymap: Keymap = {
           "page": "consumer",
           "id": 112
         }
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4734,7 +4750,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "select",
         "profile": 0
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4744,7 +4762,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "select",
         "profile": 1
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4754,7 +4774,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "select",
         "profile": 2
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4764,7 +4786,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "select",
         "profile": 3
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4774,7 +4798,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "select",
         "profile": 4
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4784,7 +4810,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "next",
         "profile": 0
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4794,7 +4822,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "previous",
         "profile": 0
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4804,7 +4834,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "clear",
         "profile": 0
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4814,7 +4846,9 @@ export const sofleKeymap: Keymap = {
         "kind": "bluetooth",
         "command": "clear-all",
         "profile": 0
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4823,7 +4857,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "output",
         "command": "usb"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4832,7 +4868,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "output",
         "command": "bluetooth"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "bluetooth",
@@ -4841,7 +4879,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "output",
         "command": "toggle"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4850,7 +4890,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "toggle"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4859,7 +4901,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "on"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4868,7 +4912,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "off"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4877,7 +4923,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "brightness-up"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4886,7 +4934,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "brightness-down"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4895,7 +4945,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "hue-up"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4904,7 +4956,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "hue-down"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4913,7 +4967,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "saturation-up"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4922,7 +4978,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "saturation-down"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4931,7 +4989,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "next-effect"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4940,7 +5000,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "previous-effect"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4949,7 +5011,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "speed-up"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "lighting",
@@ -4958,7 +5022,9 @@ export const sofleKeymap: Keymap = {
       "action": {
         "kind": "lighting",
         "command": "speed-down"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "special",
@@ -4966,7 +5032,9 @@ export const sofleKeymap: Keymap = {
       "sentence": "Types capitals until the end of the word.",
       "action": {
         "kind": "caps-word"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "special",
@@ -4974,7 +5042,9 @@ export const sofleKeymap: Keymap = {
       "sentence": "Repeats the last key.",
       "action": {
         "kind": "key-repeat"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "special",
@@ -4982,7 +5052,9 @@ export const sofleKeymap: Keymap = {
       "sentence": "Unlocks the keyboard, so Keywright can change it.",
       "action": {
         "kind": "unlock"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "special",
@@ -4990,7 +5062,9 @@ export const sofleKeymap: Keymap = {
       "sentence": "Puts the keyboard into update mode, for new firmware.",
       "action": {
         "kind": "bootloader"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     },
     {
       "category": "special",
@@ -4998,7 +5072,9 @@ export const sofleKeymap: Keymap = {
       "sentence": "Restarts the keyboard.",
       "action": {
         "kind": "reset"
-      }
+      },
+      "icon": null,
+      "defaultShortcut": null
     }
   ],
   "others": [
@@ -8356,5 +8432,368 @@ export const domCodes: DomCode[] = [
     "code": "MetaRight",
     "page": "keyboard",
     "id": 231
+  }
+];
+
+export const macActions: Choice[] = [
+  {
+    "category": "mac",
+    "label": "Mission Control",
+    "sentence": "Shows all your open windows.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 671
+      }
+    },
+    "icon": "layout-grid",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Apps",
+    "sentence": "Shows all your apps, or Launchpad before macOS 26.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 674
+      }
+    },
+    "icon": "grid-3x3",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Spotlight",
+    "sentence": "Opens Spotlight, to search your Mac.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 545
+      }
+    },
+    "icon": "search",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Show Desktop",
+    "sentence": "Moves the windows aside to show the desktop.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "keyboard",
+        "id": 68
+      }
+    },
+    "icon": "monitor",
+    "defaultShortcut": "F11"
+  },
+  {
+    "category": "mac",
+    "label": "Screenshot",
+    "sentence": "Saves a picture of the whole screen.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 10,
+        "page": "keyboard",
+        "id": 32
+      }
+    },
+    "icon": "camera",
+    "defaultShortcut": "⇧⌘3"
+  },
+  {
+    "category": "mac",
+    "label": "Screenshot of an area",
+    "sentence": "Saves a picture of the part of the screen you choose.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 10,
+        "page": "keyboard",
+        "id": 33
+      }
+    },
+    "icon": "crop",
+    "defaultShortcut": "⇧⌘4"
+  },
+  {
+    "category": "mac",
+    "label": "Screenshot options",
+    "sentence": "Shows the toolbar for screenshots and screen recordings.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 10,
+        "page": "keyboard",
+        "id": 34
+      }
+    },
+    "icon": "aperture",
+    "defaultShortcut": "⇧⌘5"
+  },
+  {
+    "category": "mac",
+    "label": "Lock Screen",
+    "sentence": "Locks the Mac.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 9,
+        "page": "keyboard",
+        "id": 20
+      }
+    },
+    "icon": "lock",
+    "defaultShortcut": "⌃⌘Q"
+  },
+  {
+    "category": "mac",
+    "label": "Emoji & Symbols",
+    "sentence": "Opens the emoji and symbols picker.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 9,
+        "page": "keyboard",
+        "id": 44
+      }
+    },
+    "icon": "smile",
+    "defaultShortcut": "⌃⌘␣"
+  },
+  {
+    "category": "mac",
+    "label": "Dictation",
+    "sentence": "Starts dictation, or offers to turn it on.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 207
+      }
+    },
+    "icon": "mic",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Switch App",
+    "sentence": "Switches to the app you used last.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 8,
+        "page": "keyboard",
+        "id": 43
+      }
+    },
+    "icon": "app-window",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Copy",
+    "sentence": "Copies the selection.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 8,
+        "page": "keyboard",
+        "id": 6
+      }
+    },
+    "icon": "copy",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Cut",
+    "sentence": "Cuts the selection.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 8,
+        "page": "keyboard",
+        "id": 27
+      }
+    },
+    "icon": "scissors",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Paste",
+    "sentence": "Pastes what you copied.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 8,
+        "page": "keyboard",
+        "id": 25
+      }
+    },
+    "icon": "clipboard-paste",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Undo",
+    "sentence": "Undoes the last change.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 8,
+        "page": "keyboard",
+        "id": 29
+      }
+    },
+    "icon": "undo-2",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Redo",
+    "sentence": "Redoes what you undid.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 10,
+        "page": "keyboard",
+        "id": 29
+      }
+    },
+    "icon": "redo-2",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Brighter",
+    "sentence": "Makes the screen brighter.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 111
+      }
+    },
+    "icon": "sun",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Dimmer",
+    "sentence": "Makes the screen dimmer.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 112
+      }
+    },
+    "icon": "sun-dim",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Volume up",
+    "sentence": "Turns the sound up.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 233
+      }
+    },
+    "icon": "volume-2",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Volume down",
+    "sentence": "Turns the sound down.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 234
+      }
+    },
+    "icon": "volume-1",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Mute",
+    "sentence": "Mutes or unmutes the sound.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 226
+      }
+    },
+    "icon": "volume-x",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Play/Pause",
+    "sentence": "Plays or pauses music or video.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 205
+      }
+    },
+    "icon": "play",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Next track",
+    "sentence": "Skips to the next track.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 181
+      }
+    },
+    "icon": "skip-forward",
+    "defaultShortcut": null
+  },
+  {
+    "category": "mac",
+    "label": "Previous track",
+    "sentence": "Goes back to the previous track.",
+    "action": {
+      "kind": "key-press",
+      "key": {
+        "mods": 0,
+        "page": "consumer",
+        "id": 182
+      }
+    },
+    "icon": "skip-back",
+    "defaultShortcut": null
   }
 ];

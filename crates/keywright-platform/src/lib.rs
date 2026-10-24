@@ -6,7 +6,8 @@
 //! - detection of UF2 firmware volumes;
 //! - the login item;
 //! - the window's "edited" dot;
-//! - where Keywright keeps its files, such as automatic backups (`paths`).
+//! - where Keywright keeps its files, such as automatic backups (`paths`);
+//! - the macOS version, for the Mac actions verified on it (`system`).
 //!
 //! All platform-specific code lives here, behind `cfg(target_os)`, so the rest of Keywright
 //! stays portable (NFR-7).
@@ -19,4 +20,5 @@
 #[cfg(target_os = "macos")]
 mod ffi;
 pub mod paths;
+pub mod system;
 pub mod window;

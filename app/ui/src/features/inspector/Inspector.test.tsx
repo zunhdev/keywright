@@ -101,6 +101,7 @@ describe("the action picker", () => {
         .map((item) => item.textContent),
     ).toEqual([
       "Key or shortcut",
+      "Mac actions",
       "Media & system",
       "Tap & hold",
       "Layers",
