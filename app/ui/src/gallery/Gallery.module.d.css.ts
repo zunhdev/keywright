@@ -11,6 +11,7 @@ declare const classes: {
   readonly keyCaption: string;
   readonly keySample: string;
   readonly layerSquare: string;
+  readonly layers: string;
   readonly mono: string;
   readonly panel: string;
   readonly row: string;

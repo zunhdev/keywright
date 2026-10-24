@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.13 — for review                                                       |
+| **Status**    | Draft v0.14 — for review                                                       |
 | **Date**      | 2026-10-24                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -89,6 +89,13 @@ This document defines how Keywright looks, reads and behaves for v1.0: informati
 | **Layer sidebar** | 220 px (180–280 resizable) | Collapsible (⌃⌘S). Collapses automatically when the window is narrower than 1100 px.                                                           |
 | **Canvas**        | flexible                   | Shows the selected layer's name and the keyboard, scaled to fit. Zoom with ⌘+ / ⌘− / ⌘0.                                                       |
 | **Inspector**     | 320 px (300–400 resizable) | Collapsible (⌥⌘0). Always shows something: the selected key, or the layer overview.                                                            |
+
+**The layer sidebar's rows** (LAY-1–LAY-6) show the layer's colour and name, a changed dot (•) while it's being tried, how it's reached (the first way, such as "Hold lower"; the layer overview lists them all, with where each key is), and while searching, its match count.
+
+- **Rename:** double-click a row, press ↩ on it, or choose _Rename_ from its right-click menu. The name becomes a field with a counter in bytes ("5/18": 18 letters in English, fewer in other scripts), and says why a name won't fit ("Your keyboard can't take “Э” in a layer name."). ↩ or leaving the field renames; Esc keeps the old name. The layer overview has the same field.
+- **Reorder:** drag a row by its handle, which shows on hover or focus. The base layer stays first. A note under the list says that a layer further down takes priority.
+- **Add and remove:** the footer shows "4 of 4 layers used" with a meter, + and −. With no room left, + is disabled and the layer-limit message (§11.3) shows. − removes the layer shown, or choose _Remove_ from a row's menu. A layer that keys turn on asks first and lists them; one only the firmware turns on goes straight away. ⌘Z brings a removed layer back. The base layer can't be removed.
+- **Right-click menu:** Rename, Restore Stock Layer (with stock keys, KEY-52), Remove.
 
 The minimum window size is 960 × 600. The keyboard never shrinks below 36 px per key (1u). Below that, the sidebar collapses first, then the inspector becomes an overlay panel. A sidebar that collapsed for width comes back when there's room again, unless it was hidden on purpose; one shown again in a narrow window stays. The panes' edges are dragged to resize them. With the keyboard, a pane is hidden or shown instead (⌃⌘S, ⌥⌘0), so the edges aren't tab stops.
 
@@ -538,3 +545,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.11    | 2026-10-24 | Shortcut recorder (§5.3, KEY-48): Record becomes Cancel while recording; Esc with a modifier is recorded; another selection stops recording, and recording shows the key editor; the menus give up their shortcuts meanwhile.                                                              |
 | 0.12    | 2026-10-24 | Mac actions (§5.4, KEY-49): only the presets verified on the Mac's macOS version, and no kind without any; which keys open with Mac actions.                                                                                                                                               |
 | 0.13    | 2026-10-24 | Search (§4.6, §9.6, KEY-44): the count in the field, the order of ↩ and ⇧↩, what VoiceOver hears, inherited keys; Edit's items edit a focused text field's text.                                                                                                                           |
+| 0.14    | 2026-10-24 | Layer sidebar (§3.1, §5.1, KEY-45): what a row shows, renaming with a byte counter, reordering by a handle with the base layer first, add and remove with the capacity footer, and asking before removing a layer keys turn on.                                                            |

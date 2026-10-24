@@ -18,6 +18,8 @@ mod convert;
 pub mod session;
 pub mod usb;
 
+pub use keywright_studio::client::{InvalidRequest, MAX_NAME_LEN, check_layer_name};
+
 pub use self::backups::Backups;
 pub use self::session::{
     Connection, Incompatibility, Peer, Session, SessionError, SessionEvent, Snapshot, State,

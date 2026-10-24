@@ -1764,7 +1764,15 @@ export const sofleKeymap: Keymap = {
           "changed": false,
           "macWarning": false
         }
-      ]
+      ],
+      "reach": [
+        {
+          "text": "The base layer, always on",
+          "position": null,
+          "place": null
+        }
+      ],
+      "changed": false
     },
     {
       "id": 1,
@@ -2834,7 +2842,15 @@ export const sofleKeymap: Keymap = {
           "changed": false,
           "macWarning": false
         }
-      ]
+      ],
+      "reach": [
+        {
+          "text": "Hold lower",
+          "position": 53,
+          "place": "Left half, row 5, key 4"
+        }
+      ],
+      "changed": false
     },
     {
       "id": 2,
@@ -3796,7 +3812,15 @@ export const sofleKeymap: Keymap = {
           "changed": false,
           "macWarning": false
         }
-      ]
+      ],
+      "reach": [
+        {
+          "text": "Hold raise",
+          "position": 56,
+          "place": "Right half, row 5, key 2"
+        }
+      ],
+      "changed": false
     },
     {
       "id": 3,
@@ -4618,9 +4642,19 @@ export const sofleKeymap: Keymap = {
           "changed": false,
           "macWarning": false
         }
-      ]
+      ],
+      "reach": [
+        {
+          "text": "lower + raise, built into the firmware",
+          "position": null,
+          "place": null
+        }
+      ],
+      "changed": false
     }
   ],
+  "freeLayerSlots": 0,
+  "layerNameMax": 18,
   "choices": [
     {
       "category": "media",

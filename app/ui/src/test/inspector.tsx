@@ -20,8 +20,8 @@ function faked(): boolean {
 
 /**
  * Fakes the Rust side, once per test: records the actions set, with the keys they're set
- * on, and names shortcuts as `shortcut_words` does, ⇧⌘4 as the screenshot of an area,
- * others by ID.
+ * on, and the layers renamed, and names shortcuts as `shortcut_words` does, ⇧⌘4 as the
+ * screenshot of an area, others by ID.
  */
 export function rustSide(): Array<{ positions: unknown; action: unknown }> {
   if (recorded !== null && faked()) return recorded;
@@ -30,6 +30,10 @@ export function rustSide(): Array<{ positions: unknown; action: unknown }> {
   mockIPC((command, args) => {
     if (command === "set_action" && args !== undefined && "action" in args) {
       set.push({ positions: args["positions"], action: args["action"] });
+    }
+    // A rename, as the layer it's on and its new name.
+    if (command === "rename_layer" && args !== undefined && "name" in args) {
+      set.push({ positions: [args["layer"]], action: args["name"] });
     }
     if (command === "shortcut_words" && args !== undefined && "shortcut" in args) {
       const shortcut = JSON.stringify(args["shortcut"]);

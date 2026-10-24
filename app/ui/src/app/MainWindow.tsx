@@ -1,22 +1,15 @@
 import { useEffect, useState } from "react";
 
-import { List, ListItem } from "../design-system/List.tsx";
 import { Inspector } from "../features/inspector/Inspector.tsx";
-import { switchLayer } from "../features/keyboard-canvas/edits.ts";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
-import { LayerName } from "../features/keyboard-canvas/Keycap.tsx";
-import { findKeys } from "../features/search/search.ts";
+import { LayersPane } from "../features/layers/LayersPane.tsx";
 import { useMessages } from "../i18n/messages.ts";
-import type { Layer } from "../ipc/bindings.ts";
 import { inspectorPlacement } from "./layout.ts";
 import { Splitter } from "./Splitter.tsx";
-import { keyboardWidth, shownLayer, useStore } from "./store.ts";
+import { keyboardWidth, useStore } from "./store.ts";
 import { WindowToolbar } from "./WindowToolbar.tsx";
 
 import styles from "./MainWindow.module.css";
-
-/** The layers before there's a keymap: the same empty list each time, for the store. */
-const NO_LAYERS: readonly Layer[] = [];
 
 /** The window's width, in px, as it changes. */
 function useWindowWidth(): number {
@@ -41,17 +34,10 @@ function useWindowWidth(): number {
 export function MainWindow() {
   const messages = useMessages();
   const width = useWindowWidth();
-  const layers = useStore((store) => store.keymap?.layers ?? NO_LAYERS);
-  const shown = useStore(shownLayer);
   const keyboard = useStore((store) => keyboardWidth(store.keymap));
   const panels = useStore((store) => store.panels);
   const paneWidths = useStore((store) => store.paneWidths);
   const fitWindow = useStore((store) => store.fitWindow);
-  const keymap = useStore((store) => store.keymap);
-  const search = useStore((store) => store.search);
-  const macActions = useStore((store) => store.macActions);
-  const found =
-    keymap === null || search.trim() === "" ? null : findKeys(keymap, search, macActions);
   useEffect(() => {
     fitWindow(width, keyboard);
   }, [width, keyboard, fitWindow]);
@@ -68,44 +54,7 @@ export function MainWindow() {
           aria-label={messages.format("layers.title")}
           style={{ width: paneWidths.layers }}
         >
-          <h2 className={styles.caption}>{messages.format("layers.title")}</h2>
-          <List
-            aria-label={messages.format("layers.title")}
-            items={layers}
-            // The rows show the search's counts, which aren't in the layers themselves.
-            dependencies={[found]}
-            selectionMode="single"
-            disallowEmptySelection
-            selectedKeys={shown === null ? [] : [shown.id]}
-            onSelectionChange={(keys) => {
-              const [id] = keys;
-              if (typeof id === "number") switchLayer(id);
-            }}
-            renderEmptyState={() => (
-              <p className={styles.empty}>{messages.format("layers.empty")}</p>
-            )}
-          >
-            {(layer) => {
-              const count = found?.get(layer.id)?.length;
-              return (
-                <ListItem id={layer.id} textValue={layer.name}>
-                  <span className={styles.layerRow}>
-                    <LayerName id={layer.id} name={layer.name} />
-                    {/* While searching, each layer says how many keys it found (design §4.6). */}
-                    {count === undefined ? null : (
-                      <span
-                        className={styles.matches}
-                        data-none={count === 0 || undefined}
-                        aria-label={messages.format("layers.matches", { count })}
-                      >
-                        {count}
-                      </span>
-                    )}
-                  </span>
-                </ListItem>
-              );
-            }}
-          </List>
+          <LayersPane />
           <Splitter panel="layers" />
         </aside>
       ) : null}

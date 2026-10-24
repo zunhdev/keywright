@@ -1,0 +1,222 @@
+/* The layers sidebar (design §3.1): a caption, the layers, and the capacity footer. */
+.caption {
+  margin: 0;
+  padding: var(--space-3) var(--space-3) var(--space-1);
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  text-transform: uppercase;
+}
+
+.empty {
+  margin: 0;
+  padding: var(--space-3);
+  color: var(--text-secondary);
+}
+
+/*
+ * The drag handle, over the row's leading edge, which shows while the row is hovered,
+ * focused or being dragged.
+ */
+[role="row"]:has(> .drag) {
+  position: relative;
+}
+
+.drag {
+  position: absolute;
+  inset-block-start: var(--space-1);
+  inset-inline-start: 0;
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  opacity: 0;
+  cursor: grab;
+
+  [role="row"]:is(:hover, [data-focus-visible], [data-dragging]) &,
+  &[data-focus-visible] {
+    opacity: 1;
+  }
+
+  &[data-disabled] {
+    display: none;
+  }
+}
+
+/* A layer's row: its name, its changed dot and match count, then how it's reached. */
+.row {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.reach {
+  overflow: hidden;
+  padding-inline-start: 18px;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Changed, as on a keycap (design §4.2): the accent's dot. */
+.changed {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.matches {
+  flex: none;
+  min-width: 18px;
+  margin-inline-start: auto;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-badge);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+
+  &[data-none] {
+    background: none;
+    color: var(--text-secondary);
+  }
+}
+
+/* Renaming (LAY-1): the name, how much room it takes, and what's wrong with it. */
+.rename {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.renameLabel {
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+.renameBox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  box-sizing: border-box;
+  height: var(--control-compact);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-control);
+  background: var(--bg-panel);
+
+  &:has(input[data-focused]) {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .rename[data-invalid] & {
+    border-color: var(--danger);
+  }
+}
+
+.renameInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font: var(--type-body);
+  outline: none;
+}
+
+.count {
+  flex: none;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  font-variant-numeric: tabular-nums;
+
+  &[data-over] {
+    color: var(--danger);
+  }
+}
+
+.problem {
+  color: var(--danger);
+  font: var(--type-caption);
+}
+
+/* How many layers fit (LAY-3), with Add and Remove, and what the order means. */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.meterText {
+  font: var(--type-caption);
+}
+
+.meterBar {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--accent-subtle);
+}
+
+.meterFill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.buttons {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.note {
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+/* Removing a layer that keys turn on (LAY-5). */
+.sheetBody {
+  margin: 0;
+  max-width: 420px;
+}
+
+.keys {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+}
+
+.sheetButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

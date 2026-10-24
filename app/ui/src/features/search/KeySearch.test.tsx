@@ -22,14 +22,18 @@ function drawWindow() {
   return screen.getByRole("searchbox", { name: "Search keys" });
 }
 
-/** Each layer's row in the sidebar, as "name count". */
+/** The Sofle's layers, by name. */
+const LAYERS = ["default", "lower", "raise", "adjust"];
+
+/** Each layer's row in the sidebar, as "name count", or "name -" while not searching. */
 function layerRows(): string[] {
   const layers = screen.getByRole("grid", { name: "Layers" });
   return within(layers)
     .getAllByRole("row")
     .map((row) => {
+      const name = LAYERS.find((each) => within(row).queryByText(each) !== null);
       const count = row.querySelector("[aria-label$='match'], [aria-label$='matches']");
-      return `${row.textContent?.replace(count?.textContent ?? "", "")} ${count?.textContent ?? "-"}`;
+      return `${name} ${count?.textContent ?? "-"}`;
     });
 }
 

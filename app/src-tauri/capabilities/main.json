@@ -22,6 +22,11 @@
     "allow-redo",
     "allow-menu-set",
     "allow-edit-text",
+    "allow-layer-name-problem",
+    "allow-rename-layer",
+    "allow-move-layer",
+    "allow-remove-layer",
+    "allow-add-layer",
     "core:window:allow-start-dragging",
     "core:window:allow-internal-toggle-maximize",
     {

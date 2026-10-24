@@ -27,14 +27,6 @@
   background: var(--bg-panel);
 }
 
-.caption {
-  margin: 0;
-  padding: var(--space-3) var(--space-3) var(--space-1);
-  color: var(--text-secondary);
-  font: var(--type-caption);
-  text-transform: uppercase;
-}
-
 .canvas {
   grid-area: canvas;
   position: relative;
@@ -57,38 +49,5 @@
     right: 0;
     bottom: 0;
     box-shadow: var(--shadow-overlay);
-  }
-}
-
-.empty {
-  margin: 0;
-  padding: var(--space-3);
-  color: var(--text-secondary);
-}
-
-/* A layer's row: its name, and while searching, how many keys it found (design §4.6). */
-.layerRow {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.matches {
-  flex: none;
-  min-width: 18px;
-  padding: 0 var(--space-1);
-  border-radius: var(--radius-badge);
-  background: var(--accent);
-  color: var(--accent-contrast);
-  font: var(--type-caption);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-
-  &[data-none] {
-    background: none;
-    color: var(--text-secondary);
   }
 }
