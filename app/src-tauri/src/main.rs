@@ -1,9 +1,14 @@
 //! Keywright's desktop app: the Tauri shell around the UI in `app/ui` (tech spec §12.1).
 //!
 //! The shell is thin. It opens the main window, which shows the UI, builds the macOS menu
-//! bar ([`menu`]), and connects the UI to the device session and the menus through typed
-//! commands and events ([`ipc`]). It shows the window's "edited" dot while changes are
-//! being tried. Editing, the keyboard and the files are other crates' work.
+//! bar ([`menu`]) and the menu bar item ([`tray`]), and connects the UI to the device
+//! session and the menus through typed commands and events ([`ipc`]). It shows the
+//! window's "edited" dot while changes are being tried. Editing, the keyboard and the files
+//! are other crates' work.
+//!
+//! **Menu-bar-only mode** (BAR-4): while the menu bar item is on ([`settings`]), closing
+//! the window hides it, and Keywright leaves the Dock, staying in the menu bar. Opening it
+//! again brings both back. With the item off, closing the window quits.
 //!
 //! **Security** (tech spec §16): the window loads only the bundled UI, under a strict
 //! Content Security Policy, and it may use only what its capability grants
@@ -14,15 +19,19 @@
 
 mod ipc;
 mod menu;
+mod settings;
 mod simulator;
+mod tray;
 
 use std::error::Error;
 
 use keywright_device::battery::Battery;
+use keywright_device::battery::BatteryWatch;
 use keywright_device::selection::{self, ThisMac};
 use keywright_device::{Backups, Session};
 use keywright_platform::bluetooth::{self, Permission};
-use tauri::{App, AppHandle, Manager, RunEvent, Runtime, WindowEvent};
+use tauri::menu::MenuEvent;
+use tauri::{App, AppHandle, Manager, RunEvent, Runtime, WindowEvent, Wry};
 use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
 
@@ -31,7 +40,12 @@ use crate::ipc::{
     QuitRequested, SessionStateChanged, SessionStatus, Update,
 };
 use crate::menu::MenuItem;
+use crate::settings::Settings;
 use crate::simulator::Scenario;
+use crate::tray::Tray;
+
+/// The menu bar item, while it's on.
+struct MenuBar(Option<Tray<Wry>>);
 
 /// The main window's label in tauri.conf.json.
 const MAIN_WINDOW: &str = "main";
@@ -68,10 +82,17 @@ fn main() -> tauri::Result<()> {
         .invoke_handler(ipc.invoke_handler())
         .manage(QuitGuard::default())
         .on_window_event(|window, event| {
-            // Closing the window quits, so it asks first too (SAF-5).
-            if let WindowEvent::CloseRequested { api, .. } = event
-                && ask_before_quitting(window.app_handle())
-            {
+            let WindowEvent::CloseRequested { api, .. } = event else {
+                return;
+            };
+            let app = window.app_handle();
+            if in_menu_bar(app) {
+                // Keywright stays in the menu bar: the window and the Dock icon go.
+                api.prevent_close();
+                let _ = window.hide();
+                show_in_dock(app, false);
+            } else if ask_before_quitting(app) {
+                // Closing the window quits, so it asks first too (SAF-5).
                 api.prevent_close();
             }
         })
@@ -80,13 +101,16 @@ fn main() -> tauri::Result<()> {
             start_session(app)
         })
         .build(tauri::generate_context!())?
-        .run(|app, event| {
-            // ⌘Q and the Dock's Quit, while changes are being tried (SAF-5).
-            if let RunEvent::ExitRequested { api, .. } = event
-                && ask_before_quitting(app)
-            {
-                api.prevent_exit();
-            }
+        .run(|app, event| match event {
+            // ⌘Q, the Dock's Quit and the menu bar item's, while changes are being tried
+            // (SAF-5).
+            RunEvent::ExitRequested { api, .. } if ask_before_quitting(app) => api.prevent_exit(),
+            // Clicking the Dock icon while the window is hidden.
+            RunEvent::Reopen {
+                has_visible_windows: false,
+                ..
+            } => show_main_window(app),
+            _ => {}
         });
     Ok(())
 }
@@ -103,9 +127,10 @@ fn ask_before_quitting<R: Runtime>(app: &AppHandle<R>) -> bool {
 
 /// Starts the device session, and keeps it connected to a keyboard on USB or Bluetooth
 /// (tech spec §6.3), or to a simulated keyboard if `KEYWRIGHT_SIMULATOR` names one. Follows
-/// a real keyboard's battery (BAR-2). Sends the UI the session's state, keymap and battery
-/// from then on.
+/// a real keyboard's battery (BAR-2). Puts the menu bar item up, if it's on. Sends the UI
+/// and the item the session's state, keymap and battery from then on.
 fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
+    let settings = Settings::load();
     let scenario = Scenario::from_env()?;
     let (state, battery) = tauri::async_runtime::block_on(async {
         let Some(scenario) = scenario else {
@@ -121,12 +146,21 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
         Ok((AppState::new(session), None))
     })?;
     let handle = app.handle().clone();
+    let tray = if settings.menu_bar {
+        Some(menu_bar(&handle, settings, battery.clone())?)
+    } else {
+        None
+    };
+    app.manage(MenuBar(tray));
     if let Some(battery) = &battery {
         let handle = handle.clone();
         tauri::async_runtime::spawn(ipc::follow_battery(
             battery.clone(),
             state.session.clone(),
             move |status| {
+                if let Some(tray) = &handle.state::<MenuBar>().0 {
+                    tray.battery_changed(status);
+                }
                 let _ = BatteryChanged(status).emit(&handle);
             },
         ));
@@ -141,6 +175,9 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
                 if is_edited(&status) != edited {
                     edited = !edited;
                     show_edited(&handle, edited);
+                }
+                if let Some(tray) = &handle.state::<MenuBar>().0 {
+                    tray.session_changed(status.clone());
                 }
                 let _ = SessionStateChanged(status).emit(&handle);
             }
@@ -186,9 +223,67 @@ fn session_with_backups() -> Session {
     }
 }
 
-/// Brings the main window to the front, for someone who opened Keywright while it was
-/// already running.
+/// The menu bar item (design §9.5), with a dot below the settings' low-battery level. Its
+/// menu reads the `battery` again as it opens.
+fn menu_bar(
+    app: &AppHandle,
+    settings: Settings,
+    battery: Option<BatteryWatch>,
+) -> tauri::Result<Tray<Wry>> {
+    let on_menu = |app: &AppHandle, event: MenuEvent| tray_menu(app, &event);
+    Tray::build(app, settings.low_battery, on_menu, move || {
+        if let Some(battery) = &battery {
+            battery.read();
+        }
+    })
+}
+
+/// Does what the menu bar item's menu item `event` names.
+fn tray_menu<R: Runtime>(app: &AppHandle<R>, event: &MenuEvent) {
+    match event.id().as_ref() {
+        tray::OPEN => show_main_window(app),
+        tray::SETTINGS => {
+            show_main_window(app);
+            let _ = MenuItemChosen(MenuItem::Settings).emit(app);
+        }
+        tray::QUIT => {
+            // The window asks first, while changes are being tried.
+            if app.state::<QuitGuard>().should_ask() {
+                show_main_window(app);
+            }
+            app.exit(0);
+        }
+        _ => {}
+    }
+}
+
+/// Whether Keywright stays in the menu bar when the window closes (BAR-4).
+fn in_menu_bar<R: Runtime>(app: &AppHandle<R>) -> bool {
+    app.try_state::<MenuBar>()
+        .is_some_and(|menu_bar| menu_bar.0.is_some())
+}
+
+/// Shows or hides Keywright in the Dock, and the app's menus with it: an accessory app has
+/// neither (BAR-4).
+fn show_in_dock<R: Runtime>(app: &AppHandle<R>, shown: bool) {
+    #[cfg(target_os = "macos")]
+    {
+        let policy = if shown {
+            tauri::ActivationPolicy::Regular
+        } else {
+            tauri::ActivationPolicy::Accessory
+        };
+        // If macOS doesn't change it, Keywright stays as it was.
+        let _ = app.set_activation_policy(policy);
+    }
+    #[cfg(not(target_os = "macos"))]
+    let _ = (app, shown);
+}
+
+/// Brings the main window to the front, and Keywright back to the Dock: for someone who
+/// opened Keywright while it was already running, or chose Open Keywright in the menu bar.
 fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
+    show_in_dock(app, true);
     if let Some(window) = app.get_webview_window(MAIN_WINDOW) {
         // Each step is worth trying even if another fails, and there's nothing more to do
         // if one does.
