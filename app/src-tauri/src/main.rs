@@ -15,6 +15,7 @@
 mod ipc;
 mod menu;
 mod simulator;
+mod usb;
 
 use std::error::Error;
 
@@ -104,8 +105,9 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     let scenario = Scenario::from_env()?;
     let state = tauri::async_runtime::block_on(async {
         let Some(scenario) = scenario else {
-            // Keyboards on USB come with the connection states (design §7).
-            return Ok::<_, simulator::Error>(AppState::new(session_with_backups()));
+            let session = session_with_backups();
+            tauri::async_runtime::spawn(usb::connect_keyboards(session.clone()));
+            return Ok::<_, simulator::Error>(AppState::new(session));
         };
         // Like the CLI, a simulated keyboard's backups go nowhere.
         let session = Session::start();
