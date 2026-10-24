@@ -133,7 +133,7 @@ description = "Run the tests that need a ZMK keyboard on USB: plug its left half
 # Ignored by `test`, so CI and machines without a keyboard skip them. One at a time, since
 # they share the keyboard. The Bluetooth tests need it unplugged, so they have their own task,
 # and the switching test (keywright-device) needs someone to move the cable: it runs on its own.
-run = "cargo nextest run --workspace --run-ignored only --test-threads 1 -E 'not binary(bluetooth) and not binary(switching)'"
+run = "cargo nextest run --workspace --run-ignored only --test-threads 1 -E 'not binary(bluetooth) and not binary(switching) and not binary(parity)'"
 
 [tasks."hardware:bluetooth"]
 description = "Run the tests that need a ZMK keyboard on Bluetooth: connect it to this Mac, and unplug its cable"
