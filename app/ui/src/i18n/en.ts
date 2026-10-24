@@ -2,6 +2,7 @@ import type { LocalizedString } from "@internationalized/string";
 
 import { changeStrings } from "./en-changes.ts";
 import { connectionStrings } from "./en-connection.ts";
+import { safetyStrings } from "./en-safety.ts";
 import { text } from "./text.ts";
 
 /**
@@ -137,6 +138,7 @@ export const en = {
   "error.session-stopped": "Keywright lost track of the keyboard. Quit and open it again.",
   "error.menu-failed": "The menu bar didn't take a change.",
   "error.invalid-layer-name": "Your keyboard can't take that layer name.",
+  "error.would-strand": "That change would leave you stuck, so Keywright didn't make it.",
   "inspector.label": "Inspector",
   "inspector.empty": "Select a key to see what it does.",
 
@@ -254,4 +256,5 @@ export const en = {
 
   ...connectionStrings,
   ...changeStrings,
+  ...safetyStrings,
 } satisfies Record<string, LocalizedString>;

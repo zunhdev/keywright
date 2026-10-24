@@ -394,7 +394,7 @@ mod tests {
     async fn layer_rows_name_the_layer_and_what_happened_to_it() {
         let app = ready_sofle().await;
         app.rename_layer(1, "Numbers".to_owned()).await.unwrap();
-        app.move_layer(2, 1).await.unwrap();
+        app.move_layer(2, 1, false).await.unwrap();
         let rows = app.review().await.unwrap();
         assert_eq!(rows[0].key, RowKey::Order);
         assert_eq!(
@@ -410,7 +410,7 @@ mod tests {
             ("lower", "Numbers")
         );
         app.session.undo().await.unwrap();
-        app.remove_layer(3).await.unwrap();
+        app.remove_layer(3, false).await.unwrap();
         let rows = app.review().await.unwrap();
         assert_eq!(rows.last().unwrap().key, RowKey::Removed { layer: 3 });
         assert_eq!(rows.last().unwrap().layer_name.as_deref(), Some("adjust"));

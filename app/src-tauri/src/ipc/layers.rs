@@ -56,7 +56,8 @@ impl AppState {
         if problem(&name).is_some() {
             return Err(AppError::InvalidLayerName);
         }
-        self.change(|keymap, _| {
+        // A name strands no one.
+        self.change(true, |keymap, _| {
             let id = LayerId(layer);
             let before = keymap
                 .layer(id)
@@ -74,8 +75,8 @@ impl AppState {
 
     /// Moves a layer to index `to` in the order. Layer keys still turn on the same layer,
     /// since they name it by ID (LAY-2).
-    pub async fn move_layer(&self, layer: u32, to: u32) -> Result<(), AppError> {
-        self.change(|keymap, _| {
+    pub async fn move_layer(&self, layer: u32, to: u32, force: bool) -> Result<(), AppError> {
+        self.change(force, |keymap, _| {
             let id = LayerId(layer);
             let from = keymap
                 .layers
@@ -91,8 +92,8 @@ impl AppState {
     }
 
     /// Removes a layer. Undoing puts it back, with its name and keys (LAY-6).
-    pub async fn remove_layer(&self, layer: u32) -> Result<(), AppError> {
-        self.change(|keymap, _| {
+    pub async fn remove_layer(&self, layer: u32, force: bool) -> Result<(), AppError> {
+        self.change(force, |keymap, _| {
             let id = LayerId(layer);
             let (index, layer) = keymap
                 .layers
@@ -138,32 +139,39 @@ pub async fn rename_layer(
     app.rename_layer(layer, name).await
 }
 
-/// Moves a layer to another place in the order (LAY-2).
+/// Moves a layer to another place in the order (LAY-2), unless that would strand the user
+/// and not `force` (SAF-2).
 ///
 /// # Errors
 ///
-/// Fails if there's no such layer or place, the keymap can't be changed now, or the
-/// keyboard doesn't move it.
+/// Fails if there's no such layer or place, the keymap can't be changed now, the move
+/// would strand the user, or the keyboard doesn't move it.
 #[tauri::command]
 #[specta::specta]
 pub async fn move_layer(
     app: tauri::State<'_, AppState>,
     layer: u32,
     to: u32,
+    force: bool,
 ) -> Result<(), AppError> {
-    app.move_layer(layer, to).await
+    app.move_layer(layer, to, force).await
 }
 
-/// Removes a layer, which undo puts back (LAY-3, LAY-6).
+/// Removes a layer, which undo puts back (LAY-3, LAY-6), unless that would strand the
+/// user and not `force` (SAF-2).
 ///
 /// # Errors
 ///
-/// Fails if there's no such layer, the keymap can't be changed now, or the keyboard
-/// doesn't remove it.
+/// Fails if there's no such layer, the keymap can't be changed now, the removal would
+/// strand the user, or the keyboard doesn't remove it.
 #[tauri::command]
 #[specta::specta]
-pub async fn remove_layer(app: tauri::State<'_, AppState>, layer: u32) -> Result<(), AppError> {
-    app.remove_layer(layer).await
+pub async fn remove_layer(
+    app: tauri::State<'_, AppState>,
+    layer: u32,
+    force: bool,
+) -> Result<(), AppError> {
+    app.remove_layer(layer, force).await
 }
 
 /// Adds a layer, in the free slot the keyboard picks (LAY-3). Undo removes it again.
@@ -263,7 +271,7 @@ mod tests {
     async fn after_reordering_layer_keys_still_turn_on_the_same_layer() {
         let app = ready_sofle(0).await;
         let before = keymap(&app).await;
-        app.move_layer(RAISE, 1).await.unwrap();
+        app.move_layer(RAISE, 1, false).await.unwrap();
         let after = keymap(&app).await;
         assert_eq!(order(&after), [0, 2, 1, 3]);
         // The keys didn't change: they name their layers by ID.
@@ -289,7 +297,8 @@ mod tests {
     async fn a_removed_layer_comes_back_with_undo() {
         let app = ready_sofle(0).await;
         let before = keymap(&app).await;
-        app.remove_layer(RAISE).await.unwrap();
+        // Raise holds the Unlock key, so the guard would ask first.
+        app.remove_layer(RAISE, true).await.unwrap();
         let removed = keymap(&app).await;
         assert_eq!(order(&removed), [0, 1, 3]);
         assert_eq!(removed.free_layer_slots, 1);

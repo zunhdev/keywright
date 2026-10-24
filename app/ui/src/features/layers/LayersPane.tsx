@@ -1,4 +1,4 @@
-import { GripVertical, Minus, Plus } from "lucide-react";
+import { GripVertical, Minus, Plus, TriangleAlert } from "lucide-react";
 import { type MouseEvent, useState } from "react";
 import { Button as AriaButton, Meter, useDragAndDrop, VisuallyHidden } from "react-aria-components";
 
@@ -134,6 +134,12 @@ export function LayersPane() {
                   ) : (
                     <LayerName id={layer.id} name={layer.name} />
                   )}
+                  {layer.warnings.length > 0 || (keymap !== null && !keymap.unlockable) ? (
+                    <span className={styles.warned}>
+                      <TriangleAlert size={12} strokeWidth={2} aria-hidden="true" />
+                      <VisuallyHidden>{messages.format("warning.layer")}</VisuallyHidden>
+                    </span>
+                  ) : null}
                   {layer.changed ? (
                     <>
                       <span className={styles.changed} aria-hidden="true" />

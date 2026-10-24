@@ -1,5 +1,6 @@
 import { shownLayer, useStore } from "../../app/store.ts";
 import { useMessages } from "../../i18n/messages.ts";
+import { GuardWarning } from "../safety/GuardWarning.tsx";
 import { KeyInspector } from "./KeyInspector.tsx";
 import { LayerOverview } from "./LayerOverview.tsx";
 
@@ -7,7 +8,8 @@ import styles from "./Inspector.module.css";
 
 /**
  * The inspector pane's content (design §5): always something, the selected keys, or the
- * layer shown when no key is. While the keymap can't be changed, such as when the
+ * layer shown when no key is, under the lockout guard's warning when it stopped a change
+ * (design §5.5). While the keymap can't be changed, such as when the
  * keyboard is locked, it can't be used.
  */
 export function Inspector() {
@@ -22,6 +24,7 @@ export function Inspector() {
   const keys = selection.filter((position) => layer.keys[position] !== undefined);
   return (
     <div className={styles.pane} inert={!editable} data-disabled={editable ? undefined : true}>
+      <GuardWarning />
       {keys.length === 0 ? (
         <LayerOverview keymap={keymap} layer={layer} />
       ) : (

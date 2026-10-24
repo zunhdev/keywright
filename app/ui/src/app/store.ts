@@ -5,6 +5,7 @@ import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
 import type {
   Choice,
   DomCode,
+  GuardWarning,
   KeyboardGuide,
   KeyEntry,
   Keymap,
@@ -56,6 +57,14 @@ export interface UiSlice {
   readonly unlockSheet: boolean;
   /** Whether the keyboard locked itself after it could be edited, so a banner says so. */
   readonly relocked: boolean;
+  /**
+   * A change the lockout guard stopped (SAF-2): what it would break, and how to apply it
+   * anyway. The inspector asks.
+   */
+  readonly guard: {
+    readonly findings: readonly GuardWarning[];
+    readonly proceed: () => Promise<boolean>;
+  } | null;
   /** Whether the review sheet shows (design §6). */
   readonly review: boolean;
   /** Whether "Discard all…" is asking to be sure. */
@@ -152,6 +161,7 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   recording: null,
   unlockSheet: false,
   relocked: false,
+  guard: null,
   review: false,
   discarding: false,
   quitting: false,
@@ -163,8 +173,9 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   crowded: false,
   layersCollapsedForWidth: false,
   // Another layer or selection stops the recorder, which records for the keys selected.
-  showLayer: (id) => set({ layer: id, recording: null }),
-  select: (positions) => set({ selection: positions, recording: null }),
+  // Another layer or selection also drops a change the guard stopped, which was for these.
+  showLayer: (id) => set({ layer: id, recording: null, guard: null }),
+  select: (positions) => set({ selection: positions, recording: null, guard: null }),
   toggleKey: (position) =>
     set((store) => ({
       recording: null,

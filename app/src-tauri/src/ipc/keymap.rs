@@ -21,6 +21,7 @@ use specta::Type;
 use super::AppState;
 use super::action::{Action, Choice, Kind, OtherBehavior, choices, kinds, other_behaviors};
 use super::error::AppError;
+use super::guard::{self, LayerWarning};
 
 /// The keymap the canvas draws: the keyboard's keys, its knobs, and its layers.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
@@ -36,6 +37,8 @@ pub struct Keymap {
     pub free_layer_slots: u32,
     /// The longest layer name, in bytes of UTF-8, for the rename field's counter (LAY-1).
     pub layer_name_max: u32,
+    /// Whether some key the user can reach unlocks the keyboard (SAF-2).
+    pub unlockable: bool,
     /// The actions the inspector lists as they are, which the firmware can do.
     pub choices: Vec<Choice>,
     /// The behaviors Keywright doesn't know, which the inspector edits by their parameters.
@@ -91,6 +94,8 @@ pub struct Layer {
     pub reach: Vec<Reach>,
     /// Whether it's being tried: added, renamed, or with keys that are.
     pub changed: bool,
+    /// What's wrong with it (SAF-2): no key turns it on, or there's no way back from it.
+    pub warnings: Vec<LayerWarning>,
 }
 
 /// One way to reach a layer (LAY-4), such as "Hold lower".
@@ -218,12 +223,16 @@ impl Keymap {
 
         let described = keycap::describe(keymap, &keyboard.behaviors, conditional_layers);
         let reach = keycap::reach(keymap, &keyboard.behaviors, conditional_layers);
+        let (layer_warnings, unlockable) =
+            guard::warnings(keymap, &keyboard.behaviors, conditional_layers);
         let layers = keymap
             .layers
             .iter()
             .zip(described)
             .zip(reach)
-            .map(|((layer, keys), ways)| Layer {
+            .zip(layer_warnings)
+            .map(|(((layer, keys), ways), layer_warnings)| Layer {
+                warnings: layer_warnings,
                 id: layer.id.0,
                 name: keycap::layer_name(keymap, layer.id),
                 reach: ways
@@ -270,6 +279,7 @@ impl Keymap {
             layers,
             free_layer_slots: keymap.free_layer_slots,
             layer_name_max: u32::try_from(MAX_NAME_LEN).unwrap_or(u32::MAX),
+            unlockable,
             choices: choices(keymap, &keyboard.behaviors),
             others: other_behaviors(&keyboard.behaviors),
             kinds: kinds(&keyboard.behaviors),

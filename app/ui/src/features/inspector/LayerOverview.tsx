@@ -3,14 +3,15 @@ import { LOCALE } from "../../i18n/messages.ts";
 import type { Keymap, Layer } from "../../ipc/bindings.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { RenameField } from "../layers/RenameField.tsx";
+import { LayerWarnings } from "../safety/LayerWarnings.tsx";
 
 import styles from "./Inspector.module.css";
 
 /**
  * The inspector with no key selected (design §5.1): the layer shown, how many of its keys
  * are changed, its name to edit, how it's reached (LAY-4), and the knobs, which can't be
- * changed yet (VIEW-4). Its Mac compatibility and its warnings come with the compatibility
- * check (KEY-62) and the lockout guard (KEY-51).
+ * changed yet (VIEW-4), and what's wrong with it (SAF-2). Its Mac compatibility comes with
+ * the compatibility check (KEY-62).
  */
 export function LayerOverview({ keymap, layer }: { keymap: Keymap; layer: Layer }) {
   const messages = useMessages();
@@ -49,6 +50,7 @@ export function LayerOverview({ keymap, layer }: { keymap: Keymap; layer: Layer 
           ))}
         </ul>
       </section>
+      <LayerWarnings keymap={keymap} layer={layer} />
       <p className={styles.note}>{messages.format("overview.hint")}</p>
       {keymap.knobs.length === 0 ? null : (
         <section className={styles.fields}>

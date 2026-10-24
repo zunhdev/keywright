@@ -22,6 +22,7 @@ mod action;
 mod connection;
 mod edit;
 mod error;
+mod guard;
 mod keymap;
 mod layers;
 mod menu;

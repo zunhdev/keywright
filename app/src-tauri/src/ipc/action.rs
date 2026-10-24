@@ -1001,7 +1001,7 @@ mod tests {
             param1: Param::Key { key: a },
             param2: Param::Number { value: 0 },
         };
-        app.set_action(0, vec![13], action).await.unwrap();
+        app.set_action(0, vec![13], action, false).await.unwrap();
         let keymap = Keymap::of(&app.session.snapshot().await.unwrap()).unwrap();
         let key = &keymap.layers[0].keys[13];
         assert_eq!(key.action, action);
@@ -1215,7 +1215,7 @@ mod tests {
             hold: shortcut(Mods::NONE, UsagePage::Keyboard, 0xE0),
             tap: shortcut(Mods::NONE, UsagePage::Keyboard, 0x29),
         });
-        app.set_action(0, vec![13, 14], escape_control)
+        app.set_action(0, vec![13, 14], escape_control, false)
             .await
             .unwrap();
         let keymap = Keymap::of(&app.session.snapshot().await.unwrap()).unwrap();
