@@ -3,13 +3,16 @@
 //! The rows are the review list of the backup's import preview (`Import::preview`), as
 //! the app's Import preview shows them (design §9.2): the layer order, then each layer's
 //! name and keys, in the file's layer order. Items the keyboard can't take, such as an
-//! action its firmware doesn't have, are listed apart. Actions are written as the backup
-//! file writes them, such as `kp LG(C)`.
+//! action its firmware doesn't have, are listed apart. Keys are written as the review
+//! sheet writes them, in the keycaps' words, such as `B → ⌘C` (CLI-5, design §6); with
+//! `--zmk`, as ZMK and the backup file name them, such as `kp B → kp LG(C)`. `--json` gives
+//! both.
 
 use keywright_core::action::Action;
 use keywright_core::backup::{ActionText, Backup, Import, Row, Unresolved};
 use keywright_core::behavior::BehaviorTable;
 use keywright_core::editor::{Change, Editor};
+use keywright_core::keycap;
 use keywright_core::keymap::{Binding, Keymap, LayerId};
 use serde::Serialize;
 
@@ -60,10 +63,14 @@ pub(crate) enum Difference {
         position: usize,
         /// Where the key is, in words, such as `row 3, key 2`.
         place: String,
-        /// What it does on the keyboard, such as `kp B`.
+        /// What it does on the keyboard, as its keycap shows it, such as `B`.
         keyboard: String,
         /// What it does in the file.
         file: String,
+        /// What it does on the keyboard, as ZMK names it, such as `kp B`.
+        keyboard_zmk: String,
+        /// What it does in the file, as ZMK names it.
+        file_zmk: String,
     },
 }
 
@@ -141,7 +148,8 @@ impl Comparison {
     }
 
     /// The differences as lines of text, grouped by layer under its name on the keyboard.
-    pub(crate) fn lines(&self) -> Vec<String> {
+    /// Keys are in the keycaps' words, or as ZMK names them with `zmk`.
+    pub(crate) fn lines(&self, zmk: bool) -> Vec<String> {
         let width = self
             .differences
             .iter()
@@ -190,9 +198,16 @@ impl Comparison {
                     place,
                     keyboard,
                     file,
+                    keyboard_zmk,
+                    file_zmk,
                     ..
                 } => {
                     heading(&mut lines, layer);
+                    let (keyboard, file) = if zmk {
+                        (keyboard_zmk, file_zmk)
+                    } else {
+                        (keyboard, file)
+                    };
                     lines.push(format!("  {place:<width$}  {keyboard} → {file}"));
                 }
             }
@@ -268,8 +283,10 @@ fn difference(
             layer: named(keyboard, layer),
             position,
             place: words::position(rows, position),
-            keyboard: action(before, behaviors),
-            file: action(after, behaviors),
+            keyboard: keycap::label(keyboard, behaviors, before),
+            file: keycap::label(file, behaviors, after),
+            keyboard_zmk: action(before, behaviors),
+            file_zmk: action(after, behaviors),
         },
     }
 }

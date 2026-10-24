@@ -19,6 +19,29 @@ Sofle Choc BT differs from mine.keywright in 5 places (keyboard → file):
 
 Layer order: default, lower, raise → default, fn, lower
 default
+  row 1, key 1  ` → ⎋ Esc
+raise
+  name          raise → fn
+  row 1, key 7  Same as layer below → ⌘C
+adjust
+  only on the keyboard
+
+Sofle Choc BT can't take 1 thing in mine.keywright:
+  fn, row 1, key 8: “Mouse Move” isn't in this keyboard's firmware.
+
+```
+
+With `--zmk`, keys read as ZMK and the backup file name them, for tuners.
+
+```console
+$ keywright diff --zmk mine.keywright
+? 1
+Sofle Choc BT is locked. To unlock it, hold the raise key, then tap the B key.
+Waiting up to 2 minutes for it to be unlocked…
+Sofle Choc BT differs from mine.keywright in 5 places (keyboard → file):
+
+Layer order: default, lower, raise → default, fn, lower
+default
   row 1, key 1  kp GRAVE → kp ESC
 raise
   name          raise → fn
@@ -89,8 +112,10 @@ Waiting up to 2 minutes for it to be unlocked…
       },
       "position": 0,
       "place": "row 1, key 1",
-      "keyboard": "kp GRAVE",
-      "file": "kp ESC"
+      "keyboard": "`",
+      "file": "⎋ Esc",
+      "keyboard_zmk": "kp GRAVE",
+      "file_zmk": "kp ESC"
     },
     {
       "kind": "layer-renamed",
@@ -109,8 +134,10 @@ Waiting up to 2 minutes for it to be unlocked…
       },
       "position": 6,
       "place": "row 1, key 7",
-      "keyboard": "trans",
-      "file": "kp LG(C)"
+      "keyboard": "Same as layer below",
+      "file": "⌘C",
+      "keyboard_zmk": "trans",
+      "file_zmk": "kp LG(C)"
     },
     {
       "kind": "layer-only-on-keyboard",
@@ -191,10 +218,10 @@ Restoring mine.keywright makes 5 changes to Sofle Choc BT:
 
 Layer order: default, lower, raise → default, fn, lower
 default
-  row 1, key 1  kp GRAVE → kp ESC
+  row 1, key 1  ` → ⎋ Esc
 raise
   name          raise → fn
-  row 1, key 7  trans → kp LG(C)
+  row 1, key 7  Same as layer below → ⌘C
 adjust
   only on the keyboard
 
@@ -215,10 +242,10 @@ Restoring mine.keywright makes 5 changes to Sofle Choc BT:
 
 Layer order: default, lower, raise → default, fn, lower
 default
-  row 1, key 1  kp GRAVE → kp ESC
+  row 1, key 1  ` → ⎋ Esc
 raise
   name          raise → fn
-  row 1, key 7  trans → kp LG(C)
+  row 1, key 7  Same as layer below → ⌘C
 adjust
   only on the keyboard
 
@@ -289,8 +316,10 @@ Waiting up to 2 minutes for it to be unlocked…
       },
       "position": 0,
       "place": "row 1, key 1",
-      "keyboard": "kp GRAVE",
-      "file": "kp ESC"
+      "keyboard": "`",
+      "file": "⎋ Esc",
+      "keyboard_zmk": "kp GRAVE",
+      "file_zmk": "kp ESC"
     },
     {
       "kind": "layer-renamed",
@@ -309,8 +338,10 @@ Waiting up to 2 minutes for it to be unlocked…
       },
       "position": 6,
       "place": "row 1, key 7",
-      "keyboard": "trans",
-      "file": "kp LG(C)"
+      "keyboard": "Same as layer below",
+      "file": "⌘C",
+      "keyboard_zmk": "trans",
+      "file_zmk": "kp LG(C)"
     },
     {
       "kind": "layer-only-on-keyboard",

@@ -684,3 +684,40 @@ mod edits {
         );
     }
 }
+
+mod labels {
+    use super::*;
+
+    /// What a key with `action` reads as in a review row, in a keymap with a "nav" layer.
+    fn row(action: Action) -> String {
+        let keymap = one_key_each(&[action]);
+        crate::keycap::label(&keymap, &zmk_v0_3_table(), binding(action))
+    }
+
+    #[test]
+    fn a_key_reads_as_its_keycap() {
+        assert_eq!(row(Action::KeyPress(plain(A))), "A");
+        assert_eq!(row(Action::KeyPress(with(Mods::LEFT_COMMAND, C))), "⌘C");
+        assert_eq!(row(Action::Momentary(LayerId(7))), "nav");
+    }
+
+    #[test]
+    fn a_tap_and_hold_key_reads_as_both() {
+        let escape_control = Action::ModTap {
+            hold: plain(LEFT_CONTROL),
+            tap: plain(ESCAPE),
+        };
+        assert_eq!(row(escape_control), "⎋ Esc / ⌃");
+        let space_nav = Action::LayerTap {
+            layer: LayerId(7),
+            tap: plain(key(0x2C)),
+        };
+        assert_eq!(row(space_nav), "␣ / nav");
+    }
+
+    #[test]
+    fn a_key_that_shows_nothing_reads_in_words() {
+        assert_eq!(row(Action::Transparent), "Same as layer below");
+        assert_eq!(row(Action::None), "Does nothing");
+    }
+}

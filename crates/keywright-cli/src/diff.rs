@@ -19,6 +19,11 @@ pub(crate) struct Args {
     /// The backup file to compare the keyboard with.
     file: PathBuf,
 
+    /// Write keys as ZMK names them, such as `kp LG(C)`, rather than as their keycaps show
+    /// them, such as `⌘C`.
+    #[arg(long)]
+    zmk: bool,
+
     #[command(flatten)]
     wait: Wait,
 }
@@ -62,13 +67,14 @@ pub(crate) async fn run(source: Source, args: Args, json: bool) -> Result<Exit, 
             comparison: &comparison,
         })?;
     } else {
-        print(text(&comparison, &name, &file))?;
+        print(text(&comparison, &name, &file, args.zmk))?;
     }
     Ok(if same { Exit::Done } else { Exit::No })
 }
 
-/// The comparison as text: the keyboard's way, then the file's.
-fn text(comparison: &Comparison, name: &str, file: &str) -> String {
+/// The comparison as text: the keyboard's way, then the file's, with keys as ZMK names them
+/// if `zmk`.
+fn text(comparison: &Comparison, name: &str, file: &str, zmk: bool) -> String {
     if comparison.is_empty() {
         return format!("{name} matches {file}.");
     }
@@ -81,7 +87,7 @@ fn text(comparison: &Comparison, name: &str, file: &str) -> String {
             ),
             String::new(),
         ];
-        lines.extend(comparison.lines());
+        lines.extend(comparison.lines(zmk));
         sections.push(lines.join("\n"));
     }
     let cannot_apply = comparison.cannot_apply_lines(name, file);
