@@ -50,6 +50,7 @@ struct Label {
 pub struct Labels {
     keys: HashMap<HidUsage, Label>,
     globe: Option<HidUsage>,
+    keyboard: KeyboardType,
 }
 
 impl Labels {
@@ -87,7 +88,11 @@ impl Labels {
                 (!nothing).then_some((usage, label))
             })
             .collect();
-        Self { keys, globe: None }
+        Self {
+            keys,
+            globe: None,
+            keyboard,
+        }
     }
 
     /// The same labels, with `code` called Globe: the key code Keywright makes act as Globe
@@ -102,6 +107,12 @@ impl Labels {
     #[must_use]
     pub const fn globe(&self) -> Option<HidUsage> {
         self.globe
+    }
+
+    /// The kind of keyboard the labels are for: ANSI for the US labels alone.
+    #[must_use]
+    pub const fn keyboard(&self) -> KeyboardType {
+        self.keyboard
     }
 
     /// What a key's keycap shows, such as `Ф`, and what text calls it: in this input

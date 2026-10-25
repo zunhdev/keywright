@@ -20,6 +20,15 @@ async function choose(label: string, option: RegExp | string) {
   await userEvent.click(await screen.findByRole("option", { name: option }));
 }
 
+/** Opens a key field by its label, and chooses a key in the key picker by its name. */
+async function chooseKey(label: string, key: string) {
+  await userEvent.click(screen.getByRole("button", { name: new RegExp(`^${label}: `, "u") }));
+  const picker = await screen.findByRole("dialog", { name: "Choose a key" });
+  const [option] = within(picker).getAllByRole("option", { name: key });
+  if (option === undefined) throw new Error(`the key picker has no ${key}`);
+  await userEvent.click(option);
+}
+
 /** Opens the action picker's menu. */
 async function openPicker(): Promise<HTMLElement> {
   await userEvent.click(screen.getByRole("button", { name: /^Action: /u }));
@@ -64,7 +73,7 @@ describe("a selected key", () => {
     expect(screen.getByText("Left half, row 2, key 2")).toBeDefined();
     expect(screen.getByText("Types Q.")).toBeDefined();
     expect(screen.getByRole("button", { name: "Action: Key or shortcut" })).toBeDefined();
-    expect(screen.getByRole("combobox", { name: "Key" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Key: Q" })).toBeDefined();
   });
 
   test("gets a modifier from the toggles, as a shortcut", async () => {
@@ -79,10 +88,10 @@ describe("a selected key", () => {
     ]);
   });
 
-  test("gets another key from the key popup, and right-hand modifiers from Details", async () => {
+  test("gets another key from the key picker, and right-hand modifiers from Details", async () => {
     const set = rustSide();
     inspect([Q]);
-    await choose("Key", /^⎋ Esc/u);
+    await chooseKey("Key", "Escape");
     expect(set.at(-1)?.action).toEqual({
       kind: "key-press",
       key: { mods: 0, page: "keyboard", id: 0x29 },
@@ -242,7 +251,7 @@ describe("the editors", () => {
       param2: { kind: "number", value: 0 },
     });
     // Key Toggle takes a key.
-    await choose("First value", /^⎋ Esc/u);
+    await chooseKey("First value", "Escape");
     expect(set.at(-1)?.action).toEqual({
       kind: "other",
       behavior: toggle,

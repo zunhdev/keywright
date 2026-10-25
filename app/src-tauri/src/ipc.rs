@@ -177,6 +177,7 @@ pub fn builder() -> Builder<tauri::Wry> {
             general::open_login_items_settings,
             keymap::session_keymap,
             action::key_catalog,
+            action::keyboard_type,
             action::dom_codes,
             action::shortcut_words,
             action::mac_actions,

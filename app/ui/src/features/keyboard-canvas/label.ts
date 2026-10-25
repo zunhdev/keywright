@@ -33,7 +33,7 @@ const ADVANCE = 0.66;
 const graphemes = new Intl.Segmenter("en", { granularity: "grapheme" });
 
 /** How many characters `text` has, as people count them: `⎋` and `🌐` are one each. */
-function length(text: string): number {
+export function characterCount(text: string): number {
   return [...graphemes.segment(text)].length;
 }
 
@@ -56,21 +56,30 @@ function breaks(text: string): Array<[string, string]> {
  * colour square.
  */
 export function fitSize(text: string, width: number, largest: number, extra = 0): number {
-  return tenth(Math.max(SMALLEST, Math.min(largest, width / ((length(text) + extra) * ADVANCE))));
+  return tenth(
+    Math.max(SMALLEST, Math.min(largest, width / ((characterCount(text) + extra) * ADVANCE))),
+  );
 }
 
 /** Lays out `text` on a keycap area `width` × `height` px. */
 export function layoutLabel(text: string, width: number, height: number): LabelLayout {
-  const characters = length(text);
-  if (characters <= 1) return { lines: [text], size: tenth(CHARACTER * height) };
-  const largest = WORDS * height;
+  if (characterCount(text) <= 1) return { lines: [text], size: tenth(CHARACTER * height) };
+  return layoutWords(text, width, WORDS * height);
+}
+
+/**
+ * Lays out words `width` px wide, at most `largest` px: on one line if they fit, or else
+ * on two, broken where the longer line is shortest, shrinking to fit.
+ */
+export function layoutWords(text: string, width: number, largest: number): LabelLayout {
+  const characters = characterCount(text);
   const sizeFor = (longest: number) =>
     tenth(Math.max(SMALLEST, Math.min(largest, width / (longest * ADVANCE))));
   if (characters * ADVANCE * largest <= width) return { lines: [text], size: tenth(largest) };
   // Two lines, broken where the longer of them is shortest.
   let best: { lines: readonly string[]; longest: number } | null = null;
   for (const lines of breaks(text)) {
-    const longest = Math.max(...lines.map((line) => length(line)));
+    const longest = Math.max(...lines.map((line) => characterCount(line)));
     if (best === null || longest < best.longest) best = { lines, longest };
   }
   if (best === null || best.longest >= characters) {

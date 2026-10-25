@@ -1,0 +1,232 @@
+/* The key field and the key picker (design §5.6). */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fieldLabel {
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+/* The field's key: its keycap, then its name. */
+.fieldCap {
+  min-width: 1.5em;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-badge);
+  font: var(--type-body-strong);
+  text-align: center;
+}
+
+.fieldName {
+  flex: 1;
+  overflow: hidden;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dialog {
+  outline: none;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-2);
+}
+
+.search {
+  display: flex;
+}
+
+.searchInput {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--control-default);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-control);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font: var(--type-body);
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+/* The tabs, or the results in their place, at the same size. */
+.body {
+  position: relative;
+}
+
+.tabs[data-hidden] {
+  visibility: hidden;
+}
+
+.tabsInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.recent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.recentLabel {
+  flex: none;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+/* A tab's keys: as tall as the Keyboard tab, scrolling if they need more. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  overflow: auto;
+  outline: none;
+}
+
+.note {
+  align-self: flex-start;
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+.results {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.count {
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.footer {
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A board: keycaps where its model puts them, under their groups' titles. */
+.board {
+  position: relative;
+  flex: none;
+}
+
+.title {
+  position: absolute;
+  left: 0;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+}
+
+.keys {
+  position: absolute;
+  inset: 0;
+  outline: none;
+}
+
+/* A key's slot; its keycap leaves a gap to the next. */
+.key {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  cursor: default;
+  outline: none;
+}
+
+.cap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid var(--border-key);
+  border-radius: 5px;
+  background: var(--surface-key);
+  box-shadow: var(--shadow-key);
+  line-height: 1.1;
+  transition: background var(--motion-hover) var(--ease-out);
+
+  .key:hover & {
+    background: var(--surface-hover);
+  }
+
+  .key[aria-selected="true"] & {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .key:focus-visible & {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+}
+
+/* What Shift types, above what the key types. */
+.upper {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+  font-weight: 600;
+}
+
+.line {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A result's name, under its keycap. */
+.caption {
+  display: -webkit-box;
+  overflow: hidden;
+  padding: 0 var(--space-1);
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  text-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.popover {
+  max-width: calc(100vw - 16px);
+}

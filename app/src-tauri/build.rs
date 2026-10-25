@@ -18,6 +18,7 @@ const COMMANDS: &[&str] = &[
     "open_login_items_settings",
     "session_keymap",
     "key_catalog",
+    "keyboard_type",
     "dom_codes",
     "shortcut_words",
     "mac_actions",

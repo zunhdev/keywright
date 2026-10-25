@@ -13,6 +13,7 @@
     "allow-open-bluetooth-settings",
     "allow-session-keymap",
     "allow-key-catalog",
+    "allow-keyboard-type",
     "allow-dom-codes",
     "allow-shortcut-words",
     "allow-mac-actions",

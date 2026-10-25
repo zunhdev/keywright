@@ -86,9 +86,14 @@ export const commands = {
 } | null, AppError>(__TAURI_INVOKE("session_keymap")),
 	/**
 	 *  Every key ZMK names, with its labels in the input source and its group, for the key
-	 *  popup. The UI asks once, and again in another input source.
+	 *  picker. The UI asks once, and again in another input source.
 	 */
 	keyCatalog: () => __TAURI_INVOKE<KeyEntry[]>("key_catalog"),
+	/**
+	 *  The kind of keyboard the key labels are for, for the key picker's Keyboard tab. Like
+	 *  the catalog, it changes with the input source.
+	 */
+	keyboardType: () => __TAURI_INVOKE<KeyboardType>("keyboard_type"),
 	/**  Every `KeyboardEvent.code` value the recorder knows, with the key it stands for. */
 	domCodes: () => __TAURI_INVOKE<DomCode[]>("dom_codes"),
 	/**  What a key or shortcut is called, and the Mac action it is, for the recorder. */
@@ -1007,7 +1012,7 @@ export type GeneralSettings = {
 	openAtLogin: OpenAtLogin,
 };
 
-/**  A group of keys in the key popup. */
+/**  A group of keys in the key picker's More tab. */
 export type Group = 
 /**  A to Z. */
 "letter" | 
@@ -1171,7 +1176,7 @@ export type KeyAction =
 /**  Nothing (⌫ on the canvas). */
 "does-nothing";
 
-/**  A key the key popup offers (design §5.4), in its group. */
+/**  A key the key picker offers (design §5.6), in its group. */
 export type KeyEntry = {
 	/**  The key's usage page. */
 	page: Page,
@@ -1181,6 +1186,14 @@ export type KeyEntry = {
 	cap: string,
 	/**  What text calls it, such as `Delete`. */
 	name: string,
+	/**  What it types with Shift, if that's another character, such as `!` for 1. */
+	shifted: string | null,
+	/**
+	 *  What ZMK calls it alone, without modifiers: the name Keywright writes first, such as
+	 *  `BSPC`, then the others, such as `BACKSPACE`. The key picker's search finds keys by
+	 *  them.
+	 */
+	zmk: string[],
 	/**  Its group. */
 	group: Group,
 };
@@ -1209,6 +1222,18 @@ export type KeyboardGuide = {
 	/**  The key to hold, with the number keys, to pick a Bluetooth slot. */
 	bluetoothHold: string | null,
 };
+
+/**
+ *  The kind of keyboard macOS takes the keyboard to be (tech spec §11.1), which the key
+ *  picker draws.
+ */
+export type KeyboardType = 
+/**  The US layout, with a wide Return key. */
+"ansi" | 
+/**  The European layout: a tall Return key, and an extra key right of left Shift. */
+"iso" | 
+/**  The Japanese layout, with extra keys of its own. */
+"jis";
 
 /**
  *  What a keycap shows (design §4.2). In TypeScript, `{ kind: "label", text: "A" }` and so

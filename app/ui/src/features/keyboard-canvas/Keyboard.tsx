@@ -18,7 +18,7 @@ import { bounds, keySize, place } from "./geometry.ts";
 import { positionOf, useKeyDrag } from "./interactions.ts";
 import { Keycap, LayerName } from "./Keycap.tsx";
 import { DoesNothingHint, doesNothingHintSeen, KeyMenu } from "./KeyMenu.tsx";
-import { type Direction, nearestKey } from "./navigation.ts";
+import { ARROWS, nearestKey } from "./navigation.ts";
 
 import styles from "./Keyboard.module.css";
 
@@ -30,14 +30,6 @@ const CAPTION = 28;
 function turning(knob: Knob): string {
   return new Intl.ListFormat(LOCALE, { type: "conjunction" }).format(knob.turn);
 }
-
-/** The keys the arrow keys move between (design §4.7). */
-const ARROWS: Readonly<Record<string, Direction>> = {
-  ArrowUp: "up",
-  ArrowDown: "down",
-  ArrowLeft: "left",
-  ArrowRight: "right",
-};
 
 /**
  * The layer's name, the keyboard with what its keys do on that layer, and the knobs.

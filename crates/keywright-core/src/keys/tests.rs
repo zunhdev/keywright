@@ -127,6 +127,9 @@ mod us_labels {
             (key(0x2B), "⇥", "Tab"),
             (key(0x2C), "␣", "Space"),
             (key(0x39), "⇪", "Caps Lock"),
+            (consumer(0xCF), "Dictation", "Dictation"),
+            (key(0x91), "英数", "Eisu"),
+            (key(0x90), "かな", "Kana"),
         ];
         for (usage, keycap, text) in expected {
             assert_eq!((cap(usage), name(usage)), (keycap, text), "{usage:?}");
@@ -172,6 +175,12 @@ mod us_labels {
         assert_eq!(cap(consumer(0x30)), "Power");
         // Without the explanation in brackets.
         assert_eq!(cap(key(0x85)), "Keypad ,");
+    }
+
+    #[test]
+    fn japanese_keys_are_printed_as_on_apples_keyboards() {
+        assert_eq!((cap(key(0x89)), name(key(0x89))), ("¥", "Yen"));
+        assert_eq!((cap(key(0x87)), name(key(0x87))), ("_", "Ro"));
     }
 
     #[test]

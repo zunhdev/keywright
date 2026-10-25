@@ -70,12 +70,13 @@ function isY(key: KeyEntry): boolean {
 }
 
 test("in another input source, the store gets the key tables again", async () => {
-  // Under German, the key in the US Y's place types Z.
+  // Under German, the key in the US Y's place types Z, on this Mac's ISO keyboard.
   const german = structuredClone(keyCatalog);
   Object.assign(german.find((key) => isY(key)) ?? {}, { cap: "Z", name: "Z" });
   mockIPC(
     (command) => {
       if (command === "key_catalog") return german;
+      if (command === "keyboard_type") return "iso";
       if (command === "dom_codes") return domCodes;
       if (command === "mac_actions") return macActions;
       throw new Error(`unexpected command ${command}`);
@@ -86,5 +87,6 @@ test("in another input source, the store gets the key tables again", async () =>
   await emit("platform://input-source", { id: "com.apple.keylayout.German", name: "German" });
   await Bun.sleep(0);
   expect(useStore.getState().keyCatalog.find((key) => isY(key))?.cap).toBe("Z");
+  expect(useStore.getState().keyboardType).toBe("iso");
   stop();
 });

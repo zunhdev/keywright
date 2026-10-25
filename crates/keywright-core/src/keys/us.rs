@@ -160,6 +160,11 @@ fn keyboard_key(id: u16) -> Option<Label> {
         0x65 => Label::word("Menu"),
         0x67 => Label::symbol("=", "Keypad ="),
         0x68..=0x73 => Label::word(FUNCTION_KEYS.get(nth(0x5C))?),
+        // The extra keys of Japanese keyboards, as Apple's are printed.
+        0x87 => Label::symbol("_", "Ro"),
+        0x89 => Label::symbol("¥", "Yen"),
+        0x90 => Label::symbol("かな", "Kana"),
+        0x91 => Label::symbol("英数", "Eisu"),
         // Left and right modifiers look the same: the difference rarely matters (MAC-1).
         0xE0 | 0xE4 => Label::symbol("⌃", "Control"),
         0xE1 | 0xE5 => Label::symbol("⇧", "Shift"),
@@ -179,6 +184,8 @@ fn consumer_control(id: u16) -> Option<Label> {
         0xB5 => Label::word("Next Track"),
         0xB6 => Label::word("Previous Track"),
         0xCD => Label::word("Play/Pause"),
+        // Voice Command starts dictation on a Mac (spike S7).
+        0xCF => Label::word("Dictation"),
         0xE2 => Label::word("Mute"),
         0xE9 => Label::word("Volume Up"),
         0xEA => Label::word("Volume Down"),
