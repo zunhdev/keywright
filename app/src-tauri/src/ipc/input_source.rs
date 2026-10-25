@@ -69,10 +69,10 @@ fn read<R: Runtime>(app: &AppHandle<R>) {
         return;
     };
     let labels = labels(&layout);
-    let changed = app.state::<AppState>().labels.send_if_modified(|current| {
-        let changed = **current != labels;
+    let changed = app.state::<AppState>().context.send_if_modified(|context| {
+        let changed = context.labels != labels;
         if changed {
-            *current = Arc::new(labels);
+            Arc::make_mut(context).labels = labels;
         }
         changed
     });

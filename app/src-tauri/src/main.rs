@@ -18,7 +18,9 @@
 #![forbid(unsafe_code)]
 
 mod ipc;
+mod json_file;
 mod low_battery;
+mod mac_check;
 mod menu;
 mod settings;
 mod simulator;
@@ -42,6 +44,7 @@ use crate::ipc::{
     QuitRequested, SessionStateChanged, SessionStatus, SettingsState, TrafficLights, Update,
 };
 use crate::low_battery::LowBattery;
+use crate::mac_check::Dismissals;
 use crate::menu::MenuItem;
 use crate::settings::Settings;
 use crate::simulator::Scenario;
@@ -164,6 +167,8 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
         scenario.connect(&session).await?;
         Ok((AppState::new(session), None))
     })?;
+    // A simulated keyboard has a serial number of its own, so its dismissals are its own.
+    let state = state.with_dismissals(Dismissals::path());
     let handle = app.handle().clone();
     let menu_bar = menu_bar(settings, battery.clone());
     menu_bar.show(&handle, settings.menu_bar)?;
@@ -188,7 +193,7 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     // Nothing listens until the UI has loaded; it asks for the state and keymap then.
     tauri::async_runtime::spawn(ipc::follow(
         state.session.clone(),
-        state.follow_labels(),
+        state.follow_context(),
         move |update| match update {
             Update::Status(status) => {
                 handle.state::<QuitGuard>().set_edited(is_edited(&status));

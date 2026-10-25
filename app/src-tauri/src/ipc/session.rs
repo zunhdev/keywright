@@ -17,9 +17,9 @@ use specta::Type;
 use tokio::sync::broadcast::error::RecvError;
 use tokio::sync::watch;
 
-use super::AppState;
 use super::error::AppError;
 use super::keymap::Keymap;
+use super::{AppState, Context};
 
 /// The session's status: its state, the keyboard it's connected to and how, and how
 /// many changes are being tried.
@@ -157,7 +157,7 @@ pub struct SessionStateChanged(pub SessionStatus);
 #[specta::specta]
 pub async fn session_state(app: tauri::State<'_, AppState>) -> Result<SessionStatus, AppError> {
     let snapshot = app.session.snapshot().await?;
-    Ok(Tracker::default().status(&snapshot.state, Some(&snapshot), &app.labels()))
+    Ok(Tracker::default().status(&snapshot.state, Some(&snapshot), &app.context().labels))
 }
 
 /// What [`follow`] sends the UI.
@@ -171,12 +171,13 @@ pub enum Update {
 }
 
 /// Calls `send` with the session's status each time its state or its changes change, and
-/// with the keymap each time it changes, until the session stops: keys are named as
-/// `labels` says, and again each time it changes. It listens from the moment it's called,
-/// so the returned future can be spawned later without missing a state.
+/// with the keymap each time it changes, until the session stops: in `context`, and again
+/// each time that changes, as when keys are called something else. It listens from the
+/// moment it's called, so the returned future can be spawned later without missing a
+/// state.
 pub fn follow(
     session: Session,
-    mut labels: watch::Receiver<Arc<Labels>>,
+    mut context: watch::Receiver<Arc<Context>>,
     mut send: impl FnMut(Update) + Send + 'static,
 ) -> impl Future<Output = ()> + Send + 'static {
     let mut events = session.subscribe();
@@ -194,10 +195,10 @@ pub fn follow(
                     Ok(_) => continue,
                     Err(RecvError::Closed) => return,
                 },
-                // Keys are called something else: what they show, and what undo names.
-                Ok(()) = labels.changed() => session.state(),
+                // Keys are called something else, or a finding was dismissed.
+                Ok(()) = context.changed() => session.state(),
             };
-            let labels = Arc::clone(&labels.borrow_and_update());
+            let context = Arc::clone(&context.borrow_and_update());
             // A snapshot waits until the session is free, so it isn't asked for while the
             // session probes or loads: that would hold the status back until it's done.
             let snapshot = if matches!(state, State::Probing | State::Loading) {
@@ -211,10 +212,10 @@ pub fn follow(
             send(Update::Status(tracker.status(
                 &state,
                 snapshot.as_ref(),
-                &labels,
+                &context.labels,
             )));
             if let Some(snapshot) = &snapshot {
-                let now = Keymap::of(snapshot, &labels);
+                let now = Keymap::of(snapshot, &context);
                 if now != keymap {
                     keymap.clone_from(&now);
                     send(Update::Keymap(now));
@@ -297,20 +298,20 @@ mod tests {
     use std::sync::Arc;
 
     use keywright_core::edit::Edit;
-    use keywright_core::keys::source::Labels;
     use keywright_device::{Connection, Incompatibility, Peer, Session, State};
     use keywright_sim::Simulator;
     use serde_json::json;
     use tokio::sync::{mpsc, watch};
 
     use super::{SessionState, SessionStatus, Transport, Update, follow};
+    use crate::ipc::Context;
 
     /// Follows the session, with keys named as on a US keyboard, and hears its statuses
     /// only.
     fn statuses(session: &Session) -> mpsc::UnboundedReceiver<SessionStatus> {
         let (sender, statuses) = mpsc::unbounded_channel();
-        let (_, labels) = watch::channel(Arc::new(Labels::us()));
-        tokio::spawn(follow(session.clone(), labels, move |update| {
+        let (_, context) = watch::channel(Arc::new(Context::default()));
+        tokio::spawn(follow(session.clone(), context, move |update| {
             if let Update::Status(status) = update {
                 sender.send(status).unwrap();
             }

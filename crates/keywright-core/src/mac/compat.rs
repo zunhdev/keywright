@@ -4,7 +4,7 @@
 //! Spike S7 (KEY-14) pressed each candidate on the Sofle, on macOS 27, and none of the keys
 //! in [`RULES`] did anything (`docs/spikes/s7-mac-actions.md`). The release checklist checks
 //! them on every supported version (KEY-98). [`check`] runs rules over a keymap (tech spec
-//! §8.4).
+//! §8.4), and [`fix`] fixes a key all at once.
 
 use super::{consumer, key};
 use crate::action::Action;
@@ -139,6 +139,21 @@ pub fn check<'r>(
         }
     }
     findings
+}
+
+/// What `action` does fixed for a Mac: every key in it that one of `rules` has a
+/// replacement for, replaced, as one-click fixes do. `None` if no rule replaces any.
+///
+/// A key may have several findings, such as a mod-tap that taps Copy and holds Paste: each
+/// finding's [`fix`](Finding::fix) changes only its own part, and this changes them all.
+#[must_use]
+pub fn fix(action: Action, rules: &[Rule]) -> Option<Action> {
+    let fixed = rules
+        .iter()
+        .filter(|rule| uses(action, rule.usage))
+        .filter_map(|rule| Some((rule.usage, rule.replacement?)))
+        .fold(action, |action, (usage, with)| replace(action, usage, with));
+    (fixed != action).then_some(fixed)
 }
 
 /// The keys an action types.

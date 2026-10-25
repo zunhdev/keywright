@@ -415,6 +415,35 @@ mod compatibility {
     }
 
     #[test]
+    fn fixing_a_key_replaces_every_part_a_rule_has_a_replacement_for() {
+        let copy_and_paste = [EDITING_KEYS[2], EDITING_KEYS[3]];
+        let both = Action::ModTap {
+            hold: plain(0x7D),
+            tap: plain(0x7C),
+        };
+        assert_eq!(
+            compat::fix(both, &copy_and_paste),
+            Some(Action::ModTap {
+                hold: command(0x19),
+                tap: command(0x06),
+            })
+        );
+        // Nothing to replace: a key that's fine, or a rule without a replacement.
+        assert_eq!(
+            compat::fix(Action::KeyPress(plain(0x29)), &copy_and_paste),
+            None
+        );
+        let unfixable = Rule {
+            replacement: None,
+            ..rule(0x7C, "Copy (Linux style)", 0)
+        };
+        assert_eq!(
+            compat::fix(Action::KeyPress(plain(0x7C)), &[unfixable]),
+            None
+        );
+    }
+
+    #[test]
     fn a_rule_without_a_replacement_still_flags_the_key() {
         let unfixable = Rule {
             replacement: None,

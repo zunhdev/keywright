@@ -12,18 +12,16 @@ use keywright_core::action as core;
 use keywright_core::editor::{Change, Editor};
 use keywright_core::keycap;
 use keywright_core::keymap::{LayerId, PhysicalLayout};
-use keywright_core::keys::source::Labels;
-use keywright_core::mac::compat;
 use keywright_core::support_packs::SupportPack;
 use keywright_device::{MAX_NAME_LEN, Snapshot};
 use serde::Serialize;
 use specta::Type;
 
-use super::AppState;
 use super::action::{Action, Choice, Kind, OtherBehavior, choices, kinds, other_behaviors};
 use super::error::AppError;
 use super::guard::{self, LayerWarning};
-use super::stock;
+use super::mac_check::{self, MacFinding};
+use super::{AppState, Context, stock};
 
 /// The keymap the canvas draws: the keyboard's keys, its knobs, and its layers.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
@@ -85,6 +83,7 @@ pub struct Knob {
 
 /// A layer, and what each key shows and does on it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct Layer {
     /// The layer's ID, which picks its colour (design §4.4).
     pub id: u32,
@@ -101,6 +100,9 @@ pub struct Layer {
     /// Whether it differs from the stock keymap, so Restore Stock Layer would change it
     /// (CHG-4).
     pub restorable: bool,
+    /// Its keys that type something that doesn't work on a Mac (MAC-7), but those the
+    /// person dismissed, in key order.
+    pub mac_findings: Vec<MacFinding>,
 }
 
 /// One way to reach a layer (LAY-4), such as "Hold lower".
@@ -135,7 +137,8 @@ pub struct Key {
     pub spoken: String,
     /// Whether it's being tried: it does something else than when last saved.
     pub changed: bool,
-    /// Whether it does something that doesn't work on a Mac (MAC-7).
+    /// Whether it does something that doesn't work on a Mac (MAC-7), and the person hasn't
+    /// dismissed that.
     pub mac_warning: bool,
     /// Whether it does something else than on the stock keymap, so Restore Stock would
     /// change it (CHG-4).
@@ -215,22 +218,30 @@ pub enum LayerMode {
 }
 
 impl Keymap {
-    /// The keymap the editor holds, once the session has read one, with keys as `labels`
-    /// names them. It stays while the keyboard is locked or gone, for the canvas to show
-    /// under its scrim.
-    pub fn of(snapshot: &Snapshot, labels: &Labels) -> Option<Self> {
+    /// The keymap the editor holds, once the session has read one, with keys as the
+    /// context's labels name them, and the Mac check's findings it hasn't dismissed. It
+    /// stays while the keyboard is locked or gone, for the canvas to show under its scrim.
+    pub fn of(snapshot: &Snapshot, context: &Context) -> Option<Self> {
         let keyboard = snapshot.keyboard.as_ref()?;
         let editor = snapshot.editor.as_ref()?;
         let keymap = editor.current();
         let pack = snapshot.support_pack();
         let conditional_layers = pack.map_or(&[][..], |pack| &pack.hints.conditional_layers);
 
+        let labels = &context.labels;
         let (changed, changed_layers) = changes(editor);
-        let warnings: HashSet<(LayerId, usize)> =
-            compat::check(keymap, &keyboard.behaviors, compat::RULES)
-                .into_iter()
-                .map(|finding| (finding.layer, finding.position))
-                .collect();
+        let mac_findings = mac_check::findings(
+            keymap,
+            &keyboard.behaviors,
+            &keyboard.identity,
+            pack,
+            context,
+        );
+        let warnings: HashSet<(u32, u32)> = mac_findings
+            .iter()
+            .flatten()
+            .map(|found| (found.finding.layer, found.finding.position))
+            .collect();
 
         let place = |position: usize| key_place(pack, position);
 
@@ -245,39 +256,43 @@ impl Keymap {
             .zip(described)
             .zip(reach)
             .zip(layer_warnings)
-            .map(|(((layer, keys), ways), layer_warnings)| Layer {
-                warnings: layer_warnings,
-                restorable: layers_not_stock.contains(&layer.id),
-                id: layer.id.0,
-                name: keycap::layer_name(keymap, layer.id),
-                reach: ways
-                    .into_iter()
-                    .map(|way| Reach {
-                        text: way.text,
-                        position: way.position.map(position),
-                        place: way.position.map(place),
-                    })
-                    .collect(),
-                changed: changed_layers.contains(&layer.id),
-                keys: keys
-                    .into_iter()
-                    .zip(&layer.bindings)
-                    .enumerate()
-                    .map(|(position, (key, binding))| Key {
-                        action: Action::of(
-                            core::Action::from_binding(*binding, &keyboard.behaviors),
-                            &keyboard.behaviors,
-                        ),
-                        keycap: key.keycap.into(),
-                        inherited: key.inherited,
-                        sentence: key.sentence,
-                        spoken: key.spoken,
-                        changed: changed.contains(&(layer.id, position)),
-                        mac_warning: warnings.contains(&(layer.id, position)),
-                        restorable: not_stock.contains(&(layer.id, position)),
-                    })
-                    .collect(),
-            })
+            .zip(mac_findings)
+            .map(
+                |((((layer, keys), ways), layer_warnings), mac_findings)| Layer {
+                    warnings: layer_warnings,
+                    mac_findings,
+                    restorable: layers_not_stock.contains(&layer.id),
+                    id: layer.id.0,
+                    name: keycap::layer_name(keymap, layer.id),
+                    reach: ways
+                        .into_iter()
+                        .map(|way| Reach {
+                            text: way.text,
+                            position: way.position.map(position),
+                            place: way.position.map(place),
+                        })
+                        .collect(),
+                    changed: changed_layers.contains(&layer.id),
+                    keys: keys
+                        .into_iter()
+                        .zip(&layer.bindings)
+                        .enumerate()
+                        .map(|(position, (key, binding))| Key {
+                            action: Action::of(
+                                core::Action::from_binding(*binding, &keyboard.behaviors),
+                                &keyboard.behaviors,
+                            ),
+                            keycap: key.keycap.into(),
+                            inherited: key.inherited,
+                            sentence: key.sentence,
+                            spoken: key.spoken,
+                            changed: changed.contains(&(layer.id, position)),
+                            mac_warning: warnings.contains(&(layer.id.0, self::position(position))),
+                            restorable: not_stock.contains(&(layer.id, position)),
+                        })
+                        .collect(),
+                },
+            )
             .collect();
 
         Some(Self {
@@ -406,7 +421,7 @@ pub struct KeymapChanged(pub Option<Keymap>);
 #[specta::specta]
 pub async fn session_keymap(app: tauri::State<'_, AppState>) -> Result<Option<Keymap>, AppError> {
     let snapshot = app.session.snapshot().await?;
-    Ok(Keymap::of(&snapshot, &app.labels()))
+    Ok(Keymap::of(&snapshot, &app.context()))
 }
 
 #[cfg(test)]
@@ -422,13 +437,14 @@ mod tests {
     use tokio::sync::{mpsc, watch};
 
     use super::{Action, Hold, Key, Keycap, Keymap, LayerMode, Reach};
-    use crate::ipc::{Update, follow};
+    use crate::ipc::{Context, Update, follow};
 
-    /// The simulated Sofle, unlocked and ready; what keys are called, as on a US keyboard
-    /// to begin with; and the keymaps the UI hears from then on.
+    /// The simulated Sofle, unlocked and ready; the context, with keys called as on a US
+    /// keyboard and nothing dismissed to begin with; and the keymaps the UI hears from then
+    /// on.
     async fn ready_sofle() -> (
         Session,
-        watch::Sender<Arc<Labels>>,
+        watch::Sender<Arc<Context>>,
         mpsc::UnboundedReceiver<Option<Keymap>>,
     ) {
         let session = Session::start();
@@ -443,13 +459,17 @@ mod tests {
             .await
             .unwrap();
         let (sender, keymaps) = mpsc::unbounded_channel();
-        let labels = watch::Sender::new(Arc::new(Labels::us()));
-        tokio::spawn(follow(session.clone(), labels.subscribe(), move |update| {
-            if let Update::Keymap(keymap) = update {
-                sender.send(keymap).unwrap();
-            }
-        }));
-        (session, labels, keymaps)
+        let context = watch::Sender::new(Arc::new(Context::default()));
+        tokio::spawn(follow(
+            session.clone(),
+            context.subscribe(),
+            move |update| {
+                if let Update::Keymap(keymap) = update {
+                    sender.send(keymap).unwrap();
+                }
+            },
+        ));
+        (session, context, keymaps)
     }
 
     fn label(text: &str) -> Keycap {
@@ -473,7 +493,7 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(
-            Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()),
+            Keymap::of(&session.snapshot().await.unwrap(), &Context::default()),
             None
         );
 
@@ -482,7 +502,7 @@ mod tests {
             .wait_for(|state| *state == State::Ready)
             .await
             .unwrap();
-        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
         assert_eq!(keymap.keys.len(), 60);
         // The right thumb's inner key, rotated 24° anticlockwise around its corner.
         let thumb = &keymap.keys[55];
@@ -524,7 +544,7 @@ mod tests {
     #[tokio::test]
     async fn keys_that_dont_work_on_a_mac_are_flagged() {
         let (session, _, _) = ready_sofle().await;
-        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
         let flagged: Vec<_> = keymap.layers[2]
             .keys
             .iter()
@@ -585,8 +605,8 @@ mod tests {
     /// they type there (MAC-5): under German, the key in the US Y's place is Z.
     #[tokio::test]
     async fn the_canvas_hears_the_keymap_again_in_another_input_source() {
-        let (session, labels, mut keymaps) = ready_sofle().await;
-        let us = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let (session, context, mut keymaps) = ready_sofle().await;
+        let us = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
         let y = us.layers[0]
             .keys
             .iter()
@@ -602,7 +622,10 @@ mod tests {
             },
             _ => Typed::default(),
         });
-        labels.send_replace(Arc::new(german));
+        context.send_replace(Arc::new(Context {
+            labels: german,
+            ..Context::default()
+        }));
         let keymap = keymaps.recv().await.unwrap().unwrap();
         assert_eq!(keymap.layers[0].keys[y].keycap, label("Z"));
         assert_eq!(keymap.layers[0].keys[y].sentence, "Types Z.");
@@ -613,7 +636,7 @@ mod tests {
     #[tokio::test]
     async fn each_layer_says_how_its_reached_and_whether_its_changed() {
         let (session, _labels, mut keymaps) = ready_sofle().await;
-        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
         assert_eq!(keymap.free_layer_slots, 0);
         assert_eq!(
             keymap.layers[1].reach,
