@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "backups-window",
+  "description": "What the Backups window's UI may use (design §9.1): listing the automatic backups, previewing one against the keymap, restoring one through the main window's Import preview, and showing one in Finder. It changes nothing itself.",
+  "windows": ["backups"],
+  "permissions": [
+    "allow-backups",
+    "allow-backup-preview",
+    "allow-restore-backup",
+    "allow-show-backup-in-finder"
+  ]
+}

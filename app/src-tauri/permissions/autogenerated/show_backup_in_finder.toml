@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-show-backup-in-finder"
+description = "Enables the show_backup_in_finder command without any pre-configured scope."
+commands.allow = ["show_backup_in_finder"]
+
+[[permission]]
+identifier = "deny-show-backup-in-finder"
+description = "Denies the show_backup_in_finder command without any pre-configured scope."
+commands.deny = ["show_backup_in_finder"]

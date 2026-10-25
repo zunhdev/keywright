@@ -86,8 +86,8 @@ fn layer_name(layer: &keywright_core::keymap::Layer, index: usize) -> String {
 }
 
 /// What the review sheet lists: the editor's review list, in words, with keys as `labels`
-/// names them.
-fn rows(
+/// names them. The Import preview lists an import's the same way.
+pub(super) fn rows(
     current: &Keymap,
     saved: &Keymap,
     behaviors: &BehaviorTable,

@@ -52,6 +52,17 @@ pub enum AppError {
     NoGlobeCode,
     /// macOS didn't take the Globe key's mapping, or its removal.
     GlobeNotMapped,
+    /// The backups folder couldn't be read.
+    BackupsNotRead,
+    /// There's no such backup: it was deleted, or was never one of the automatic backups.
+    NoSuchBackup,
+    /// The backup can't be read: the file can't be opened, or isn't a backup Keywright
+    /// can read.
+    UnreadableBackup,
+    /// The Import preview has no backup to show or apply.
+    NothingToImport,
+    /// Finder didn't show the file.
+    NotShownInFinder,
     /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
     /// `force`, it is.
     WouldStrand {

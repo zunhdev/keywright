@@ -46,6 +46,18 @@ impl AppState {
         force: bool,
         build: impl FnOnce(&Keymap, &BehaviorTable) -> Result<Vec<Edit>, AppError>,
     ) -> Result<(), AppError> {
+        let edits = self.checked_edits(force, build).await?;
+        Ok(self.session.apply(edits).await?)
+    }
+
+    /// The edits `build` makes from the keymap the editor holds, checked by the lockout
+    /// guard unless `force` (SAF-2): a change that would strand the user fails with what it
+    /// would break.
+    pub(super) async fn checked_edits(
+        &self,
+        force: bool,
+        build: impl FnOnce(&Keymap, &BehaviorTable) -> Result<Vec<Edit>, AppError>,
+    ) -> Result<Vec<Edit>, AppError> {
         let snapshot = self.session.snapshot().await?;
         let (Some(keyboard), Some(editor)) = (&snapshot.keyboard, &snapshot.editor) else {
             return Err(AppError::NotReady);
@@ -65,7 +77,7 @@ impl AppState {
                 return Err(AppError::WouldStrand { findings });
             }
         }
-        Ok(self.session.apply(edits).await?)
+        Ok(edits)
     }
 
     /// Swaps what two keys do on a layer, as dragging one onto the other does.

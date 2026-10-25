@@ -1,5 +1,6 @@
 import type { LocalizedString } from "@internationalized/string";
 
+import { backupStrings } from "./en-backups.ts";
 import { changeStrings } from "./en-changes.ts";
 import { connectionStrings } from "./en-connection.ts";
 import { macStrings } from "./en-mac.ts";
@@ -287,4 +288,5 @@ export const en = {
   ...changeStrings,
   ...safetyStrings,
   ...macStrings,
+  ...backupStrings,
 } satisfies Record<string, LocalizedString>;

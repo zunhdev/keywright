@@ -425,11 +425,68 @@ character: string } | null>("layer_name_problem", { name }),
 	 *  while they're hidden, as in full screen.
 	 */
 	trafficLights: () => __TAURI_INVOKE<number | null>("traffic_lights"),
+	/**
+	 *  The automatic backups, newest first (BAK-4), for the Backups window.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the backups folder can't be read.
+	 */
+	backups: () => typedError<BackupEntry[], AppError>(__TAURI_INVOKE("backups")),
+	/**
+	 *  An automatic backup compared with the keymap being edited, for the Backups window's
+	 *  preview (design §9.1).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no such backup, it can't be read, or the keymap isn't loaded.
+	 */
+	backupPreview: (id: string) => typedError<ImportPreview, AppError>(__TAURI_INVOKE("backup_preview", { id })),
+	/**
+	 *  _Restore…_ (design §9.1): makes an automatic backup the pending import, brings the main
+	 *  window forward, and tells it to show the Import preview.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no such backup, or it can't be read.
+	 */
+	restoreBackup: (id: string) => typedError<null, AppError>(__TAURI_INVOKE("restore_backup", { id })),
+	/**
+	 *  _Show in Finder_ (design §9.1): shows an automatic backup's file in Finder.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no such backup, or Finder doesn't show it.
+	 */
+	showBackupInFinder: (id: string) => typedError<null, AppError>(__TAURI_INVOKE("show_backup_in_finder", { id })),
+	/**
+	 *  The pending import compared with the keymap being edited, for the Import preview
+	 *  (design §9.2).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if nothing is pending, or the keymap isn't loaded.
+	 */
+	importPreview: () => typedError<ImportPreview, AppError>(__TAURI_INVOKE("import_preview")),
+	/**
+	 *  _Apply as changes_ (design §9.2, BAK-3): applies the pending import as one change to
+	 *  try, after backing the keymap up. Nothing is saved until the person saves.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if nothing is pending, the keymap can't be changed now, the change would strand
+	 *  the user and not `force`, the keymap can't be backed up first, or the keyboard doesn't
+	 *  carry it out.
+	 */
+	applyImport: (force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("apply_import", { force })),
+	/**  _Cancel_ in the Import preview: forgets the pending import. */
+	cancelImport: () => __TAURI_INVOKE<void>("cancel_import"),
 };
 
 /** Events */
 export const events = {
 	appQuitRequested: makeEvent<QuitRequested>("app://quit-requested"),
+	importRequested: makeEvent<ImportRequested>("import://requested"),
 	menuItem: makeEvent<MenuItemChosen>("menu://item"),
 	platformInputSource: makeEvent<InputSourceChanged>("platform://input-source"),
 	sessionBattery: makeEvent<BatteryChanged>("session://battery"),
@@ -568,6 +625,19 @@ export type AppError =
 { code: "no-globe-code" } | 
 /**  macOS didn't take the Globe key's mapping, or its removal. */
 { code: "globe-not-mapped" } | 
+/**  The backups folder couldn't be read. */
+{ code: "backups-not-read" } | 
+/**  There's no such backup: it was deleted, or was never one of the automatic backups. */
+{ code: "no-such-backup" } | 
+/**
+ *  The backup can't be read: the file can't be opened, or isn't a backup Keywright
+ *  can read.
+ */
+{ code: "unreadable-backup" } | 
+/**  The Import preview has no backup to show or apply. */
+{ code: "nothing-to-import" } | 
+/**  Finder didn't show the file. */
+{ code: "not-shown-in-finder" } | 
 /**
  *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
  *  `force`, it is.
@@ -575,6 +645,31 @@ export type AppError =
 { code: "would-strand"; 
 /**  What it would break. */
 findings: GuardWarning[] };
+
+/**  One backup, as the Backups window lists it. */
+export type BackupEntry = {
+	/**  Its file's name in the backups folder, which names it to the other commands. */
+	id: string,
+	/**  When it was made, in UTC, such as `2026-10-25T12:36:45Z`. */
+	created: string,
+	/**  Why. */
+	reason: BackupReason,
+	/**  The keyboard it was made from, by the name it reports. */
+	keyboard: string,
+};
+
+/**  Why a backup was made, as the Backups window says (design §9.1). */
+export type BackupReason = 
+/**  Someone exported the keymap. */
+"export" | 
+/**  Keywright met the keyboard for the first time this session. */
+"first-connect" | 
+/**  Before restoring the keyboard's stock settings. */
+"before-restore" | 
+/**  Before importing a backup. */
+"before-import" | 
+/**  Before updating the keyboard's firmware. */
+"before-firmware";
 
 /**  `session://battery`: a half's battery level changed, or went unreported. */
 export type BatteryChanged = BatteryStatus;
@@ -615,6 +710,52 @@ export type BluetoothPermission =
 "denied" | 
 /**  A profile on this Mac doesn't let apps use Bluetooth. */
 "restricted";
+
+/**
+ *  Something in a backup that the keyboard can't take (BAK-3). Layers are the backup's,
+ *  by name. In TypeScript, `{ kind: "missing-action", layer: "lower", … }` and so on.
+ */
+export type CannotApply = 
+/**
+ *  The backup's layers have another number of keys: it's for another kind of
+ *  keyboard, so nothing can be applied.
+ */
+{ kind: "key-count"; 
+/**  The backup's keys. */
+backup: number; 
+/**  The keyboard's. */
+keyboard: number } | 
+/**
+ *  The backup has more layers than the keyboard has room for, so the last ones are
+ *  left out.
+ */
+{ kind: "too-many-layers"; 
+/**  The backup's layers. */
+backup: number; 
+/**  How many the keyboard has room for. */
+keyboard: number } | 
+/**  A key's action isn't in the keyboard's firmware, such as Mouse Move. */
+{ kind: "missing-action"; 
+/**  The layer. */
+layer: string; 
+/**  Where the key is, such as `Left half, row 2, key 1`. */
+place: string; 
+/**  The action, by the name of its behavior. */
+action: string } | 
+/**  A key turns on a layer that's left out. */
+{ kind: "missing-layer"; 
+/**  The layer. */
+layer: string; 
+/**  Where the key is. */
+place: string; 
+/**  The layer it turns on. */
+target: string } | 
+/**  A key's action can't be read. */
+{ kind: "unreadable"; 
+/**  The layer. */
+layer: string; 
+/**  Where the key is. */
+place: string };
 
 /**  A group of actions in the action picker (EDIT-1). */
 export type Category = 
@@ -768,6 +909,33 @@ text: string } |
 layer: number; 
 /**  The layer's name. */
 name: string };
+
+/**
+ *  A backup compared with the keymap (design §9.1, §9.2): how the keymap would change if
+ *  it were imported, and what can't be.
+ */
+export type ImportPreview = {
+	/**  The backup's file name, such as `sofle.keywright`. */
+	file: string,
+	/**  When it was made, in UTC. */
+	created: string,
+	/**  Why. */
+	reason: BackupReason,
+	/**  The keyboard it was made from. */
+	keyboard: string,
+	/**  How the keymap would change, as the review sheet's rows. */
+	rows: ReviewRow[],
+	/**  How many of the rows are keys. */
+	keys: number,
+	/**  What can't be applied, and why. */
+	cannotApply: CannotApply[],
+};
+
+/**
+ *  `import://requested`: the main window should show the Import preview for the pending
+ *  import.
+ */
+export type ImportRequested = null;
 
 /**  An input source's keyboard layout. */
 export type InputSource = {

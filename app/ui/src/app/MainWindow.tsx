@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { ImportSheet } from "../features/backups/ImportSheet.tsx";
 import { DiscardSheet } from "../features/changes/DiscardSheet.tsx";
 import { QuitDialog } from "../features/changes/QuitDialog.tsx";
 import { ReviewSheet } from "../features/changes/ReviewSheet.tsx";
@@ -71,6 +72,7 @@ export function MainWindow() {
       <DiscardSheet />
       <QuitDialog />
       <RestoreSheet />
+      <ImportSheet />
       {inspector === null ? null : (
         <aside
           className={styles.inspector}

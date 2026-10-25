@@ -5,13 +5,13 @@
 //! is trying changes it hasn't saved is backed up as it is now, with those changes.
 
 use std::fmt::Write as _;
-use std::fs::{File, OpenOptions};
-use std::io::{self, Read as _, Write as _};
+use std::fs::OpenOptions;
+use std::io::{self, Write as _};
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
-use keywright_core::backup::{self, Backup, BackupError, Datetime, Reason};
-use keywright_device::backups;
+use keywright_core::backup::{Backup, Datetime, Reason};
+use keywright_device::backups::{self, ReadError};
 use serde::Serialize;
 
 use crate::failure::{Exit, Failure};
@@ -108,28 +108,17 @@ pub(crate) async fn run(source: Source, args: Args, json: bool) -> Result<Exit, 
 /// Fails if the file can't be read, or isn't a backup Keywright can read.
 pub(crate) fn read(path: &Path) -> Result<Backup, Failure> {
     let shown = path.display();
-    let unusable = |error: BackupError| {
-        // A syntax error shows the line, on lines of its own, which a full stop would
-        // follow oddly.
-        let error = error.to_string();
-        let end = if error.contains('\n') { "" } else { "." };
-        Failure::file(format!("Can't use {shown}: {}{end}", error.trim_end()))
-    };
-    let mut bytes = Vec::new();
-    // One byte past the limit is enough to tell that the file is too large.
-    let limit = u64::try_from(backup::MAX_FILE_LEN).map_or(u64::MAX, |len| len.saturating_add(1));
-    File::open(path)
-        .and_then(|file| file.take(limit).read_to_end(&mut bytes))
-        .map_err(|error| match error.kind() {
-            io::ErrorKind::NotFound => Failure::file(format!("{shown} doesn't exist.")),
-            _ => Failure::file(format!("Couldn't read {shown}: {error}.")),
-        })?;
-    if bytes.len() > backup::MAX_FILE_LEN {
-        return Err(unusable(BackupError::TooLarge));
-    }
-    let text = String::from_utf8(bytes)
-        .map_err(|_| unusable(BackupError::Syntax("it isn't UTF-8 text".to_owned())))?;
-    Backup::parse(&text).map_err(unusable)
+    backups::read(path).map_err(|error| match error {
+        ReadError::NotFound => Failure::file(format!("{shown} doesn't exist.")),
+        ReadError::Io(error) => Failure::file(format!("Couldn't read {shown}: {error}.")),
+        ReadError::Backup(error) => {
+            // A syntax error shows the line, on lines of its own, which a full stop would
+            // follow oddly.
+            let error = error.to_string();
+            let end = if error.contains('\n') { "" } else { "." };
+            Failure::file(format!("Can't use {shown}: {}{end}", error.trim_end()))
+        }
+    })
 }
 
 /// Writes the backup's text to `path`, which has to be new unless `force` is set.

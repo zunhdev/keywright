@@ -85,6 +85,8 @@ export interface UiSlice {
   readonly quitting: boolean;
   /** Whether Restore Stock Settings… is asking to be sure (CHG-5). */
   readonly restoring: boolean;
+  /** Whether the Import preview shows (design §9.2). */
+  readonly importing: boolean;
   /** What the toolbar's search looks for across layers (design §4.6), or `""`. */
   readonly search: string;
   /** Whether a text field has keyboard focus, so Edit's items edit its text. */
@@ -183,6 +185,7 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   discarding: false,
   quitting: false,
   restoring: false,
+  importing: false,
   search: "",
   textFocused: false,
   zoom: 1,

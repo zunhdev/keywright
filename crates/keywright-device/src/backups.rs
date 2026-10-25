@@ -9,16 +9,19 @@
 //!
 //! The folder comes from whoever starts the session: on macOS, the app's Application
 //! Support folder (`keywright-platform`). This crate stays free of OS-specific paths.
+//!
+//! [`read`] reads a backup file, from the folder or anywhere else, as the Backups window,
+//! the Import preview and the command line do.
 
 #[cfg(test)]
 mod tests;
 
-use std::fs;
-use std::io;
+use std::fs::{self, File};
+use std::io::{self, Read as _};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use keywright_core::backup::{Backup, Datetime, KeyboardInfo, Reason, Row};
+use keywright_core::backup::{self, Backup, BackupError, Datetime, KeyboardInfo, Reason, Row};
 use keywright_core::keymap::{Keyboard, Keymap};
 
 /// The extension of a backup file.
@@ -152,6 +155,44 @@ impl Backups {
             let _ = fs::remove_file(path);
         }
     }
+}
+
+/// Why a backup file can't be read.
+#[derive(Debug, thiserror::Error)]
+pub enum ReadError {
+    /// There's no such file.
+    #[error("the file doesn't exist")]
+    NotFound,
+    /// The file couldn't be read.
+    #[error("couldn't read the file: {0}")]
+    Io(#[source] io::Error),
+    /// The file isn't a backup Keywright can read.
+    #[error(transparent)]
+    Backup(#[from] BackupError),
+}
+
+/// Reads the backup file at `path`. The file is untrusted, so no more of it is read than a
+/// backup can have ([`backup::MAX_FILE_LEN`]).
+///
+/// # Errors
+///
+/// Fails if the file isn't there or can't be read, or isn't a backup Keywright can read.
+pub fn read(path: &Path) -> Result<Backup, ReadError> {
+    let mut bytes = Vec::new();
+    // One byte past the limit is enough to tell that the file is too large.
+    let limit = u64::try_from(backup::MAX_FILE_LEN).map_or(u64::MAX, |len| len.saturating_add(1));
+    File::open(path)
+        .and_then(|file| file.take(limit).read_to_end(&mut bytes))
+        .map_err(|error| match error.kind() {
+            io::ErrorKind::NotFound => ReadError::NotFound,
+            _ => ReadError::Io(error),
+        })?;
+    if bytes.len() > backup::MAX_FILE_LEN {
+        return Err(BackupError::TooLarge.into());
+    }
+    let text = String::from_utf8(bytes)
+        .map_err(|_| BackupError::Syntax("it isn't UTF-8 text".to_owned()))?;
+    Ok(Backup::parse(&text)?)
 }
 
 /// A backup of `keymap`, which `keyboard` holds, with the support pack for it by ID.
