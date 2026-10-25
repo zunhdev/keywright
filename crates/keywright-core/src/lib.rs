@@ -7,7 +7,8 @@
 //! - edits, undo and redo history, the review diff, and reconciling with the keyboard;
 //! - lockout guards, Mac compatibility rules and Mac action presets;
 //! - the tables that map HID usages to key names, DOM codes and macOS key codes;
-//! - the `.keywright` backup format and keyboard support packs.
+//! - the `.keywright` backup format and keyboard support packs;
+//! - firmware images, and which half each one is for.
 //!
 //! The core is plain, synchronous Rust. It does no I/O, runs no async code and contains
 //! nothing platform-specific, so its logic can be tested exhaustively and ports to any OS
@@ -23,6 +24,7 @@ pub mod backup;
 pub mod behavior;
 pub mod edit;
 pub mod editor;
+pub mod firmware;
 mod generated;
 pub mod guard;
 pub mod hid;

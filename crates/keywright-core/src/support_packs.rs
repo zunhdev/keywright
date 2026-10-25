@@ -113,6 +113,17 @@ pub enum Half {
     Right,
 }
 
+impl Half {
+    /// The other half.
+    #[must_use]
+    pub const fn other(self) -> Self {
+        match self {
+            Self::Left => Self::Right,
+            Self::Right => Self::Left,
+        }
+    }
+}
+
 /// Keys to press: hold each of `hold`, in order, then tap `tap`.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]

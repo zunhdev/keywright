@@ -40,11 +40,13 @@ objc2-service-management = { version = "0.3.2", default-features = false, featur
 # CoreFoundation's types, for the input sources' hand-written Carbon calls (tech spec
 # §11.1): strings, data, the lists and dictionaries TIS takes and gives, the notification
 # center that says when another input source is selected, the preferences that say which
-# kind each keyboard is, and the run loop IOKit's notifications come on (the Globe key).
+# kind each keyboard is, and the run loop IOKit's notifications come on (the Globe key);
+# and the run loop, dates and URLs DiskArbitration's notifications of UF2 drives use.
 objc2-core-foundation = { version = "0.3.2", default-features = false, features = [
   "std",
   "CFArray",
   "CFData",
+  "CFDate",
   "CFDictionary",
   "CFNotificationCenter",
   "CFNumber",
@@ -52,6 +54,7 @@ objc2-core-foundation = { version = "0.3.2", default-features = false, features 
   "CFPropertyList",
   "CFRunLoop",
   "CFString",
+  "CFURL",
 ] }
 objc2-foundation = { version = "0.3.2", default-features = false, features = [
   "std",

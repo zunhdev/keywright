@@ -1,5 +1,6 @@
-//! IOKit's registry notifications, declared by hand: when a keyboard's HID service appears.
-//! Watching the registry needs no permission, unlike opening the keyboard (ADR-0011).
+//! IOKit's registry, declared by hand: its notifications, for when a keyboard's HID service
+//! appears, and its properties, for a UF2 drive's USB serial number. Reading the registry
+//! needs no permission, unlike opening the keyboard (ADR-0011).
 
 #![allow(unsafe_code)]
 
@@ -8,7 +9,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::ptr::NonNull;
 
 use objc2_core_foundation::{
-    CFMutableDictionary, CFNumber, CFRetained, CFRunLoop, CFRunLoopSource, CFString,
+    CFMutableDictionary, CFNumber, CFRetained, CFRunLoop, CFRunLoopSource, CFString, CFType,
     kCFRunLoopDefaultMode,
 };
 
@@ -16,7 +17,7 @@ use crate::globe::GlobeError;
 use crate::input_source::Keyboard;
 
 /// An IOKit object, such as a service, or an iterator over them (`io_object_t`).
-type IoObject = u32;
+pub type IoObject = u32;
 
 /// IOKit's notification port (`IONotificationPortRef`).
 #[repr(C)]
@@ -33,6 +34,13 @@ const FIRST_MATCH: &CStr = c"IOServiceFirstMatch";
 /// The class of the services that turn a HID device's reports into events, where macOS
 /// keeps a keyboard's `UserKeyMapping`.
 const EVENT_SERVICE: &CStr = c"IOHIDEventService";
+
+/// The registry's plane of services and the providers they sit on (`kIOServicePlane`).
+const SERVICE_PLANE: &CStr = c"IOService";
+
+/// `kIORegistryIterateRecursively | kIORegistryIterateParents`: search up through every
+/// provider, such as from a disk's media to its USB device.
+const SEARCH_PROVIDERS: u32 = 1 | 2;
 
 #[link(name = "IOKit", kind = "framework")]
 unsafe extern "C" {
@@ -51,6 +59,13 @@ unsafe extern "C" {
     ) -> i32;
     fn IOIteratorNext(iterator: IoObject) -> IoObject;
     fn IOObjectRelease(object: IoObject) -> i32;
+    fn IORegistryEntrySearchCFProperty(
+        entry: IoObject,
+        plane: *const std::ffi::c_char,
+        key: &CFString,
+        allocator: *const c_void,
+        options: u32,
+    ) -> Option<NonNull<CFType>>;
 }
 
 /// What [`watch`] calls.
@@ -144,4 +159,30 @@ fn drain(iterator: IoObject) -> usize {
         unsafe { IOObjectRelease(service) };
         count += 1;
     }
+}
+
+/// The string property `key` of `service` or of the nearest provider it sits on that has
+/// one, such as `USB Serial Number` from a disk's media. Releases `service`, which the
+/// caller owns.
+pub fn provider_string(service: IoObject, key: &str) -> Option<String> {
+    if service == 0 {
+        return None;
+    }
+    // SAFETY: the service is live, since the caller owns it; the plane is a C string, the
+    // key a live string, and a null allocator is the default one. It returns a property we
+    // own, or null.
+    let value = unsafe {
+        IORegistryEntrySearchCFProperty(
+            service,
+            SERVICE_PLANE.as_ptr(),
+            &CFString::from_str(key),
+            std::ptr::null(),
+            SEARCH_PROVIDERS,
+        )
+    }
+    // SAFETY: as just said, we own it (the "Copy" rule).
+    .map(|value| unsafe { CFRetained::from_raw(value) });
+    // SAFETY: the caller handed its reference over, and nothing uses the service after this.
+    unsafe { IOObjectRelease(service) };
+    Some(value?.downcast_ref::<CFString>()?.to_string())
 }
