@@ -2,8 +2,8 @@
 
 |             |                                                           |
 | ----------- | --------------------------------------------------------- |
-| **Status**  | Draft v0.5 — for review                                   |
-| **Date**    | 2026-10-24                                                |
+| **Status**  | Draft v0.6 — for review                                   |
+| **Date**    | 2026-10-25                                                |
 | **Owner**   | zunh                                                      |
 | **Scope**   | v1.0: Keebart Sofle Choc Pro BT, macOS on Apple Silicon   |
 | **Related** | [Design spec](design-spec.md) · [Tech spec](tech-spec.md) |
@@ -83,7 +83,7 @@ See §10 and §12.
 - **Host-side remapping** like Karabiner-Elements: per-app layers or OS-level key rewriting. Keywright changes what the keyboard itself sends.
 - **Official support for other keyboards.** Other Studio-enabled ZMK boards may connect in "untested" mode (DEV-3).
 - **QMK/VIA/Vial keyboards.**
-- **Windows and Linux.** The architecture must not prevent them (NFR-7).
+- **Windows and Linux.** The architecture must not prevent them (NFR-7). They come before Keywright is shown to anyone else, in the public launch (§12.2).
 - **Saved profiles** (several named keymaps you can switch between). _Planned for v1.x._
 - **Accounts, cloud sync and telemetry.**
 - **Intel Macs and Universal binaries.** v1 runs on Apple Silicon only.
@@ -404,15 +404,15 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 
 ## 11. Success metrics
 
-| Metric                                                                                                 | Target                                                                                 |
-| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| Newcomer task: remap a key to a Mac shortcut and save it, no docs, starting from a plugged-in keyboard | ≥ 4 of 5 first-time testers succeed in < 2 minutes                                     |
-| ZMK syntax visible in the default UI                                                                   | Zero (UI copy audit before release)                                                    |
-| Destructive operations preceded by an automatic backup                                                 | 100% (enforced by automated tests)                                                     |
-| Wireless parity                                                                                        | Every v1 editing feature passes the release test checklist over both USB and Bluetooth |
-| Mac action presets verified                                                                            | 100% on every supported macOS version, every release                                   |
-| Engineering health                                                                                     | CI green on main; zero lint warnings; core test coverage ≥ 80% lines                   |
-| Support signal (post-launch)                                                                           | Most GitHub issues are feature requests, not "how do I…" confusion                     |
+| Metric                                                                                                 | Target                                                                                    |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Newcomer task: remap a key to a Mac shortcut and save it, no docs, starting from a plugged-in keyboard | ≥ 4 of 5 first-time testers succeed in < 2 minutes, measured in the public launch (§12.2) |
+| ZMK syntax visible in the default UI                                                                   | Zero (UI copy audit before release)                                                       |
+| Destructive operations preceded by an automatic backup                                                 | 100% (enforced by automated tests)                                                        |
+| Wireless parity                                                                                        | Every v1 editing feature passes the release test checklist over both USB and Bluetooth    |
+| Mac action presets verified                                                                            | 100% on every supported macOS version, every release                                      |
+| Engineering health                                                                                     | CI green on main; zero lint warnings; core test coverage ≥ 80% lines                      |
+| Support signal (post-launch)                                                                           | Most GitHub issues are feature requests, not "how do I…" confusion                        |
 
 ---
 
@@ -420,20 +420,21 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 
 ### 12.1 Milestones to v1.0
 
-| Milestone          | Contents                                                                                                         | Proves                                    |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| **M0 Specs**       | Product spec (this) → design spec → tech spec                                                                    | Shared understanding                      |
-| **M1 Foundations** | Rust core, simulated keyboard, USB transport, CLI `status` / `backup` / `restore` / `diff`                       | Protocol and architecture work end to end |
-| **M2 Editor**      | GUI keyboard view, editing, action catalogue, recorder, Mac vocabulary, unlock flow, undo/review/save, layers    | Newcomer task (§11) over USB              |
-| **M3 Wireless**    | Bluetooth transport, seamless USB ↔ Bluetooth switching, menu bar, battery                                       | Wireless parity                           |
-| **M4 Mac polish**  | Input-source labels, compatibility check, complete presets library, firmware assistant, accessibility pass, docs | Release readiness                         |
-| **v1.0**           | Tagged GitHub Release: unsigned Apple Silicon app + CLI with checksums. Build from source documented.            | Shipping                                  |
+| Milestone          | Contents                                                                                                                                     | Proves                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| **M0 Specs**       | Product spec (this) → design spec → tech spec                                                                                                | Shared understanding                      |
+| **M1 Foundations** | Rust core, simulated keyboard, USB transport, CLI `status` / `backup` / `restore` / `diff`                                                   | Protocol and architecture work end to end |
+| **M2 Editor**      | GUI keyboard view, editing, action catalogue, recorder, Mac vocabulary, unlock flow, undo/review/save, layers                                | Newcomer task (§11) over USB              |
+| **M3 Wireless**    | Bluetooth transport, seamless USB ↔ Bluetooth switching, menu bar, battery                                                                   | Wireless parity                           |
+| **M4 Mac polish**  | Input-source labels, compatibility check, complete presets library, firmware assistant, accessibility pass, docs                             | Release readiness                         |
+| **v1.0**           | Tagged GitHub Release for the owner's own use, not announced: unsigned Apple Silicon app + CLI with checksums. Build from source documented. | Shipping                                  |
 
 ### 12.2 After v1.0
 
+- **Public launch**. Nobody else sees Keywright before it's ready for them. First, the owner uses v1.0 day to day, and the bugs it finds are fixed in point releases. Then Keywright gets Linux and Windows support (NFR-7), still for the one keyboard. Only then come the newcomer usability test with 5 first-time users (§11) and outreach, Keebart first (Q2).
 - **v1.x**: Signed and notarized builds through a Homebrew cask · Saved profiles (named keymaps, one-click switch) · printable layer cheat sheet · select a key by pressing it on the keyboard · items from §8 marked Could.
 - **v2: Advanced (firmware path)**. Combos, macros, tap-dance, hold-tap timing, knobs, RGB, sleep, extra layers. Keywright generates the firmware configuration, builds it (local toolchain or the user's GitHub Actions), and flashes it with the firmware assistant. This possibly includes a published "app-optimised" firmware.
-- **v3: Reach**. More keyboards, Keebart's Corne Choc Pro BT and Piantor Pro BT first (same firmware repo, so likely cheap), then others via community support packs. Linux and Windows.
+- **v3: Reach**. More keyboards, Keebart's Corne Choc Pro BT and Piantor Pro BT first (same firmware repo, so likely cheap), then others via community support packs. Linux and Windows come earlier, in the public launch.
 
 ---
 
@@ -458,13 +459,13 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 
 ### 13.3 Open questions
 
-| ID  | Question                                                                                                                                                                                           | Needed by   |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| Q1  | Who holds the Apple Developer ID ($99/yr) for signed Homebrew builds?                                                                                                                              | Before v1.x |
-| Q2  | Reach out to Keebart (endorsement, docs links, firmware release location, test hardware)?                                                                                                          | Before v1.0 |
-| Q3  | Does Keebart publish firmware releases at a stable URL (needed for FW-5)? _Not yet_: only GitHub Actions artifacts, which need a GitHub login and expire after 90 days (spike S6). Ask through Q2. | Before M4   |
-| Q4  | ~~Is the menu bar item on by default?~~ _Resolved_: it is offered in the first run, pre-checked (design spec §8).                                                                                  | —           |
-| Q5  | ~~Backup file format and extension?~~ _Resolved_: see tech spec §9.                                                                                                                                | —           |
+| ID  | Question                                                                                                                                                                                           | Needed by                                     |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| Q1  | Who holds the Apple Developer ID ($99/yr) for signed Homebrew builds?                                                                                                                              | Before v1.x                                   |
+| Q2  | Reach out to Keebart (endorsement, docs links, firmware release location, test hardware)?                                                                                                          | In the public launch, after the newcomer test |
+| Q3  | Does Keebart publish firmware releases at a stable URL (needed for FW-5)? _Not yet_: only GitHub Actions artifacts, which need a GitHub login and expire after 90 days (spike S6). Ask through Q2. | Before FW-5 (v1.x)                            |
+| Q4  | ~~Is the menu bar item on by default?~~ _Resolved_: it is offered in the first run, pre-checked (design spec §8).                                                                                  | —                                             |
+| Q5  | ~~Backup file format and extension?~~ _Resolved_: see tech spec §9.                                                                                                                                | —                                             |
 
 ---
 
@@ -490,3 +491,4 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 | 0.3     | 2026-10-21 | Aligned with the design and tech specs. The UI is Keywright's own design language rather than an imitation of Apple's, and the stack is Tauri + React + Bun. CON-3 and SAF-1 now reflect the firmware's single editing connection and its auto-lock. MAC-8 becomes a Globe helper. Layer names are limited to 19 characters. The battery and Globe limitations are documented. R3, R4 and R6 are resolved, and Q4 and Q5 answered.                                         |
 | 0.4     | 2026-10-23 | LAY-1: layer names up to 18 bytes rather than 19 characters; ZMK v0.3 can't receive a few letters (spike S1, KEY-95).                                                                                                                                                                                                                                                                                                                                                      |
 | 0.5     | 2026-10-24 | Spike outcomes (KEY-19). SAF-5: the keyboard forgets unsaved changes when it sleeps, too (S5). MAC-4: presets are offered per verified macOS version, and v1.0 needs them all (S7). MAC-8: Keywright maps a chosen key to Globe itself, since Modifier Keys doesn't work for the Sofle (S7). FW-1: success is the half coming back (S6). BAR-5 (S9). Battery on USB (S3). R2 resolved (S2); R5 partly resolved by self-signed releases (S8, S9); Q3 answered for now (S6). |
+| 0.6     | 2026-10-25 | The public launch (§3.2, §11, §12, Q2, Q3): v1.0 is the owner's own release, not announced. Nobody else sees Keywright before the owner's real-world trial and Linux and Windows support; the newcomer test and outreach to Keebart come after them. v3 keeps more keyboards.                                                                                                                                                                                              |
