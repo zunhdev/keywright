@@ -3,8 +3,8 @@
 //! The shell is thin. It opens the main window, which shows the UI, builds the macOS menu
 //! bar ([`menu`]) and the menu bar item ([`tray`]), and connects the UI to the device
 //! session and the menus through typed commands and events ([`ipc`]). It shows the
-//! window's "edited" dot while changes are being tried. Editing, the keyboard and the files
-//! are other crates' work.
+//! window's "edited" dot while changes are being tried, and follows the input source, which
+//! key labels show (MAC-5). Editing, the keyboard and the files are other crates' work.
 //!
 //! **Menu-bar-only mode** (BAR-4): while the menu bar item is on ([`settings`]), closing
 //! the window hides it, and Keywright leaves the Dock, staying in the menu bar. Opening it
@@ -115,7 +115,9 @@ fn main() -> tauri::Result<()> {
         })
         .setup(move |app| {
             ipc.mount_events(app);
-            start_session(app)
+            start_session(app)?;
+            ipc::follow_input_source(app.handle());
+            Ok(())
         })
         .build(tauri::generate_context!())?
         .run(|app, event| match event {
@@ -186,6 +188,7 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     // Nothing listens until the UI has loaded; it asks for the state and keymap then.
     tauri::async_runtime::spawn(ipc::follow(
         state.session.clone(),
+        state.follow_labels(),
         move |update| match update {
             Update::Status(status) => {
                 handle.state::<QuitGuard>().set_edited(is_edited(&status));

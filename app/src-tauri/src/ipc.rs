@@ -9,6 +9,8 @@
 //!   no logic of its own. Those that change keys are in [`edit`].
 //! - **Events** carry snapshots of what the UI shows, such as `session://state`,
 //!   `session://keymap` for the canvas, and `session://battery`.
+//! - **Keys** are named as the input source the person types in names them
+//!   ([`input_source`]), in every payload that names keys.
 //! - **Errors** are codes with data, never English text ([`AppError`]): the UI words them.
 //!
 //! A window may call a command only if its capability allows it: build.rs lists the
@@ -26,6 +28,7 @@ mod edit;
 mod error;
 mod general;
 mod guard;
+mod input_source;
 mod keymap;
 mod layers;
 mod menu;
@@ -35,14 +38,17 @@ mod session;
 mod stock;
 mod window;
 
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use keywright_core::keymap::Binding;
+use keywright_core::keys::source::Labels;
 use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
+use tokio::sync::watch;
 
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
 pub use self::general::SettingsState;
+pub use self::input_source::{InputSourceChanged, follow as follow_input_source};
 pub use self::keymap::KeymapChanged;
 pub use self::menu::MenuItemChosen;
 pub use self::quit::{QuitGuard, QuitRequested};
@@ -57,15 +63,30 @@ pub struct AppState {
     pub session: Session,
     /// What the key last copied does, to paste (⌘C, ⌘V).
     clipboard: Mutex<Option<Binding>>,
+    /// What keys are called in the input source the person types in (MAC-5), which
+    /// [`input_source`] keeps up to date.
+    labels: watch::Sender<Arc<Labels>>,
 }
 
 impl AppState {
-    /// The commands' state, around a session, with nothing copied.
-    pub const fn new(session: Session) -> Self {
+    /// The commands' state, around a session, with nothing copied, and keys called as on
+    /// a US keyboard until the input source is read.
+    pub fn new(session: Session) -> Self {
         Self {
             session,
             clipboard: Mutex::new(None),
+            labels: watch::Sender::new(Arc::new(Labels::us())),
         }
+    }
+
+    /// What keys are called now.
+    fn labels(&self) -> Arc<Labels> {
+        Arc::clone(&self.labels.borrow())
+    }
+
+    /// What keys are called, now and each time that changes, for [`follow`].
+    pub fn follow_labels(&self) -> watch::Receiver<Arc<Labels>> {
+        self.labels.subscribe()
     }
 }
 
@@ -125,7 +146,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             KeymapChanged,
             MenuItemChosen,
             QuitRequested,
-            TrafficLightsMoved
+            TrafficLightsMoved,
+            InputSourceChanged
         ])
 }
 
@@ -134,6 +156,7 @@ mod tests {
     use std::fs;
     use std::path::{Path, PathBuf};
 
+    use keywright_core::keys::source::Labels;
     use keywright_device::{Connection, Peer, Session, State};
     use keywright_sim::Simulator;
     use specta_typescript::Typescript;
@@ -192,7 +215,7 @@ mod tests {
             .wait_for(|state| *state == State::Ready)
             .await
             .unwrap();
-        let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         let generated = format!(
             "// The simulated Sofle's stock keymap, as `session_keymap` gives it, the key\n\
              // tables, as `key_catalog` and `dom_codes` do, the Mac actions on macOS 27, as\n\
@@ -211,11 +234,12 @@ mod tests {
              \n\
              export const sofleGuide: KeyboardGuide = {};\n",
             serde_json::to_string_pretty(&keymap).unwrap(),
-            serde_json::to_string_pretty(&super::action::key_catalog()).unwrap(),
+            serde_json::to_string_pretty(&super::action::catalog(&Labels::us())).unwrap(),
             serde_json::to_string_pretty(&super::action::dom_codes()).unwrap(),
-            serde_json::to_string_pretty(&super::action::mac_choices(Some(
-                keywright_core::mac::presets::MacOsVersion(27)
-            )))
+            serde_json::to_string_pretty(&super::action::mac_choices(
+                Some(keywright_core::mac::presets::MacOsVersion(27)),
+                &Labels::us()
+            ))
             .unwrap(),
             serde_json::to_string_pretty(&super::connection::keyboard_guide(Some(
                 "keebart-sofle-choc-pro-bt".to_owned()

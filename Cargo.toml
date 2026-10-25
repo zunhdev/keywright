@@ -37,6 +37,21 @@ objc2-service-management = { version = "0.3.2", default-features = false, featur
   "objc2-foundation",
   "SMAppService",
 ] }
+# CoreFoundation's types, for the input sources' hand-written Carbon calls (tech spec
+# §11.1): strings, data, the lists and dictionaries TIS takes and gives, the notification
+# center that says when another input source is selected, and the preferences that say
+# which kind each keyboard is.
+objc2-core-foundation = { version = "0.3.2", default-features = false, features = [
+  "std",
+  "CFArray",
+  "CFData",
+  "CFDictionary",
+  "CFNotificationCenter",
+  "CFNumber",
+  "CFPreferences",
+  "CFPropertyList",
+  "CFString",
+] }
 objc2-foundation = { version = "0.3.2", default-features = false, features = [
   "std",
   "NSGeometry",
@@ -51,6 +66,8 @@ objc2-app-kit = { version = "0.3.2", default-features = false, features = [
   "NSView",
   "NSWindow",
 ] }
+# A test harness like Rust's own, for tests that must run on the main thread.
+libtest-mimic = "0.8.2"
 # USB devices' interfaces, to tell the half of a split keyboard that talks to the computer
 # from the other (spike S4): `serialport` sees only the serial interface.
 nusb = "0.2.8"

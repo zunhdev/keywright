@@ -14,6 +14,7 @@ use keywright_core::behavior::BehaviorTable;
 use keywright_core::editor::{Change, Editor};
 use keywright_core::keycap;
 use keywright_core::keymap::{Binding, Keymap, LayerId};
+use keywright_core::keys::source::Labels;
 use serde::Serialize;
 
 use crate::failure::Failure;
@@ -283,8 +284,9 @@ fn difference(
             layer: named(keyboard, layer),
             position,
             place: words::position(rows, position),
-            keyboard: keycap::label(keyboard, behaviors, before),
-            file: keycap::label(file, behaviors, after),
+            // The command line names keys as a US keyboard does: it has no input source.
+            keyboard: keycap::label(keyboard, behaviors, before, &Labels::us()),
+            file: keycap::label(file, behaviors, after, &Labels::us()),
             keyboard_zmk: action(before, behaviors),
             file_zmk: action(after, behaviors),
         },

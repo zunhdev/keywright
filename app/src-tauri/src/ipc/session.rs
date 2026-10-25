@@ -2,15 +2,20 @@
 //!
 //! The UI asks once, with [`session_state`], then follows [`SessionStateChanged`]
 //! (`session://state`), which [`follow`] sends each time the state changes. [`follow`]
-//! sends the keymap too, when it changes ([`super::keymap`]).
+//! sends the keymap too, when it changes ([`super::keymap`]), as when keys are called
+//! something else in another input source.
+
+use std::sync::Arc;
 
 use keywright_core::edit::Edit;
 use keywright_core::editor::Editor;
 use keywright_core::keycap;
+use keywright_core::keys::source::Labels;
 use keywright_device::{Incompatibility, Peer, Session, SessionEvent, Snapshot, State};
 use serde::Serialize;
 use specta::Type;
 use tokio::sync::broadcast::error::RecvError;
+use tokio::sync::watch;
 
 use super::AppState;
 use super::error::AppError;
@@ -152,7 +157,7 @@ pub struct SessionStateChanged(pub SessionStatus);
 #[specta::specta]
 pub async fn session_state(app: tauri::State<'_, AppState>) -> Result<SessionStatus, AppError> {
     let snapshot = app.session.snapshot().await?;
-    Ok(Tracker::default().status(&snapshot.state, Some(&snapshot)))
+    Ok(Tracker::default().status(&snapshot.state, Some(&snapshot), &app.labels()))
 }
 
 /// What [`follow`] sends the UI.
@@ -166,11 +171,12 @@ pub enum Update {
 }
 
 /// Calls `send` with the session's status each time its state or its changes change, and
-/// with the keymap each time it changes, until the session stops. It listens from the
-/// moment it's called, so the returned future can be spawned later without missing a
-/// state.
+/// with the keymap each time it changes, until the session stops: keys are named as
+/// `labels` says, and again each time it changes. It listens from the moment it's called,
+/// so the returned future can be spawned later without missing a state.
 pub fn follow(
     session: Session,
+    mut labels: watch::Receiver<Arc<Labels>>,
     mut send: impl FnMut(Update) + Send + 'static,
 ) -> impl Future<Output = ()> + Send + 'static {
     let mut events = session.subscribe();
@@ -178,15 +184,20 @@ pub fn follow(
         let mut tracker = Tracker::default();
         let mut keymap = None;
         loop {
-            let state = match events.recv().await {
-                Ok(SessionEvent::State(state)) => state,
-                // The changes being tried changed, or some events were missed, of which
-                // only the latest state matters.
-                Ok(SessionEvent::Editor | SessionEvent::ChangedElsewhere)
-                | Err(RecvError::Lagged(_)) => session.state(),
-                Ok(_) => continue,
-                Err(RecvError::Closed) => return,
+            let state = tokio::select! {
+                event = events.recv() => match event {
+                    Ok(SessionEvent::State(state)) => state,
+                    // The changes being tried changed, or some events were missed, of
+                    // which only the latest state matters.
+                    Ok(SessionEvent::Editor | SessionEvent::ChangedElsewhere)
+                    | Err(RecvError::Lagged(_)) => session.state(),
+                    Ok(_) => continue,
+                    Err(RecvError::Closed) => return,
+                },
+                // Keys are called something else: what they show, and what undo names.
+                Ok(()) = labels.changed() => session.state(),
             };
+            let labels = Arc::clone(&labels.borrow_and_update());
             // A snapshot waits until the session is free, so it isn't asked for while the
             // session probes or loads: that would hold the status back until it's done.
             let snapshot = if matches!(state, State::Probing | State::Loading) {
@@ -197,9 +208,13 @@ pub fn follow(
                     Err(_) => return,
                 }
             };
-            send(Update::Status(tracker.status(&state, snapshot.as_ref())));
+            send(Update::Status(tracker.status(
+                &state,
+                snapshot.as_ref(),
+                &labels,
+            )));
             if let Some(snapshot) = &snapshot {
-                let now = Keymap::of(snapshot);
+                let now = Keymap::of(snapshot, &labels);
                 if now != keymap {
                     keymap.clone_from(&now);
                     send(Update::Keymap(now));
@@ -224,7 +239,12 @@ struct Tracker {
 }
 
 impl Tracker {
-    fn status(&mut self, state: &State, snapshot: Option<&Snapshot>) -> SessionStatus {
+    fn status(
+        &mut self,
+        state: &State,
+        snapshot: Option<&Snapshot>,
+        labels: &Labels,
+    ) -> SessionStatus {
         if let Some(snapshot) = snapshot {
             self.transport = snapshot.peer.as_ref().map(Transport::from);
             self.pack.clone_from(&snapshot.pack);
@@ -240,6 +260,7 @@ impl Tracker {
                     editor.current(),
                     &keyboard.behaviors,
                     group?,
+                    labels,
                 ))
             };
             self.undo = name(editor.and_then(Editor::next_undo));
@@ -273,18 +294,23 @@ impl Tracker {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use keywright_core::edit::Edit;
+    use keywright_core::keys::source::Labels;
     use keywright_device::{Connection, Incompatibility, Peer, Session, State};
     use keywright_sim::Simulator;
     use serde_json::json;
-    use tokio::sync::mpsc;
+    use tokio::sync::{mpsc, watch};
 
     use super::{SessionState, SessionStatus, Transport, Update, follow};
 
-    /// Follows the session, and hears its statuses only.
+    /// Follows the session, with keys named as on a US keyboard, and hears its statuses
+    /// only.
     fn statuses(session: &Session) -> mpsc::UnboundedReceiver<SessionStatus> {
         let (sender, statuses) = mpsc::unbounded_channel();
-        tokio::spawn(follow(session.clone(), move |update| {
+        let (_, labels) = watch::channel(Arc::new(Labels::us()));
+        tokio::spawn(follow(session.clone(), labels, move |update| {
             if let Update::Status(status) = update {
                 sender.send(status).unwrap();
             }

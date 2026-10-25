@@ -12,7 +12,8 @@
 //! Sofle, Raise's see-through keys show the base layer's, not Lower's, and Adjust's show
 //! Raise's, then Lower's.
 //!
-//! Keys are labelled as a US keyboard labels them ([`us`]).
+//! Keys are labelled as the input source the person types in labels them, from
+//! [`Labels`], and as a US keyboard labels them where it doesn't say ([`Labels::us`]).
 
 #[cfg(test)]
 mod tests;
@@ -25,7 +26,7 @@ use crate::edit::Edit;
 use crate::guard::{Activation, BASE, ConditionalLayer, layer_keys};
 use crate::hid::{HidUsage, Mods, Shortcut, UsagePage};
 use crate::keymap::{Binding, Keymap, LayerId};
-use crate::keys::us;
+use crate::keys::source::Labels;
 
 /// What a key shows and does on one layer.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -100,17 +101,19 @@ pub enum LayerMode {
 }
 
 /// What every key shows and does: layer by layer, in the keymap's order, then by key
-/// position. `conditional_layers` are the layers the firmware turns on by itself, from the
-/// keyboard's support pack.
+/// position, with keys as `labels` name them. `conditional_layers` are the layers the
+/// firmware turns on by itself, from the keyboard's support pack.
 #[must_use]
 pub fn describe(
     keymap: &Keymap,
     behaviors: &BehaviorTable,
     conditional_layers: &[ConditionalLayer],
+    labels: &Labels,
 ) -> Vec<Vec<Key>> {
     let words = Words {
         keymap,
         behaviors,
+        labels,
         shortcut: shortcut_name,
     };
     let spoken = Words {
@@ -156,10 +159,16 @@ pub fn describe(
 /// What a key that does `action` shows and says, such as an action the inspector offers
 /// (design §5.4). "Same as layer below" isn't resolved: it says so, and shows nothing.
 #[must_use]
-pub fn describe_action(keymap: &Keymap, behaviors: &BehaviorTable, action: Action) -> Key {
+pub fn describe_action(
+    keymap: &Keymap,
+    behaviors: &BehaviorTable,
+    action: Action,
+    labels: &Labels,
+) -> Key {
     let words = Words {
         keymap,
         behaviors,
+        labels,
         shortcut: shortcut_name,
     };
     let spoken = Words {
@@ -179,11 +188,16 @@ pub fn describe_action(keymap: &Keymap, behaviors: &BehaviorTable, action: Actio
 /// The review sheet (design §6) and the CLI's `diff` and `restore` (CLI-5) write keys
 /// this way.
 #[must_use]
-pub fn label(keymap: &Keymap, behaviors: &BehaviorTable, binding: Binding) -> String {
+pub fn label(
+    keymap: &Keymap,
+    behaviors: &BehaviorTable,
+    binding: Binding,
+    labels: &Labels,
+) -> String {
     match Action::from_binding(binding, behaviors) {
         Action::Transparent => "Same as layer below".to_owned(),
         Action::None => "Does nothing".to_owned(),
-        action => match describe_action(keymap, behaviors, action).keycap {
+        action => match describe_action(keymap, behaviors, action, labels).keycap {
             Keycap::Label(text) | Keycap::Sticky(text) => text,
             Keycap::TapHold { tap, hold } => match hold {
                 Hold::Key(hold) => format!("{tap} / {hold}"),
@@ -214,10 +228,12 @@ pub fn reach(
     keymap: &Keymap,
     behaviors: &BehaviorTable,
     conditional_layers: &[ConditionalLayer],
+    labels: &Labels,
 ) -> Vec<Vec<Reach>> {
     let words = Words {
         keymap,
         behaviors,
+        labels,
         shortcut: shortcut_name,
     };
     let keys = layer_keys(keymap, behaviors);
@@ -299,10 +315,16 @@ fn key_label(keycap: Keycap) -> String {
 /// (design §6): "Assign ⌘C to B", "Swap Q and W", "Rename lower to Numbers", "Change 3
 /// Keys". Keys are named by what their keycaps show.
 #[must_use]
-pub fn describe_edits(keymap: &Keymap, behaviors: &BehaviorTable, edits: &[Edit]) -> String {
+pub fn describe_edits(
+    keymap: &Keymap,
+    behaviors: &BehaviorTable,
+    edits: &[Edit],
+    labels: &Labels,
+) -> String {
     let words = Words {
         keymap,
         behaviors,
+        labels,
         shortcut: shortcut_name,
     };
     let label = |binding: Binding| match Action::from_binding(binding, behaviors) {
@@ -415,12 +437,13 @@ fn lowercase_first(sentence: &str) -> String {
 }
 
 /// A keymap's words for its actions, which name its layers, and name keys and shortcuts
-/// with `shortcut`: for reading, or for VoiceOver.
+/// as `labels` do, with `shortcut`: for reading, or for VoiceOver.
 #[derive(Clone, Copy)]
 struct Words<'a> {
     keymap: &'a Keymap,
     behaviors: &'a BehaviorTable,
-    shortcut: fn(Shortcut) -> String,
+    labels: &'a Labels,
+    shortcut: fn(Shortcut, &Labels) -> String,
 }
 
 impl Words<'_> {
@@ -430,14 +453,15 @@ impl Words<'_> {
             name: layer_name(self.keymap, layer),
             mode,
         };
+        let label = |shortcut| shortcut_label(shortcut, self.labels);
         match action {
-            Action::KeyPress(shortcut) => Keycap::Label(shortcut_label(shortcut)),
+            Action::KeyPress(shortcut) => Keycap::Label(label(shortcut)),
             Action::ModTap { hold, tap } => Keycap::TapHold {
-                tap: shortcut_label(tap),
-                hold: Hold::Key(shortcut_label(hold)),
+                tap: label(tap),
+                hold: Hold::Key(label(hold)),
             },
             Action::LayerTap { layer, tap } => Keycap::TapHold {
-                tap: shortcut_label(tap),
+                tap: label(tap),
                 hold: Hold::Layer {
                     layer,
                     name: layer_name(self.keymap, layer),
@@ -447,7 +471,7 @@ impl Words<'_> {
             Action::ToLayer(id) => layer(id, LayerMode::Switch),
             Action::Toggle(id) => layer(id, LayerMode::Toggle),
             Action::StickyLayer(id) => layer(id, LayerMode::NextKey),
-            Action::StickyKey(shortcut) => Keycap::Sticky(shortcut_label(shortcut)),
+            Action::StickyKey(shortcut) => Keycap::Sticky(label(shortcut)),
             // `describe` shows what the key inherits instead.
             Action::Transparent | Action::None => Keycap::Nothing,
             Action::Bluetooth(command) => Keycap::Label(bluetooth_cap(command)),
@@ -469,7 +493,7 @@ impl Words<'_> {
 
     fn sentence(&self, action: Action) -> String {
         let layer = |id| layer_phrase(self.keymap, id);
-        let name = self.shortcut;
+        let name = |shortcut| (self.shortcut)(shortcut, self.labels);
         match action {
             Action::KeyPress(shortcut) if modifier_bits(shortcut.usage).is_some() => {
                 format!("Acts as {}.", name(shortcut))
@@ -589,36 +613,48 @@ fn modifier_bits(usage: HidUsage) -> Option<u8> {
 
 /// Whether Shift is the only modifier, so a key can show what it types with it.
 const fn only_shift(mods: Mods) -> bool {
-    let shift = Mods::LEFT_SHIFT.bits() | Mods::RIGHT_SHIFT.bits();
-    !mods.is_empty() && mods.bits() & !shift == 0
+    !mods.is_empty() && mods.bits() & !SHIFT == 0
 }
 
-/// What a key is called, or its usage for a key without a name, such as `Key 07:00A5`.
-fn names(usage: HidUsage) -> (String, String) {
-    us::label(usage).map_or_else(
-        || {
-            let unknown = format!("Key {:02X}:{:04X}", usage.page.number(), usage.id);
-            (unknown.clone(), unknown)
-        },
-        |label| (label.cap.to_owned(), label.name.to_owned()),
-    )
+/// Whether a modifier other than Shift is held, so a key is part of a shortcut, which
+/// macOS menus name in the input source they take shortcuts from: ⌘C under Russian.
+const fn in_shortcut(mods: Mods) -> bool {
+    mods.bits() & !SHIFT != 0
+}
+
+/// Both Shift keys' bits.
+const SHIFT: u8 = Mods::LEFT_SHIFT.bits() | Mods::RIGHT_SHIFT.bits();
+
+/// What a key is called with `shortcut`'s modifiers, as its keycap shows it and as text
+/// calls it, or its usage for a key without a name, such as `Key 07:00A5`.
+fn names(shortcut: Shortcut, labels: &Labels) -> (String, String) {
+    let usage = shortcut.usage;
+    let named = if in_shortcut(shortcut.mods) {
+        labels.shortcut(usage)
+    } else {
+        labels.cap(usage)
+    };
+    named.unwrap_or_else(|| {
+        let unknown = format!("Key {:02X}:{:04X}", usage.page.number(), usage.id);
+        (unknown.clone(), unknown)
+    })
 }
 
 /// A key or shortcut as a keycap shows it: the modifiers in Apple's order, then the key,
 /// such as `⇧⌘4`. With Shift alone, a key shows what it types, such as `!`, and a modifier
 /// key shows only modifiers, such as `⌃⇧`.
 #[must_use]
-pub fn shortcut_label(shortcut: Shortcut) -> String {
+pub fn shortcut_label(shortcut: Shortcut, labels: &Labels) -> String {
     let mods = shortcut.mods;
     if let Some(bits) = modifier_bits(shortcut.usage) {
         return symbols(mods.bits() | bits);
     }
     if only_shift(mods)
-        && let Some(shifted) = us::label(shortcut.usage).and_then(|label| label.shifted)
+        && let Some(shifted) = labels.shifted(shortcut.usage)
     {
-        return shifted.to_owned();
+        return shifted;
     }
-    let (cap, _) = names(shortcut.usage);
+    let (cap, _) = names(shortcut, labels);
     format!("{}{cap}", symbols(mods.bits()))
 }
 
@@ -626,7 +662,7 @@ pub fn shortcut_label(shortcut: Shortcut) -> String {
 /// its symbol and name, such as `⌃ Control` or `⌃⇧ Control-Shift`, and a shortcut as a
 /// keycap shows it, such as `⌘C`.
 #[must_use]
-pub fn shortcut_name(shortcut: Shortcut) -> String {
+pub fn shortcut_name(shortcut: Shortcut, labels: &Labels) -> String {
     let mods = shortcut.mods;
     if let Some(bits) = modifier_bits(shortcut.usage) {
         let bits = mods.bits() | bits;
@@ -634,28 +670,28 @@ pub fn shortcut_name(shortcut: Shortcut) -> String {
         return format!("{} {}", symbols(bits), names.join("-"));
     }
     if mods.is_empty() {
-        let (_, name) = names(shortcut.usage);
+        let (_, name) = names(shortcut, labels);
         return name;
     }
-    shortcut_label(shortcut)
+    shortcut_label(shortcut, labels)
 }
 
 /// A key or shortcut as VoiceOver should say it: by names rather than symbols, such as
 /// `Escape`, `Control-Shift` or `Shift-Command-4`. With Shift alone, a key is what it
 /// types, such as `!`.
 #[must_use]
-pub fn shortcut_spoken(shortcut: Shortcut) -> String {
+pub fn shortcut_spoken(shortcut: Shortcut, labels: &Labels) -> String {
     let mods = shortcut.mods;
     let modifiers = |bits: u8| held(bits).map(|(_, name)| name).collect::<Vec<_>>();
     if let Some(bits) = modifier_bits(shortcut.usage) {
         return modifiers(mods.bits() | bits).join("-");
     }
     if only_shift(mods)
-        && let Some(shifted) = us::label(shortcut.usage).and_then(|label| label.shifted)
+        && let Some(shifted) = labels.shifted(shortcut.usage)
     {
-        return shifted.to_owned();
+        return shifted;
     }
-    let (_, name) = names(shortcut.usage);
+    let (_, name) = names(shortcut, labels);
     let mut words = modifiers(mods.bits());
     words.push(&name);
     words.join("-")

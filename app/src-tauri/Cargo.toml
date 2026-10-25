@@ -46,8 +46,8 @@ tauri-plugin-window-state.workspace = true
 tauri-specta.workspace = true
 thiserror.workspace = true
 # The session runs on Tauri's Tokio runtime, and the simulated keyboard's unlock waits on
-# its timer.
-tokio = { workspace = true, features = ["rt", "sync", "time"] }
+# its timer. `select!` follows the session and the input source at once.
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
 
 [dev-dependencies]
 # Parses the menu shortcuts the way Tauri does, to check them.

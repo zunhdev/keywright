@@ -4,9 +4,9 @@ import { emit } from "@tauri-apps/api/event";
 import { mockIPC } from "@tauri-apps/api/mocks";
 
 import { useStore } from "../app/store.ts";
-import { sofleKeymap } from "../test/sofle.ts";
-import type { Keymap } from "./bindings.ts";
-import { followKeymap } from "./keymap.ts";
+import { domCodes, keyCatalog, macActions, sofleKeymap } from "../test/sofle.ts";
+import type { KeyEntry, Keymap } from "./bindings.ts";
+import { followInputSource, followKeymap } from "./keymap.ts";
 
 const renamed: Keymap = {
   ...sofleKeymap,
@@ -61,5 +61,30 @@ test("a stopped session leaves no keymap to draw", async () => {
   );
   const stop = await followKeymap();
   expect(useStore.getState().keymap).toBeNull();
+  stop();
+});
+
+/** Whether a key popup entry is the key in the US Y's place. */
+function isY(key: KeyEntry): boolean {
+  return key.page === "keyboard" && key.id === 0x1c;
+}
+
+test("in another input source, the store gets the key tables again", async () => {
+  // Under German, the key in the US Y's place types Z.
+  const german = structuredClone(keyCatalog);
+  Object.assign(german.find((key) => isY(key)) ?? {}, { cap: "Z", name: "Z" });
+  mockIPC(
+    (command) => {
+      if (command === "key_catalog") return german;
+      if (command === "dom_codes") return domCodes;
+      if (command === "mac_actions") return macActions;
+      throw new Error(`unexpected command ${command}`);
+    },
+    { shouldMockEvents: true },
+  );
+  const stop = await followInputSource();
+  await emit("platform://input-source", { id: "com.apple.keylayout.German", name: "German" });
+  await Bun.sleep(0);
+  expect(useStore.getState().keyCatalog.find((key) => isY(key))?.cap).toBe("Z");
   stop();
 });
