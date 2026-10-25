@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-fix-mac-keys"
+description = "Enables the fix_mac_keys command without any pre-configured scope."
+commands.allow = ["fix_mac_keys"]
+
+[[permission]]
+identifier = "deny-fix-mac-keys"
+description = "Denies the fix_mac_keys command without any pre-configured scope."
+commands.deny = ["fix_mac_keys"]

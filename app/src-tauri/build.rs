@@ -51,6 +51,8 @@ const COMMANDS: &[&str] = &[
     "restore_stock_keys",
     "restore_stock_layer",
     "restore_stock_settings",
+    "fix_mac_keys",
+    "dismiss_mac_findings",
     "traffic_lights",
 ];
 

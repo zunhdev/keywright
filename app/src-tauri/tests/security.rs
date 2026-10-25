@@ -147,3 +147,56 @@ fn the_opener_opens_only_system_settings_and_the_docs() {
         }
     }
 }
+
+/// The commands the UI's bindings call, by name, such as `session_state`.
+fn commands_the_ui_calls() -> BTreeSet<String> {
+    let bindings = include_str!("../../ui/src/ipc/bindings.ts");
+    bindings
+        .split("__TAURI_INVOKE")
+        .skip(2)
+        .filter_map(|call| {
+            let name = call.split_once("(\"")?.1.split_once('"')?.0;
+            Some(name.to_owned())
+        })
+        .collect()
+}
+
+/// The commands build.rs gives a permission of their own.
+fn commands_with_permissions() -> BTreeSet<String> {
+    let build = include_str!("../build.rs");
+    let list = build
+        .split_once("const COMMANDS: &[&str] = &[")
+        .and_then(|(_, rest)| rest.split_once("];"))
+        .expect("build.rs should list the commands in COMMANDS")
+        .0;
+    list.split('"')
+        .skip(1)
+        .step_by(2)
+        .map(String::from)
+        .collect()
+}
+
+/// A command whose permission no capability grants can't be called from any window: Tauri
+/// refuses it, which only shows in the running app.
+#[test]
+fn every_command_the_ui_calls_has_a_permission_a_window_is_granted() {
+    let called = commands_the_ui_calls();
+    assert!(called.contains("session_state"), "{called:?}");
+    let listed = commands_with_permissions();
+    let missing: Vec<_> = called.difference(&listed).collect();
+    assert!(
+        missing.is_empty(),
+        "build.rs's COMMANDS should list {missing:?}"
+    );
+
+    let granted: BTreeSet<String> = capabilities()
+        .iter()
+        .flat_map(|(_, capability)| capability["permissions"].as_array().unwrap().clone())
+        .filter_map(|permission| permission.as_str().map(String::from))
+        .collect();
+    let ungranted: Vec<_> = called
+        .iter()
+        .filter(|command| !granted.contains(&format!("allow-{}", command.replace('_', "-"))))
+        .collect();
+    assert!(ungranted.is_empty(), "no capability grants {ungranted:?}");
+}

@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.68 — for review                                        |
+| **Status**    | Draft v0.69 — for review                                        |
 | **Date**      | 2026-10-25                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -576,7 +576,7 @@ support-packs/keebart-sofle-choc-pro-bt/
 - **Plugins**, kept minimal: `dialog` (open/save panels), `notification`, `opener` (scoped to `x-apple.systempreferences:` and the docs URL), `single-instance`, `window-state`. The tray and menus use Tauri core APIs.
 - **Security**:
   - Capability files grant each window only the commands it uses.
-  - Strict CSP: `default-src 'self'`; no remote origins; `connect-src` limited to IPC. `font-src` also allows `data:`, because Bun's bundler inlines the bundled fonts into the stylesheet. Tauri applies it to the bundled UI, so `mise run dev`, which loads the UI from Bun's dev server, runs without it; `mise run build:debug` runs the bundled UI under it, with the web inspector. `app/src-tauri/tests/security.rs` fails if the CSP or a capability loosens.
+  - Strict CSP: `default-src 'self'`; no remote origins; `connect-src` limited to IPC. `font-src` also allows `data:`, because Bun's bundler inlines the bundled fonts into the stylesheet. Tauri applies it to the bundled UI, so `mise run dev`, which loads the UI from Bun's dev server, runs without it; `mise run build:debug` runs the bundled UI under it, with the web inspector. `app/src-tauri/tests/security.rs` fails if the CSP or a capability loosens, or if a command the UI's bindings call has no permission in `build.rs` that some window's capability grants.
   - Devtools are disabled in release builds.
   - No remote content is loaded, ever.
 
@@ -895,3 +895,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.66    | 2026-10-25 | Where the traffic lights end (§11.3, KEY-103): `traffic_lights` and `window://traffic-lights`, for the toolbar.                                                                                                                                                                                                                                                    |
 | 0.67    | 2026-10-25 | Input-source-aware labels (§4, §11.1, §12.1, KEY-61): `keywright_platform::input_source` and `keys::source::Labels`; shortcuts from the ASCII-capable layout; read again on each change rather than cached; `platform://input-source` reloads the UI's key tables.                                                                                                 |
 | 0.68    | 2026-10-25 | Mac check (§12.1, KEY-62): findings in the keymap payload, `fix_mac_keys` and `dismiss_mac_findings`, dismissals kept by keyboard in `mac-check.json`, and the payloads' context.                                                                                                                                                                                  |
+| 0.69    | 2026-10-25 | Security tests (§12.1, KEY-62): every command the UI calls has a permission some window is granted.                                                                                                                                                                                                                                                                |
