@@ -25,10 +25,11 @@ pub struct VirtualKeyCode(pub u16);
 /// The kind of keyboard macOS takes the keyboard to be, as `KBGetLayoutType` reports it.
 ///
 /// macOS asks which kind a third-party keyboard is the first time it's used (Keyboard
-/// Setup Assistant).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// Setup Assistant). Without an answer, keys are called as on a US keyboard, which is ANSI.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum KeyboardType {
     /// The US layout, with a wide Return key.
+    #[default]
     Ansi,
     /// The European layout: a tall Return key, and an extra key right of left Shift.
     Iso,

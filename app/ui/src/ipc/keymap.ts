@@ -2,18 +2,20 @@ import { useStore } from "../app/store.ts";
 import { commands, events } from "./bindings.ts";
 
 /**
- * Loads the key tables from the core: every key ZMK names, for the inspector's key popup,
- * the key behind each `KeyboardEvent.code`, for the shortcut recorder, and the Mac actions
- * this Mac offers. Their keys are named as the input source the person types in names
- * them, so they change only with it ({@link followInputSource}).
+ * Loads the key tables from the core: every key ZMK names, and the kind of keyboard they
+ * are labelled for, for the inspector's key picker, the key behind each
+ * `KeyboardEvent.code`, for the shortcut recorder, and the Mac actions this Mac offers.
+ * Their keys are named as the input source the person types in names them, so they change
+ * only with it ({@link followInputSource}).
  */
 export async function loadKeyTables(): Promise<void> {
-  const [keyCatalog, domCodes, macActions] = await Promise.all([
+  const [keyCatalog, keyboardType, domCodes, macActions] = await Promise.all([
     commands.keyCatalog(),
+    commands.keyboardType(),
     commands.domCodes(),
     commands.macActions(),
   ]);
-  useStore.setState({ keyCatalog, domCodes, macActions });
+  useStore.setState({ keyCatalog, keyboardType, domCodes, macActions });
 }
 
 /**

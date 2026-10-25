@@ -5739,6 +5739,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 4,
     "cap": "A",
     "name": "A",
+    "shifted": null,
+    "zmk": [
+      "A"
+    ],
     "group": "letter"
   },
   {
@@ -5746,6 +5750,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 5,
     "cap": "B",
     "name": "B",
+    "shifted": null,
+    "zmk": [
+      "B"
+    ],
     "group": "letter"
   },
   {
@@ -5753,6 +5761,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 6,
     "cap": "C",
     "name": "C",
+    "shifted": null,
+    "zmk": [
+      "C"
+    ],
     "group": "letter"
   },
   {
@@ -5760,6 +5772,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 7,
     "cap": "D",
     "name": "D",
+    "shifted": null,
+    "zmk": [
+      "D"
+    ],
     "group": "letter"
   },
   {
@@ -5767,6 +5783,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 8,
     "cap": "E",
     "name": "E",
+    "shifted": null,
+    "zmk": [
+      "E"
+    ],
     "group": "letter"
   },
   {
@@ -5774,6 +5794,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 9,
     "cap": "F",
     "name": "F",
+    "shifted": null,
+    "zmk": [
+      "F"
+    ],
     "group": "letter"
   },
   {
@@ -5781,6 +5805,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 10,
     "cap": "G",
     "name": "G",
+    "shifted": null,
+    "zmk": [
+      "G"
+    ],
     "group": "letter"
   },
   {
@@ -5788,6 +5816,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 11,
     "cap": "H",
     "name": "H",
+    "shifted": null,
+    "zmk": [
+      "H"
+    ],
     "group": "letter"
   },
   {
@@ -5795,6 +5827,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 12,
     "cap": "I",
     "name": "I",
+    "shifted": null,
+    "zmk": [
+      "I"
+    ],
     "group": "letter"
   },
   {
@@ -5802,6 +5838,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 13,
     "cap": "J",
     "name": "J",
+    "shifted": null,
+    "zmk": [
+      "J"
+    ],
     "group": "letter"
   },
   {
@@ -5809,6 +5849,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 14,
     "cap": "K",
     "name": "K",
+    "shifted": null,
+    "zmk": [
+      "K"
+    ],
     "group": "letter"
   },
   {
@@ -5816,6 +5860,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 15,
     "cap": "L",
     "name": "L",
+    "shifted": null,
+    "zmk": [
+      "L"
+    ],
     "group": "letter"
   },
   {
@@ -5823,6 +5871,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 16,
     "cap": "M",
     "name": "M",
+    "shifted": null,
+    "zmk": [
+      "M"
+    ],
     "group": "letter"
   },
   {
@@ -5830,6 +5882,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 17,
     "cap": "N",
     "name": "N",
+    "shifted": null,
+    "zmk": [
+      "N"
+    ],
     "group": "letter"
   },
   {
@@ -5837,6 +5893,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 18,
     "cap": "O",
     "name": "O",
+    "shifted": null,
+    "zmk": [
+      "O"
+    ],
     "group": "letter"
   },
   {
@@ -5844,6 +5904,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 19,
     "cap": "P",
     "name": "P",
+    "shifted": null,
+    "zmk": [
+      "P"
+    ],
     "group": "letter"
   },
   {
@@ -5851,6 +5915,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 20,
     "cap": "Q",
     "name": "Q",
+    "shifted": null,
+    "zmk": [
+      "Q"
+    ],
     "group": "letter"
   },
   {
@@ -5858,6 +5926,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 21,
     "cap": "R",
     "name": "R",
+    "shifted": null,
+    "zmk": [
+      "R"
+    ],
     "group": "letter"
   },
   {
@@ -5865,6 +5937,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 22,
     "cap": "S",
     "name": "S",
+    "shifted": null,
+    "zmk": [
+      "S"
+    ],
     "group": "letter"
   },
   {
@@ -5872,6 +5948,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 23,
     "cap": "T",
     "name": "T",
+    "shifted": null,
+    "zmk": [
+      "T"
+    ],
     "group": "letter"
   },
   {
@@ -5879,6 +5959,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 24,
     "cap": "U",
     "name": "U",
+    "shifted": null,
+    "zmk": [
+      "U"
+    ],
     "group": "letter"
   },
   {
@@ -5886,6 +5970,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 25,
     "cap": "V",
     "name": "V",
+    "shifted": null,
+    "zmk": [
+      "V"
+    ],
     "group": "letter"
   },
   {
@@ -5893,6 +5981,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 26,
     "cap": "W",
     "name": "W",
+    "shifted": null,
+    "zmk": [
+      "W"
+    ],
     "group": "letter"
   },
   {
@@ -5900,6 +5992,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 27,
     "cap": "X",
     "name": "X",
+    "shifted": null,
+    "zmk": [
+      "X"
+    ],
     "group": "letter"
   },
   {
@@ -5907,6 +6003,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 28,
     "cap": "Y",
     "name": "Y",
+    "shifted": null,
+    "zmk": [
+      "Y"
+    ],
     "group": "letter"
   },
   {
@@ -5914,6 +6014,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 29,
     "cap": "Z",
     "name": "Z",
+    "shifted": null,
+    "zmk": [
+      "Z"
+    ],
     "group": "letter"
   },
   {
@@ -5921,6 +6025,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 30,
     "cap": "1",
     "name": "1",
+    "shifted": "!",
+    "zmk": [
+      "N1",
+      "NUMBER_1",
+      "NUM_1"
+    ],
     "group": "number"
   },
   {
@@ -5928,6 +6038,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 31,
     "cap": "2",
     "name": "2",
+    "shifted": "@",
+    "zmk": [
+      "N2",
+      "NUMBER_2",
+      "NUM_2"
+    ],
     "group": "number"
   },
   {
@@ -5935,6 +6051,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 32,
     "cap": "3",
     "name": "3",
+    "shifted": "#",
+    "zmk": [
+      "N3",
+      "NUMBER_3",
+      "NUM_3"
+    ],
     "group": "number"
   },
   {
@@ -5942,6 +6064,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 33,
     "cap": "4",
     "name": "4",
+    "shifted": "$",
+    "zmk": [
+      "N4",
+      "NUMBER_4",
+      "NUM_4"
+    ],
     "group": "number"
   },
   {
@@ -5949,6 +6077,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 34,
     "cap": "5",
     "name": "5",
+    "shifted": "%",
+    "zmk": [
+      "N5",
+      "NUMBER_5",
+      "NUM_5"
+    ],
     "group": "number"
   },
   {
@@ -5956,6 +6090,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 35,
     "cap": "6",
     "name": "6",
+    "shifted": "^",
+    "zmk": [
+      "N6",
+      "NUMBER_6",
+      "NUM_6"
+    ],
     "group": "number"
   },
   {
@@ -5963,6 +6103,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 36,
     "cap": "7",
     "name": "7",
+    "shifted": "&",
+    "zmk": [
+      "N7",
+      "NUMBER_7",
+      "NUM_7"
+    ],
     "group": "number"
   },
   {
@@ -5970,6 +6116,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 37,
     "cap": "8",
     "name": "8",
+    "shifted": "*",
+    "zmk": [
+      "N8",
+      "NUMBER_8",
+      "NUM_8"
+    ],
     "group": "number"
   },
   {
@@ -5977,6 +6129,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 38,
     "cap": "9",
     "name": "9",
+    "shifted": "(",
+    "zmk": [
+      "N9",
+      "NUMBER_9",
+      "NUM_9"
+    ],
     "group": "number"
   },
   {
@@ -5984,6 +6142,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 39,
     "cap": "0",
     "name": "0",
+    "shifted": ")",
+    "zmk": [
+      "N0",
+      "NUMBER_0",
+      "NUM_0"
+    ],
     "group": "number"
   },
   {
@@ -5991,6 +6155,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 40,
     "cap": "↩",
     "name": "Return",
+    "shifted": null,
+    "zmk": [
+      "RET",
+      "RETURN",
+      "ENTER"
+    ],
     "group": "editing"
   },
   {
@@ -5998,6 +6168,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 41,
     "cap": "⎋ Esc",
     "name": "Escape",
+    "shifted": null,
+    "zmk": [
+      "ESC",
+      "ESCAPE"
+    ],
     "group": "editing"
   },
   {
@@ -6005,6 +6180,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 42,
     "cap": "⌫",
     "name": "Delete",
+    "shifted": null,
+    "zmk": [
+      "BSPC",
+      "BACKSPACE",
+      "BKSP"
+    ],
     "group": "editing"
   },
   {
@@ -6012,6 +6193,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 43,
     "cap": "⇥",
     "name": "Tab",
+    "shifted": null,
+    "zmk": [
+      "TAB"
+    ],
     "group": "editing"
   },
   {
@@ -6019,6 +6204,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 44,
     "cap": "␣",
     "name": "Space",
+    "shifted": null,
+    "zmk": [
+      "SPACE",
+      "SPC"
+    ],
     "group": "editing"
   },
   {
@@ -6026,6 +6216,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 45,
     "cap": "-",
     "name": "-",
+    "shifted": "_",
+    "zmk": [
+      "MINUS"
+    ],
     "group": "symbol"
   },
   {
@@ -6033,6 +6227,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 46,
     "cap": "=",
     "name": "=",
+    "shifted": "+",
+    "zmk": [
+      "EQUAL",
+      "EQL"
+    ],
     "group": "symbol"
   },
   {
@@ -6040,6 +6239,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 47,
     "cap": "[",
     "name": "[",
+    "shifted": "{",
+    "zmk": [
+      "LBKT",
+      "LEFT_BRACKET"
+    ],
     "group": "symbol"
   },
   {
@@ -6047,6 +6251,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 48,
     "cap": "]",
     "name": "]",
+    "shifted": "}",
+    "zmk": [
+      "RBKT",
+      "RIGHT_BRACKET"
+    ],
     "group": "symbol"
   },
   {
@@ -6054,6 +6263,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 49,
     "cap": "\\",
     "name": "\\",
+    "shifted": "|",
+    "zmk": [
+      "BSLH",
+      "BACKSLASH"
+    ],
     "group": "symbol"
   },
   {
@@ -6061,6 +6275,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 50,
     "cap": "#",
     "name": "ISO #",
+    "shifted": "~",
+    "zmk": [
+      "NUHS",
+      "NON_US_HASH"
+    ],
     "group": "symbol"
   },
   {
@@ -6068,6 +6287,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 51,
     "cap": ";",
     "name": ";",
+    "shifted": ":",
+    "zmk": [
+      "SEMI",
+      "SEMICOLON",
+      "SCLN"
+    ],
     "group": "symbol"
   },
   {
@@ -6075,6 +6300,14 @@ export const keyCatalog: KeyEntry[] = [
     "id": 52,
     "cap": "'",
     "name": "'",
+    "shifted": "\"",
+    "zmk": [
+      "SQT",
+      "SINGLE_QUOTE",
+      "APOSTROPHE",
+      "APOS",
+      "QUOT"
+    ],
     "group": "symbol"
   },
   {
@@ -6082,6 +6315,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 53,
     "cap": "`",
     "name": "`",
+    "shifted": "~",
+    "zmk": [
+      "GRAVE",
+      "GRAV"
+    ],
     "group": "symbol"
   },
   {
@@ -6089,6 +6327,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 54,
     "cap": ",",
     "name": ",",
+    "shifted": "<",
+    "zmk": [
+      "COMMA",
+      "CMMA"
+    ],
     "group": "symbol"
   },
   {
@@ -6096,6 +6339,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 55,
     "cap": ".",
     "name": ".",
+    "shifted": ">",
+    "zmk": [
+      "DOT",
+      "PERIOD"
+    ],
     "group": "symbol"
   },
   {
@@ -6103,6 +6351,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 56,
     "cap": "/",
     "name": "/",
+    "shifted": "?",
+    "zmk": [
+      "FSLH",
+      "SLASH"
+    ],
     "group": "symbol"
   },
   {
@@ -6110,6 +6363,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 57,
     "cap": "⇪",
     "name": "Caps Lock",
+    "shifted": null,
+    "zmk": [
+      "CAPS",
+      "CAPSLOCK",
+      "CLCK"
+    ],
     "group": "modifier"
   },
   {
@@ -6117,6 +6376,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 58,
     "cap": "F1",
     "name": "F1",
+    "shifted": null,
+    "zmk": [
+      "F1"
+    ],
     "group": "function"
   },
   {
@@ -6124,6 +6387,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 59,
     "cap": "F2",
     "name": "F2",
+    "shifted": null,
+    "zmk": [
+      "F2"
+    ],
     "group": "function"
   },
   {
@@ -6131,6 +6398,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 60,
     "cap": "F3",
     "name": "F3",
+    "shifted": null,
+    "zmk": [
+      "F3"
+    ],
     "group": "function"
   },
   {
@@ -6138,6 +6409,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 61,
     "cap": "F4",
     "name": "F4",
+    "shifted": null,
+    "zmk": [
+      "F4"
+    ],
     "group": "function"
   },
   {
@@ -6145,6 +6420,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 62,
     "cap": "F5",
     "name": "F5",
+    "shifted": null,
+    "zmk": [
+      "F5"
+    ],
     "group": "function"
   },
   {
@@ -6152,6 +6431,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 63,
     "cap": "F6",
     "name": "F6",
+    "shifted": null,
+    "zmk": [
+      "F6"
+    ],
     "group": "function"
   },
   {
@@ -6159,6 +6442,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 64,
     "cap": "F7",
     "name": "F7",
+    "shifted": null,
+    "zmk": [
+      "F7"
+    ],
     "group": "function"
   },
   {
@@ -6166,6 +6453,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 65,
     "cap": "F8",
     "name": "F8",
+    "shifted": null,
+    "zmk": [
+      "F8"
+    ],
     "group": "function"
   },
   {
@@ -6173,6 +6464,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 66,
     "cap": "F9",
     "name": "F9",
+    "shifted": null,
+    "zmk": [
+      "F9"
+    ],
     "group": "function"
   },
   {
@@ -6180,6 +6475,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 67,
     "cap": "F10",
     "name": "F10",
+    "shifted": null,
+    "zmk": [
+      "F10"
+    ],
     "group": "function"
   },
   {
@@ -6187,6 +6486,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 68,
     "cap": "F11",
     "name": "F11",
+    "shifted": null,
+    "zmk": [
+      "F11"
+    ],
     "group": "function"
   },
   {
@@ -6194,6 +6497,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 69,
     "cap": "F12",
     "name": "F12",
+    "shifted": null,
+    "zmk": [
+      "F12"
+    ],
     "group": "function"
   },
   {
@@ -6201,6 +6508,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 70,
     "cap": "Print Screen",
     "name": "Print Screen",
+    "shifted": null,
+    "zmk": [
+      "PSCRN",
+      "PRINTSCREEN",
+      "PRSC"
+    ],
     "group": "other"
   },
   {
@@ -6208,6 +6521,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 71,
     "cap": "Scroll Lock",
     "name": "Scroll Lock",
+    "shifted": null,
+    "zmk": [
+      "SLCK",
+      "SCROLLLOCK",
+      "SCLK"
+    ],
     "group": "other"
   },
   {
@@ -6215,6 +6534,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 72,
     "cap": "Pause",
     "name": "Pause",
+    "shifted": null,
+    "zmk": [
+      "PAUSE_BREAK",
+      "PAUS"
+    ],
     "group": "other"
   },
   {
@@ -6222,6 +6546,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 73,
     "cap": "Insert",
     "name": "Insert",
+    "shifted": null,
+    "zmk": [
+      "INS",
+      "INSERT"
+    ],
     "group": "editing"
   },
   {
@@ -6229,6 +6558,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 74,
     "cap": "↖",
     "name": "Home",
+    "shifted": null,
+    "zmk": [
+      "HOME"
+    ],
     "group": "navigation"
   },
   {
@@ -6236,6 +6569,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 75,
     "cap": "⇞",
     "name": "Page Up",
+    "shifted": null,
+    "zmk": [
+      "PG_UP",
+      "PAGE_UP",
+      "PGUP"
+    ],
     "group": "navigation"
   },
   {
@@ -6243,6 +6582,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 76,
     "cap": "⌦",
     "name": "Forward Delete",
+    "shifted": null,
+    "zmk": [
+      "DEL",
+      "DELETE"
+    ],
     "group": "editing"
   },
   {
@@ -6250,6 +6594,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 77,
     "cap": "↘",
     "name": "End",
+    "shifted": null,
+    "zmk": [
+      "END"
+    ],
     "group": "navigation"
   },
   {
@@ -6257,6 +6605,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 78,
     "cap": "⇟",
     "name": "Page Down",
+    "shifted": null,
+    "zmk": [
+      "PG_DN",
+      "PAGE_DOWN",
+      "PGDN"
+    ],
     "group": "navigation"
   },
   {
@@ -6264,6 +6618,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 79,
     "cap": "→",
     "name": "Right Arrow",
+    "shifted": null,
+    "zmk": [
+      "RIGHT",
+      "RIGHT_ARROW",
+      "RARW"
+    ],
     "group": "navigation"
   },
   {
@@ -6271,6 +6631,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 80,
     "cap": "←",
     "name": "Left Arrow",
+    "shifted": null,
+    "zmk": [
+      "LEFT",
+      "LEFT_ARROW",
+      "LARW"
+    ],
     "group": "navigation"
   },
   {
@@ -6278,6 +6644,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 81,
     "cap": "↓",
     "name": "Down Arrow",
+    "shifted": null,
+    "zmk": [
+      "DOWN",
+      "DOWN_ARROW",
+      "DARW"
+    ],
     "group": "navigation"
   },
   {
@@ -6285,6 +6657,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 82,
     "cap": "↑",
     "name": "Up Arrow",
+    "shifted": null,
+    "zmk": [
+      "UP",
+      "UP_ARROW",
+      "UARW"
+    ],
     "group": "navigation"
   },
   {
@@ -6292,6 +6670,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 83,
     "cap": "⌧",
     "name": "Clear",
+    "shifted": null,
+    "zmk": [
+      "KP_NUM",
+      "KP_NUMLOCK",
+      "KP_NLCK"
+    ],
     "group": "numpad"
   },
   {
@@ -6299,6 +6683,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 84,
     "cap": "/",
     "name": "Keypad /",
+    "shifted": null,
+    "zmk": [
+      "KP_SLASH",
+      "KP_DIVIDE",
+      "KDIV"
+    ],
     "group": "numpad"
   },
   {
@@ -6306,6 +6696,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 85,
     "cap": "*",
     "name": "Keypad *",
+    "shifted": null,
+    "zmk": [
+      "KP_MULTIPLY",
+      "KP_ASTERISK",
+      "KMLT"
+    ],
     "group": "numpad"
   },
   {
@@ -6313,6 +6709,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 86,
     "cap": "-",
     "name": "Keypad -",
+    "shifted": null,
+    "zmk": [
+      "KP_MINUS",
+      "KP_SUBTRACT",
+      "KMIN"
+    ],
     "group": "numpad"
   },
   {
@@ -6320,6 +6722,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 87,
     "cap": "+",
     "name": "Keypad +",
+    "shifted": null,
+    "zmk": [
+      "KP_PLUS",
+      "KPLS"
+    ],
     "group": "numpad"
   },
   {
@@ -6327,6 +6734,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 88,
     "cap": "⌤",
     "name": "Keypad Enter",
+    "shifted": null,
+    "zmk": [
+      "KP_ENTER"
+    ],
     "group": "numpad"
   },
   {
@@ -6334,6 +6745,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 89,
     "cap": "1",
     "name": "Keypad 1",
+    "shifted": null,
+    "zmk": [
+      "KP_N1",
+      "KP_NUMBER_1"
+    ],
     "group": "numpad"
   },
   {
@@ -6341,6 +6757,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 90,
     "cap": "2",
     "name": "Keypad 2",
+    "shifted": null,
+    "zmk": [
+      "KP_N2",
+      "KP_NUMBER_2"
+    ],
     "group": "numpad"
   },
   {
@@ -6348,6 +6769,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 91,
     "cap": "3",
     "name": "Keypad 3",
+    "shifted": null,
+    "zmk": [
+      "KP_N3",
+      "KP_NUMBER_3"
+    ],
     "group": "numpad"
   },
   {
@@ -6355,6 +6781,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 92,
     "cap": "4",
     "name": "Keypad 4",
+    "shifted": null,
+    "zmk": [
+      "KP_N4",
+      "KP_NUMBER_4"
+    ],
     "group": "numpad"
   },
   {
@@ -6362,6 +6793,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 93,
     "cap": "5",
     "name": "Keypad 5",
+    "shifted": null,
+    "zmk": [
+      "KP_N5",
+      "KP_NUMBER_5"
+    ],
     "group": "numpad"
   },
   {
@@ -6369,6 +6805,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 94,
     "cap": "6",
     "name": "Keypad 6",
+    "shifted": null,
+    "zmk": [
+      "KP_N6",
+      "KP_NUMBER_6"
+    ],
     "group": "numpad"
   },
   {
@@ -6376,6 +6817,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 95,
     "cap": "7",
     "name": "Keypad 7",
+    "shifted": null,
+    "zmk": [
+      "KP_N7",
+      "KP_NUMBER_7"
+    ],
     "group": "numpad"
   },
   {
@@ -6383,6 +6829,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 96,
     "cap": "8",
     "name": "Keypad 8",
+    "shifted": null,
+    "zmk": [
+      "KP_N8",
+      "KP_NUMBER_8"
+    ],
     "group": "numpad"
   },
   {
@@ -6390,6 +6841,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 97,
     "cap": "9",
     "name": "Keypad 9",
+    "shifted": null,
+    "zmk": [
+      "KP_N9",
+      "KP_NUMBER_9"
+    ],
     "group": "numpad"
   },
   {
@@ -6397,6 +6853,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 98,
     "cap": "0",
     "name": "Keypad 0",
+    "shifted": null,
+    "zmk": [
+      "KP_N0",
+      "KP_NUMBER_0"
+    ],
     "group": "numpad"
   },
   {
@@ -6404,6 +6865,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 99,
     "cap": ".",
     "name": "Keypad .",
+    "shifted": null,
+    "zmk": [
+      "KP_DOT"
+    ],
     "group": "numpad"
   },
   {
@@ -6411,6 +6876,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 100,
     "cap": "\\",
     "name": "ISO \\",
+    "shifted": "|",
+    "zmk": [
+      "NUBS",
+      "NON_US_BACKSLASH",
+      "NON_US_BSLH"
+    ],
     "group": "symbol"
   },
   {
@@ -6418,6 +6889,14 @@ export const keyCatalog: KeyEntry[] = [
     "id": 101,
     "cap": "Menu",
     "name": "Menu",
+    "shifted": null,
+    "zmk": [
+      "K_APP",
+      "K_APPLICATION",
+      "K_CONTEXT_MENU",
+      "K_CMENU",
+      "GUI"
+    ],
     "group": "other"
   },
   {
@@ -6425,6 +6904,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 102,
     "cap": "Power",
     "name": "Power",
+    "shifted": null,
+    "zmk": [
+      "K_PWR",
+      "K_POWER"
+    ],
     "group": "other"
   },
   {
@@ -6432,6 +6916,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 103,
     "cap": "=",
     "name": "Keypad =",
+    "shifted": null,
+    "zmk": [
+      "KP_EQUAL"
+    ],
     "group": "numpad"
   },
   {
@@ -6439,6 +6927,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 104,
     "cap": "F13",
     "name": "F13",
+    "shifted": null,
+    "zmk": [
+      "F13"
+    ],
     "group": "function"
   },
   {
@@ -6446,6 +6938,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 105,
     "cap": "F14",
     "name": "F14",
+    "shifted": null,
+    "zmk": [
+      "F14"
+    ],
     "group": "function"
   },
   {
@@ -6453,6 +6949,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 106,
     "cap": "F15",
     "name": "F15",
+    "shifted": null,
+    "zmk": [
+      "F15"
+    ],
     "group": "function"
   },
   {
@@ -6460,6 +6960,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 107,
     "cap": "F16",
     "name": "F16",
+    "shifted": null,
+    "zmk": [
+      "F16"
+    ],
     "group": "function"
   },
   {
@@ -6467,6 +6971,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 108,
     "cap": "F17",
     "name": "F17",
+    "shifted": null,
+    "zmk": [
+      "F17"
+    ],
     "group": "function"
   },
   {
@@ -6474,6 +6982,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 109,
     "cap": "F18",
     "name": "F18",
+    "shifted": null,
+    "zmk": [
+      "F18"
+    ],
     "group": "function"
   },
   {
@@ -6481,6 +6993,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 110,
     "cap": "F19",
     "name": "F19",
+    "shifted": null,
+    "zmk": [
+      "F19"
+    ],
     "group": "function"
   },
   {
@@ -6488,6 +7004,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 111,
     "cap": "F20",
     "name": "F20",
+    "shifted": null,
+    "zmk": [
+      "F20"
+    ],
     "group": "function"
   },
   {
@@ -6495,6 +7015,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 112,
     "cap": "F21",
     "name": "F21",
+    "shifted": null,
+    "zmk": [
+      "F21"
+    ],
     "group": "function"
   },
   {
@@ -6502,6 +7026,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 113,
     "cap": "F22",
     "name": "F22",
+    "shifted": null,
+    "zmk": [
+      "F22"
+    ],
     "group": "function"
   },
   {
@@ -6509,6 +7037,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 114,
     "cap": "F23",
     "name": "F23",
+    "shifted": null,
+    "zmk": [
+      "F23"
+    ],
     "group": "function"
   },
   {
@@ -6516,6 +7048,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 115,
     "cap": "F24",
     "name": "F24",
+    "shifted": null,
+    "zmk": [
+      "F24"
+    ],
     "group": "function"
   },
   {
@@ -6523,6 +7059,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 116,
     "cap": "Execute",
     "name": "Execute",
+    "shifted": null,
+    "zmk": [
+      "K_EXEC",
+      "K_EXECUTE"
+    ],
     "group": "other"
   },
   {
@@ -6530,6 +7071,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 117,
     "cap": "Help",
     "name": "Help",
+    "shifted": null,
+    "zmk": [
+      "K_HELP"
+    ],
     "group": "other"
   },
   {
@@ -6537,6 +7082,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 118,
     "cap": "Menu",
     "name": "Menu",
+    "shifted": null,
+    "zmk": [
+      "K_MENU"
+    ],
     "group": "other"
   },
   {
@@ -6544,6 +7093,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 119,
     "cap": "Select",
     "name": "Select",
+    "shifted": null,
+    "zmk": [
+      "K_SELECT"
+    ],
     "group": "other"
   },
   {
@@ -6551,6 +7104,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 120,
     "cap": "Stop",
     "name": "Stop",
+    "shifted": null,
+    "zmk": [
+      "K_STOP"
+    ],
     "group": "other"
   },
   {
@@ -6558,6 +7115,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 121,
     "cap": "Again",
     "name": "Again",
+    "shifted": null,
+    "zmk": [
+      "K_REDO",
+      "K_AGAIN"
+    ],
     "group": "other"
   },
   {
@@ -6565,6 +7127,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 122,
     "cap": "Undo",
     "name": "Undo",
+    "shifted": null,
+    "zmk": [
+      "K_UNDO",
+      "UNDO"
+    ],
     "group": "other"
   },
   {
@@ -6572,6 +7139,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 123,
     "cap": "Cut",
     "name": "Cut",
+    "shifted": null,
+    "zmk": [
+      "K_CUT",
+      "CUT"
+    ],
     "group": "other"
   },
   {
@@ -6579,6 +7151,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 124,
     "cap": "Copy",
     "name": "Copy",
+    "shifted": null,
+    "zmk": [
+      "K_COPY",
+      "COPY"
+    ],
     "group": "other"
   },
   {
@@ -6586,6 +7163,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 125,
     "cap": "Paste",
     "name": "Paste",
+    "shifted": null,
+    "zmk": [
+      "K_PASTE",
+      "PSTE"
+    ],
     "group": "other"
   },
   {
@@ -6593,6 +7175,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 126,
     "cap": "Find",
     "name": "Find",
+    "shifted": null,
+    "zmk": [
+      "K_FIND"
+    ],
     "group": "other"
   },
   {
@@ -6600,6 +7186,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 127,
     "cap": "Mute",
     "name": "Mute",
+    "shifted": null,
+    "zmk": [
+      "K_MUTE"
+    ],
     "group": "media"
   },
   {
@@ -6607,6 +7197,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 128,
     "cap": "Volume Up",
     "name": "Volume Up",
+    "shifted": null,
+    "zmk": [
+      "K_VOL_UP",
+      "K_VOLUME_UP",
+      "VOLU"
+    ],
     "group": "media"
   },
   {
@@ -6614,6 +7210,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 129,
     "cap": "Volume Down",
     "name": "Volume Down",
+    "shifted": null,
+    "zmk": [
+      "K_VOL_DN",
+      "K_VOLUME_DOWN",
+      "VOLD"
+    ],
     "group": "media"
   },
   {
@@ -6621,6 +7223,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 130,
     "cap": "Locking Caps Lock",
     "name": "Locking Caps Lock",
+    "shifted": null,
+    "zmk": [
+      "LCAPS",
+      "LOCKING_CAPS"
+    ],
     "group": "other"
   },
   {
@@ -6628,6 +7235,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 131,
     "cap": "Locking Num Lock",
     "name": "Locking Num Lock",
+    "shifted": null,
+    "zmk": [
+      "LNLCK",
+      "LOCKING_NUM"
+    ],
     "group": "other"
   },
   {
@@ -6635,6 +7247,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 132,
     "cap": "Locking Scroll Lock",
     "name": "Locking Scroll Lock",
+    "shifted": null,
+    "zmk": [
+      "LSLCK",
+      "LOCKING_SCROLL"
+    ],
     "group": "other"
   },
   {
@@ -6642,6 +7259,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 133,
     "cap": "Keypad ,",
     "name": "Keypad ,",
+    "shifted": null,
+    "zmk": [
+      "KP_COMMA"
+    ],
     "group": "numpad"
   },
   {
@@ -6649,13 +7270,23 @@ export const keyCatalog: KeyEntry[] = [
     "id": 134,
     "cap": "Keypad = (Equal) AS/400",
     "name": "Keypad = (Equal) AS/400",
+    "shifted": null,
+    "zmk": [
+      "KP_EQUAL_AS400"
+    ],
     "group": "numpad"
   },
   {
     "page": "keyboard",
     "id": 135,
-    "cap": "International 1",
-    "name": "International 1",
+    "cap": "_",
+    "name": "Ro",
+    "shifted": null,
+    "zmk": [
+      "INT1",
+      "INTERNATIONAL_1",
+      "INT_RO"
+    ],
     "group": "international"
   },
   {
@@ -6663,13 +7294,26 @@ export const keyCatalog: KeyEntry[] = [
     "id": 136,
     "cap": "International 2",
     "name": "International 2",
+    "shifted": null,
+    "zmk": [
+      "INT2",
+      "INTERNATIONAL_2",
+      "INT_KATAKANAHIRAGANA",
+      "INT_KANA"
+    ],
     "group": "international"
   },
   {
     "page": "keyboard",
     "id": 137,
-    "cap": "International 3",
-    "name": "International 3",
+    "cap": "¥",
+    "name": "Yen",
+    "shifted": null,
+    "zmk": [
+      "INT3",
+      "INTERNATIONAL_3",
+      "INT_YEN"
+    ],
     "group": "international"
   },
   {
@@ -6677,6 +7321,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 138,
     "cap": "International 4",
     "name": "International 4",
+    "shifted": null,
+    "zmk": [
+      "INT4",
+      "INTERNATIONAL_4",
+      "INT_HENKAN"
+    ],
     "group": "international"
   },
   {
@@ -6684,6 +7334,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 139,
     "cap": "International 5",
     "name": "International 5",
+    "shifted": null,
+    "zmk": [
+      "INT5",
+      "INTERNATIONAL_5",
+      "INT_MUHENKAN"
+    ],
     "group": "international"
   },
   {
@@ -6691,6 +7347,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 140,
     "cap": "International 6",
     "name": "International 6",
+    "shifted": null,
+    "zmk": [
+      "INT6",
+      "INTERNATIONAL_6",
+      "INT_KPJPCOMMA"
+    ],
     "group": "international"
   },
   {
@@ -6698,6 +7360,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 141,
     "cap": "International 7",
     "name": "International 7",
+    "shifted": null,
+    "zmk": [
+      "INT7",
+      "INTERNATIONAL_7"
+    ],
     "group": "international"
   },
   {
@@ -6705,6 +7372,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 142,
     "cap": "International 8",
     "name": "International 8",
+    "shifted": null,
+    "zmk": [
+      "INT8",
+      "INTERNATIONAL_8"
+    ],
     "group": "international"
   },
   {
@@ -6712,20 +7384,37 @@ export const keyCatalog: KeyEntry[] = [
     "id": 143,
     "cap": "International 9",
     "name": "International 9",
+    "shifted": null,
+    "zmk": [
+      "INT9",
+      "INTERNATIONAL_9"
+    ],
     "group": "international"
   },
   {
     "page": "keyboard",
     "id": 144,
-    "cap": "Language 1",
-    "name": "Language 1",
+    "cap": "かな",
+    "name": "Kana",
+    "shifted": null,
+    "zmk": [
+      "LANG1",
+      "LANGUAGE_1",
+      "LANG_HANGEUL"
+    ],
     "group": "international"
   },
   {
     "page": "keyboard",
     "id": 145,
-    "cap": "Language 2",
-    "name": "Language 2",
+    "cap": "英数",
+    "name": "Eisu",
+    "shifted": null,
+    "zmk": [
+      "LANG2",
+      "LANGUAGE_2",
+      "LANG_HANJA"
+    ],
     "group": "international"
   },
   {
@@ -6733,6 +7422,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 146,
     "cap": "Language 3",
     "name": "Language 3",
+    "shifted": null,
+    "zmk": [
+      "LANG3",
+      "LANGUAGE_3",
+      "LANG_KATAKANA"
+    ],
     "group": "international"
   },
   {
@@ -6740,6 +7435,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 147,
     "cap": "Language 4",
     "name": "Language 4",
+    "shifted": null,
+    "zmk": [
+      "LANG4",
+      "LANGUAGE_4",
+      "LANG_HIRAGANA"
+    ],
     "group": "international"
   },
   {
@@ -6747,6 +7448,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 148,
     "cap": "Language 5",
     "name": "Language 5",
+    "shifted": null,
+    "zmk": [
+      "LANG5",
+      "LANGUAGE_5",
+      "LANG_ZENKAKUHANKAKU"
+    ],
     "group": "international"
   },
   {
@@ -6754,6 +7461,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 149,
     "cap": "Language 6",
     "name": "Language 6",
+    "shifted": null,
+    "zmk": [
+      "LANG6",
+      "LANGUAGE_6"
+    ],
     "group": "international"
   },
   {
@@ -6761,6 +7473,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 150,
     "cap": "Language 7",
     "name": "Language 7",
+    "shifted": null,
+    "zmk": [
+      "LANG7",
+      "LANGUAGE_7"
+    ],
     "group": "international"
   },
   {
@@ -6768,6 +7485,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 151,
     "cap": "Language 8",
     "name": "Language 8",
+    "shifted": null,
+    "zmk": [
+      "LANG8",
+      "LANGUAGE_8"
+    ],
     "group": "international"
   },
   {
@@ -6775,6 +7497,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 152,
     "cap": "Language 9",
     "name": "Language 9",
+    "shifted": null,
+    "zmk": [
+      "LANG9",
+      "LANGUAGE_9"
+    ],
     "group": "international"
   },
   {
@@ -6782,6 +7509,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 153,
     "cap": "Alternate Erase",
     "name": "Alternate Erase",
+    "shifted": null,
+    "zmk": [
+      "ALT_ERASE"
+    ],
     "group": "other"
   },
   {
@@ -6789,6 +7520,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 154,
     "cap": "SysReq/Attention",
     "name": "SysReq/Attention",
+    "shifted": null,
+    "zmk": [
+      "SYSREQ",
+      "ATTENTION"
+    ],
     "group": "other"
   },
   {
@@ -6796,6 +7532,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 155,
     "cap": "Cancel",
     "name": "Cancel",
+    "shifted": null,
+    "zmk": [
+      "K_CANCEL"
+    ],
     "group": "other"
   },
   {
@@ -6803,6 +7543,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 156,
     "cap": "Clear",
     "name": "Clear",
+    "shifted": null,
+    "zmk": [
+      "CLEAR"
+    ],
     "group": "other"
   },
   {
@@ -6810,6 +7554,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 157,
     "cap": "Prior",
     "name": "Prior",
+    "shifted": null,
+    "zmk": [
+      "PRIOR"
+    ],
     "group": "other"
   },
   {
@@ -6817,6 +7565,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 158,
     "cap": "Return",
     "name": "Return",
+    "shifted": null,
+    "zmk": [
+      "RET2",
+      "RETURN2"
+    ],
     "group": "other"
   },
   {
@@ -6824,6 +7577,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 159,
     "cap": "Separator",
     "name": "Separator",
+    "shifted": null,
+    "zmk": [
+      "SEPARATOR"
+    ],
     "group": "other"
   },
   {
@@ -6831,6 +7588,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 160,
     "cap": "Out",
     "name": "Out",
+    "shifted": null,
+    "zmk": [
+      "OUT"
+    ],
     "group": "other"
   },
   {
@@ -6838,6 +7599,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 161,
     "cap": "Oper",
     "name": "Oper",
+    "shifted": null,
+    "zmk": [
+      "OPER"
+    ],
     "group": "other"
   },
   {
@@ -6845,6 +7610,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 162,
     "cap": "Clear/Again",
     "name": "Clear/Again",
+    "shifted": null,
+    "zmk": [
+      "CLEAR_AGAIN"
+    ],
     "group": "other"
   },
   {
@@ -6852,6 +7621,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 163,
     "cap": "CrSel/Props",
     "name": "CrSel/Props",
+    "shifted": null,
+    "zmk": [
+      "CRSEL"
+    ],
     "group": "other"
   },
   {
@@ -6859,6 +7632,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 164,
     "cap": "ExSel",
     "name": "ExSel",
+    "shifted": null,
+    "zmk": [
+      "EXSEL"
+    ],
     "group": "other"
   },
   {
@@ -6866,6 +7643,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 180,
     "cap": "Currency Unit",
     "name": "Currency Unit",
+    "shifted": null,
+    "zmk": [
+      "CURU"
+    ],
     "group": "numpad"
   },
   {
@@ -6873,6 +7654,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 182,
     "cap": "Keypad (",
     "name": "Keypad (",
+    "shifted": null,
+    "zmk": [
+      "KP_LPAR",
+      "KP_LEFT_PARENTHESIS"
+    ],
     "group": "numpad"
   },
   {
@@ -6880,6 +7666,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 183,
     "cap": "Keypad )",
     "name": "Keypad )",
+    "shifted": null,
+    "zmk": [
+      "KP_RPAR",
+      "KP_RIGHT_PARENTHESIS"
+    ],
     "group": "numpad"
   },
   {
@@ -6887,6 +7678,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 205,
     "cap": "Keypad Space",
     "name": "Keypad Space",
+    "shifted": null,
+    "zmk": [
+      "KSPC"
+    ],
     "group": "numpad"
   },
   {
@@ -6894,6 +7689,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 216,
     "cap": "Keypad Clear",
     "name": "Keypad Clear",
+    "shifted": null,
+    "zmk": [
+      "KP_CLEAR"
+    ],
     "group": "numpad"
   },
   {
@@ -6901,6 +7700,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 224,
     "cap": "⌃",
     "name": "Control",
+    "shifted": null,
+    "zmk": [
+      "LCTRL",
+      "LEFT_CONTROL",
+      "LCTL"
+    ],
     "group": "modifier"
   },
   {
@@ -6908,6 +7713,13 @@ export const keyCatalog: KeyEntry[] = [
     "id": 225,
     "cap": "⇧",
     "name": "Shift",
+    "shifted": null,
+    "zmk": [
+      "LSHFT",
+      "LEFT_SHIFT",
+      "LSHIFT",
+      "LSFT"
+    ],
     "group": "modifier"
   },
   {
@@ -6915,6 +7727,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 226,
     "cap": "⌥",
     "name": "Option",
+    "shifted": null,
+    "zmk": [
+      "LALT",
+      "LEFT_ALT"
+    ],
     "group": "modifier"
   },
   {
@@ -6922,6 +7739,17 @@ export const keyCatalog: KeyEntry[] = [
     "id": 227,
     "cap": "⌘",
     "name": "Command",
+    "shifted": null,
+    "zmk": [
+      "LGUI",
+      "LEFT_GUI",
+      "LEFT_WIN",
+      "LWIN",
+      "LEFT_COMMAND",
+      "LCMD",
+      "LEFT_META",
+      "LMETA"
+    ],
     "group": "modifier"
   },
   {
@@ -6929,6 +7757,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 232,
     "cap": "Play/Pause",
     "name": "Play/Pause",
+    "shifted": null,
+    "zmk": [
+      "K_PP",
+      "K_PLAY_PAUSE"
+    ],
     "group": "other"
   },
   {
@@ -6936,6 +7769,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 233,
     "cap": "Stop",
     "name": "Stop",
+    "shifted": null,
+    "zmk": [
+      "K_STOP2"
+    ],
     "group": "other"
   },
   {
@@ -6943,6 +7780,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 234,
     "cap": "Previous",
     "name": "Previous",
+    "shifted": null,
+    "zmk": [
+      "K_PREV",
+      "K_PREVIOUS"
+    ],
     "group": "other"
   },
   {
@@ -6950,6 +7792,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 235,
     "cap": "Next",
     "name": "Next",
+    "shifted": null,
+    "zmk": [
+      "K_NEXT"
+    ],
     "group": "other"
   },
   {
@@ -6957,6 +7803,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 236,
     "cap": "Eject",
     "name": "Eject",
+    "shifted": null,
+    "zmk": [
+      "K_EJECT"
+    ],
     "group": "other"
   },
   {
@@ -6964,6 +7814,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 237,
     "cap": "Volume Up",
     "name": "Volume Up",
+    "shifted": null,
+    "zmk": [
+      "K_VOL_UP2",
+      "K_VOLUME_UP2"
+    ],
     "group": "other"
   },
   {
@@ -6971,6 +7826,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 238,
     "cap": "Volume Down",
     "name": "Volume Down",
+    "shifted": null,
+    "zmk": [
+      "K_VOL_DN2",
+      "K_VOLUME_DOWN2"
+    ],
     "group": "other"
   },
   {
@@ -6978,6 +7838,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 239,
     "cap": "Mute",
     "name": "Mute",
+    "shifted": null,
+    "zmk": [
+      "K_MUTE2"
+    ],
     "group": "other"
   },
   {
@@ -6985,6 +7849,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 240,
     "cap": "WWW",
     "name": "WWW",
+    "shifted": null,
+    "zmk": [
+      "K_WWW"
+    ],
     "group": "other"
   },
   {
@@ -6992,6 +7860,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 241,
     "cap": "Back",
     "name": "Back",
+    "shifted": null,
+    "zmk": [
+      "K_BACK"
+    ],
     "group": "other"
   },
   {
@@ -6999,6 +7871,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 242,
     "cap": "Forward",
     "name": "Forward",
+    "shifted": null,
+    "zmk": [
+      "K_FORWARD"
+    ],
     "group": "other"
   },
   {
@@ -7006,6 +7882,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 243,
     "cap": "Stop",
     "name": "Stop",
+    "shifted": null,
+    "zmk": [
+      "K_STOP3"
+    ],
     "group": "other"
   },
   {
@@ -7013,6 +7893,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 244,
     "cap": "Find",
     "name": "Find",
+    "shifted": null,
+    "zmk": [
+      "K_FIND2"
+    ],
     "group": "other"
   },
   {
@@ -7020,6 +7904,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 245,
     "cap": "Scroll Up",
     "name": "Scroll Up",
+    "shifted": null,
+    "zmk": [
+      "K_SCROLL_UP"
+    ],
     "group": "other"
   },
   {
@@ -7027,6 +7915,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 246,
     "cap": "Scroll Down",
     "name": "Scroll Down",
+    "shifted": null,
+    "zmk": [
+      "K_SCROLL_DOWN"
+    ],
     "group": "other"
   },
   {
@@ -7034,6 +7926,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 247,
     "cap": "Edit",
     "name": "Edit",
+    "shifted": null,
+    "zmk": [
+      "K_EDIT"
+    ],
     "group": "other"
   },
   {
@@ -7041,6 +7937,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 248,
     "cap": "Sleep",
     "name": "Sleep",
+    "shifted": null,
+    "zmk": [
+      "K_SLEEP"
+    ],
     "group": "other"
   },
   {
@@ -7048,6 +7948,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 249,
     "cap": "Lock",
     "name": "Lock",
+    "shifted": null,
+    "zmk": [
+      "K_LOCK",
+      "K_SCREENSAVER",
+      "K_COFFEE"
+    ],
     "group": "other"
   },
   {
@@ -7055,6 +7961,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 250,
     "cap": "Refresh",
     "name": "Refresh",
+    "shifted": null,
+    "zmk": [
+      "K_REFRESH"
+    ],
     "group": "other"
   },
   {
@@ -7062,6 +7972,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 251,
     "cap": "Calculator",
     "name": "Calculator",
+    "shifted": null,
+    "zmk": [
+      "K_CALC",
+      "K_CALCULATOR"
+    ],
     "group": "other"
   },
   {
@@ -7069,6 +7984,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 48,
     "cap": "Power",
     "name": "Power",
+    "shifted": null,
+    "zmk": [
+      "C_PWR",
+      "C_POWER"
+    ],
     "group": "other"
   },
   {
@@ -7076,6 +7996,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 49,
     "cap": "Reset",
     "name": "Reset",
+    "shifted": null,
+    "zmk": [
+      "C_RESET"
+    ],
     "group": "other"
   },
   {
@@ -7083,6 +8007,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 50,
     "cap": "Sleep",
     "name": "Sleep",
+    "shifted": null,
+    "zmk": [
+      "C_SLEEP"
+    ],
     "group": "other"
   },
   {
@@ -7090,6 +8018,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 52,
     "cap": "Sleep Mode",
     "name": "Sleep Mode",
+    "shifted": null,
+    "zmk": [
+      "C_SLEEP_MODE"
+    ],
     "group": "other"
   },
   {
@@ -7097,6 +8029,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 64,
     "cap": "Menu",
     "name": "Menu",
+    "shifted": null,
+    "zmk": [
+      "C_MENU"
+    ],
     "group": "other"
   },
   {
@@ -7104,6 +8040,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 65,
     "cap": "Menu Pick",
     "name": "Menu Pick",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_PICK",
+      "C_MENU_SELECT"
+    ],
     "group": "other"
   },
   {
@@ -7111,6 +8052,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 66,
     "cap": "Menu Up",
     "name": "Menu Up",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_UP"
+    ],
     "group": "other"
   },
   {
@@ -7118,6 +8063,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 67,
     "cap": "Menu Down",
     "name": "Menu Down",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_DOWN"
+    ],
     "group": "other"
   },
   {
@@ -7125,6 +8074,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 68,
     "cap": "Menu Left",
     "name": "Menu Left",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_LEFT"
+    ],
     "group": "other"
   },
   {
@@ -7132,6 +8085,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 69,
     "cap": "Menu Right",
     "name": "Menu Right",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_RIGHT"
+    ],
     "group": "other"
   },
   {
@@ -7139,6 +8096,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 70,
     "cap": "Menu Escape",
     "name": "Menu Escape",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_ESC",
+      "C_MENU_ESCAPE"
+    ],
     "group": "other"
   },
   {
@@ -7146,6 +8108,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 71,
     "cap": "Menu Value Increase",
     "name": "Menu Value Increase",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_INC",
+      "C_MENU_INCREASE"
+    ],
     "group": "other"
   },
   {
@@ -7153,6 +8120,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 72,
     "cap": "Menu Value Decrease",
     "name": "Menu Value Decrease",
+    "shifted": null,
+    "zmk": [
+      "C_MENU_DEC",
+      "C_MENU_DECREASE"
+    ],
     "group": "other"
   },
   {
@@ -7160,6 +8132,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 96,
     "cap": "Data On Screen",
     "name": "Data On Screen",
+    "shifted": null,
+    "zmk": [
+      "C_DATA_ON_SCREEN"
+    ],
     "group": "other"
   },
   {
@@ -7167,6 +8143,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 97,
     "cap": "Closed Caption",
     "name": "Closed Caption",
+    "shifted": null,
+    "zmk": [
+      "C_CAPTIONS",
+      "C_SUBTITLES"
+    ],
     "group": "other"
   },
   {
@@ -7174,6 +8155,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 101,
     "cap": "Snapshot",
     "name": "Snapshot",
+    "shifted": null,
+    "zmk": [
+      "C_SNAPSHOT"
+    ],
     "group": "other"
   },
   {
@@ -7181,6 +8166,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 103,
     "cap": "Picture-in-Picture Toggle",
     "name": "Picture-in-Picture Toggle",
+    "shifted": null,
+    "zmk": [
+      "C_PIP"
+    ],
     "group": "other"
   },
   {
@@ -7188,6 +8177,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 105,
     "cap": "Red Menu Button",
     "name": "Red Menu Button",
+    "shifted": null,
+    "zmk": [
+      "C_RED",
+      "C_RED_BUTTON"
+    ],
     "group": "other"
   },
   {
@@ -7195,6 +8189,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 106,
     "cap": "Green Menu Button",
     "name": "Green Menu Button",
+    "shifted": null,
+    "zmk": [
+      "C_GREEN",
+      "C_GREEN_BUTTON"
+    ],
     "group": "other"
   },
   {
@@ -7202,6 +8201,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 107,
     "cap": "Blue Menu Button",
     "name": "Blue Menu Button",
+    "shifted": null,
+    "zmk": [
+      "C_BLUE",
+      "C_BLUE_BUTTON"
+    ],
     "group": "other"
   },
   {
@@ -7209,6 +8213,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 108,
     "cap": "Yellow Menu Button",
     "name": "Yellow Menu Button",
+    "shifted": null,
+    "zmk": [
+      "C_YELLOW",
+      "C_YELLOW_BUTTON"
+    ],
     "group": "other"
   },
   {
@@ -7216,6 +8225,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 109,
     "cap": "Aspect",
     "name": "Aspect",
+    "shifted": null,
+    "zmk": [
+      "C_ASPECT"
+    ],
     "group": "other"
   },
   {
@@ -7223,6 +8236,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 111,
     "cap": "Brightness Up",
     "name": "Brightness Up",
+    "shifted": null,
+    "zmk": [
+      "C_BRI_UP",
+      "C_BRIGHTNESS_INC",
+      "C_BRI_INC"
+    ],
     "group": "media"
   },
   {
@@ -7230,6 +8249,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 112,
     "cap": "Brightness Down",
     "name": "Brightness Down",
+    "shifted": null,
+    "zmk": [
+      "C_BRI_DN",
+      "C_BRIGHTNESS_DEC",
+      "C_BRI_DEC"
+    ],
     "group": "media"
   },
   {
@@ -7237,6 +8262,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 114,
     "cap": "Display Backlight Toggle",
     "name": "Display Backlight Toggle",
+    "shifted": null,
+    "zmk": [
+      "C_BKLT_TOG",
+      "C_BACKLIGHT_TOGGLE"
+    ],
     "group": "media"
   },
   {
@@ -7244,6 +8274,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 115,
     "cap": "Display Set Brightness to Minimum",
     "name": "Display Set Brightness to Minimum",
+    "shifted": null,
+    "zmk": [
+      "C_BRI_MIN",
+      "C_BRIGHTNESS_MINIMUM"
+    ],
     "group": "media"
   },
   {
@@ -7251,6 +8286,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 116,
     "cap": "Display Set Brightness to Maximum",
     "name": "Display Set Brightness to Maximum",
+    "shifted": null,
+    "zmk": [
+      "C_BRI_MAX",
+      "C_BRIGHTNESS_MAXIMUM"
+    ],
     "group": "media"
   },
   {
@@ -7258,6 +8298,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 117,
     "cap": "Display Set Auto Brightness",
     "name": "Display Set Auto Brightness",
+    "shifted": null,
+    "zmk": [
+      "C_BRI_AUTO",
+      "C_BRIGHTNESS_AUTO"
+    ],
     "group": "media"
   },
   {
@@ -7265,6 +8310,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 130,
     "cap": "Mode Step",
     "name": "Mode Step",
+    "shifted": null,
+    "zmk": [
+      "C_MODE_STEP",
+      "C_MEDIA_STEP"
+    ],
     "group": "other"
   },
   {
@@ -7272,6 +8322,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 131,
     "cap": "Recall Last",
     "name": "Recall Last",
+    "shifted": null,
+    "zmk": [
+      "C_CHAN_LAST",
+      "C_RECALL_LAST"
+    ],
     "group": "other"
   },
   {
@@ -7279,6 +8334,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 136,
     "cap": "Media Select Computer",
     "name": "Media Select Computer",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_COMPUTER"
+    ],
     "group": "other"
   },
   {
@@ -7286,6 +8345,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 137,
     "cap": "Media Select TV",
     "name": "Media Select TV",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_TV"
+    ],
     "group": "other"
   },
   {
@@ -7293,6 +8356,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 138,
     "cap": "Media Select WWW",
     "name": "Media Select WWW",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_WWW"
+    ],
     "group": "other"
   },
   {
@@ -7300,6 +8367,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 139,
     "cap": "Media Select DVD",
     "name": "Media Select DVD",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_DVD"
+    ],
     "group": "other"
   },
   {
@@ -7307,6 +8378,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 140,
     "cap": "Media Select Telephone",
     "name": "Media Select Telephone",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_PHONE"
+    ],
     "group": "other"
   },
   {
@@ -7314,6 +8389,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 141,
     "cap": "Media Select Program Guide",
     "name": "Media Select Program Guide",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_GUIDE"
+    ],
     "group": "other"
   },
   {
@@ -7321,6 +8400,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 142,
     "cap": "Media Select Video Phone",
     "name": "Media Select Video Phone",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_VIDEOPHONE"
+    ],
     "group": "other"
   },
   {
@@ -7328,6 +8411,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 143,
     "cap": "Media Select Games",
     "name": "Media Select Games",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_GAMES"
+    ],
     "group": "other"
   },
   {
@@ -7335,6 +8422,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 144,
     "cap": "Media Select Messages",
     "name": "Media Select Messages",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_MESSAGES"
+    ],
     "group": "other"
   },
   {
@@ -7342,6 +8433,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 145,
     "cap": "Media Select CD",
     "name": "Media Select CD",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_CD"
+    ],
     "group": "other"
   },
   {
@@ -7349,6 +8444,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 146,
     "cap": "Media Select VCR",
     "name": "Media Select VCR",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_VCR"
+    ],
     "group": "other"
   },
   {
@@ -7356,6 +8455,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 147,
     "cap": "Media Select Tuner",
     "name": "Media Select Tuner",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_TUNER"
+    ],
     "group": "other"
   },
   {
@@ -7363,6 +8466,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 148,
     "cap": "Quit",
     "name": "Quit",
+    "shifted": null,
+    "zmk": [
+      "C_QUIT"
+    ],
     "group": "other"
   },
   {
@@ -7370,6 +8477,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 149,
     "cap": "Help",
     "name": "Help",
+    "shifted": null,
+    "zmk": [
+      "C_HELP"
+    ],
     "group": "other"
   },
   {
@@ -7377,6 +8488,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 150,
     "cap": "Media Select Tape",
     "name": "Media Select Tape",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_TAPE"
+    ],
     "group": "other"
   },
   {
@@ -7384,6 +8499,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 151,
     "cap": "Media Select Cable",
     "name": "Media Select Cable",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_CABLE"
+    ],
     "group": "other"
   },
   {
@@ -7391,6 +8510,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 152,
     "cap": "Media Select Satellite",
     "name": "Media Select Satellite",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_SATELLITE"
+    ],
     "group": "other"
   },
   {
@@ -7398,6 +8521,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 154,
     "cap": "Media Select Home",
     "name": "Media Select Home",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_HOME"
+    ],
     "group": "other"
   },
   {
@@ -7405,6 +8532,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 156,
     "cap": "Channel Increment",
     "name": "Channel Increment",
+    "shifted": null,
+    "zmk": [
+      "C_CHAN_INC",
+      "C_CHANNEL_INC"
+    ],
     "group": "other"
   },
   {
@@ -7412,6 +8544,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 157,
     "cap": "Channel Decrement",
     "name": "Channel Decrement",
+    "shifted": null,
+    "zmk": [
+      "C_CHAN_DEC",
+      "C_CHANNEL_DEC"
+    ],
     "group": "other"
   },
   {
@@ -7419,6 +8556,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 160,
     "cap": "VCR Plus",
     "name": "VCR Plus",
+    "shifted": null,
+    "zmk": [
+      "C_MEDIA_VCR_PLUS"
+    ],
     "group": "other"
   },
   {
@@ -7426,6 +8567,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 176,
     "cap": "Play",
     "name": "Play",
+    "shifted": null,
+    "zmk": [
+      "C_PLAY"
+    ],
     "group": "media"
   },
   {
@@ -7433,6 +8578,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 177,
     "cap": "Pause",
     "name": "Pause",
+    "shifted": null,
+    "zmk": [
+      "C_PAUSE"
+    ],
     "group": "media"
   },
   {
@@ -7440,6 +8589,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 178,
     "cap": "Record",
     "name": "Record",
+    "shifted": null,
+    "zmk": [
+      "C_REC",
+      "C_RECORD"
+    ],
     "group": "media"
   },
   {
@@ -7447,6 +8601,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 179,
     "cap": "Fast Forward",
     "name": "Fast Forward",
+    "shifted": null,
+    "zmk": [
+      "C_FF",
+      "C_FAST_FORWARD"
+    ],
     "group": "media"
   },
   {
@@ -7454,6 +8613,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 180,
     "cap": "Rewind",
     "name": "Rewind",
+    "shifted": null,
+    "zmk": [
+      "C_RW",
+      "C_REWIND"
+    ],
     "group": "media"
   },
   {
@@ -7461,6 +8625,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 181,
     "cap": "Next Track",
     "name": "Next Track",
+    "shifted": null,
+    "zmk": [
+      "C_NEXT",
+      "M_NEXT"
+    ],
     "group": "media"
   },
   {
@@ -7468,6 +8637,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 182,
     "cap": "Previous Track",
     "name": "Previous Track",
+    "shifted": null,
+    "zmk": [
+      "C_PREV",
+      "C_PREVIOUS",
+      "M_PREV"
+    ],
     "group": "media"
   },
   {
@@ -7475,6 +8650,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 183,
     "cap": "Stop",
     "name": "Stop",
+    "shifted": null,
+    "zmk": [
+      "C_STOP",
+      "M_STOP"
+    ],
     "group": "media"
   },
   {
@@ -7482,6 +8662,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 184,
     "cap": "Eject",
     "name": "Eject",
+    "shifted": null,
+    "zmk": [
+      "C_EJECT",
+      "M_EJCT"
+    ],
     "group": "media"
   },
   {
@@ -7489,6 +8674,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 185,
     "cap": "Random Play",
     "name": "Random Play",
+    "shifted": null,
+    "zmk": [
+      "C_SHUFFLE",
+      "C_RANDOM_PLAY"
+    ],
     "group": "media"
   },
   {
@@ -7496,6 +8686,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 188,
     "cap": "Repeat",
     "name": "Repeat",
+    "shifted": null,
+    "zmk": [
+      "C_REPEAT"
+    ],
     "group": "media"
   },
   {
@@ -7503,6 +8697,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 191,
     "cap": "Slow Tracking",
     "name": "Slow Tracking",
+    "shifted": null,
+    "zmk": [
+      "C_SLOW2",
+      "C_SLOW_TRACKING"
+    ],
     "group": "media"
   },
   {
@@ -7510,6 +8709,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 204,
     "cap": "Stop/Eject",
     "name": "Stop/Eject",
+    "shifted": null,
+    "zmk": [
+      "C_STOP_EJECT"
+    ],
     "group": "media"
   },
   {
@@ -7517,13 +8720,23 @@ export const keyCatalog: KeyEntry[] = [
     "id": 205,
     "cap": "Play/Pause",
     "name": "Play/Pause",
+    "shifted": null,
+    "zmk": [
+      "C_PP",
+      "C_PLAY_PAUSE",
+      "M_PLAY"
+    ],
     "group": "media"
   },
   {
     "page": "consumer",
     "id": 207,
-    "cap": "Voice Command",
-    "name": "Voice Command",
+    "cap": "Dictation",
+    "name": "Dictation",
+    "shifted": null,
+    "zmk": [
+      "C_VOICE_COMMAND"
+    ],
     "group": "other"
   },
   {
@@ -7531,6 +8744,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 226,
     "cap": "Mute",
     "name": "Mute",
+    "shifted": null,
+    "zmk": [
+      "C_MUTE",
+      "M_MUTE"
+    ],
     "group": "media"
   },
   {
@@ -7538,6 +8756,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 229,
     "cap": "Bass Boost",
     "name": "Bass Boost",
+    "shifted": null,
+    "zmk": [
+      "C_BASS_BOOST"
+    ],
     "group": "media"
   },
   {
@@ -7545,6 +8767,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 233,
     "cap": "Volume Up",
     "name": "Volume Up",
+    "shifted": null,
+    "zmk": [
+      "C_VOL_UP",
+      "C_VOLUME_UP",
+      "M_VOLU"
+    ],
     "group": "media"
   },
   {
@@ -7552,6 +8780,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 234,
     "cap": "Volume Down",
     "name": "Volume Down",
+    "shifted": null,
+    "zmk": [
+      "C_VOL_DN",
+      "C_VOLUME_DOWN",
+      "M_VOLD"
+    ],
     "group": "media"
   },
   {
@@ -7559,6 +8793,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 245,
     "cap": "Slow",
     "name": "Slow",
+    "shifted": null,
+    "zmk": [
+      "C_SLOW"
+    ],
     "group": "media"
   },
   {
@@ -7566,6 +8804,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 371,
     "cap": "Alternate Audio Increment",
     "name": "Alternate Audio Increment",
+    "shifted": null,
+    "zmk": [
+      "C_ALT_AUDIO_INC",
+      "C_ALTERNATE_AUDIO_INCREMENT"
+    ],
     "group": "other"
   },
   {
@@ -7573,6 +8816,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 387,
     "cap": "Consumer Control Configuration",
     "name": "Consumer Control Configuration",
+    "shifted": null,
+    "zmk": [
+      "C_AL_CCC"
+    ],
     "group": "application"
   },
   {
@@ -7580,6 +8827,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 388,
     "cap": "Word Processor",
     "name": "Word Processor",
+    "shifted": null,
+    "zmk": [
+      "C_AL_WORD"
+    ],
     "group": "application"
   },
   {
@@ -7587,6 +8838,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 389,
     "cap": "Text Editor",
     "name": "Text Editor",
+    "shifted": null,
+    "zmk": [
+      "C_AL_TEXT_EDITOR"
+    ],
     "group": "application"
   },
   {
@@ -7594,6 +8849,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 390,
     "cap": "Spreadsheet",
     "name": "Spreadsheet",
+    "shifted": null,
+    "zmk": [
+      "C_AL_SHEET",
+      "C_AL_SPREADSHEET"
+    ],
     "group": "application"
   },
   {
@@ -7601,6 +8861,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 391,
     "cap": "Graphics Editor",
     "name": "Graphics Editor",
+    "shifted": null,
+    "zmk": [
+      "C_AL_GRAPHICS_EDITOR"
+    ],
     "group": "application"
   },
   {
@@ -7608,6 +8872,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 392,
     "cap": "Presentation App",
     "name": "Presentation App",
+    "shifted": null,
+    "zmk": [
+      "C_AL_PRESENTATION"
+    ],
     "group": "application"
   },
   {
@@ -7615,6 +8883,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 393,
     "cap": "Database App",
     "name": "Database App",
+    "shifted": null,
+    "zmk": [
+      "C_AL_DB",
+      "C_AL_DATABASE"
+    ],
     "group": "application"
   },
   {
@@ -7622,6 +8895,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 394,
     "cap": "Email Reader",
     "name": "Email Reader",
+    "shifted": null,
+    "zmk": [
+      "C_AL_MAIL",
+      "C_AL_EMAIL"
+    ],
     "group": "application"
   },
   {
@@ -7629,6 +8907,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 395,
     "cap": "Newsreader",
     "name": "Newsreader",
+    "shifted": null,
+    "zmk": [
+      "C_AL_NEWS"
+    ],
     "group": "application"
   },
   {
@@ -7636,6 +8918,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 396,
     "cap": "Voicemail",
     "name": "Voicemail",
+    "shifted": null,
+    "zmk": [
+      "C_AL_VOICEMAIL"
+    ],
     "group": "application"
   },
   {
@@ -7643,6 +8929,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 397,
     "cap": "Contacts/Address Book",
     "name": "Contacts/Address Book",
+    "shifted": null,
+    "zmk": [
+      "C_AL_CONTACTS",
+      "C_AL_ADDRESS_BOOK"
+    ],
     "group": "application"
   },
   {
@@ -7650,6 +8941,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 398,
     "cap": "Calendar/Schedule",
     "name": "Calendar/Schedule",
+    "shifted": null,
+    "zmk": [
+      "C_AL_CAL",
+      "C_AL_CALENDAR"
+    ],
     "group": "application"
   },
   {
@@ -7657,6 +8953,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 399,
     "cap": "Task/Project Manager",
     "name": "Task/Project Manager",
+    "shifted": null,
+    "zmk": [
+      "C_AL_TASK_MANAGER"
+    ],
     "group": "application"
   },
   {
@@ -7664,6 +8964,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 400,
     "cap": "Log/Journal/Timecard",
     "name": "Log/Journal/Timecard",
+    "shifted": null,
+    "zmk": [
+      "C_AL_JOURNAL"
+    ],
     "group": "application"
   },
   {
@@ -7671,6 +8975,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 401,
     "cap": "Checkbook/Finance",
     "name": "Checkbook/Finance",
+    "shifted": null,
+    "zmk": [
+      "C_AL_FINANCE"
+    ],
     "group": "application"
   },
   {
@@ -7678,6 +8986,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 402,
     "cap": "Calculator",
     "name": "Calculator",
+    "shifted": null,
+    "zmk": [
+      "C_AL_CALC",
+      "C_AL_CALCULATOR"
+    ],
     "group": "application"
   },
   {
@@ -7685,6 +8998,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 403,
     "cap": "A/V Capture/Playback",
     "name": "A/V Capture/Playback",
+    "shifted": null,
+    "zmk": [
+      "C_AL_AV_CAPTURE_PLAYBACK"
+    ],
     "group": "application"
   },
   {
@@ -7692,6 +9009,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 404,
     "cap": "Local Machine Browser",
     "name": "Local Machine Browser",
+    "shifted": null,
+    "zmk": [
+      "C_AL_MY_COMPUTER"
+    ],
     "group": "application"
   },
   {
@@ -7699,6 +9020,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 406,
     "cap": "Internet Browser",
     "name": "Internet Browser",
+    "shifted": null,
+    "zmk": [
+      "C_AL_WWW"
+    ],
     "group": "application"
   },
   {
@@ -7706,6 +9031,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 409,
     "cap": "Network Chat",
     "name": "Network Chat",
+    "shifted": null,
+    "zmk": [
+      "C_AL_CHAT",
+      "C_AL_NETWORK_CHAT"
+    ],
     "group": "application"
   },
   {
@@ -7713,6 +9043,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 412,
     "cap": "Logoff",
     "name": "Logoff",
+    "shifted": null,
+    "zmk": [
+      "C_AL_LOGOFF"
+    ],
     "group": "application"
   },
   {
@@ -7720,6 +9054,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 414,
     "cap": "Terminal Lock/Screensaver",
     "name": "Terminal Lock/Screensaver",
+    "shifted": null,
+    "zmk": [
+      "C_AL_LOCK",
+      "C_AL_SCREENSAVER",
+      "C_AL_COFFEE"
+    ],
     "group": "application"
   },
   {
@@ -7727,6 +9067,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 415,
     "cap": "Control Panel",
     "name": "Control Panel",
+    "shifted": null,
+    "zmk": [
+      "C_AL_CONTROL_PANEL"
+    ],
     "group": "application"
   },
   {
@@ -7734,6 +9078,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 418,
     "cap": "Select Task/Application",
     "name": "Select Task/Application",
+    "shifted": null,
+    "zmk": [
+      "C_AL_SELECT_TASK"
+    ],
     "group": "application"
   },
   {
@@ -7741,6 +9089,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 419,
     "cap": "Next Task/Application",
     "name": "Next Task/Application",
+    "shifted": null,
+    "zmk": [
+      "C_AL_NEXT_TASK"
+    ],
     "group": "application"
   },
   {
@@ -7748,6 +9100,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 420,
     "cap": "Previous Task/Application",
     "name": "Previous Task/Application",
+    "shifted": null,
+    "zmk": [
+      "C_AL_PREV_TASK",
+      "C_AL_PREVIOUS_TASK"
+    ],
     "group": "application"
   },
   {
@@ -7755,6 +9112,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 422,
     "cap": "Integrated Help Center",
     "name": "Integrated Help Center",
+    "shifted": null,
+    "zmk": [
+      "C_AL_HELP"
+    ],
     "group": "application"
   },
   {
@@ -7762,6 +9123,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 423,
     "cap": "Documents",
     "name": "Documents",
+    "shifted": null,
+    "zmk": [
+      "C_AL_DOCS",
+      "C_AL_DOCUMENTS"
+    ],
     "group": "application"
   },
   {
@@ -7769,6 +9135,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 427,
     "cap": "Spell Check",
     "name": "Spell Check",
+    "shifted": null,
+    "zmk": [
+      "C_AL_SPELL",
+      "C_AL_SPELLCHECK"
+    ],
     "group": "application"
   },
   {
@@ -7776,6 +9147,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 430,
     "cap": "Keyboard Layout",
     "name": "Keyboard Layout",
+    "shifted": null,
+    "zmk": [
+      "C_AL_KEYBOARD_LAYOUT"
+    ],
     "group": "application"
   },
   {
@@ -7783,6 +9158,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 433,
     "cap": "Screen Saver",
     "name": "Screen Saver",
+    "shifted": null,
+    "zmk": [
+      "C_AL_SCREEN_SAVER"
+    ],
     "group": "application"
   },
   {
@@ -7790,6 +9169,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 436,
     "cap": "File Browser",
     "name": "File Browser",
+    "shifted": null,
+    "zmk": [
+      "C_AL_FILES",
+      "C_AL_FILE_BROWSER"
+    ],
     "group": "application"
   },
   {
@@ -7797,6 +9181,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 438,
     "cap": "Image Browser",
     "name": "Image Browser",
+    "shifted": null,
+    "zmk": [
+      "C_AL_IMAGES",
+      "C_AL_IMAGE_BROWSER"
+    ],
     "group": "application"
   },
   {
@@ -7804,6 +9193,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 439,
     "cap": "Audio Browser",
     "name": "Audio Browser",
+    "shifted": null,
+    "zmk": [
+      "C_AL_AUDIO",
+      "C_AL_AUDIO_BROWSER",
+      "C_AL_MUSIC"
+    ],
     "group": "application"
   },
   {
@@ -7811,6 +9206,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 440,
     "cap": "Movie Browser",
     "name": "Movie Browser",
+    "shifted": null,
+    "zmk": [
+      "C_AL_MOVIES",
+      "C_AL_MOVIE_BROWSER"
+    ],
     "group": "application"
   },
   {
@@ -7818,6 +9218,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 444,
     "cap": "Instant Messaging",
     "name": "Instant Messaging",
+    "shifted": null,
+    "zmk": [
+      "C_AL_IM",
+      "C_AL_INSTANT_MESSAGING"
+    ],
     "group": "application"
   },
   {
@@ -7825,6 +9230,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 445,
     "cap": "OEM Features/Tips/Tutorial Browser",
     "name": "OEM Features/Tips/Tutorial Browser",
+    "shifted": null,
+    "zmk": [
+      "C_AL_TIPS",
+      "C_AL_OEM_FEATURES",
+      "C_AL_TUTORIAL"
+    ],
     "group": "application"
   },
   {
@@ -7832,6 +9243,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 513,
     "cap": "New",
     "name": "New",
+    "shifted": null,
+    "zmk": [
+      "C_AC_NEW"
+    ],
     "group": "application"
   },
   {
@@ -7839,6 +9254,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 514,
     "cap": "Open",
     "name": "Open",
+    "shifted": null,
+    "zmk": [
+      "C_AC_OPEN"
+    ],
     "group": "application"
   },
   {
@@ -7846,6 +9265,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 515,
     "cap": "Close",
     "name": "Close",
+    "shifted": null,
+    "zmk": [
+      "C_AC_CLOSE"
+    ],
     "group": "application"
   },
   {
@@ -7853,6 +9276,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 516,
     "cap": "Exit",
     "name": "Exit",
+    "shifted": null,
+    "zmk": [
+      "C_AC_EXIT"
+    ],
     "group": "application"
   },
   {
@@ -7860,6 +9287,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 519,
     "cap": "Save",
     "name": "Save",
+    "shifted": null,
+    "zmk": [
+      "C_AC_SAVE"
+    ],
     "group": "application"
   },
   {
@@ -7867,6 +9298,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 520,
     "cap": "Print",
     "name": "Print",
+    "shifted": null,
+    "zmk": [
+      "C_AC_PRINT"
+    ],
     "group": "application"
   },
   {
@@ -7874,6 +9309,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 521,
     "cap": "Properties",
     "name": "Properties",
+    "shifted": null,
+    "zmk": [
+      "C_AC_PROPS",
+      "C_AC_PROPERTIES"
+    ],
     "group": "application"
   },
   {
@@ -7881,6 +9321,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 538,
     "cap": "Undo",
     "name": "Undo",
+    "shifted": null,
+    "zmk": [
+      "C_AC_UNDO"
+    ],
     "group": "application"
   },
   {
@@ -7888,6 +9332,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 539,
     "cap": "Copy",
     "name": "Copy",
+    "shifted": null,
+    "zmk": [
+      "C_AC_COPY"
+    ],
     "group": "application"
   },
   {
@@ -7895,6 +9343,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 540,
     "cap": "Cut",
     "name": "Cut",
+    "shifted": null,
+    "zmk": [
+      "C_AC_CUT"
+    ],
     "group": "application"
   },
   {
@@ -7902,6 +9354,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 541,
     "cap": "Paste",
     "name": "Paste",
+    "shifted": null,
+    "zmk": [
+      "C_AC_PASTE"
+    ],
     "group": "application"
   },
   {
@@ -7909,6 +9365,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 543,
     "cap": "Find",
     "name": "Find",
+    "shifted": null,
+    "zmk": [
+      "C_AC_FIND"
+    ],
     "group": "application"
   },
   {
@@ -7916,6 +9376,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 545,
     "cap": "Spotlight",
     "name": "Spotlight",
+    "shifted": null,
+    "zmk": [
+      "C_AC_SEARCH"
+    ],
     "group": "application"
   },
   {
@@ -7923,6 +9387,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 546,
     "cap": "Go To",
     "name": "Go To",
+    "shifted": null,
+    "zmk": [
+      "C_AC_GOTO"
+    ],
     "group": "application"
   },
   {
@@ -7930,6 +9398,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 547,
     "cap": "Home",
     "name": "Home",
+    "shifted": null,
+    "zmk": [
+      "C_AC_HOME"
+    ],
     "group": "application"
   },
   {
@@ -7937,6 +9409,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 548,
     "cap": "Back",
     "name": "Back",
+    "shifted": null,
+    "zmk": [
+      "C_AC_BACK"
+    ],
     "group": "application"
   },
   {
@@ -7944,6 +9420,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 549,
     "cap": "Forward",
     "name": "Forward",
+    "shifted": null,
+    "zmk": [
+      "C_AC_FORWARD"
+    ],
     "group": "application"
   },
   {
@@ -7951,6 +9431,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 550,
     "cap": "Stop",
     "name": "Stop",
+    "shifted": null,
+    "zmk": [
+      "C_AC_STOP"
+    ],
     "group": "application"
   },
   {
@@ -7958,6 +9442,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 551,
     "cap": "Refresh",
     "name": "Refresh",
+    "shifted": null,
+    "zmk": [
+      "C_AC_REFRESH"
+    ],
     "group": "application"
   },
   {
@@ -7965,6 +9453,12 @@ export const keyCatalog: KeyEntry[] = [
     "id": 554,
     "cap": "Bookmarks",
     "name": "Bookmarks",
+    "shifted": null,
+    "zmk": [
+      "C_AC_BOOKMARKS",
+      "C_AC_FAVORITES",
+      "C_AC_FAVOURITES"
+    ],
     "group": "application"
   },
   {
@@ -7972,6 +9466,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 557,
     "cap": "Zoom In",
     "name": "Zoom In",
+    "shifted": null,
+    "zmk": [
+      "C_AC_ZOOM_IN"
+    ],
     "group": "application"
   },
   {
@@ -7979,6 +9477,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 558,
     "cap": "Zoom Out",
     "name": "Zoom Out",
+    "shifted": null,
+    "zmk": [
+      "C_AC_ZOOM_OUT"
+    ],
     "group": "application"
   },
   {
@@ -7986,6 +9488,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 559,
     "cap": "Zoom",
     "name": "Zoom",
+    "shifted": null,
+    "zmk": [
+      "C_AC_ZOOM"
+    ],
     "group": "application"
   },
   {
@@ -7993,6 +9499,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 562,
     "cap": "View Toggle",
     "name": "View Toggle",
+    "shifted": null,
+    "zmk": [
+      "C_AC_VIEW_TOGGLE"
+    ],
     "group": "application"
   },
   {
@@ -8000,6 +9510,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 563,
     "cap": "Scroll Up",
     "name": "Scroll Up",
+    "shifted": null,
+    "zmk": [
+      "C_AC_SCROLL_UP"
+    ],
     "group": "application"
   },
   {
@@ -8007,6 +9521,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 564,
     "cap": "Scroll Down",
     "name": "Scroll Down",
+    "shifted": null,
+    "zmk": [
+      "C_AC_SCROLL_DOWN"
+    ],
     "group": "application"
   },
   {
@@ -8014,6 +9532,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 573,
     "cap": "Edit",
     "name": "Edit",
+    "shifted": null,
+    "zmk": [
+      "C_AC_EDIT"
+    ],
     "group": "application"
   },
   {
@@ -8021,6 +9543,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 607,
     "cap": "Cancel",
     "name": "Cancel",
+    "shifted": null,
+    "zmk": [
+      "C_AC_CANCEL"
+    ],
     "group": "application"
   },
   {
@@ -8028,6 +9554,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 617,
     "cap": "Insert Mode",
     "name": "Insert Mode",
+    "shifted": null,
+    "zmk": [
+      "C_AC_INS",
+      "C_AC_INSERT"
+    ],
     "group": "application"
   },
   {
@@ -8035,6 +9566,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 618,
     "cap": "Delete",
     "name": "Delete",
+    "shifted": null,
+    "zmk": [
+      "C_AC_DEL"
+    ],
     "group": "application"
   },
   {
@@ -8042,6 +9577,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 633,
     "cap": "Redo/Repeat",
     "name": "Redo/Repeat",
+    "shifted": null,
+    "zmk": [
+      "C_AC_REDO"
+    ],
     "group": "application"
   },
   {
@@ -8049,6 +9588,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 649,
     "cap": "Reply",
     "name": "Reply",
+    "shifted": null,
+    "zmk": [
+      "C_AC_REPLY"
+    ],
     "group": "application"
   },
   {
@@ -8056,6 +9599,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 651,
     "cap": "Forward Msg",
     "name": "Forward Msg",
+    "shifted": null,
+    "zmk": [
+      "C_AC_FORWARD_MAIL"
+    ],
     "group": "application"
   },
   {
@@ -8063,6 +9610,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 652,
     "cap": "Send",
     "name": "Send",
+    "shifted": null,
+    "zmk": [
+      "C_AC_SEND"
+    ],
     "group": "application"
   },
   {
@@ -8070,6 +9621,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 669,
     "cap": "🌐",
     "name": "Globe",
+    "shifted": null,
+    "zmk": [
+      "GLOBE",
+      "C_AC_NEXT_KEYBOARD_LAYOUT_SELECT"
+    ],
     "group": "application"
   },
   {
@@ -8077,6 +9633,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 671,
     "cap": "Mission Control",
     "name": "Mission Control",
+    "shifted": null,
+    "zmk": [
+      "C_AC_DESKTOP_SHOW_ALL_WINDOWS"
+    ],
     "group": "application"
   },
   {
@@ -8084,6 +9644,10 @@ export const keyCatalog: KeyEntry[] = [
     "id": 674,
     "cap": "Apps",
     "name": "Apps",
+    "shifted": null,
+    "zmk": [
+      "C_AC_DESKTOP_SHOW_ALL_APPLICATIONS"
+    ],
     "group": "application"
   },
   {
@@ -8091,6 +9655,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 711,
     "cap": "Keyboard Input Assist Previous",
     "name": "Keyboard Input Assist Previous",
+    "shifted": null,
+    "zmk": [
+      "C_KBIA_PREV",
+      "C_KEYBOARD_INPUT_ASSIST_PREVIOUS"
+    ],
     "group": "other"
   },
   {
@@ -8098,6 +9667,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 712,
     "cap": "Keyboard Input Assist Next",
     "name": "Keyboard Input Assist Next",
+    "shifted": null,
+    "zmk": [
+      "C_KBIA_NEXT",
+      "C_KEYBOARD_INPUT_ASSIST_NEXT"
+    ],
     "group": "other"
   },
   {
@@ -8105,6 +9679,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 713,
     "cap": "Keyboard Input Assist Previous Group",
     "name": "Keyboard Input Assist Previous Group",
+    "shifted": null,
+    "zmk": [
+      "C_KBIA_PREV_GRP",
+      "C_KEYBOARD_INPUT_ASSIST_PREVIOUS_GROUP"
+    ],
     "group": "other"
   },
   {
@@ -8112,6 +9691,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 714,
     "cap": "Keyboard Input Assist Next Group",
     "name": "Keyboard Input Assist Next Group",
+    "shifted": null,
+    "zmk": [
+      "C_KBIA_NEXT_GRP",
+      "C_KEYBOARD_INPUT_ASSIST_NEXT_GROUP"
+    ],
     "group": "other"
   },
   {
@@ -8119,6 +9703,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 715,
     "cap": "Keyboard Input Assist Accept",
     "name": "Keyboard Input Assist Accept",
+    "shifted": null,
+    "zmk": [
+      "C_KBIA_ACCEPT",
+      "C_KEYBOARD_INPUT_ASSIST_ACCEPT"
+    ],
     "group": "other"
   },
   {
@@ -8126,6 +9715,11 @@ export const keyCatalog: KeyEntry[] = [
     "id": 716,
     "cap": "Keyboard Input Assist Cancel",
     "name": "Keyboard Input Assist Cancel",
+    "shifted": null,
+    "zmk": [
+      "C_KBIA_CANCEL",
+      "C_KEYBOARD_INPUT_ASSIST_CANCEL"
+    ],
     "group": "other"
   }
 ];

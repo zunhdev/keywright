@@ -4,13 +4,11 @@ import {
   ComboBox as AriaComboBox,
   type ComboBoxProps as AriaComboBoxProps,
   Button as AriaButton,
-  Header,
   Input,
   Label,
   ListBox,
   ListBoxItem,
   type ListBoxItemProps,
-  ListBoxSection,
   Popover,
 } from "react-aria-components";
 
@@ -58,16 +56,6 @@ export function ComboBox<T extends object>({
         <ListBox className={overlay.collection}>{children}</ListBox>
       </Popover>
     </AriaComboBox>
-  );
-}
-
-/** A titled group of a combobox's options, such as Letters in the key popup. */
-export function ComboBoxSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <ListBoxSection>
-      <Header className={overlay.header}>{title}</Header>
-      {children}
-    </ListBoxSection>
   );
 }
 

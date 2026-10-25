@@ -14,6 +14,7 @@ declare const classes: {
   readonly layers: string;
   readonly mono: string;
   readonly panel: string;
+  readonly picker: string;
   readonly row: string;
   readonly section: string;
   readonly state: string;

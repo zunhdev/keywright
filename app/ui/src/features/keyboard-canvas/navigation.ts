@@ -8,6 +8,14 @@ import type { PhysicalKey } from "../../ipc/bindings.ts";
 /** Where an arrow key moves. */
 export type Direction = "up" | "down" | "left" | "right";
 
+/** Where each arrow key moves, by its `KeyboardEvent.key`. */
+export const ARROWS: Readonly<Record<string, Direction>> = {
+  ArrowUp: "up",
+  ArrowDown: "down",
+  ArrowLeft: "left",
+  ArrowRight: "right",
+};
+
 /** A key's centre, in key units, after its rotation. */
 function centre(key: PhysicalKey): [number, number] {
   const angle = (key.rotation / 100) * (Math.PI / 180);

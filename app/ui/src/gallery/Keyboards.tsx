@@ -8,6 +8,7 @@ import { NoKeyboard } from "../features/connection/NoKeyboard.tsx";
 import { StateCard } from "../features/connection/StateCard.tsx";
 import { UnlockSteps } from "../features/connection/UnlockSheet.tsx";
 import { Inspector } from "../features/inspector/Inspector.tsx";
+import { KeyPicker } from "../features/key-picker/KeyPicker.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { Keycap, type KeycapProps, type KeycapState } from "../features/keyboard-canvas/Keycap.tsx";
 import { LayersPane } from "../features/layers/LayersPane.tsx";
@@ -15,6 +16,7 @@ import { KeySearch } from "../features/search/KeySearch.tsx";
 import type { Key, Keycap as KeycapData, SessionStatus } from "../ipc/bindings.ts";
 import { domCodes, keyCatalog, macActions, sofleGuide, sofleKeymap } from "../test/sofle.ts";
 
+import overlay from "../design-system/overlay.module.css";
 import styles from "./Gallery.module.css";
 
 /** A key that shows `keycap`, named for what it shows. */
@@ -188,7 +190,33 @@ useStore.setState({
   session: gallerySession,
   keymap: sofleKeymap,
   keyCatalog,
+  // `?keyboard=iso` draws the key picker's keyboard as an ISO one.
+  keyboardType: new URLSearchParams(location.search).get("keyboard") === "iso" ? "iso" : "ansi",
   domCodes,
   macActions,
   guides: { "": sofleGuide, "keebart-sofle-choc-pro-bt": sofleGuide },
 });
+
+/** The key picker (design §5.6) as it opens for Q and for {, and searching for "del". */
+export function Pickers() {
+  const examples = [
+    { chosen: { key: "keyboard:20", shift: false }, query: "" },
+    { chosen: { key: "keyboard:47", shift: true }, query: "" },
+    { chosen: { key: "keyboard:20", shift: false }, query: "del" },
+  ] as const;
+  return (
+    <div className={styles.row}>
+      {examples.map(({ chosen, query }) => (
+        <div key={`${chosen.key}${query}`} className={`${overlay.popover} ${styles.picker}`}>
+          <KeyPicker
+            chosen={chosen}
+            initialQuery={query}
+            onChoose={() => {
+              // The gallery only shows it.
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}

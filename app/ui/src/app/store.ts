@@ -9,6 +9,7 @@ import type {
   DomCode,
   GuardWarning,
   KeyboardGuide,
+  KeyboardType,
   KeyEntry,
   Keymap,
   SessionStatus,
@@ -34,8 +35,10 @@ export interface SessionSlice {
    * `undefined` until the Rust side has said.
    */
   readonly trafficLights: number | null | undefined;
-  /** Every key ZMK names, for the inspector's key popup, once loaded. */
+  /** Every key ZMK names, for the inspector's key picker, once loaded. */
   readonly keyCatalog: readonly KeyEntry[];
+  /** The kind of keyboard macOS takes the keyboard to be, which the key picker draws. */
+  readonly keyboardType: KeyboardType;
   /** The key behind each `KeyboardEvent.code`, for the shortcut recorder, once loaded. */
   readonly domCodes: readonly DomCode[];
   /** The Mac actions this Mac's macOS version offers, once loaded (MAC-4). */
@@ -149,6 +152,7 @@ const sessionSlice: StateCreator<Store, [], [], SessionSlice> = () => ({
   bluetoothPermission: null,
   trafficLights: undefined,
   keyCatalog: [],
+  keyboardType: "ansi",
   domCodes: [],
   macActions: [],
   guides: {},

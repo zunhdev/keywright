@@ -13,7 +13,7 @@ use keywright_core::keycap;
 use keywright_core::keymap::{Keymap, LayerId};
 use keywright_core::keys::source::Labels;
 use keywright_core::keys::{self, KeyCategory};
-use keywright_core::mac::presets;
+use keywright_core::mac::{self, presets};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
@@ -746,7 +746,7 @@ pub fn other_behaviors(behaviors: &BehaviorTable) -> Vec<OtherBehavior> {
         .collect()
 }
 
-/// A key the key popup offers (design §5.4), in its group.
+/// A key the key picker offers (design §5.6), in its group.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 pub struct KeyEntry {
     /// The key's usage page.
@@ -757,11 +757,17 @@ pub struct KeyEntry {
     pub cap: String,
     /// What text calls it, such as `Delete`.
     pub name: String,
+    /// What it types with Shift, if that's another character, such as `!` for 1.
+    pub shifted: Option<String>,
+    /// What ZMK calls it alone, without modifiers: the name Keywright writes first, such as
+    /// `BSPC`, then the others, such as `BACKSPACE`. The key picker's search finds keys by
+    /// them.
+    pub zmk: Vec<String>,
     /// Its group.
     pub group: Group,
 }
 
-/// A group of keys in the key popup.
+/// A group of keys in the key picker's More tab.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "kebab-case")]
 pub enum Group {
@@ -811,7 +817,7 @@ impl From<KeyCategory> for Group {
 }
 
 /// Every key ZMK names, with its labels in the input source and its group, for the key
-/// popup. The UI asks once, and again in another input source.
+/// picker. The UI asks once, and again in another input source.
 #[tauri::command]
 #[specta::specta]
 #[must_use]
@@ -823,8 +829,8 @@ pub fn key_catalog(app: tauri::State<'_, AppState>) -> Vec<KeyEntry> {
     catalog(&app.context().labels)
 }
 
-/// Every key ZMK names, with its labels and group. Right-hand modifiers are left out: the
-/// modifier toggles choose a side.
+/// Every key ZMK names, with its labels, its ZMK names and its group. Right-hand modifiers
+/// are left out: the modifier toggles choose a side.
 pub fn catalog(labels: &Labels) -> Vec<KeyEntry> {
     keys::named_usages()
         .filter(|usage| !(usage.page == UsagePage::Keyboard && (0xE4..=0xE7).contains(&usage.id)))
@@ -835,10 +841,67 @@ pub fn catalog(labels: &Labels) -> Vec<KeyEntry> {
                 id: usage.id,
                 cap,
                 name,
+                shifted: labels.shifted(usage),
+                zmk: zmk_names(usage),
                 group: KeyCategory::of(usage).into(),
             })
         })
         .collect()
+}
+
+/// What ZMK calls a key alone: the name Keywright writes first, then the others in the
+/// order `keys.h` defines them.
+fn zmk_names(usage: HidUsage) -> Vec<String> {
+    let alone = hid::Shortcut {
+        mods: Mods::NONE,
+        usage,
+    };
+    let written = keys::zmk::name(alone);
+    written
+        .into_iter()
+        .chain(
+            keys::zmk::names()
+                .filter(|candidate| candidate.shortcut == alone && Some(candidate.name) != written)
+                .map(|candidate| candidate.name),
+        )
+        .map(str::to_owned)
+        .collect()
+}
+
+/// The kind of keyboard macOS takes the keyboard to be (tech spec §11.1), which the key
+/// picker draws.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "kebab-case")]
+pub enum KeyboardType {
+    /// The US layout, with a wide Return key.
+    Ansi,
+    /// The European layout: a tall Return key, and an extra key right of left Shift.
+    Iso,
+    /// The Japanese layout, with extra keys of its own.
+    Jis,
+}
+
+impl From<mac::KeyboardType> for KeyboardType {
+    fn from(keyboard: mac::KeyboardType) -> Self {
+        match keyboard {
+            mac::KeyboardType::Ansi => Self::Ansi,
+            mac::KeyboardType::Iso => Self::Iso,
+            mac::KeyboardType::Jis => Self::Jis,
+        }
+    }
+}
+
+/// The kind of keyboard the key labels are for, for the key picker's Keyboard tab. Like
+/// the catalog, it changes with the input source.
+#[tauri::command]
+#[specta::specta]
+#[must_use]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Tauri hands a command its arguments by value"
+)]
+pub fn keyboard_type(app: tauri::State<'_, AppState>) -> KeyboardType {
+    app.context().labels.keyboard().into()
 }
 
 /// A physical key, by its `KeyboardEvent.code`, for the shortcut recorder (MAC-2, tech
@@ -916,14 +979,15 @@ mod tests {
     use keywright_core::behavior::BehaviorId;
     use keywright_core::hid::{self, HidUsage, Mods, UsagePage};
     use keywright_core::keymap::LayerId;
-    use keywright_core::keys::source::Labels;
+    use keywright_core::keys::source::{Labels, Typed};
+    use keywright_core::mac;
     use keywright_device::{Connection, Peer, Session, State};
     use keywright_sim::Simulator;
     use serde_json::json;
 
     use super::{
-        Action, Category, LIGHTING, Page, Param, Shortcut, Value, catalog, dom_codes, mac_choices,
-        words,
+        Action, Category, KeyboardType, LIGHTING, Page, Param, Shortcut, Value, catalog, dom_codes,
+        mac_choices, words,
     };
     use crate::ipc::keymap::Keymap;
     use crate::ipc::{AppState, Context};
@@ -1196,7 +1260,12 @@ mod tests {
     #[tokio::test]
     async fn the_words_for_keys_and_actions_are_the_macs() {
         let (_, keymap) = ready_sofle().await;
-        let catalog = catalog(&Labels::us());
+        // The catalog's ZMK names are for the key picker's search, and show only with Show
+        // ZMK names on (EDIT-6).
+        let catalog: Vec<_> = catalog(&Labels::us())
+            .into_iter()
+            .map(|key| (key.cap, key.name, key.shifted))
+            .collect();
         let all_mods = words(
             Shortcut {
                 mods: 0x0F,
@@ -1252,6 +1321,39 @@ mod tests {
         assert!(find(Page::Keyboard, 0xE4).is_none(), "right Control");
         assert_eq!(find(Page::Consumer, 0xE9).unwrap().name, "Volume Up");
         assert!(catalog.len() > 300);
+    }
+
+    /// The key picker shows Shift's character on a keycap, and its search finds keys by
+    /// their ZMK names, the one Keywright writes first.
+    #[test]
+    fn the_key_catalog_has_shift_characters_and_zmk_names() {
+        let catalog = catalog(&Labels::us());
+        let find = |page, id| catalog.iter().find(|key| key.page == page && key.id == id);
+        let one = find(Page::Keyboard, 0x1E).unwrap();
+        assert_eq!(one.shifted.as_deref(), Some("!"));
+        assert_eq!(one.zmk, ["N1", "NUMBER_1", "NUM_1"]);
+        let delete = find(Page::Keyboard, 0x2A).unwrap();
+        assert_eq!(delete.shifted, None);
+        assert_eq!(delete.zmk.first().map(String::as_str), Some("BSPC"));
+        assert!(delete.zmk.iter().any(|name| name == "BACKSPACE"));
+        assert_eq!(
+            find(Page::Consumer, 0xE9)
+                .unwrap()
+                .zmk
+                .first()
+                .map(String::as_str),
+            Some("C_VOL_UP")
+        );
+    }
+
+    #[test]
+    fn the_keyboard_type_is_the_labels_one() {
+        assert_eq!(
+            KeyboardType::from(Labels::us().keyboard()),
+            KeyboardType::Ansi
+        );
+        let iso = Labels::from_typed(mac::KeyboardType::Iso, |_| Typed::default());
+        assert_eq!(KeyboardType::from(iso.keyboard()), KeyboardType::Iso);
     }
 
     /// The inspector sets any action, on several keys at once, as one change.

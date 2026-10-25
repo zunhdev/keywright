@@ -190,3 +190,11 @@ fn on_an_iso_keyboard_the_key_left_of_1_is_asked_about_by_its_iso_code() {
     assert_eq!(label(GRAVE, &abc), "§");
     assert_eq!(label(key(0x64), &abc), "`");
 }
+
+#[test]
+fn labels_say_which_kind_of_keyboard_they_are_for() {
+    assert_eq!(Labels::us().keyboard(), KeyboardType::Ansi);
+    assert_eq!(german().keyboard(), KeyboardType::Ansi);
+    let iso = Labels::from_typed(KeyboardType::Iso, |_| Typed::default());
+    assert_eq!(iso.keyboard(), KeyboardType::Iso);
+}

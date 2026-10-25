@@ -6,33 +6,16 @@ import { useId, useState } from "react";
 
 import { useStore } from "../../app/store.ts";
 import { Button } from "../../design-system/Button.tsx";
-import { ComboBox, ComboBoxItem, ComboBoxSection } from "../../design-system/ComboBox.tsx";
+import { ComboBox, ComboBoxItem } from "../../design-system/ComboBox.tsx";
 import { Segment, SegmentedControl, ToggleGroup } from "../../design-system/SegmentedControl.tsx";
 import { useMessages } from "../../i18n/messages.ts";
-import type { Group, KeyEntry, Layer, Shortcut } from "../../ipc/bindings.ts";
+import type { Layer, Shortcut } from "../../ipc/bindings.ts";
+import { keyId } from "../key-picker/boards.ts";
+import { KeyField } from "../key-picker/KeyField.tsx";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { RecorderField } from "./RecorderField.tsx";
 
 import styles from "./Inspector.module.css";
-
-/** The key popup's groups, in order (design §5.4). */
-const GROUPS: readonly Group[] = [
-  "letter",
-  "number",
-  "symbol",
-  "editing",
-  "navigation",
-  "function",
-  "modifier",
-  "numpad",
-  "international",
-  "media",
-  "application",
-  "other",
-];
-
-/** A key's ID in the key popup. */
-const keyId = (key: { page: string; id: number }) => `${key.page}:${key.id}`;
 
 /**
  * The modifiers, in Apple's order ⌃⌥⇧⌘, with their symbols and their left-hand bits in
@@ -66,51 +49,13 @@ function bits(selected: Iterable<unknown>, right: boolean): number {
   );
 }
 
-/** The key popup: every key, grouped and searchable, by its keycap and its name. */
-function KeyPicker({
-  label,
-  value,
-  keys,
-  onChange,
-}: {
-  label: string;
-  value: { page: string; id: number } | null;
-  keys: readonly KeyEntry[];
-  onChange: (key: KeyEntry) => void;
-}) {
-  const messages = useMessages();
-  return (
-    <ComboBox
-      // Shows the key chosen straight away, and the key's action once it changes.
-      key={value === null ? "none" : keyId(value)}
-      label={label}
-      defaultValue={value === null ? null : keyId(value)}
-      onChange={(id) => {
-        const key = keys.find((each) => keyId(each) === id);
-        if (key !== undefined) onChange(key);
-      }}
-    >
-      {GROUPS.map((group) => {
-        const members = keys.filter((key) => key.group === group);
-        return members.length === 0 ? null : (
-          <ComboBoxSection key={group} title={messages.format(`group.${group}`)}>
-            {members.map((key) => (
-              <ComboBoxItem key={keyId(key)} id={keyId(key)} textValue={key.name}>
-                {key.cap === key.name ? key.name : `${key.cap}  ${key.name}`}
-              </ComboBoxItem>
-            ))}
-          </ComboBoxSection>
-        );
-      })}
-    </ComboBox>
-  );
-}
-
 /**
  * A key or shortcut (design §5.3, §5.4): the shortcut, with Record to press it on the
- * keyboard; the key, from the key popup; and the modifiers held with it, ⌃ ⌥ ⇧ ⌘,
- * left-hand unless Details says otherwise. Each change goes to `onChange` once there's a
- * key. `recorder` names its recorder, such as `KEY_RECORDER` for the one ⌘R starts.
+ * keyboard; the key, from the key picker (§5.6); and the modifiers held with it, ⌃ ⌥ ⇧ ⌘,
+ * left-hand unless Details says otherwise. A character, such as { from the picker's
+ * Symbols tab, holds ⇧ just when it needs it. Each change goes to `onChange` once there's
+ * a key. `recorder` names its
+ * recorder, such as `KEY_RECORDER` for the one ⌘R starts.
  */
 export function ShortcutField({
   label,
@@ -125,7 +70,6 @@ export function ShortcutField({
 }) {
   const messages = useMessages();
   const ownRecorder = useId();
-  const keys = useStore((store) => store.keyCatalog);
   const mods = value?.mods ?? 0;
   const [right, setRight] = useState(mods > 0x0f);
   const [details, setDetails] = useState(false);
@@ -138,12 +82,19 @@ export function ShortcutField({
   return (
     <div className={styles.fields}>
       <RecorderField value={value} recorder={recorder ?? ownRecorder} onRecord={onChange} />
-      <KeyPicker
+      <KeyField
         label={label}
         value={value}
-        keys={keys}
-        onChange={(key) => {
-          change({ page: key.page, id: key.id });
+        shifted={held(mods).includes("shift")}
+        onChange={(key, shift) => {
+          // A character holds ⇧ just when it needs it; another key leaves the modifiers.
+          const others = held(mods).filter((modifier) => modifier !== "shift");
+          const withShift = shift === true ? [...others, "shift"] : others;
+          change({
+            page: key.page,
+            id: key.id,
+            ...(shift === null ? {} : { mods: bits(withShift, right) }),
+          });
         }}
       />
       <ToggleGroup
@@ -189,7 +140,10 @@ export function ShortcutField({
   );
 }
 
-/** A modifier on its own, such as what holding a key holds: Control, Shift, Option, Command or Caps Lock. */
+/**
+ * A modifier on its own, such as what holding a key holds: Control, Shift, Option, Command
+ * or Caps Lock, from a short pop-up (design §5.6).
+ */
 export function ModifierPicker({
   label,
   value,
@@ -202,14 +156,22 @@ export function ModifierPicker({
   const keys = useStore((store) => store.keyCatalog);
   const modifiers = keys.filter((key) => key.group === "modifier");
   return (
-    <KeyPicker
+    <ComboBox
+      // Shows the modifier chosen straight away, and the key's action once it changes.
+      key={value === null ? "none" : keyId(value)}
       label={label}
-      value={value}
-      keys={modifiers}
-      onChange={(key) => {
-        onChange({ mods: 0, page: key.page, id: key.id });
+      defaultValue={value === null ? null : keyId(value)}
+      onChange={(id) => {
+        const key = modifiers.find((each) => keyId(each) === id);
+        if (key !== undefined) onChange({ mods: 0, page: key.page, id: key.id });
       }}
-    />
+    >
+      {modifiers.map((key) => (
+        <ComboBoxItem key={keyId(key)} id={keyId(key)} textValue={key.name}>
+          {`${key.cap}  ${key.name}`}
+        </ComboBoxItem>
+      ))}
+    </ComboBox>
   );
 }
 
