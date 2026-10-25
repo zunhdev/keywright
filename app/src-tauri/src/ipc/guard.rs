@@ -11,7 +11,7 @@ use keywright_core::edit::Edit;
 use keywright_core::guard::{self, Activation, ConditionalLayer, GuardFinding, Reachability};
 use keywright_core::keycap;
 use keywright_core::keymap::{Keymap, LayerId};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use specta::Type;
 
 /// What a change would break (SAF-2). In TypeScript, `{ kind: "last-unlock-key" }` and
@@ -75,7 +75,7 @@ pub fn check(
 }
 
 /// A key on a layer.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct KeyRef {
     /// The layer, by ID.
     pub layer: u32,

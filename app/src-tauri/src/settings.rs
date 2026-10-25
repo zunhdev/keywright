@@ -6,12 +6,13 @@
 //! changes. The window has the General tab so far: _Show in menu bar_ and _Open at login_.
 //! The other tabs come with KEY-67, and the first run's menu bar step with KEY-72.
 
-use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
+
+use crate::json_file;
 
 /// The Settings window's label.
 pub const WINDOW: &str = "settings";
@@ -43,15 +44,12 @@ impl Default for Settings {
 impl Settings {
     /// The settings in Keywright's folder, or the defaults.
     pub fn load() -> Self {
-        path().map_or_else(Self::default, |path| Self::read(&path))
+        json_file::path(FILE).map_or_else(Self::default, |path| Self::read(&path))
     }
 
     /// The settings in the file at `path`, or the defaults.
     fn read(path: &Path) -> Self {
-        let Ok(text) = fs::read_to_string(path) else {
-            return Self::default();
-        };
-        serde_json::from_str(&text).unwrap_or_default()
+        json_file::read(path)
     }
 
     /// Saves the settings in Keywright's folder.
@@ -60,20 +58,14 @@ impl Settings {
     ///
     /// Fails if the home folder isn't known, or the file can't be written.
     pub fn save(self) -> io::Result<()> {
-        let path = path().ok_or_else(|| io::Error::other("the home folder isn't known"))?;
+        let path =
+            json_file::path(FILE).ok_or_else(|| io::Error::other("the home folder isn't known"))?;
         self.write(&path)
     }
 
-    /// Writes the settings to `path`, whole or not at all: to a hidden file first, then
-    /// renamed over it.
+    /// Writes the settings to `path`, whole or not at all.
     fn write(self, path: &Path) -> io::Result<()> {
-        if let Some(folder) = path.parent() {
-            fs::create_dir_all(folder)?;
-        }
-        let text = serde_json::to_string_pretty(&self).map_err(io::Error::other)?;
-        let hidden = path.with_file_name(format!(".{FILE}.new"));
-        fs::write(&hidden, text + "\n")?;
-        fs::rename(&hidden, path)
+        json_file::write(path, &self)
     }
 }
 
@@ -100,13 +92,11 @@ pub fn open_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     Ok(())
 }
 
-/// Where the settings file is, if the home folder is known.
-fn path() -> Option<PathBuf> {
-    keywright_platform::paths::app_support_dir().map(|dir| dir.join(FILE))
-}
-
 #[cfg(test)]
 mod tests {
+    use std::fs;
+    use std::path::PathBuf;
+
     use super::*;
 
     /// A file in the system's temporary folder, removed when dropped.

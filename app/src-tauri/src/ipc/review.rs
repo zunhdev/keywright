@@ -227,7 +227,7 @@ impl AppState {
             &keyboard.behaviors,
             snapshot.support_pack(),
             &editor.changes(),
-            &self.labels(),
+            &self.context().labels,
         ))
     }
 

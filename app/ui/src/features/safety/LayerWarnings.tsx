@@ -1,23 +1,12 @@
 import { TriangleAlert } from "lucide-react";
 
-import { useStore } from "../../app/store.ts";
 import { Button } from "../../design-system/Button.tsx";
 import { Icon } from "../../design-system/Icon.tsx";
 import { useMessages } from "../../i18n/messages.ts";
-import type { KeyRef, Keymap, Layer } from "../../ipc/bindings.ts";
-import { switchLayer } from "../keyboard-canvas/edits.ts";
+import type { Keymap, Layer } from "../../ipc/bindings.ts";
+import { showKeys } from "../keyboard-canvas/edits.ts";
 
 import styles from "./Safety.module.css";
-
-/** Shows the keys a warning is about: their layer, with them selected. */
-function showKeys(keys: readonly KeyRef[]): void {
-  const [first] = keys;
-  if (first === undefined) return;
-  switchLayer(first.layer);
-  useStore
-    .getState()
-    .select(keys.filter((key) => key.layer === first.layer).map((key) => key.position));
-}
 
 /**
  * What's wrong with the keymap as it is, for a layer (design §5.1, SAF-2): no key can

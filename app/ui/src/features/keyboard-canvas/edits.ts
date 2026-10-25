@@ -7,7 +7,13 @@
 import { shownLayer, useStore } from "../../app/store.ts";
 import { toasts } from "../../design-system/Toast.tsx";
 import { messages } from "../../i18n/messages.ts";
-import { type Action, type AppError, commands, type KeyAction } from "../../ipc/bindings.ts";
+import {
+  type Action,
+  type AppError,
+  commands,
+  type KeyAction,
+  type KeyRef,
+} from "../../ipc/bindings.ts";
 
 /** How long a toast about a failed change stays, in ms. */
 const TOAST = 5000;
@@ -119,4 +125,14 @@ export function switchLayer(id: number): void {
       changed: shown.keys.filter((key) => key.changed).length,
     }),
   });
+}
+
+/** Shows the keys something is about, such as a warning: their layer, with them selected. */
+export function showKeys(keys: readonly KeyRef[]): void {
+  const [first] = keys;
+  if (first === undefined) return;
+  switchLayer(first.layer);
+  useStore
+    .getState()
+    .select(keys.filter((key) => key.layer === first.layer).map((key) => key.position));
 }

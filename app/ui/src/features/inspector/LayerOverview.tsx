@@ -3,15 +3,16 @@ import { LOCALE } from "../../i18n/messages.ts";
 import type { Keymap, Layer } from "../../ipc/bindings.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { RenameField } from "../layers/RenameField.tsx";
+import { FixAll, MacFindings } from "../mac-check/MacFindings.tsx";
 import { LayerWarnings } from "../safety/LayerWarnings.tsx";
 
 import styles from "./Inspector.module.css";
 
 /**
  * The inspector with no key selected (design §5.1): the layer shown, how many of its keys
- * are changed, its name to edit, how it's reached (LAY-4), and the knobs, which can't be
- * changed yet (VIEW-4), and what's wrong with it (SAF-2). Its Mac compatibility comes with
- * the compatibility check (KEY-62).
+ * are changed, its name to edit, how it's reached (LAY-4), its keys that don't work on a
+ * Mac, with their fixes (MAC-7), what's wrong with it (SAF-2), and the knobs, which can't
+ * be changed yet (VIEW-4).
  */
 export function LayerOverview({ keymap, layer }: { keymap: Keymap; layer: Layer }) {
   const messages = useMessages();
@@ -50,6 +51,15 @@ export function LayerOverview({ keymap, layer }: { keymap: Keymap; layer: Layer 
           ))}
         </ul>
       </section>
+      {layer.macFindings.length === 0 ? null : (
+        <section className={styles.fields} aria-label={messages.format("mac.section")}>
+          <h3 className={styles.label}>{messages.format("mac.section")}</h3>
+          <MacFindings findings={layer.macFindings} />
+          {layer.macFindings.filter((found) => found.fix !== null).length > 1 ? (
+            <FixAll findings={layer.macFindings} />
+          ) : null}
+        </section>
+      )}
       <LayerWarnings keymap={keymap} layer={layer} />
       <p className={styles.note}>{messages.format("overview.hint")}</p>
       {keymap.knobs.length === 0 ? null : (

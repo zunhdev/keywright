@@ -1835,7 +1835,8 @@ export const sofleKeymap: Keymap = {
       ],
       "changed": false,
       "warnings": [],
-      "restorable": false
+      "restorable": false,
+      "macFindings": []
     },
     {
       "id": 1,
@@ -2975,7 +2976,8 @@ export const sofleKeymap: Keymap = {
       ],
       "changed": false,
       "warnings": [],
-      "restorable": false
+      "restorable": false,
+      "macFindings": []
     },
     {
       "id": 2,
@@ -4007,7 +4009,93 @@ export const sofleKeymap: Keymap = {
       ],
       "changed": false,
       "warnings": [],
-      "restorable": false
+      "restorable": false,
+      "macFindings": [
+        {
+          "finding": {
+            "layer": 2,
+            "position": 13,
+            "page": "keyboard",
+            "id": 73
+          },
+          "place": "Left half, row 2, key 2",
+          "name": "Insert (Windows style)",
+          "reason": "Macs have no Insert key, so it does nothing.",
+          "fix": null
+        },
+        {
+          "finding": {
+            "layer": 2,
+            "position": 14,
+            "page": "keyboard",
+            "id": 70
+          },
+          "place": "Left half, row 2, key 3",
+          "name": "Print Screen (Windows style)",
+          "reason": "It doesn't take a screenshot on a Mac.",
+          "fix": "⇧⌘3"
+        },
+        {
+          "finding": {
+            "layer": 2,
+            "position": 15,
+            "page": "keyboard",
+            "id": 101
+          },
+          "place": "Left half, row 2, key 4",
+          "name": "Menu key (Windows style)",
+          "reason": "Macs open menus with a Control-click, not a key, so it does nothing.",
+          "fix": null
+        },
+        {
+          "finding": {
+            "layer": 2,
+            "position": 37,
+            "page": "keyboard",
+            "id": 122
+          },
+          "place": "Left half, row 4, key 2",
+          "name": "Undo (Linux style)",
+          "reason": "It doesn't do anything on a Mac.",
+          "fix": "⌘Z"
+        },
+        {
+          "finding": {
+            "layer": 2,
+            "position": 38,
+            "page": "keyboard",
+            "id": 123
+          },
+          "place": "Left half, row 4, key 3",
+          "name": "Cut (Linux style)",
+          "reason": "It doesn't do anything on a Mac.",
+          "fix": "⌘X"
+        },
+        {
+          "finding": {
+            "layer": 2,
+            "position": 39,
+            "page": "keyboard",
+            "id": 124
+          },
+          "place": "Left half, row 4, key 4",
+          "name": "Copy (Linux style)",
+          "reason": "It doesn't do anything on a Mac.",
+          "fix": "⌘C"
+        },
+        {
+          "finding": {
+            "layer": 2,
+            "position": 40,
+            "page": "keyboard",
+            "id": 125
+          },
+          "place": "Left half, row 4, key 5",
+          "name": "Paste (Linux style)",
+          "reason": "It doesn't do anything on a Mac.",
+          "fix": "⌘V"
+        }
+      ]
     },
     {
       "id": 3,
@@ -4899,7 +4987,8 @@ export const sofleKeymap: Keymap = {
       ],
       "changed": false,
       "warnings": [],
-      "restorable": false
+      "restorable": false,
+      "macFindings": []
     }
   ],
   "freeLayerSlots": 0,

@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.24 — for review                                                       |
+| **Status**    | Draft v0.25 — for review                                                       |
 | **Date**      | 2026-10-25                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -83,12 +83,12 @@ This document defines how Keywright looks, reads and behaves for v1.0: informati
 ├──────────────┴─────────────────────────────────────────────────┴──────────────────┤
 ```
 
-| Region            | Width                      | Behaviour                                                                                                                                                                                                                                                        |
-| ----------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Toolbar**       | full, 52 px high           | Keyboard name, connection chip, search, changes button, Save. It is the window's drag area, and holds the window's traffic lights on its left; the name starts 16 px after them. In full screen, where macOS hides them, it starts at the toolbar's usual 12 px. |
-| **Layer sidebar** | 220 px (180–280 resizable) | Collapsible (⌃⌘S). Collapses automatically when the window is narrower than 1100 px.                                                                                                                                                                             |
-| **Canvas**        | flexible                   | Shows the selected layer's name and the keyboard, scaled to fit. Zoom with ⌘+ / ⌘− / ⌘0.                                                                                                                                                                         |
-| **Inspector**     | 320 px (300–400 resizable) | Collapsible (⌥⌘0). Always shows something: the selected key, or the layer overview.                                                                                                                                                                              |
+| Region            | Width                      | Behaviour                                                                                                                                                                                                                                                                   |
+| ----------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Toolbar**       | full, 52 px high           | Keyboard name, connection chip, search, Mac check, changes button, Save. It is the window's drag area, and holds the window's traffic lights on its left; the name starts 16 px after them. In full screen, where macOS hides them, it starts at the toolbar's usual 12 px. |
+| **Layer sidebar** | 220 px (180–280 resizable) | Collapsible (⌃⌘S). Collapses automatically when the window is narrower than 1100 px.                                                                                                                                                                                        |
+| **Canvas**        | flexible                   | Shows the selected layer's name and the keyboard, scaled to fit. Zoom with ⌘+ / ⌘− / ⌘0.                                                                                                                                                                                    |
+| **Inspector**     | 320 px (300–400 resizable) | Collapsible (⌥⌘0). Always shows something: the selected key, or the layer overview.                                                                                                                                                                                         |
 
 **The layer sidebar's rows** (LAY-1–LAY-6) show the layer's colour and name, a changed dot (•) while it's being tried, how it's reached (the first way, such as "Hold lower"; the layer overview lists them all, with where each key is), and while searching, its match count.
 
@@ -103,6 +103,7 @@ The minimum window size is 960 × 600. The keyboard never shrinks below 36 px pe
 
 - **Keyboard name and connection chip.** For example `⌁ USB · Unlocked`, `ᛒ Bluetooth · Locked`, or `Not connected`. Clicking the chip opens a popover with details: transport, firmware name, each half's battery ("Battery: Left 82% · Right not reported", BAR-2; not for the demo keyboard), the "Keyboard locks itself after 10 minutes idle" note, and _Unlock…_ if locked. Colour is never the only signal: the chip always includes the words.
 - **Search** (⌘F): see §4.6.
+- **Mac check** (MAC-7). While some keys don't work on a Mac, a quiet button shows ⚠ and how many, in the warning colour, with the tooltip "7 keys don't work on a Mac". It opens a popover with them all, by layer, each as in the layer overview (§5.1), and _Fix All_ with the note "Fixes are tried on your keyboard right away. Review them, then save." The first run shows the same list as its Mac check step (§8).
 - **Changes button.** Hidden when there's nothing to save. Otherwise it reads `1 change` / `3 changes`, uses the accent tint, and opens Review. The window also shows the macOS "edited" dot in its close button.
 - **Save** (⌘S): the primary button. It's disabled, with the tooltip "Nothing to save", when there are no changes. It always goes through Review (§6).
 
@@ -204,7 +205,7 @@ Single-key shortcuts (R, T, ⌫) work only while the canvas has focus, so they n
 ### 5.1 Nothing selected: layer overview
 
 - Layer name, rename field, and how to reach the layer ("Hold **Lower** (left thumb)", or "Hold **Lower + Raise**, built into your keyboard's firmware").
-- **Mac compatibility** list for this layer (MAC-7), with _Fix_ buttons.
+- **Mac compatibility** list for this layer (MAC-7). Each key shows what it types (**Copy (Linux style)**), where it is, which selects it, and why ("It doesn't do anything on a Mac."), with _Use ⌘C_ where there's a Mac replacement, and _Dismiss_. A fix is a change to try, like any other; with more than one, _Fix All_ applies them as one. A dismissed key stays dismissed on this keyboard: it loses its ⚠, and the check doesn't list it again.
 - **Unreachable / can't-leave warnings** (SAF-2), each with a _Show keys_ link.
 - **Knobs** (VIEW-4): stock functions, read-only, with the note "Changing knobs comes in a future version."
 
@@ -572,3 +573,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.22    | 2026-10-25 | Connection states (§7, §8, KEY-101): a silent cable's card offers Bluetooth while Keywright may not use it.                                                                                                                                                                                |
 | 0.23    | 2026-10-25 | Review sheet (§6, KEY-102): as wide as its rows need within the window; columns sized to their content, long texts truncated with a tooltip; the rows scroll and the footer shows whole.                                                                                                   |
 | 0.24    | 2026-10-25 | Toolbar (§3.1, KEY-103): the name starts 16 px after the traffic lights, measured where macOS draws them, and at the usual inset in full screen.                                                                                                                                           |
+| 0.25    | 2026-10-25 | Mac check (§3.2, §5.1, KEY-62): the toolbar's ⚠ with a count, its popover with Fix All, and the layer overview's list with Use ⌘C and Dismiss, which lasts on that keyboard.                                                                                                               |

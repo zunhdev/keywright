@@ -45,6 +45,9 @@ pub enum AppError {
     /// A setting didn't change: the menu bar didn't take the item, or the setting couldn't
     /// be saved.
     SettingNotChanged,
+    /// A finding of the Mac check was dismissed, but that couldn't be saved, so it comes
+    /// back once Keywright quits.
+    DismissalNotSaved,
     /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
     /// `force`, it is.
     WouldStrand {

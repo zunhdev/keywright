@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 import { Button } from "../design-system/Button.tsx";
 import { Toolbar } from "../design-system/Toolbar.tsx";
+import { MacCheckButton } from "../features/mac-check/MacCheckButton.tsx";
 import { KeySearch } from "../features/search/KeySearch.tsx";
 import { useMessages } from "../i18n/messages.ts";
 import { ConnectionChip } from "./ConnectionChip.tsx";
@@ -31,7 +32,8 @@ function trafficLightsInset(end: number | null | undefined) {
 
 /**
  * The window's toolbar (design §3.2), which is also where the window is dragged: the
- * keyboard's name, the connection chip, search, the changes button, and Save.
+ * keyboard's name, the connection chip, search, the Mac compatibility check's ⚠ while
+ * some keys don't work on a Mac, the changes button, and Save.
  */
 export function WindowToolbar() {
   const messages = useMessages();
@@ -56,6 +58,7 @@ export function WindowToolbar() {
         <div className={styles.search} data-tauri-drag-region>
           <KeySearch />
         </div>
+        <MacCheckButton />
         {changes > 0 ? (
           <Button size="compact" onPress={openReview}>
             {messages.format("toolbar.changes", { count: changes })}

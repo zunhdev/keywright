@@ -364,6 +364,26 @@ character: string } | null>("layer_name_problem", { name }),
 	 */
 	restoreStockSettings: () => typedError<null, AppError>(__TAURI_INVOKE("restore_stock_settings")),
 	/**
+	 *  Puts the Mac replacements into keys, as one change to try (MAC-7): what _Fix_ and _Fix
+	 *  All_ do. Like every command that changes keys, it refuses a change that would strand
+	 *  the user unless `force` (SAF-2).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keymap can't be changed now, a key isn't there, the change would strand
+	 *  the user, or the keyboard doesn't carry out the change, which is then undone.
+	 */
+	fixMacKeys: (keys: KeyRef[], force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("fix_mac_keys", { keys, force })),
+	/**
+	 *  Dismisses findings of the Mac check on this keyboard, for good (MAC-7).
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if no keyboard has been read, or the session has stopped; or if the dismissal
+	 *  can't be saved, in which case it lasts until Keywright quits.
+	 */
+	dismissMacFindings: (findings: FindingRef[]) => typedError<null, AppError>(__TAURI_INVOKE("dismiss_mac_findings", { findings })),
+	/**
 	 *  Where the main window's traffic lights end, in points from its left edge, or `null`
 	 *  while they're hidden, as in full screen.
 	 */
@@ -503,6 +523,11 @@ export type AppError =
  */
 { code: "setting-not-changed" } | 
 /**
+ *  A finding of the Mac check was dismissed, but that couldn't be saved, so it comes
+ *  back once Keywright quits.
+ */
+{ code: "dismissal-not-saved" } | 
+/**
  *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
  *  `force`, it is.
  */
@@ -595,6 +620,21 @@ export type DomCode = {
 	/**  The key's usage page. */
 	page: Page,
 	/**  The key's usage ID. */
+	id: number,
+};
+
+/**
+ *  A finding of the Mac check: a key on a layer, and the key it types that doesn't work on
+ *  a Mac.
+ */
+export type FindingRef = {
+	/**  The layer, by ID. */
+	layer: number,
+	/**  The key, by key position. */
+	position: number,
+	/**  The usage page of the key it types. */
+	page: Page,
+	/**  That key's usage ID. */
 	id: number,
 };
 
@@ -719,7 +759,10 @@ export type Key = {
 	spoken: string,
 	/**  Whether it's being tried: it does something else than when last saved. */
 	changed: boolean,
-	/**  Whether it does something that doesn't work on a Mac (MAC-7). */
+	/**
+	 *  Whether it does something that doesn't work on a Mac (MAC-7), and the person hasn't
+	 *  dismissed that.
+	 */
 	macWarning: boolean,
 	/**
 	 *  Whether it does something else than on the stock keymap, so Restore Stock would
@@ -889,6 +932,11 @@ export type Layer = {
 	 *  (CHG-4).
 	 */
 	restorable: boolean,
+	/**
+	 *  Its keys that type something that doesn't work on a Mac (MAC-7), but those the
+	 *  person dismissed, in key order.
+	 */
+	macFindings: MacFinding[],
 };
 
 /**  How a layer key turns its layer on. */
@@ -949,6 +997,23 @@ export type LoginProblem =
 "requires-approval" | 
 /**  macOS refused to register it. */
 "refused";
+
+/**  A key that types something that doesn't work on a Mac. */
+export type MacFinding = {
+	/**  The finding, to dismiss it: the key, and what it types. */
+	finding: FindingRef,
+	/**  Where the key is, in words, such as `Right half, row 2, key 3`. */
+	place: string,
+	/**  What it types, such as `Copy (Linux style)`. */
+	name: string,
+	/**  What goes wrong, in one sentence, such as "It doesn't do anything on a Mac." */
+	reason: string,
+	/**
+	 *  What the key shows once fixed, such as `⌘C`, if there's a Mac replacement the
+	 *  keyboard can take.
+	 */
+	fix: string | null,
+};
 
 /**
  *  One of Keywright's own menu items. In TypeScript, its kebab-case name, such as

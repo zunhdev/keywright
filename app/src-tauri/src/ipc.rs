@@ -31,6 +31,7 @@ mod guard;
 mod input_source;
 mod keymap;
 mod layers;
+mod mac_check;
 mod menu;
 mod quit;
 mod review;
@@ -38,6 +39,7 @@ mod session;
 mod stock;
 mod window;
 
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 use keywright_core::keymap::Binding;
@@ -45,6 +47,8 @@ use keywright_core::keys::source::Labels;
 use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
 use tokio::sync::watch;
+
+use crate::mac_check::Dismissals;
 
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
 pub use self::general::SettingsState;
@@ -57,36 +61,59 @@ pub use self::session::{
 };
 pub use self::window::{TrafficLights, TrafficLightsMoved, follow as follow_traffic_lights};
 
+/// What the payloads say besides what the session holds: what keys are called, and which
+/// of the Mac check's findings the person dismissed.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Context {
+    /// What keys are called in the input source the person types in (MAC-5), which
+    /// [`input_source`] keeps up to date.
+    pub labels: Labels,
+    /// The Mac check's findings dismissed, by keyboard (MAC-7), which [`mac_check`]
+    /// changes.
+    pub dismissed: Dismissals,
+}
+
 /// What the commands share.
 pub struct AppState {
     /// The device session.
     pub session: Session,
     /// What the key last copied does, to paste (⌘C, ⌘V).
     clipboard: Mutex<Option<Binding>>,
-    /// What keys are called in the input source the person types in (MAC-5), which
-    /// [`input_source`] keeps up to date.
-    labels: watch::Sender<Arc<Labels>>,
+    /// What the payloads say besides what the session holds.
+    context: watch::Sender<Arc<Context>>,
+    /// Where the Mac check's dismissals are saved, or nowhere, as in tests.
+    dismissals: Option<PathBuf>,
 }
 
 impl AppState {
-    /// The commands' state, around a session, with nothing copied, and keys called as on
-    /// a US keyboard until the input source is read.
+    /// The commands' state, around a session, with nothing copied, keys called as on a US
+    /// keyboard until the input source is read, and nothing dismissed.
     pub fn new(session: Session) -> Self {
         Self {
             session,
             clipboard: Mutex::new(None),
-            labels: watch::Sender::new(Arc::new(Labels::us())),
+            context: watch::Sender::new(Arc::default()),
+            dismissals: None,
         }
     }
 
-    /// What keys are called now.
-    fn labels(&self) -> Arc<Labels> {
-        Arc::clone(&self.labels.borrow())
+    /// The same, with the Mac check's dismissals saved in `file`, and those it holds.
+    pub fn with_dismissals(mut self, file: Option<PathBuf>) -> Self {
+        let dismissed = file.as_deref().map(Dismissals::read).unwrap_or_default();
+        self.context
+            .send_modify(|context| Arc::make_mut(context).dismissed = dismissed);
+        self.dismissals = file;
+        self
     }
 
-    /// What keys are called, now and each time that changes, for [`follow`].
-    pub fn follow_labels(&self) -> watch::Receiver<Arc<Labels>> {
-        self.labels.subscribe()
+    /// What the payloads say now besides what the session holds.
+    fn context(&self) -> Arc<Context> {
+        Arc::clone(&self.context.borrow())
+    }
+
+    /// The same, now and each time it changes, for [`follow`].
+    pub fn follow_context(&self) -> watch::Receiver<Arc<Context>> {
+        self.context.subscribe()
     }
 }
 
@@ -138,6 +165,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             stock::restore_stock_keys,
             stock::restore_stock_layer,
             stock::restore_stock_settings,
+            mac_check::fix_mac_keys,
+            mac_check::dismiss_mac_findings,
             window::traffic_lights
         ])
         .events(collect_events![
@@ -161,8 +190,8 @@ mod tests {
     use keywright_sim::Simulator;
     use specta_typescript::Typescript;
 
-    use super::builder;
     use super::keymap::Keymap;
+    use super::{Context, builder};
 
     /// Set to rewrite the bindings and the UI's test keymap instead of checking them, as
     /// `mise run generate:bindings` does.
@@ -215,7 +244,7 @@ mod tests {
             .wait_for(|state| *state == State::Ready)
             .await
             .unwrap();
-        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
         let generated = format!(
             "// The simulated Sofle's stock keymap, as `session_keymap` gives it, the key\n\
              // tables, as `key_catalog` and `dom_codes` do, the Mac actions on macOS 27, as\n\

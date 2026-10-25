@@ -2,6 +2,7 @@ import type { LocalizedString } from "@internationalized/string";
 
 import { changeStrings } from "./en-changes.ts";
 import { connectionStrings } from "./en-connection.ts";
+import { macStrings } from "./en-mac.ts";
 import { safetyStrings } from "./en-safety.ts";
 import { text } from "./text.ts";
 
@@ -146,6 +147,8 @@ export const en = {
   "error.reset-failed": "Your keyboard couldn't restore its stock settings.",
   "error.settings-not-opened": "System Settings didn't open.",
   "error.setting-not-changed": "Keywright couldn't change that setting.",
+  "error.dismissal-not-saved":
+    "Dismissed for now. Keywright couldn't save that, so it comes back when you open Keywright again.",
   "settings.general": "General",
   "settings.menu-bar": "Show in menu bar",
   "settings.menu-bar-note":
@@ -274,4 +277,5 @@ export const en = {
   ...connectionStrings,
   ...changeStrings,
   ...safetyStrings,
+  ...macStrings,
 } satisfies Record<string, LocalizedString>;

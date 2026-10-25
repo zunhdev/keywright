@@ -284,6 +284,15 @@ impl From<UsagePage> for Page {
     }
 }
 
+impl From<Page> for UsagePage {
+    fn from(page: Page) -> Self {
+        match page {
+            Page::Keyboard => Self::Keyboard,
+            Page::Consumer => Self::Consumer,
+        }
+    }
+}
+
 impl From<hid::Shortcut> for Shortcut {
     fn from(shortcut: hid::Shortcut) -> Self {
         Self {
@@ -299,10 +308,7 @@ impl From<Shortcut> for hid::Shortcut {
         Self {
             mods: Mods::from_bits(shortcut.mods),
             usage: HidUsage {
-                page: match shortcut.page {
-                    Page::Keyboard => UsagePage::Keyboard,
-                    Page::Consumer => UsagePage::Consumer,
-                },
+                page: shortcut.page.into(),
                 id: shortcut.id,
             },
         }
@@ -644,7 +650,7 @@ pub fn mac_choices(version: Option<presets::MacOsVersion>, labels: &Labels) -> V
 pub fn mac_actions(app: tauri::State<'_, AppState>) -> Vec<Choice> {
     mac_choices(
         keywright_platform::system::macos_version().map(presets::MacOsVersion),
-        &app.labels(),
+        &app.context().labels,
     )
 }
 
@@ -814,7 +820,7 @@ impl From<KeyCategory> for Group {
     reason = "Tauri hands a command its arguments by value"
 )]
 pub fn key_catalog(app: tauri::State<'_, AppState>) -> Vec<KeyEntry> {
-    catalog(&app.labels())
+    catalog(&app.context().labels)
 }
 
 /// Every key ZMK names, with its labels and group. Right-hand modifiers are left out: the
@@ -888,7 +894,7 @@ pub struct ShortcutWords {
     reason = "Tauri hands a command its arguments by value"
 )]
 pub fn shortcut_words(app: tauri::State<'_, AppState>, shortcut: Shortcut) -> ShortcutWords {
-    words(shortcut, &app.labels())
+    words(shortcut, &app.context().labels)
 }
 
 /// What a key or shortcut is called, as `labels` names keys, and the Mac action it is.
@@ -919,8 +925,8 @@ mod tests {
         Action, Category, LIGHTING, Page, Param, Shortcut, Value, catalog, dom_codes, mac_choices,
         words,
     };
-    use crate::ipc::AppState;
     use crate::ipc::keymap::Keymap;
+    use crate::ipc::{AppState, Context};
     use keywright_core::mac::presets::MacOsVersion;
 
     fn shortcut(mods: Mods, page: UsagePage, id: u16) -> hid::Shortcut {
@@ -943,7 +949,7 @@ mod tests {
             .wait_for(|state| *state == State::Ready)
             .await
             .unwrap();
-        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
         (AppState::new(session), keymap)
     }
 
@@ -1033,7 +1039,8 @@ mod tests {
             param2: Param::Number { value: 0 },
         };
         app.set_action(0, vec![13], action, false).await.unwrap();
-        let keymap = Keymap::of(&app.session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap =
+            Keymap::of(&app.session.snapshot().await.unwrap(), &Context::default()).unwrap();
         let key = &keymap.layers[0].keys[13];
         assert_eq!(key.action, action);
         assert_eq!(key.sentence, "Runs the firmware's Key Toggle action.");
@@ -1258,14 +1265,16 @@ mod tests {
         app.set_action(0, vec![13, 14], escape_control, false)
             .await
             .unwrap();
-        let keymap = Keymap::of(&app.session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap =
+            Keymap::of(&app.session.snapshot().await.unwrap(), &Context::default()).unwrap();
         for position in [13, 14] {
             let key = &keymap.layers[0].keys[position];
             assert_eq!(key.action, escape_control);
             assert_eq!(key.sentence, "Tap for Escape, hold for ⌃ Control.");
         }
         app.session.undo().await.unwrap();
-        let keymap = Keymap::of(&app.session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let keymap =
+            Keymap::of(&app.session.snapshot().await.unwrap(), &Context::default()).unwrap();
         assert_eq!(keymap.layers[0].keys[13].sentence, "Types Q.");
         assert_eq!(keymap.layers[0].keys[14].sentence, "Types W.");
     }
