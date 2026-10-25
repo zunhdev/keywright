@@ -31,6 +31,10 @@ fn main() -> ExitCode {
                 "an_input_source_that_isnt_installed_has_no_layout",
                 an_input_source_that_isnt_installed_has_no_layout,
             ),
+            Trial::test(
+                "the_layouts_turned_on_include_the_selected_one",
+                the_layouts_turned_on_include_the_selected_one,
+            ),
         ]
     } else {
         vec![Trial::test(
@@ -113,6 +117,20 @@ fn an_input_source_that_isnt_installed_has_no_layout() -> Result<(), Failed> {
         Err(InputSourceError::NoLayout) => Ok(()),
         other => Err(format!("{other:?}").into()),
     }
+}
+
+fn the_layouts_turned_on_include_the_selected_one() -> Result<(), Failed> {
+    let layouts = input_source::layouts()?;
+    let current = input_source::current(ZMK)?.source;
+    assert!(
+        layouts.contains(&current),
+        "{current:?} isn't in {layouts:?}"
+    );
+    assert!(
+        layouts.iter().all(|layout| layout.id.contains("keylayout")),
+        "{layouts:?}"
+    );
+    Ok(())
 }
 
 fn elsewhere_there_are_no_input_sources() -> Result<(), Failed> {

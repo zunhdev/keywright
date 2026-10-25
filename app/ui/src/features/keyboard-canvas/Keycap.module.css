@@ -210,12 +210,36 @@
     color: var(--text-secondary);
   }
 
-  &[data-corner="top-right"] {
-    right: calc(var(--unit) * 0.06);
+  &[data-badge="changed"] {
+    position: static;
     color: var(--accent);
   }
 
   &[data-badge="⚠"] {
     color: var(--warning);
+  }
+}
+
+/* The top-right corner: what the key types in the second input source (MAC-6), at a
+   quarter of the key's size, then the changed dot. */
+.corner {
+  position: absolute;
+  top: calc(var(--unit) * 0.03);
+  right: calc(var(--unit) * 0.06);
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--unit) * 0.03);
+  line-height: 1;
+}
+
+.secondary {
+  /* Below the corner's top, so accents such as Й's stay inside the keycap. */
+  margin-top: calc(var(--unit) * 0.04);
+  color: var(--text-secondary);
+  font-size: calc(var(--unit) * 0.25);
+  font-weight: 500;
+
+  &[data-inherited] {
+    opacity: 0.35;
   }
 }

@@ -6,8 +6,12 @@
 //! changes, the canvas gets its keymap again ([`super::follow`]), and
 //! [`InputSourceChanged`] (`platform://input-source`) tells the UI, which asks again for
 //! what it shows keys with, such as the key popup's catalog.
+//!
+//! A second input source can label keys too, as dual-printed keycaps do (MAC-6, KEY-63):
+//! Settings › Keyboard chooses it ([`secondary_labels`], [`set_secondary_labels`]), and
+//! keycaps show what keys type there in their top-right corner.
 
-use std::sync::Arc;
+use std::sync::{Arc, PoisonError};
 
 use keywright_core::keys::source::{Labels, Typed};
 use keywright_core::mac::KeyboardType;
@@ -18,7 +22,9 @@ use specta::Type;
 use tauri::{AppHandle, Manager, Runtime};
 use tauri_specta::Event;
 
-use super::AppState;
+use super::error::AppError;
+use super::general::SettingsState;
+use super::{AppState, on_main_thread};
 
 /// `platform://input-source`: keys are called something else, since another input source
 /// was selected.
@@ -33,6 +39,25 @@ pub struct InputSource {
     pub id: String,
     /// Its name, in the language the Mac is set to, such as `German`.
     pub name: String,
+}
+
+impl From<input_source::InputSource> for InputSource {
+    fn from(source: input_source::InputSource) -> Self {
+        Self {
+            id: source.id,
+            name: source.name,
+        }
+    }
+}
+
+/// Settings › Keyboard's secondary labels (MAC-6): the input source chosen, and those to
+/// choose from.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+pub struct SecondaryLabels {
+    /// The input source chosen, by ID, if one is.
+    pub chosen: Option<String>,
+    /// The keyboard layouts turned on in System Settings, as the input menu lists them.
+    pub layouts: Vec<InputSource>,
 }
 
 /// Reads the input source, then follows it, for as long as Keywright runs. Call it once
@@ -60,29 +85,85 @@ const ZMK: Keyboard = Keyboard {
     product_id: ZMK_PID,
 };
 
-/// Reads the selected input source, and keeps what keys are called in it. If that changed,
-/// says so. On the main thread.
+/// Reads the selected input source, and the one chosen for secondary labels, and keeps
+/// what keys are called in them. If what they're called in the selected one changed, says
+/// so. On the main thread.
 fn read<R: Runtime>(app: &AppHandle<R>) {
     // If macOS can't say, as for an input method without a keyboard layout, keys keep
     // what they were called.
     let Ok(layout) = input_source::current(ZMK) else {
         return;
     };
-    let labels = labels(&layout);
-    let changed = app.state::<AppState>().context.send_if_modified(|context| {
-        let changed = context.labels != labels;
+    let primary = labels(&layout);
+    // One that's been turned off since it was chosen labels nothing.
+    let secondary = chosen(app)
+        .and_then(|id| input_source::layout(&id, ZMK).ok())
+        .map(|layout| labels(&layout));
+    let mut relabelled = false;
+    app.state::<AppState>().context.send_if_modified(|context| {
+        relabelled = context.labels != primary;
+        let changed = relabelled || context.secondary != secondary;
         if changed {
-            Arc::make_mut(context).labels = labels;
+            let context = Arc::make_mut(context);
+            context.labels = primary;
+            context.secondary = secondary;
         }
         changed
     });
-    if changed {
-        let source = InputSource {
-            id: layout.source.id,
-            name: layout.source.name,
-        };
-        let _ = InputSourceChanged(source).emit(app);
+    if relabelled {
+        let _ = InputSourceChanged(layout.source.into()).emit(app);
     }
+}
+
+/// The input source chosen for secondary labels, by ID, if one is.
+fn chosen<R: Runtime>(app: &AppHandle<R>) -> Option<String> {
+    let settings = app.try_state::<SettingsState>()?;
+    let settings = settings.0.lock().unwrap_or_else(PoisonError::into_inner);
+    settings.secondary_input_source.clone()
+}
+
+/// Settings › Keyboard's secondary labels: the input source chosen, and the layouts turned
+/// on, read each time the window asks, since they can change in System Settings.
+#[tauri::command]
+#[specta::specta]
+pub async fn secondary_labels(app: AppHandle) -> SecondaryLabels {
+    let layouts = on_main_thread(&app, || input_source::layouts().unwrap_or_default()).await;
+    SecondaryLabels {
+        chosen: chosen(&app),
+        layouts: layouts
+            .unwrap_or_default()
+            .into_iter()
+            .map(InputSource::from)
+            .collect(),
+    }
+}
+
+/// Chooses the input source whose labels keycaps show too, by ID, or none, and saves it.
+/// The canvas gets its keymap again with them.
+///
+/// # Errors
+///
+/// Fails if the setting can't be saved; it's chosen until Keywright quits then.
+#[tauri::command]
+#[specta::specta]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Tauri hands a command its arguments by value"
+)]
+pub fn set_secondary_labels(
+    app: AppHandle,
+    settings: tauri::State<'_, SettingsState>,
+    id: Option<String>,
+) -> Result<(), AppError> {
+    let saved = {
+        let mut settings = settings.0.lock().unwrap_or_else(PoisonError::into_inner);
+        settings.secondary_input_source = id;
+        settings.save()
+    };
+    let handle = app.clone();
+    // If the app is quitting, there are no keycaps to label.
+    let _ = app.run_on_main_thread(move || read(&handle));
+    saved.map_err(|_| AppError::SettingNotChanged)
 }
 
 /// What keys are called in a layout, from what macOS says each key types in it.

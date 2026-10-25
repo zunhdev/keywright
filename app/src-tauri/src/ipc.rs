@@ -48,6 +48,9 @@ use keywright_device::Session;
 use tauri_specta::{Builder, collect_commands, collect_events};
 use tokio::sync::watch;
 
+use tauri::{AppHandle, Runtime};
+use tokio::sync::oneshot;
+
 use crate::mac_check::Dismissals;
 
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
@@ -68,6 +71,9 @@ pub struct Context {
     /// What keys are called in the input source the person types in (MAC-5), which
     /// [`input_source`] keeps up to date.
     pub labels: Labels,
+    /// What keys are called in the input source chosen for secondary labels (MAC-6), if
+    /// one is and it can be read, which [`input_source`] keeps up to date.
+    pub secondary: Option<Labels>,
     /// The Mac check's findings dismissed, by keyboard (MAC-7), which [`mac_check`]
     /// changes.
     pub dismissed: Dismissals,
@@ -115,6 +121,20 @@ impl AppState {
     pub fn follow_context(&self) -> watch::Receiver<Arc<Context>> {
         self.context.subscribe()
     }
+}
+
+/// Runs `run` on the main thread, where AppKit and macOS's input sources are used, and
+/// gives what it returns, or `None` if the app is quitting.
+async fn on_main_thread<R: Runtime, T: Send + 'static>(
+    app: &AppHandle<R>,
+    run: impl FnOnce() -> T + Send + 'static,
+) -> Option<T> {
+    let (sender, answer) = oneshot::channel();
+    app.run_on_main_thread(move || {
+        let _ = sender.send(run());
+    })
+    .ok()?;
+    answer.await.ok()
 }
 
 /// The commands and events the UI can use.
@@ -167,6 +187,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             stock::restore_stock_settings,
             mac_check::fix_mac_keys,
             mac_check::dismiss_mac_findings,
+            input_source::secondary_labels,
+            input_source::set_secondary_labels,
             window::traffic_lights
         ])
         .events(collect_events![

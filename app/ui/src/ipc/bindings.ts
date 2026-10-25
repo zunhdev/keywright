@@ -384,6 +384,20 @@ character: string } | null>("layer_name_problem", { name }),
 	 */
 	dismissMacFindings: (findings: FindingRef[]) => typedError<null, AppError>(__TAURI_INVOKE("dismiss_mac_findings", { findings })),
 	/**
+	 *  Settings › Keyboard's secondary labels: the input source chosen, and the layouts turned
+	 *  on, read each time the window asks, since they can change in System Settings.
+	 */
+	secondaryLabels: () => __TAURI_INVOKE<SecondaryLabels>("secondary_labels"),
+	/**
+	 *  Chooses the input source whose labels keycaps show too, by ID, or none, and saves it.
+	 *  The canvas gets its keymap again with them.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the setting can't be saved; it's chosen until Keywright quits then.
+	 */
+	setSecondaryLabels: (id: string | null) => typedError<null, AppError>(__TAURI_INVOKE("set_secondary_labels", { id })),
+	/**
 	 *  Where the main window's traffic lights end, in points from its left edge, or `null`
 	 *  while they're hidden, as in full screen.
 	 */
@@ -757,6 +771,11 @@ export type Key = {
 	sentence: string,
 	/**  The sentence for VoiceOver, with keys by name rather than symbol. */
 	spoken: string,
+	/**
+	 *  What it types in the input source chosen for secondary labels, where that differs,
+	 *  such as `Ф` (MAC-6): its keycap shows it in the top-right corner.
+	 */
+	secondary: string | null,
 	/**  Whether it's being tried: it does something else than when last saved. */
 	changed: boolean,
 	/**
@@ -1214,6 +1233,17 @@ layer: number } |
 layer: number; 
 /**  The key. */
 position: number };
+
+/**
+ *  Settings › Keyboard's secondary labels (MAC-6): the input source chosen, and those to
+ *  choose from.
+ */
+export type SecondaryLabels = {
+	/**  The input source chosen, by ID, if one is. */
+	chosen: string | null,
+	/**  The keyboard layouts turned on in System Settings, as the input menu lists them. */
+	layouts: InputSource[],
+};
 
 /**
  *  What the session is doing (tech spec §7.1). In TypeScript, `{ kind: "ready" }` and so

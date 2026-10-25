@@ -10,8 +10,8 @@ use serde::Serialize;
 use specta::Type;
 use tauri::{AppHandle, Manager, Runtime};
 use tauri_specta::Event;
-use tokio::sync::oneshot;
 
+use super::on_main_thread;
 use crate::MAIN_WINDOW;
 
 /// `window://traffic-lights`: where the main window's traffic lights end moved, in points
@@ -39,17 +39,16 @@ impl TrafficLights {
 #[tauri::command]
 #[specta::specta]
 pub async fn traffic_lights(app: AppHandle) -> Option<f64> {
-    let (sender, end) = oneshot::channel();
     let handle = app.clone();
     // AppKit runs on the main thread. If the app is quitting, there's no window to ask.
-    app.run_on_main_thread(move || {
+    on_main_thread(&app, move || {
         // It can always read them here, on the main thread, for a window that's open.
         let end = read(&handle).ok().flatten();
         handle.state::<TrafficLights>().moved(end);
-        let _ = sender.send(end);
+        end
     })
-    .ok()?;
-    end.await.ok().flatten()
+    .await
+    .flatten()
 }
 
 /// After the main window resized: says on `window://traffic-lights` where its traffic

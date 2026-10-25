@@ -149,7 +149,13 @@ export const en = {
   "error.setting-not-changed": "Keywright couldn't change that setting.",
   "error.dismissal-not-saved":
     "Dismissed for now. Keywright couldn't save that, so it comes back when you open Keywright again.",
+  "settings.tabs": "Settings",
   "settings.general": "General",
+  "settings.keyboard": "Keyboard",
+  "settings.secondary": "Secondary labels",
+  "settings.secondary-none": "None",
+  "settings.secondary-note":
+    "Keys also show what they type in this input source, in their top-right corner, like keycaps printed for two languages.",
   "settings.menu-bar": "Show in menu bar",
   "settings.menu-bar-note":
     "Shows your keyboard's battery in the menu bar. Closing the window keeps Keywright there; with it off, closing the window quits.",
