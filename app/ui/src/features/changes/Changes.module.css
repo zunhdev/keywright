@@ -16,19 +16,24 @@
 }
 
 /*
- * Where, how it was, →, how it is, Revert: one grid for every group, so the columns line
- * up, each as wide as its content up to a limit. How it is takes what's left, which puts
- * Revert at the right edge. The rows scroll when there are many.
+ * Where, how it was, →, how it is, and a button such as Revert: one grid for every group,
+ * so the columns line up, each as wide as its content up to a limit. How it is takes
+ * what's left, which puts the button at the right edge. The rows scroll when there are
+ * many.
  */
 .groups {
   display: grid;
-  grid-template-columns:
-    minmax(0, max-content) minmax(0, max-content) max-content minmax(0, 1fr)
-    max-content;
+  grid-template-columns: minmax(0, max-content) minmax(0, max-content) max-content minmax(0, 1fr);
   column-gap: var(--space-2);
   row-gap: var(--space-3);
   max-height: 50vh;
   overflow: auto;
+
+  &[data-actions] {
+    grid-template-columns:
+      minmax(0, max-content) minmax(0, max-content) max-content minmax(0, 1fr)
+      max-content;
+  }
 }
 
 .group,

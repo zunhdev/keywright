@@ -15,6 +15,16 @@ use keywright_sim::{FirmwareError, Simulator};
 /// The variable that picks a simulated keyboard.
 const VARIABLE: &str = "KEYWRIGHT_SIMULATOR";
 
+/// The variable that names a folder for a simulated keyboard's automatic backups, as the
+/// CLI's does.
+const BACKUPS_DIR: &str = "KEYWRIGHT_BACKUPS_DIR";
+
+/// Where a simulated keyboard's automatic backups go: the folder `KEYWRIGHT_BACKUPS_DIR`
+/// names, or nowhere.
+pub fn backups_dir() -> Option<std::path::PathBuf> {
+    env::var_os(BACKUPS_DIR).map(Into::into)
+}
+
 /// How long after connecting someone presses the unlock keys, in the `sofle` scenario, and
 /// after the keyboard reconnects in `sofle-restarts`.
 const UNLOCKED_AFTER: Duration = Duration::from_secs(3);

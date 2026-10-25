@@ -58,6 +58,13 @@ const COMMANDS: &[&str] = &[
     "use_as_globe",
     "globe_key",
     "turn_off_globe",
+    "backups",
+    "backup_preview",
+    "restore_backup",
+    "show_backup_in_finder",
+    "import_preview",
+    "apply_import",
+    "cancel_import",
     "traffic_lights",
 ];
 

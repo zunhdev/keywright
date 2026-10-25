@@ -1,8 +1,8 @@
 /**
  * The UI's entry point, which index.html loads, for each of Keywright's windows: the main
  * window follows the session, its keymap, the keyboard's battery, the input source, the
- * menu bar and its own traffic lights, and the Settings window (`#settings`) shows the
- * settings (tech spec §12.2).
+ * menu bar and its own traffic lights; the Settings window (`#settings`) shows the
+ * settings, and the Backups window (`#backups`) the automatic backups (tech spec §12.2).
  */
 // First, before React loads.
 import "./no-performance-tracks.ts";
@@ -16,6 +16,8 @@ import { createRoot } from "react-dom/client";
 
 import { App } from "./app/App.tsx";
 import { followTextFocus } from "./app/text-focus.ts";
+import { BackupsWindow } from "./features/backups/BackupsWindow.tsx";
+import { followImport } from "./features/backups/ImportSheet.tsx";
 import { followQuit } from "./features/changes/QuitDialog.tsx";
 import { followConnection } from "./features/connection/follow.ts";
 import { SettingsWindow } from "./features/settings/SettingsWindow.tsx";
@@ -39,6 +41,14 @@ if (location.hash === "#settings") {
       </I18nProvider>
     </StrictMode>,
   );
+} else if (location.hash === "#backups") {
+  createRoot(root).render(
+    <StrictMode>
+      <I18nProvider locale={LOCALE}>
+        <BackupsWindow />
+      </I18nProvider>
+    </StrictMode>,
+  );
 } else {
   // For as long as the page is open.
   void followSession();
@@ -52,6 +62,7 @@ if (location.hash === "#settings") {
   followTextFocus();
   followConnection();
   void followQuit();
+  void followImport();
   createRoot(root).render(
     <StrictMode>
       <App />

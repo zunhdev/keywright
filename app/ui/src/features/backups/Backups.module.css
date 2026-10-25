@@ -1,0 +1,121 @@
+/* The Backups window (design §9.1): the list and the preview side by side, then the buttons. */
+.window {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  box-sizing: border-box;
+  height: 100vh;
+  padding: var(--space-4);
+  background: var(--bg-window);
+  color: var(--text-primary);
+  font: var(--type-body);
+}
+
+.panes {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(280px, 1fr) 2fr;
+  gap: var(--space-4);
+  min-height: 0;
+}
+
+/* Each pane scrolls on its own. */
+.list,
+.detail {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+}
+
+.detail {
+  padding: var(--space-3);
+}
+
+/* A backup in the list: when, why, and from which keyboard, a line each. */
+.entry {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-1) 0;
+}
+
+.when,
+.why {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.why {
+  color: var(--text-secondary);
+  font: var(--type-body);
+}
+
+.note {
+  margin: 0;
+  padding: var(--space-2);
+  color: var(--text-secondary);
+}
+
+.problem {
+  margin: 0;
+}
+
+/* The buttons always show whole. */
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  & > :not(.spacer) {
+    flex: none;
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* What a backup would change: the summary, the rows, then what can't be applied. */
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.summary,
+.from {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.cannot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.heading {
+  margin: 0;
+  font: var(--type-body-strong);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1) 0 var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.where {
+  color: var(--text-secondary);
+}

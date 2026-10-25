@@ -77,11 +77,14 @@ fn main() -> tauri::Result<()> {
         .plugin(tauri_plugin_opener::init())
         .menu(menu::build)
         .on_menu_event(|app, event| {
-            // macOS handles its own items, such as Quit; the shell opens Settings, and the
-            // UI handles Keywright's other items.
+            // macOS handles its own items, such as Quit; the shell opens Settings and
+            // Backups, and the UI handles Keywright's other items.
             match MenuItem::from_id(event.id().as_ref()) {
-                Some(item) if item.handled_by_the_shell() => {
+                Some(MenuItem::Settings) => {
                     let _ = settings::open_window(app);
+                }
+                Some(MenuItem::Backups) => {
+                    let _ = ipc::open_backups_window(app);
                 }
                 Some(item) => {
                     let _ = MenuItemChosen(item).emit(app);
@@ -157,16 +160,21 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     let scenario = Scenario::from_env()?;
     let (state, battery) = tauri::async_runtime::block_on(async {
         let Some(scenario) = scenario else {
-            let session = session_with_backups();
+            let backups = keywright_platform::paths::backups_dir()
+                .map(|dir| Backups::new(dir, Backups::DEFAULT_KEEP));
+            let session = session_with(backups.clone());
             let keyboards = ThisMac::new(bluetooth_allowed);
             tauri::async_runtime::spawn(selection::select(session.clone(), keyboards));
             let battery = Battery::watch(ThisMac::new(bluetooth_allowed));
-            return Ok::<_, simulator::Error>((AppState::new(session), Some(battery)));
+            let state = AppState::new(session).with_backups(backups);
+            return Ok::<_, simulator::Error>((state, Some(battery)));
         };
-        // Like the CLI, a simulated keyboard's backups go nowhere. It has no battery.
-        let session = Session::start();
+        // Like the CLI, a simulated keyboard's backups go to `KEYWRIGHT_BACKUPS_DIR`, or
+        // nowhere. It has no battery.
+        let backups = simulator::backups_dir().map(|dir| Backups::new(dir, Backups::DEFAULT_KEEP));
+        let session = session_with(backups.clone());
         scenario.connect(&session).await?;
-        Ok((AppState::new(session), None))
+        Ok((AppState::new(session).with_backups(backups), None))
     })?;
     // A simulated keyboard has a serial number of its own, so its dismissals are its own.
     let state = state.with_dismissals(Dismissals::path());
@@ -248,11 +256,10 @@ fn bluetooth_allowed() -> bool {
     bluetooth::permission() == Permission::Allowed
 }
 
-/// A session that keeps automatic backups in the app's folder (SAF-4), or none if the
-/// home folder is unknown.
-fn session_with_backups() -> Session {
-    match keywright_platform::paths::backups_dir() {
-        Some(dir) => Session::with_backups(Backups::new(dir, Backups::DEFAULT_KEEP)),
+/// A session that keeps automatic backups in `backups` (SAF-4), or none.
+fn session_with(backups: Option<Backups>) -> Session {
+    match backups {
+        Some(backups) => Session::with_backups(backups),
         None => Session::start(),
     }
 }

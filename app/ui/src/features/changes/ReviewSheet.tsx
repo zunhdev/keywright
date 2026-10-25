@@ -5,8 +5,8 @@ import { Button } from "../../design-system/Button.tsx";
 import { Sheet } from "../../design-system/Sheet.tsx";
 import { useMessages } from "../../i18n/messages.ts";
 import { commands, type ReviewRow } from "../../ipc/bindings.ts";
-import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { revertChange, saveChanges } from "./actions.ts";
+import { ChangeRows } from "./ChangeRows.tsx";
 
 import styles from "./Changes.module.css";
 
@@ -31,17 +31,6 @@ function useReviewRows(open: boolean): readonly ReviewRow[] {
     };
   }, [open, session]);
   return rows;
-}
-
-/** Rows that follow each other under the same layer, with that layer. */
-function byLayer(rows: readonly ReviewRow[]) {
-  const groups: Array<{ layer: number | null; name: string | null; rows: ReviewRow[] }> = [];
-  for (const row of rows) {
-    const last = groups.at(-1);
-    if (last !== undefined && last.layer === row.layer) last.rows.push(row);
-    else groups.push({ layer: row.layer, name: row.layerName, rows: [row] });
-  }
-  return groups;
 }
 
 /** Closes the review sheet. */
@@ -81,55 +70,20 @@ export function ReviewSheet() {
           {rows.length === 0 ? (
             <p className={styles.empty}>{messages.format("review.nothing")}</p>
           ) : (
-            <div className={styles.groups}>
-              {byLayer(rows).map((group) => (
-                <section key={group.layer ?? "order"} className={styles.group}>
-                  <h3 className={styles.layer}>
-                    {group.layer === null || group.name === null ? (
-                      messages.format("review.order")
-                    ) : (
-                      <LayerName id={group.layer} name={group.name} />
-                    )}
-                  </h3>
-                  <ul className={styles.rows}>
-                    {group.rows.map((row) => {
-                      const what =
-                        row.place ??
-                        messages.format(
-                          row.key.kind === "order" ? "review.order-row" : `review.${row.key.kind}`,
-                        );
-                      // Each column truncates a long text, which its title gives in full; the
-                      // after column's gives what the key does now, in a sentence.
-                      return (
-                        <li key={JSON.stringify(row.key)} className={styles.row}>
-                          <span className={styles.what} title={what}>
-                            {what}
-                          </span>
-                          <span className={styles.before} title={row.before}>
-                            {row.before}
-                          </span>
-                          <span className={styles.arrow} aria-label={messages.format("review.to")}>
-                            →
-                          </span>
-                          <span className={styles.after} title={row.sentence ?? row.after}>
-                            {row.after}
-                          </span>
-                          <Button
-                            variant="quiet"
-                            size="compact"
-                            isDisabled={!editable}
-                            aria-label={messages.format("review.revert-row", { what })}
-                            onPress={() => void revertChange(row.key)}
-                          >
-                            {messages.format("review.revert")}
-                          </Button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </section>
-              ))}
-            </div>
+            <ChangeRows
+              rows={rows}
+              renderAction={(row, what) => (
+                <Button
+                  variant="quiet"
+                  size="compact"
+                  isDisabled={!editable}
+                  aria-label={messages.format("review.revert-row", { what })}
+                  onPress={() => void revertChange(row.key)}
+                >
+                  {messages.format("review.revert")}
+                </Button>
+              )}
+            />
           )}
           <div className={styles.footer}>
             <Button

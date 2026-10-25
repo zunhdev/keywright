@@ -21,6 +21,7 @@
 //! that file up to date too, and `tsc` checks it against the bindings.
 
 mod action;
+mod backups;
 mod battery;
 mod bluetooth;
 mod connection;
@@ -45,7 +46,7 @@ use std::sync::{Arc, Mutex};
 
 use keywright_core::keymap::Binding;
 use keywright_core::keys::source::Labels;
-use keywright_device::Session;
+use keywright_device::{Backups, Session};
 use tauri_specta::{Builder, collect_commands, collect_events};
 use tokio::sync::watch;
 
@@ -54,6 +55,7 @@ use tokio::sync::oneshot;
 
 use crate::mac_check::Dismissals;
 
+pub use self::backups::{ImportRequested, open_window as open_backups_window};
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
 pub use self::general::SettingsState;
 pub use self::globe::follow as follow_globe;
@@ -91,6 +93,11 @@ pub struct AppState {
     context: watch::Sender<Arc<Context>>,
     /// Where the Mac check's dismissals are saved, or nowhere, as in tests.
     dismissals: Option<PathBuf>,
+    /// The automatic backups' folder, which the session backs up into, or none, as for a
+    /// simulated keyboard.
+    backups: Option<Backups>,
+    /// The backup waiting in the Import preview.
+    import: backups::PendingImport,
 }
 
 impl AppState {
@@ -102,7 +109,16 @@ impl AppState {
             clipboard: Mutex::new(None),
             context: watch::Sender::new(Arc::default()),
             dismissals: None,
+            backups: None,
+            import: backups::PendingImport::default(),
         }
+    }
+
+    /// The same, with the automatic backups' folder the session backs up into, for the
+    /// Backups window.
+    pub fn with_backups(mut self, backups: Option<Backups>) -> Self {
+        self.backups = backups;
+        self
     }
 
     /// The same, with the Mac check's dismissals saved in `file`, and those it holds.
@@ -194,7 +210,14 @@ pub fn builder() -> Builder<tauri::Wry> {
             globe::use_as_globe,
             globe::globe_key,
             globe::turn_off_globe,
-            window::traffic_lights
+            window::traffic_lights,
+            backups::backups,
+            backups::backup_preview,
+            backups::restore_backup,
+            backups::show_backup_in_finder,
+            backups::import_preview,
+            backups::apply_import,
+            backups::cancel_import
         ])
         .events(collect_events![
             SessionStateChanged,
@@ -203,7 +226,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             MenuItemChosen,
             QuitRequested,
             TrafficLightsMoved,
-            InputSourceChanged
+            InputSourceChanged,
+            ImportRequested
         ])
 }
 
