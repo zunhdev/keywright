@@ -13,7 +13,9 @@
 //! Raise's, then Lower's.
 //!
 //! Keys are labelled as the input source the person types in labels them, from
-//! [`Labels`], and as a US keyboard labels them where it doesn't say ([`Labels::us`]).
+//! [`Labels`], and as a US keyboard labels them where it doesn't say ([`Labels::us`]). A
+//! second input source can label them too, as dual-printed keycaps do (MAC-6): its label is
+//! a key's [`Key::secondary`].
 
 #[cfg(test)]
 mod tests;
@@ -41,6 +43,10 @@ pub struct Key {
     /// The sentence for VoiceOver, with keys by name rather than symbol, such as "Tap for
     /// Escape, hold for Control." or "Types Shift-Command-4."
     pub spoken: String,
+    /// What the key types in a second input source, if it's shown and differs, such as `Ф`
+    /// for A under ABC with Russian: for a key that types a character when tapped, not a
+    /// shortcut.
+    pub secondary: Option<String>,
 }
 
 /// What a keycap shows.
@@ -101,14 +107,16 @@ pub enum LayerMode {
 }
 
 /// What every key shows and does: layer by layer, in the keymap's order, then by key
-/// position, with keys as `labels` name them. `conditional_layers` are the layers the
-/// firmware turns on by itself, from the keyboard's support pack.
+/// position, with keys as `labels` name them, and as `secondary` does too, if it's given.
+/// `conditional_layers` are the layers the firmware turns on by itself, from the keyboard's
+/// support pack.
 #[must_use]
 pub fn describe(
     keymap: &Keymap,
     behaviors: &BehaviorTable,
     conditional_layers: &[ConditionalLayer],
     labels: &Labels,
+    secondary: Option<&Labels>,
 ) -> Vec<Vec<Key>> {
     let words = Words {
         keymap,
@@ -132,12 +140,16 @@ pub fn describe(
                 .enumerate()
                 .map(|(position, binding)| {
                     let action = Action::from_binding(*binding, behaviors);
+                    let secondary = |action| {
+                        secondary.and_then(|secondary| secondary_label(action, labels, secondary))
+                    };
                     if action != Action::Transparent {
                         return Key {
                             keycap: words.keycap(action),
                             inherited: false,
                             sentence: words.sentence(action),
                             spoken: spoken.sentence(action),
+                            secondary: secondary(action),
                         };
                     }
                     let inherited = inherited(keymap, behaviors, &below, position);
@@ -149,6 +161,7 @@ pub fn describe(
                         inherited: true,
                         sentence: see_through(words.sentence(inherited)),
                         spoken: see_through(spoken.sentence(inherited)),
+                        secondary: secondary(inherited),
                     }
                 })
                 .collect()
@@ -180,7 +193,23 @@ pub fn describe_action(
         inherited: false,
         sentence: words.sentence(action),
         spoken: spoken.sentence(action),
+        secondary: None,
     }
+}
+
+/// What a key that does `action` types in the `secondary` input source, if it types a
+/// character when tapped and that differs from what it types in `labels`' input source.
+fn secondary_label(action: Action, labels: &Labels, secondary: &Labels) -> Option<String> {
+    let (Action::KeyPress(tap) | Action::ModTap { tap, .. } | Action::LayerTap { tap, .. }) =
+        action
+    else {
+        return None;
+    };
+    if in_shortcut(tap.mods) || modifier_bits(tap.usage).is_some() {
+        return None;
+    }
+    let theirs = shortcut_label(tap, secondary);
+    (theirs != shortcut_label(tap, labels)).then_some(theirs)
 }
 
 /// What a key bound to `binding` does, as its keycap shows it, or in a word or two where

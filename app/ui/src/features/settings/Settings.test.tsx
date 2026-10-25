@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 
 import { mockIPC } from "@tauri-apps/api/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
@@ -6,12 +6,28 @@ import { userEvent } from "@testing-library/user-event";
 import { I18nProvider } from "react-aria-components";
 
 import { LOCALE } from "../../i18n/messages.ts";
-import type { GeneralSettings, OpenAtLogin } from "../../ipc/bindings.ts";
+import type { GeneralSettings, OpenAtLogin, SecondaryLabels } from "../../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
 import { SettingsWindow } from "./SettingsWindow.tsx";
 
-/** Fakes the Rust side, whose settings are `general`, and records commands with their arguments. */
-function rustSide(general: GeneralSettings, turnedOn?: OpenAtLogin) {
+/** ABC and Russian, as a Mac with both turned on lists them, with none chosen. */
+const abcAndRussian: SecondaryLabels = {
+  chosen: null,
+  layouts: [
+    { id: "com.apple.keylayout.ABC", name: "ABC" },
+    { id: "com.apple.keylayout.Russian", name: "Russian" },
+  ],
+};
+
+/**
+ * Fakes the Rust side, whose settings are `general` and `secondary`, and records commands
+ * with their arguments.
+ */
+function rustSide(
+  general: GeneralSettings,
+  turnedOn?: OpenAtLogin,
+  secondary: SecondaryLabels = abcAndRussian,
+) {
   const calls: [string, unknown][] = [];
   mockIPC((command, args) => {
     calls.push([command, args]);
@@ -20,6 +36,8 @@ function rustSide(general: GeneralSettings, turnedOn?: OpenAtLogin) {
         return general;
       case "set_open_at_login":
         return turnedOn ?? { on: true, problem: null };
+      case "secondary_labels":
+        return secondary;
       default:
         return null;
     }
@@ -79,5 +97,43 @@ test("the settings are read again each time the window shows", async () => {
   document.dispatchEvent(new Event("visibilitychange"));
   await waitFor(() => {
     expect(calls.filter(([command]) => command === "general_settings")).toHaveLength(2);
+  });
+});
+
+describe("the Keyboard tab", () => {
+  test("chooses the input source of secondary labels from those turned on, or none", async () => {
+    const calls = rustSide({ menuBar: true, openAtLogin: { on: false, problem: null } });
+    const { container } = draw();
+    await userEvent.click(await screen.findByRole("tab", { name: "Keyboard" }));
+    const choice = await screen.findByRole("button", { name: /Secondary labels/u });
+    expect(choice.textContent).toContain("None");
+    await expectNoAxeViolations(container);
+
+    await userEvent.click(choice);
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+      "None",
+      "ABC",
+      "Russian",
+    ]);
+    await userEvent.click(screen.getByRole("option", { name: "Russian" }));
+    expect(calls).toContainEqual(["set_secondary_labels", { id: "com.apple.keylayout.Russian" }]);
+    await waitFor(() => {
+      expect(choice.textContent).toContain("Russian");
+    });
+
+    await userEvent.click(choice);
+    await userEvent.click(screen.getByRole("option", { name: "None" }));
+    expect(calls).toContainEqual(["set_secondary_labels", { id: null }]);
+  });
+
+  test("shows the one chosen before", async () => {
+    rustSide({ menuBar: true, openAtLogin: { on: false, problem: null } }, undefined, {
+      ...abcAndRussian,
+      chosen: "com.apple.keylayout.Russian",
+    });
+    draw();
+    await userEvent.click(await screen.findByRole("tab", { name: "Keyboard" }));
+    const choice = await screen.findByRole("button", { name: /Secondary labels/u });
+    expect(choice.textContent).toContain("Russian");
   });
 });

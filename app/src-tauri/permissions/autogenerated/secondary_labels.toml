@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-secondary-labels"
+description = "Enables the secondary_labels command without any pre-configured scope."
+commands.allow = ["secondary_labels"]
+
+[[permission]]
+identifier = "deny-secondary-labels"
+description = "Denies the secondary_labels command without any pre-configured scope."
+commands.deny = ["secondary_labels"]

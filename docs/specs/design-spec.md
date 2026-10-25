@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.25 — for review                                                       |
+| **Status**    | Draft v0.26 — for review                                                       |
 | **Date**      | 2026-10-25                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -139,7 +139,7 @@ Knob push-keys are drawn as **round keys** with a thin ring that stands for rota
 | **Same as layer below**     | The label it inherits is drawn at 35% opacity with a ▽ badge in the top-left corner. It must never look identical to "Does nothing". It inherits what the key does on the next layer down that is on whenever its own layer is: the base layer, and for a layer the firmware turns on by itself, such as Adjust, the layers that turn it on. |
 | **Does nothing**            | An empty keycap with a faint diagonal hatch and a centred `–`.                                                                                                                                                                                                                                                                               |
 | **Other actions**           | The firmware's display name in small text, with a ⋯ badge.                                                                                                                                                                                                                                                                                   |
-| **Secondary label** (MAC-6) | Top-right corner at 25% size, in `text-secondary`.                                                                                                                                                                                                                                                                                           |
+| **Secondary label** (MAC-6) | Top-right corner at 25% size, in `text-secondary`, left of the changed dot: what the key types in the input source chosen in Settings › Keyboard (§9.4), for a key that types a character when tapped, where it differs from the main label (`Ф` on A with ABC and Russian). Shortcuts and modifiers have none.                              |
 | **Badges**                  | Top-left: Mac compatibility ⚠ (warning colour), or ▽ or ⋯ above, which never apply together. Top-right: changed • (accent). Search matches get an accent outline.                                                                                                                                                                            |
 
 ### 4.3 Key states
@@ -358,12 +358,12 @@ A dedicated window with a step indicator: **Prepare → Back up → one half →
 
 ### 9.4 Settings window
 
-| Tab          | Contents                                                                                                                                     |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **General**  | Show in menu bar · Open at login · Appearance (System / Light / Dark) · Show ZMK names                                                       |
-| **Keyboard** | Secondary label input source (MAC-6) · Bluetooth permission status with a _Open System Settings_ button · Globe key (MAC-8), with _Turn Off_ |
-| **Backups**  | Number of automatic backups kept (default 20, minimum 5) · _Show backups folder_                                                             |
-| **Advanced** | _Copy diagnostics_ (NFR-4) · _Reset first-time setup_                                                                                        |
+| Tab          | Contents                                                                                                                                                                                                                |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **General**  | Show in menu bar · Open at login · Appearance (System / Light / Dark) · Show ZMK names                                                                                                                                  |
+| **Keyboard** | _Secondary labels_ (MAC-6): None, or one of the keyboard layouts turned on in System Settings, as a pop-up menu · Bluetooth permission status with a _Open System Settings_ button · Globe key (MAC-8), with _Turn Off_ |
+| **Backups**  | Number of automatic backups kept (default 20, minimum 5) · _Show backups folder_                                                                                                                                        |
+| **Advanced** | _Copy diagnostics_ (NFR-4) · _Reset first-time setup_                                                                                                                                                                   |
 
 ### 9.5 Menu bar item (BAR-*)
 
@@ -574,3 +574,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.23    | 2026-10-25 | Review sheet (§6, KEY-102): as wide as its rows need within the window; columns sized to their content, long texts truncated with a tooltip; the rows scroll and the footer shows whole.                                                                                                   |
 | 0.24    | 2026-10-25 | Toolbar (§3.1, KEY-103): the name starts 16 px after the traffic lights, measured where macOS draws them, and at the usual inset in full screen.                                                                                                                                           |
 | 0.25    | 2026-10-25 | Mac check (§3.2, §5.1, KEY-62): the toolbar's ⚠ with a count, its popover with Fix All, and the layer overview's list with Use ⌘C and Dismiss, which lasts on that keyboard.                                                                                                               |
+| 0.26    | 2026-10-25 | Secondary labels (§4.2, §9.4, KEY-63): where the legend sits beside the changed dot, which keys have one, and the Keyboard tab's pop-up menu. Settings' tabs are a segmented row at the top.                                                                                               |

@@ -58,7 +58,7 @@ fn binding(action: Action) -> Binding {
 fn stock(change: impl FnOnce(&mut Keymap)) -> Vec<Vec<Key>> {
     let mut keymap = stock_keymap();
     change(&mut keymap);
-    describe(&keymap, &zmk_v0_3_table(), &adjust(), &Labels::us())
+    describe(&keymap, &zmk_v0_3_table(), &adjust(), &Labels::us(), None)
 }
 
 fn set(keymap: &mut Keymap, layer: LayerId, position: usize, action: Action) {
@@ -92,7 +92,7 @@ fn one_key_each(actions: &[Action]) -> Keymap {
 /// What a single key with this action shows and says, in a keymap with a "nav" layer.
 fn one(action: Action) -> Key {
     let keymap = one_key_each(&[action]);
-    describe(&keymap, &zmk_v0_3_table(), &[], &Labels::us())[0][0].clone()
+    describe(&keymap, &zmk_v0_3_table(), &[], &Labels::us(), None)[0][0].clone()
 }
 
 fn label(text: &str) -> Keycap {
@@ -307,7 +307,7 @@ mod actions {
     fn unnamed_and_missing_layers_are_called_by_their_place() {
         // The second layer has no name; layer 9 isn't there.
         let keymap = one_key_each(&[Action::Momentary(LayerId(1)), Action::Momentary(LayerId(9))]);
-        let keys = describe(&keymap, &zmk_v0_3_table(), &[], &Labels::us());
+        let keys = describe(&keymap, &zmk_v0_3_table(), &[], &Labels::us(), None);
         assert_eq!(layer_name(&keymap, LayerId(1)), "Layer 2");
         assert_eq!(keys[0][0].sentence, "Hold to use layer 2.");
         assert_eq!(layer_name(&keymap, LayerId(9)), "Missing layer");
@@ -407,7 +407,7 @@ mod actions {
         let toggle = testing::binding(&table, "Key Toggle", plain(A).to_param(), 0);
         let mut keymap = one_key_each(&[Action::None]);
         keymap.layers[0].bindings[0] = toggle;
-        let key = &describe(&keymap, &table, &[], &Labels::us())[0][0];
+        let key = &describe(&keymap, &table, &[], &Labels::us(), None)[0][0];
         assert_eq!(key.keycap, Keycap::Other("Key Toggle".to_owned()));
         assert_eq!(key.sentence, "Runs the firmware's Key Toggle action.");
     }
@@ -489,7 +489,7 @@ mod same_as_layer_below {
         let mut keymap = stock_keymap();
         // Lower, then the base layer, then the rest.
         keymap.layers.swap(0, 1);
-        let keys = describe(&keymap, &zmk_v0_3_table(), &adjust(), &Labels::us());
+        let keys = describe(&keymap, &zmk_v0_3_table(), &adjust(), &Labels::us(), None);
         assert_eq!(keys[0][GRAVE].keycap, Keycap::Nothing);
     }
 }
@@ -768,5 +768,111 @@ mod labels {
     fn a_key_that_shows_nothing_reads_in_words() {
         assert_eq!(row(Action::Transparent), "Same as layer below");
         assert_eq!(row(Action::None), "Does nothing");
+    }
+}
+
+mod secondary_labels {
+    use super::*;
+    use crate::keys::source::Typed;
+    use crate::mac::KeyboardType;
+
+    /// A few keys of macOS's Russian layout: A, Q, 1 and grave, by virtual key code.
+    fn russian() -> Labels {
+        Labels::from_typed(KeyboardType::Ansi, |code| {
+            let typed = |plain: &str, shifted: &str, command: &str| Typed {
+                plain: Some(plain.to_owned()),
+                shifted: Some(shifted.to_owned()),
+                command: Some(command.to_owned()),
+            };
+            match code.0 {
+                0x00 => typed("ф", "Ф", "a"),
+                0x0C => typed("й", "Й", "q"),
+                0x12 => typed("1", "!", "1"),
+                0x32 => typed("]", "[", "`"),
+                _ => Typed::default(),
+            }
+        })
+    }
+
+    /// The stock keymap, labelled as on a US keyboard with Russian as the second input
+    /// source.
+    fn stock_with_russian(change: impl FnOnce(&mut Keymap)) -> Vec<Vec<Key>> {
+        let mut keymap = stock_keymap();
+        change(&mut keymap);
+        let russian = russian();
+        describe(
+            &keymap,
+            &zmk_v0_3_table(),
+            &adjust(),
+            &Labels::us(),
+            Some(&russian),
+        )
+    }
+
+    /// Row 2's second key: Q on the base layer; and row 3's second, A.
+    const Q: usize = 13;
+    const A_KEY: usize = 25;
+
+    #[test]
+    fn keys_that_type_another_character_there_show_it() {
+        let keys = stock_with_russian(|_| {});
+        assert_eq!(keys[0][Q].secondary.as_deref(), Some("Й"));
+        assert_eq!(keys[0][A_KEY].secondary.as_deref(), Some("Ф"));
+        assert_eq!(keys[0][0].secondary.as_deref(), Some("]"));
+        // A see-through key shows what it inherits there too: Lower's grave.
+        assert!(keys[1][0].inherited);
+        assert_eq!(keys[1][0].secondary.as_deref(), Some("]"));
+    }
+
+    #[test]
+    fn keys_that_type_the_same_or_no_character_show_nothing_more() {
+        let keys = stock_with_russian(|_| {});
+        // 1 types 1 in both; Escape and Space type no character; a layer key types none.
+        let one = keys[0]
+            .iter()
+            .position(|key| key.keycap == label("1"))
+            .unwrap();
+        assert_eq!(keys[0][one].secondary, None);
+        let escape = keys[0]
+            .iter()
+            .position(|key| key.keycap == label("⎋ Esc"))
+            .unwrap();
+        assert_eq!(keys[0][escape].secondary, None);
+        assert!(keys[0].iter().all(|key| match key.keycap {
+            Keycap::Layer { .. } | Keycap::Nothing => key.secondary.is_none(),
+            _ => true,
+        }));
+        // Without a second input source, no key shows one.
+        assert!(
+            stock(|_| {})
+                .iter()
+                .flatten()
+                .all(|key| key.secondary.is_none())
+        );
+    }
+
+    #[test]
+    fn shortcuts_and_modifiers_show_nothing_more_but_a_tap_does() {
+        let keys = stock_with_russian(|keymap| {
+            set(
+                keymap,
+                BASE,
+                Q,
+                Action::KeyPress(with(Mods::LEFT_COMMAND, key(0x14))),
+            );
+            set(
+                keymap,
+                BASE,
+                A_KEY,
+                Action::ModTap {
+                    hold: plain(LEFT_CONTROL),
+                    tap: plain(A),
+                },
+            );
+            set(keymap, BASE, 0, Action::KeyPress(plain(LEFT_SHIFT)));
+        });
+        assert_eq!(keys[0][Q].secondary, None);
+        assert_eq!(keys[0][A_KEY].secondary.as_deref(), Some("Ф"));
+        assert_eq!(keys[0][0].secondary, None);
     }
 }

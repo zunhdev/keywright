@@ -1,0 +1,53 @@
+/* A window's pages (design §9.4), as Settings shows them: the tabs as one segmented row
+   at the top, then the page. */
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.list {
+  display: inline-flex;
+  align-self: center;
+  box-sizing: border-box;
+  height: var(--control-default);
+  padding: 2px;
+  border: 1px solid var(--border-key);
+  border-radius: var(--radius-control);
+  background: var(--bg-canvas);
+}
+
+.tab {
+  display: grid;
+  place-items: center;
+  padding: 0 var(--space-3);
+  white-space: nowrap;
+  border-radius: var(--radius-badge);
+  color: var(--text-secondary);
+  font: var(--type-body-strong);
+  cursor: default;
+  outline: none;
+  transition: background-color var(--motion-hover) var(--ease-out);
+
+  &[data-hovered] {
+    color: var(--text-primary);
+  }
+
+  &[data-selected] {
+    background: var(--surface-key);
+    box-shadow: var(--shadow-key);
+    color: var(--text-primary);
+  }
+
+  &[data-focus-visible] {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  outline: none;
+}

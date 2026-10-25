@@ -1,37 +1,48 @@
 import { useEffect, useState } from "react";
+import type { Key } from "react-aria-components";
 
 import { Button } from "../../design-system/Button.tsx";
+import { Select, SelectItem } from "../../design-system/Select.tsx";
 import { Switch } from "../../design-system/Switch.tsx";
+import { Tab, TabList, TabPanel, Tabs } from "../../design-system/Tabs.tsx";
 import { useMessages } from "../../i18n/messages.ts";
-import { commands, type GeneralSettings } from "../../ipc/bindings.ts";
+import { commands, type SecondaryLabels } from "../../ipc/bindings.ts";
 
 import styles from "./Settings.module.css";
 
-/**
- * The Settings window (design §9.4), with its General tab: Show in menu bar (BAR-1, BAR-4)
- * and Open at login (BAR-5). Open at login shows what macOS has recorded, read each time
- * the window shows, since it can change in System Settings. The other tabs come with
- * KEY-67.
- */
-export function SettingsWindow() {
-  const messages = useMessages();
-  const [general, setGeneral] = useState<GeneralSettings | null>(null);
-  const [failed, setFailed] = useState(false);
+/** What the secondary labels' choice calls "no input source". */
+const NONE = "none";
 
+/**
+ * Reads a tab's settings with `read`, and again each time the window shows, since some can
+ * change outside Keywright, such as in System Settings. `null` until they're read.
+ */
+function useSettings<T>(read: () => Promise<T>): [T | null, (settings: T) => void] {
+  const [settings, setSettings] = useState<T | null>(null);
   useEffect(() => {
-    const read = async () => {
-      setGeneral(await commands.generalSettings());
+    const load = async () => {
+      setSettings(await read());
     };
-    void read();
+    void load();
     const onShow = () => {
-      if (document.visibilityState === "visible") void read();
+      if (document.visibilityState === "visible") void load();
     };
     document.addEventListener("visibilitychange", onShow);
     return () => {
       document.removeEventListener("visibilitychange", onShow);
     };
-  }, []);
+  }, [read]);
+  return [settings, setSettings];
+}
 
+/**
+ * The General tab: Show in menu bar (BAR-1, BAR-4) and Open at login (BAR-5). Open at
+ * login shows what macOS has recorded, since it can change in System Settings.
+ */
+function General() {
+  const messages = useMessages();
+  const [general, setGeneral] = useSettings(commands.generalSettings);
+  const [failed, setFailed] = useState(false);
   if (general === null) return null;
   const login = general.openAtLogin;
   const changeMenuBar = async (on: boolean) => {
@@ -43,8 +54,7 @@ export function SettingsWindow() {
     setGeneral({ ...general, openAtLogin: await commands.setOpenAtLogin(on) });
   };
   return (
-    <main className={styles.window}>
-      <h1 className={styles.tab}>{messages.format("settings.general")}</h1>
+    <>
       <section className={styles.setting}>
         <Switch isSelected={general.menuBar} onChange={(on) => void changeMenuBar(on)}>
           {messages.format("settings.menu-bar")}
@@ -67,6 +77,67 @@ export function SettingsWindow() {
           </>
         )}
       </section>
+    </>
+  );
+}
+
+/**
+ * The Keyboard tab: the input source whose labels keycaps show too, as dual-printed
+ * keycaps do (MAC-6), from the layouts turned on in System Settings, or none.
+ */
+function Keyboard() {
+  const messages = useMessages();
+  const [secondary, setSecondary] = useSettings(commands.secondaryLabels);
+  const [failed, setFailed] = useState(false);
+  if (secondary === null) return null;
+  const choose = async (key: Key | null) => {
+    const id = key === null || key === NONE ? null : String(key);
+    const result = await commands.setSecondaryLabels(id);
+    setFailed(result.status === "error");
+    setSecondary({ ...secondary, chosen: id } satisfies SecondaryLabels);
+  };
+  const options = [
+    { id: NONE, name: messages.format("settings.secondary-none") },
+    ...secondary.layouts,
+  ];
+  return (
+    <section className={styles.setting}>
+      <Select
+        label={messages.format("settings.secondary")}
+        items={options}
+        value={secondary.chosen ?? NONE}
+        onChange={(key) => void choose(key)}
+      >
+        {(option) => <SelectItem id={option.id}>{option.name}</SelectItem>}
+      </Select>
+      <p className={styles.note}>{messages.format("settings.secondary-note")}</p>
+      {failed ? (
+        <p className={styles.problem}>{messages.format("error.setting-not-changed")}</p>
+      ) : null}
+    </section>
+  );
+}
+
+/**
+ * The Settings window (design §9.4): the General tab, and the Keyboard tab with the
+ * secondary labels (MAC-6). The other settings come with KEY-67.
+ */
+export function SettingsWindow() {
+  const messages = useMessages();
+  return (
+    <main className={styles.window}>
+      <Tabs>
+        <TabList aria-label={messages.format("settings.tabs")}>
+          <Tab id="general">{messages.format("settings.general")}</Tab>
+          <Tab id="keyboard">{messages.format("settings.keyboard")}</Tab>
+        </TabList>
+        <TabPanel id="general">
+          <General />
+        </TabPanel>
+        <TabPanel id="keyboard">
+          <Keyboard />
+        </TabPanel>
+      </Tabs>
     </main>
   );
 }

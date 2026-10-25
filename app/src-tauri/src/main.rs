@@ -170,7 +170,8 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     // A simulated keyboard has a serial number of its own, so its dismissals are its own.
     let state = state.with_dismissals(Dismissals::path());
     let handle = app.handle().clone();
-    let menu_bar = menu_bar(settings, battery.clone());
+    let low_battery = settings.low_battery;
+    let menu_bar = menu_bar(low_battery, battery.clone());
     menu_bar.show(&handle, settings.menu_bar)?;
     app.manage(menu_bar);
     app.manage(SettingsState(std::sync::Mutex::new(settings)));
@@ -182,7 +183,7 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
             state.session.clone(),
             move |status, keyboard| {
                 handle.state::<MenuBar<Wry>>().battery_changed(status);
-                for (half, percent) in low.update(status, settings.low_battery) {
+                for (half, percent) in low.update(status, low_battery) {
                     notify(&handle, &low_battery::message(keyboard, half, percent));
                 }
                 let _ = BatteryChanged(status).emit(&handle);
@@ -255,10 +256,10 @@ fn session_with_backups() -> Session {
     }
 }
 
-/// The menu bar item (design §9.5), with a dot below the settings' low-battery level. Its
+/// The menu bar item (design §9.5), with a dot below the settings' `low_battery` level. Its
 /// menu reads the `battery` again as it opens.
-fn menu_bar(settings: Settings, battery: Option<BatteryWatch>) -> MenuBar<Wry> {
-    MenuBar::new(settings.low_battery, tray_menu, move || {
+fn menu_bar(low_battery: u8, battery: Option<BatteryWatch>) -> MenuBar<Wry> {
+    MenuBar::new(low_battery, tray_menu, move || {
         if let Some(battery) = &battery {
             battery.read();
         }

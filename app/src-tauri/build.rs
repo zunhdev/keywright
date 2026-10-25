@@ -53,6 +53,8 @@ const COMMANDS: &[&str] = &[
     "restore_stock_settings",
     "fix_mac_keys",
     "dismiss_mac_findings",
+    "secondary_labels",
+    "set_secondary_labels",
     "traffic_lights",
 ];
 

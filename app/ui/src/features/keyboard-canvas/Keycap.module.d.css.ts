@@ -2,6 +2,7 @@
 declare const classes: {
   readonly badge: string;
   readonly cap: string;
+  readonly corner: string;
   readonly dash: string;
   readonly face: string;
   readonly hatch: string;
@@ -14,6 +15,7 @@ declare const classes: {
   readonly nothing: string;
   readonly other: string;
   readonly preview: string;
+  readonly secondary: string;
   readonly square: string;
   readonly strip: string;
 };

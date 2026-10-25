@@ -25,6 +25,7 @@ function face(name: string, keycap: KeycapData, more: Partial<Key> = {}): Key {
     inherited: false,
     sentence: name,
     spoken: name,
+    secondary: null,
     changed: false,
     macWarning: false,
     restorable: false,
@@ -57,6 +58,8 @@ const KEYCAPS: readonly Key[] = [
   face("Same as layer below: nothing", { kind: "nothing" }, { inherited: true }),
   face("Unknown action", { kind: "other", name: "Macro 1" }),
   face("Changed, no use on a Mac", label("Copy"), { changed: true, macWarning: true }),
+  face("With Russian too", label("A"), { secondary: "Ф" }),
+  face("With Russian, changed", label("Q"), { secondary: "Й", changed: true }),
 ];
 
 /** Each state a key can be in (design §4.3), besides hovered. */

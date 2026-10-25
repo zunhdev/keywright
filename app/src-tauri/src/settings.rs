@@ -3,8 +3,9 @@
 //!
 //! Each setting has a default, which a missing file, or a setting missing from it, gets; a
 //! file that doesn't read gets the defaults too, and stays as it is until a setting
-//! changes. The window has the General tab so far: _Show in menu bar_ and _Open at login_.
-//! The other tabs come with KEY-67, and the first run's menu bar step with KEY-72.
+//! changes. The window has the General tab, with _Show in menu bar_ and _Open at login_,
+//! and the Keyboard tab, with the secondary labels' input source (KEY-63). The other
+//! settings come with KEY-67, and the first run's menu bar step with KEY-72.
 
 use std::io;
 use std::path::Path;
@@ -21,7 +22,7 @@ pub const WINDOW: &str = "settings";
 const FILE: &str = "settings.json";
 
 /// Keywright's settings.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default, rename_all = "kebab-case")]
 pub struct Settings {
     /// Show in menu bar (BAR-1, BAR-4): the menu bar item, and closing the window keeps
@@ -30,6 +31,9 @@ pub struct Settings {
     /// The level, in percent, below which a half's battery counts as low (BAR-3): the menu
     /// bar icon gets a dot.
     pub low_battery: u8,
+    /// The input source whose labels keycaps show too, as dual-printed keycaps do (MAC-6),
+    /// by ID, such as `com.apple.keylayout.Russian`. None at first.
+    pub secondary_input_source: Option<String>,
 }
 
 impl Default for Settings {
@@ -37,6 +41,7 @@ impl Default for Settings {
         Self {
             menu_bar: true,
             low_battery: 15,
+            secondary_input_source: None,
         }
     }
 }
@@ -57,15 +62,15 @@ impl Settings {
     /// # Errors
     ///
     /// Fails if the home folder isn't known, or the file can't be written.
-    pub fn save(self) -> io::Result<()> {
+    pub fn save(&self) -> io::Result<()> {
         let path =
             json_file::path(FILE).ok_or_else(|| io::Error::other("the home folder isn't known"))?;
         self.write(&path)
     }
 
     /// Writes the settings to `path`, whole or not at all.
-    fn write(self, path: &Path) -> io::Result<()> {
-        json_file::write(path, &self)
+    fn write(&self, path: &Path) -> io::Result<()> {
+        json_file::write(path, self)
     }
 }
 
@@ -131,7 +136,7 @@ mod tests {
             Settings::read(&file.0),
             Settings {
                 menu_bar: false,
-                low_battery: 15,
+                ..Settings::default()
             }
         );
     }
@@ -142,6 +147,7 @@ mod tests {
         let settings = Settings {
             menu_bar: false,
             low_battery: 20,
+            secondary_input_source: Some("com.apple.keylayout.Russian".to_owned()),
         };
         settings.write(&file.0).unwrap();
         assert_eq!(Settings::read(&file.0), settings);

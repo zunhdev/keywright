@@ -124,6 +124,24 @@ pub fn layout(id: &str, keyboard: Keyboard) -> Result<Layout, InputSourceError> 
     }
 }
 
+/// The keyboard layouts the person turned on in System Settings, as the input menu lists
+/// them, such as ABC and Russian. Input methods, such as Japanese, aren't layouts, so they
+/// aren't listed. Call it on the main thread.
+///
+/// # Errors
+///
+/// Fails off the main thread, or on a system other than macOS.
+pub fn layouts() -> Result<Vec<InputSource>, InputSourceError> {
+    #[cfg(target_os = "macos")]
+    {
+        crate::ffi::carbon::layouts()
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        Err(InputSourceError::Unsupported)
+    }
+}
+
 /// Calls `changed` each time another input source is selected, for as long as the app
 /// runs, even while it's in the background. macOS calls it on the main thread. Call this
 /// once, on the main thread.
@@ -161,6 +179,7 @@ mod tests {
             layout("com.apple.keylayout.ABC", ZMK),
             Err(InputSourceError::NotMainThread)
         );
+        assert_eq!(layouts(), Err(InputSourceError::NotMainThread));
         assert_eq!(watch(|| {}), Err(InputSourceError::NotMainThread));
     }
 
@@ -172,6 +191,7 @@ mod tests {
             layout("com.apple.keylayout.ABC", ZMK),
             Err(InputSourceError::Unsupported)
         );
+        assert_eq!(layouts(), Err(InputSourceError::Unsupported));
         assert_eq!(watch(|| {}), Err(InputSourceError::Unsupported));
     }
 }

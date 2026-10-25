@@ -645,6 +645,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types `.",
           "spoken": "Types `.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -665,6 +666,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 1.",
           "spoken": "Types 1.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -685,6 +687,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 2.",
           "spoken": "Types 2.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -705,6 +708,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 3.",
           "spoken": "Types 3.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -725,6 +729,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 4.",
           "spoken": "Types 4.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -745,6 +750,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 5.",
           "spoken": "Types 5.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -765,6 +771,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 6.",
           "spoken": "Types 6.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -785,6 +792,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 7.",
           "spoken": "Types 7.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -805,6 +813,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 8.",
           "spoken": "Types 8.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -825,6 +834,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 9.",
           "spoken": "Types 9.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -845,6 +855,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 0.",
           "spoken": "Types 0.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -865,6 +876,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types `.",
           "spoken": "Types `.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -885,6 +897,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Escape.",
           "spoken": "Types Escape.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -905,6 +918,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Q.",
           "spoken": "Types Q.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -925,6 +939,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types W.",
           "spoken": "Types W.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -945,6 +960,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types E.",
           "spoken": "Types E.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -965,6 +981,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types R.",
           "spoken": "Types R.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -985,6 +1002,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types T.",
           "spoken": "Types T.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1005,6 +1023,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Y.",
           "spoken": "Types Y.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1025,6 +1044,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types U.",
           "spoken": "Types U.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1045,6 +1065,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types I.",
           "spoken": "Types I.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1065,6 +1086,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types O.",
           "spoken": "Types O.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1085,6 +1107,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types P.",
           "spoken": "Types P.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1105,6 +1128,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Delete.",
           "spoken": "Types Delete.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1125,6 +1149,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Tab.",
           "spoken": "Types Tab.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1145,6 +1170,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types A.",
           "spoken": "Types A.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1165,6 +1191,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types S.",
           "spoken": "Types S.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1185,6 +1212,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types D.",
           "spoken": "Types D.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1205,6 +1233,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F.",
           "spoken": "Types F.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1225,6 +1254,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types G.",
           "spoken": "Types G.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1245,6 +1275,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types H.",
           "spoken": "Types H.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1265,6 +1296,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types J.",
           "spoken": "Types J.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1285,6 +1317,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types K.",
           "spoken": "Types K.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1305,6 +1338,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types L.",
           "spoken": "Types L.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1325,6 +1359,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types ;.",
           "spoken": "Types ;.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1345,6 +1380,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types '.",
           "spoken": "Types '.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1365,6 +1401,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⇧ Shift.",
           "spoken": "Acts as Shift.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1385,6 +1422,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Z.",
           "spoken": "Types Z.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1405,6 +1443,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types X.",
           "spoken": "Types X.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1425,6 +1464,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types C.",
           "spoken": "Types C.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1445,6 +1485,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types V.",
           "spoken": "Types V.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1465,6 +1506,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types B.",
           "spoken": "Types B.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1485,6 +1527,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Presses Mute.",
           "spoken": "Presses Mute.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1505,6 +1548,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Presses Play.",
           "spoken": "Presses Play.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1525,6 +1569,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types N.",
           "spoken": "Types N.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1545,6 +1590,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types M.",
           "spoken": "Types M.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1565,6 +1611,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types ,.",
           "spoken": "Types ,.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1585,6 +1632,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types ..",
           "spoken": "Types ..",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1605,6 +1653,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types /.",
           "spoken": "Types /.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1625,6 +1674,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⇧ Shift.",
           "spoken": "Acts as Shift.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1645,6 +1695,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌘ Command.",
           "spoken": "Acts as Command.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1665,6 +1716,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌥ Option.",
           "spoken": "Acts as Option.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1685,6 +1737,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌃ Control.",
           "spoken": "Acts as Control.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1703,6 +1756,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Hold to use the lower layer.",
           "spoken": "Hold to use the lower layer.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1723,6 +1777,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Return.",
           "spoken": "Types Return.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1743,6 +1798,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Space.",
           "spoken": "Types Space.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1761,6 +1817,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Hold to use the raise layer.",
           "spoken": "Hold to use the raise layer.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1781,6 +1838,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌃ Control.",
           "spoken": "Acts as Control.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1801,6 +1859,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌥ Option.",
           "spoken": "Acts as Option.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1821,6 +1880,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌘ Command.",
           "spoken": "Acts as Command.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1853,6 +1913,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types `.",
           "spoken": "Same as the layer below: types `.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1873,6 +1934,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F1.",
           "spoken": "Types F1.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1893,6 +1955,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F2.",
           "spoken": "Types F2.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1913,6 +1976,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F3.",
           "spoken": "Types F3.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1933,6 +1997,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F4.",
           "spoken": "Types F4.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1953,6 +2018,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F5.",
           "spoken": "Types F5.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1973,6 +2039,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F6.",
           "spoken": "Types F6.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -1993,6 +2060,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F7.",
           "spoken": "Types F7.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2013,6 +2081,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F8.",
           "spoken": "Types F8.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2033,6 +2102,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F9.",
           "spoken": "Types F9.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2053,6 +2123,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F10.",
           "spoken": "Types F10.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2073,6 +2144,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F11.",
           "spoken": "Types F11.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2093,6 +2165,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types `.",
           "spoken": "Types `.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2113,6 +2186,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 1.",
           "spoken": "Types 1.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2133,6 +2207,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 2.",
           "spoken": "Types 2.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2153,6 +2228,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 3.",
           "spoken": "Types 3.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2173,6 +2249,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 4.",
           "spoken": "Types 4.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2193,6 +2270,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 5.",
           "spoken": "Types 5.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2213,6 +2291,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 6.",
           "spoken": "Types 6.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2233,6 +2312,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 7.",
           "spoken": "Types 7.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2253,6 +2333,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 8.",
           "spoken": "Types 8.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2273,6 +2354,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 9.",
           "spoken": "Types 9.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2293,6 +2375,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 0.",
           "spoken": "Types 0.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2313,6 +2396,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types F12.",
           "spoken": "Types F12.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2328,6 +2412,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Tab.",
           "spoken": "Same as the layer below: types Tab.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2348,6 +2433,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types !.",
           "spoken": "Types !.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2368,6 +2454,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types @.",
           "spoken": "Types @.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2388,6 +2475,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types #.",
           "spoken": "Types #.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2408,6 +2496,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types $.",
           "spoken": "Types $.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2428,6 +2517,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types %.",
           "spoken": "Types %.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2448,6 +2538,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types ^.",
           "spoken": "Types ^.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2468,6 +2559,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types &.",
           "spoken": "Types &.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2488,6 +2580,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types *.",
           "spoken": "Types *.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2508,6 +2601,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types (.",
           "spoken": "Types (.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2528,6 +2622,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types ).",
           "spoken": "Types ).",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2548,6 +2643,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types |.",
           "spoken": "Types |.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2563,6 +2659,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2583,6 +2680,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types =.",
           "spoken": "Types =.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2603,6 +2701,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types -.",
           "spoken": "Types -.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2623,6 +2722,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types +.",
           "spoken": "Types +.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2643,6 +2743,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types {.",
           "spoken": "Types {.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2663,6 +2764,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types }.",
           "spoken": "Types }.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2678,6 +2780,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: presses Mute.",
           "spoken": "Same as the layer below: presses Mute.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2693,6 +2796,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: presses Play.",
           "spoken": "Same as the layer below: presses Play.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2713,6 +2817,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types [.",
           "spoken": "Types [.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2733,6 +2838,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types ].",
           "spoken": "Types ].",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2753,6 +2859,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types ;.",
           "spoken": "Types ;.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2773,6 +2880,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types :.",
           "spoken": "Types :.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2793,6 +2901,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types \\.",
           "spoken": "Types \\.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2808,6 +2917,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2823,6 +2933,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2838,6 +2949,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2853,6 +2965,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2870,6 +2983,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: hold to use the lower layer.",
           "spoken": "Same as the layer below: hold to use the lower layer.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2885,6 +2999,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Return.",
           "spoken": "Same as the layer below: types Return.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2900,6 +3015,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Space.",
           "spoken": "Same as the layer below: types Space.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2917,6 +3033,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: hold to use the raise layer.",
           "spoken": "Same as the layer below: hold to use the raise layer.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2932,6 +3049,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2947,6 +3065,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2962,6 +3081,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -2996,6 +3116,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Forgets the pairing of the Bluetooth device in use.",
           "spoken": "Forgets the pairing of the Bluetooth device in use.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3013,6 +3134,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 1.",
           "spoken": "Uses Bluetooth device 1.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3030,6 +3152,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 2.",
           "spoken": "Uses Bluetooth device 2.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3047,6 +3170,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 3.",
           "spoken": "Uses Bluetooth device 3.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3064,6 +3188,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 4.",
           "spoken": "Uses Bluetooth device 4.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3081,6 +3206,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 5.",
           "spoken": "Uses Bluetooth device 5.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3096,6 +3222,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types 6.",
           "spoken": "Same as the layer below: types 6.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3111,6 +3238,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types 7.",
           "spoken": "Same as the layer below: types 7.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3126,6 +3254,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types 8.",
           "spoken": "Same as the layer below: types 8.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3141,6 +3270,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types 9.",
           "spoken": "Same as the layer below: types 9.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3156,6 +3286,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types 0.",
           "spoken": "Same as the layer below: types 0.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3171,6 +3302,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types `.",
           "spoken": "Same as the layer below: types `.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3186,6 +3318,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Escape.",
           "spoken": "Same as the layer below: types Escape.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3206,6 +3339,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Insert.",
           "spoken": "Types Insert.",
+          "secondary": null,
           "changed": false,
           "macWarning": true,
           "restorable": false
@@ -3226,6 +3360,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Print Screen.",
           "spoken": "Types Print Screen.",
+          "secondary": null,
           "changed": false,
           "macWarning": true,
           "restorable": false
@@ -3246,6 +3381,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Menu.",
           "spoken": "Types Menu.",
+          "secondary": null,
           "changed": false,
           "macWarning": true,
           "restorable": false
@@ -3261,6 +3397,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types R.",
           "spoken": "Same as the layer below: types R.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3276,6 +3413,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types T.",
           "spoken": "Same as the layer below: types T.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3296,6 +3434,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Page Up.",
           "spoken": "Types Page Up.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3311,6 +3450,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types U.",
           "spoken": "Same as the layer below: types U.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3331,6 +3471,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Up Arrow.",
           "spoken": "Types Up Arrow.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3346,6 +3487,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types O.",
           "spoken": "Same as the layer below: types O.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3366,6 +3508,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types 0.",
           "spoken": "Types 0.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3381,6 +3524,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Delete.",
           "spoken": "Same as the layer below: types Delete.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3396,6 +3540,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Tab.",
           "spoken": "Same as the layer below: types Tab.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3416,6 +3561,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌥ Option.",
           "spoken": "Acts as Option.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3436,6 +3582,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⌃ Control.",
           "spoken": "Acts as Control.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3456,6 +3603,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Acts as ⇧ Shift.",
           "spoken": "Acts as Shift.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3471,6 +3619,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types F.",
           "spoken": "Same as the layer below: types F.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3491,6 +3640,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Caps Lock.",
           "spoken": "Types Caps Lock.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3511,6 +3661,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Page Down.",
           "spoken": "Types Page Down.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3531,6 +3682,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Left Arrow.",
           "spoken": "Types Left Arrow.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3551,6 +3703,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Down Arrow.",
           "spoken": "Types Down Arrow.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3571,6 +3724,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Right Arrow.",
           "spoken": "Types Right Arrow.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3591,6 +3745,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Forward Delete.",
           "spoken": "Types Forward Delete.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3611,6 +3766,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Delete.",
           "spoken": "Types Delete.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3626,6 +3782,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3646,6 +3803,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Undo.",
           "spoken": "Types Undo.",
+          "secondary": null,
           "changed": false,
           "macWarning": true,
           "restorable": false
@@ -3666,6 +3824,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Cut.",
           "spoken": "Types Cut.",
+          "secondary": null,
           "changed": false,
           "macWarning": true,
           "restorable": false
@@ -3686,6 +3845,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Copy.",
           "spoken": "Types Copy.",
+          "secondary": null,
           "changed": false,
           "macWarning": true,
           "restorable": false
@@ -3706,6 +3866,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Types Paste.",
           "spoken": "Types Paste.",
+          "secondary": null,
           "changed": false,
           "macWarning": true,
           "restorable": false
@@ -3721,6 +3882,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Unlocks the keyboard, so Keywright can change it.",
           "spoken": "Unlocks the keyboard, so Keywright can change it.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3736,6 +3898,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: presses Mute.",
           "spoken": "Same as the layer below: presses Mute.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3751,6 +3914,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: presses Play.",
           "spoken": "Same as the layer below: presses Play.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3766,6 +3930,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types N.",
           "spoken": "Same as the layer below: types N.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3781,6 +3946,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types M.",
           "spoken": "Same as the layer below: types M.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3796,6 +3962,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types ,.",
           "spoken": "Same as the layer below: types ,.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3811,6 +3978,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types ..",
           "spoken": "Same as the layer below: types ..",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3826,6 +3994,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types /.",
           "spoken": "Same as the layer below: types /.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3841,6 +4010,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⇧ Shift.",
           "spoken": "Same as the layer below: acts as Shift.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3856,6 +4026,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3871,6 +4042,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3886,6 +4058,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3903,6 +4076,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: hold to use the lower layer.",
           "spoken": "Same as the layer below: hold to use the lower layer.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3918,6 +4092,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Return.",
           "spoken": "Same as the layer below: types Return.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3933,6 +4108,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: types Space.",
           "spoken": "Same as the layer below: types Space.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3950,6 +4126,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: hold to use the raise layer.",
           "spoken": "Same as the layer below: hold to use the raise layer.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3965,6 +4142,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌃ Control.",
           "spoken": "Same as the layer below: acts as Control.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3980,6 +4158,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌥ Option.",
           "spoken": "Same as the layer below: acts as Option.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -3995,6 +4174,7 @@ export const sofleKeymap: Keymap = {
           "inherited": true,
           "sentence": "Same as the layer below: acts as ⌘ Command.",
           "spoken": "Same as the layer below: acts as Command.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4114,6 +4294,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Forgets the pairing of the Bluetooth device in use.",
           "spoken": "Forgets the pairing of the Bluetooth device in use.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4131,6 +4312,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 1.",
           "spoken": "Uses Bluetooth device 1.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4148,6 +4330,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 2.",
           "spoken": "Uses Bluetooth device 2.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4165,6 +4348,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 3.",
           "spoken": "Uses Bluetooth device 3.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4182,6 +4366,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 4.",
           "spoken": "Uses Bluetooth device 4.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4199,6 +4384,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Uses Bluetooth device 5.",
           "spoken": "Uses Bluetooth device 5.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4213,6 +4399,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4227,6 +4414,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4241,6 +4429,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4255,6 +4444,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4269,6 +4459,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4283,6 +4474,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4299,6 +4491,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Turns the power to the lights and display on or off.",
           "spoken": "Turns the power to the lights and display on or off.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4315,6 +4508,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Shifts the lights' colour the other way.",
           "spoken": "Shifts the lights' colour the other way.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4331,6 +4525,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Shifts the lights' colour one way.",
           "spoken": "Shifts the lights' colour one way.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4347,6 +4542,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Makes the lights' colour paler.",
           "spoken": "Makes the lights' colour paler.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4363,6 +4559,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Makes the lights' colour stronger.",
           "spoken": "Makes the lights' colour stronger.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4379,6 +4576,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Switches the lights to the next effect.",
           "spoken": "Switches the lights to the next effect.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4393,6 +4591,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4407,6 +4606,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4421,6 +4621,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4435,6 +4636,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4449,6 +4651,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4463,6 +4666,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4477,6 +4681,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4493,6 +4698,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Makes the lights dimmer.",
           "spoken": "Makes the lights dimmer.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4509,6 +4715,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Makes the lights brighter.",
           "spoken": "Makes the lights brighter.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4523,6 +4730,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4537,6 +4745,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4551,6 +4760,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4565,6 +4775,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4579,6 +4790,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4593,6 +4805,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4607,6 +4820,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4621,6 +4835,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4635,6 +4850,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4649,6 +4865,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4663,6 +4880,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4677,6 +4895,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4691,6 +4910,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4705,6 +4925,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4719,6 +4940,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4735,6 +4957,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Turns the lights on or off.",
           "spoken": "Turns the lights on or off.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4749,6 +4972,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4763,6 +4987,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4777,6 +5002,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4791,6 +5017,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4805,6 +5032,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4819,6 +5047,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4833,6 +5062,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4847,6 +5077,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4861,6 +5092,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4875,6 +5107,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4889,6 +5122,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4903,6 +5137,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4917,6 +5152,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4931,6 +5167,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4945,6 +5182,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4959,6 +5197,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false
@@ -4973,6 +5212,7 @@ export const sofleKeymap: Keymap = {
           "inherited": false,
           "sentence": "Does nothing.",
           "spoken": "Does nothing.",
+          "secondary": null,
           "changed": false,
           "macWarning": false,
           "restorable": false

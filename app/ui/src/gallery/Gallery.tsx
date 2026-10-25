@@ -3,7 +3,6 @@ import { useState } from "react";
 import { DialogTrigger, I18nProvider, type Key } from "react-aria-components";
 
 import { Button } from "../design-system/Button.tsx";
-import { ComboBox, ComboBoxItem } from "../design-system/ComboBox.tsx";
 import { Icon } from "../design-system/Icon.tsx";
 import { List, ListItem } from "../design-system/List.tsx";
 import { MenuButton, MenuItem, MenuSeparator } from "../design-system/Menu.tsx";
@@ -13,6 +12,7 @@ import { Sheet } from "../design-system/Sheet.tsx";
 import { ToastRegion, toasts } from "../design-system/Toast.tsx";
 import { Toolbar, ToolbarSeparator } from "../design-system/Toolbar.tsx";
 import { LOCALE } from "../i18n/messages.ts";
+import { Controls } from "./Controls.tsx";
 import { Connection, Keycaps, Sofle } from "./Keyboards.tsx";
 
 import styles from "./Gallery.module.css";
@@ -212,23 +212,7 @@ export function Gallery() {
           </Toolbar>
         </section>
 
-        <section className={styles.section}>
-          <h2>Combobox and segmented control</h2>
-          <div className={styles.row}>
-            <ComboBox label="Action">
-              <ComboBoxItem id="key">Key or shortcut</ComboBoxItem>
-              <ComboBoxItem id="tap-hold">Tap &amp; hold</ComboBoxItem>
-              <ComboBoxItem id="layer">Layer</ComboBoxItem>
-              <ComboBoxItem id="mac">Mac actions</ComboBoxItem>
-              <ComboBoxItem id="media">Media</ComboBoxItem>
-            </ComboBox>
-            <SegmentedControl aria-label="Layer mode" defaultSelectedKeys={["hold"]}>
-              <Segment id="hold">Hold</Segment>
-              <Segment id="switch">Switch</Segment>
-              <Segment id="toggle">Toggle</Segment>
-            </SegmentedControl>
-          </div>
-        </section>
+        <Controls />
 
         <section className={styles.section}>
           <h2>List</h2>

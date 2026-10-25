@@ -135,6 +135,9 @@ pub struct Key {
     pub sentence: String,
     /// The sentence for VoiceOver, with keys by name rather than symbol.
     pub spoken: String,
+    /// What it types in the input source chosen for secondary labels, where that differs,
+    /// such as `Ф` (MAC-6): its keycap shows it in the top-right corner.
+    pub secondary: Option<String>,
     /// Whether it's being tried: it does something else than when last saved.
     pub changed: bool,
     /// Whether it does something that doesn't work on a Mac (MAC-7), and the person hasn't
@@ -245,7 +248,13 @@ impl Keymap {
 
         let place = |position: usize| key_place(pack, position);
 
-        let described = keycap::describe(keymap, &keyboard.behaviors, conditional_layers, labels);
+        let described = keycap::describe(
+            keymap,
+            &keyboard.behaviors,
+            conditional_layers,
+            labels,
+            context.secondary.as_ref(),
+        );
         let reach = keycap::reach(keymap, &keyboard.behaviors, conditional_layers, labels);
         let (layer_warnings, unlockable) =
             guard::warnings(keymap, &keyboard.behaviors, conditional_layers);
@@ -286,6 +295,7 @@ impl Keymap {
                             inherited: key.inherited,
                             sentence: key.sentence,
                             spoken: key.spoken,
+                            secondary: key.secondary,
                             changed: changed.contains(&(layer.id, position)),
                             mac_warning: warnings.contains(&(layer.id.0, self::position(position))),
                             restorable: not_stock.contains(&(layer.id, position)),
@@ -631,6 +641,37 @@ mod tests {
         assert_eq!(keymap.layers[0].keys[y].sentence, "Types Z.");
     }
 
+    /// With a second input source chosen, keys that type something else there say what
+    /// (MAC-6): with Russian, the key in the US A's place also types Ф.
+    #[tokio::test]
+    async fn the_canvas_hears_what_keys_type_in_the_second_input_source() {
+        let (session, context, mut keymaps) = ready_sofle().await;
+        let us = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
+        let a = us.layers[0]
+            .keys
+            .iter()
+            .position(|key| key.keycap == label("A"))
+            .unwrap();
+        assert_eq!(us.layers[0].keys[a].secondary, None);
+
+        // kVK_ANSI_A types ф.
+        let russian = Labels::from_typed(KeyboardType::Ansi, |code| match code.0 {
+            0x00 => Typed {
+                plain: Some("ф".to_owned()),
+                shifted: Some("Ф".to_owned()),
+                command: Some("a".to_owned()),
+            },
+            _ => Typed::default(),
+        });
+        context.send_replace(Arc::new(Context {
+            secondary: Some(russian),
+            ..Context::default()
+        }));
+        let keymap = keymaps.recv().await.unwrap().unwrap();
+        assert_eq!(keymap.layers[0].keys[a].keycap, label("A"));
+        assert_eq!(keymap.layers[0].keys[a].secondary.as_deref(), Some("Ф"));
+    }
+
     /// Each layer says how it's reached, with the key's place, and whether it's being
     /// tried; the keymap says how many more layers fit (LAY-3, LAY-4).
     #[tokio::test]
@@ -686,6 +727,7 @@ mod tests {
             inherited: false,
             sentence: "Tap for Escape, hold for ⌃ Control.".to_owned(),
             spoken: "Tap for Escape, hold for Control.".to_owned(),
+            secondary: None,
             changed: true,
             mac_warning: false,
             restorable: false,
@@ -698,6 +740,7 @@ mod tests {
                 "inherited": false,
                 "sentence": "Tap for Escape, hold for ⌃ Control.",
                 "spoken": "Tap for Escape, hold for Control.",
+                "secondary": null,
                 "changed": true,
                 "macWarning": false,
                 "restorable": false,

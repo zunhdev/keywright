@@ -69,6 +69,8 @@ const PADDING = 0.08;
  * A key on the canvas (design §4.2, §4.3): a button whose keycap shows what the key does,
  * and whose tooltip says it in a sentence. Badges mark a key that's changed, one that
  * doesn't work on a Mac, a "same as layer below" key and an action Keywright doesn't know.
+ * With a second input source chosen, its top-right corner shows what the key types there
+ * too, as dual-printed keycaps do (MAC-6).
  */
 export function Keycap({
   face,
@@ -149,11 +151,20 @@ export function Keycap({
                 {badge}
               </span>
             )}
-            {face.changed ? (
-              <span className={styles.badge} data-corner="top-right" data-badge="changed">
-                •
+            {face.secondary === null && !face.changed ? null : (
+              <span className={styles.corner}>
+                {face.secondary === null ? null : (
+                  <span className={styles.secondary} data-inherited={face.inherited || undefined}>
+                    {face.secondary}
+                  </span>
+                )}
+                {face.changed ? (
+                  <span className={styles.badge} data-badge="changed">
+                    •
+                  </span>
+                ) : null}
               </span>
-            ) : null}
+            )}
           </span>
         </button>
       </Pressable>

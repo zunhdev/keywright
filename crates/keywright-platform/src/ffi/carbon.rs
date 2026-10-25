@@ -49,6 +49,8 @@ unsafe extern "C" {
     static kTISPropertyInputSourceID: Option<&'static CFString>;
     static kTISPropertyInputSourceIsASCIICapable: Option<&'static CFString>;
     static kTISPropertyLocalizedName: Option<&'static CFString>;
+    static kTISPropertyInputSourceType: Option<&'static CFString>;
+    static kTISTypeKeyboardLayout: Option<&'static CFString>;
     static kTISNotifySelectedKeyboardInputSourceChanged: Option<&'static CFNotificationName>;
 
     fn TISCopyCurrentKeyboardLayoutInputSource() -> Option<NonNull<TisInputSource>>;
@@ -100,6 +102,28 @@ pub fn layout(id: &str, keyboard: Keyboard) -> Result<Layout, InputSourceError> 
     // SAFETY: TIS's list holds only input sources.
     let source = list.and_then(|list| unsafe { list.cast_unchecked::<TisInputSource>() }.get(0));
     read(&*source.ok_or(InputSourceError::NoLayout)?, keyboard)
+}
+
+/// The keyboard layouts the person turned on, in the order the input menu lists them.
+pub fn layouts() -> Result<Vec<InputSource>, InputSourceError> {
+    MainThreadMarker::new().ok_or(InputSourceError::NotMainThread)?;
+    // SAFETY: TIS's property keys and values are constants it defines.
+    let (key, layouts) = unsafe { (kTISPropertyInputSourceType, kTISTypeKeyboardLayout) };
+    let (Some(key), Some(layouts)) = (key, layouts) else {
+        return Err(InputSourceError::Unsupported);
+    };
+    let filter = CFDictionary::<CFString, CFString>::from_slices(&[key], &[layouts]);
+    // SAFETY: as for `layout`: on the main thread, with a filter of TIS properties to
+    // values of their types. Without the installed ones, the list is those turned on.
+    let list = unsafe { TISCreateInputSourceList(filter.as_opaque(), false) }
+        // SAFETY: we own the array (the "Create" rule).
+        .map(|list| unsafe { CFRetained::<CFArray>::from_raw(list) });
+    let Some(list) = list else {
+        return Ok(Vec::new());
+    };
+    // SAFETY: TIS's list holds only input sources.
+    let sources = unsafe { list.cast_unchecked::<TisInputSource>() };
+    Ok(sources.iter().map(|source| identify(&source)).collect())
 }
 
 /// Calls `changed` each time another input source is selected, for as long as the app
@@ -190,15 +214,20 @@ fn read(source: &TisInputSource, keyboard: Keyboard) -> Result<Layout, InputSour
         })
         .collect();
     Ok(Layout {
-        source: InputSource {
-            // SAFETY: TIS's property keys are constants it defines.
-            id: string(source, unsafe { kTISPropertyInputSourceID }).unwrap_or_default(),
-            // SAFETY: as above.
-            name: string(source, unsafe { kTISPropertyLocalizedName }).unwrap_or_default(),
-        },
+        source: identify(source),
         keyboard,
         keys,
     })
+}
+
+/// Which input source `source` is: its ID and name.
+fn identify(source: &TisInputSource) -> InputSource {
+    InputSource {
+        // SAFETY: TIS's property keys are constants it defines.
+        id: string(source, unsafe { kTISPropertyInputSourceID }).unwrap_or_default(),
+        // SAFETY: as above.
+        name: string(source, unsafe { kTISPropertyLocalizedName }).unwrap_or_default(),
+    }
 }
 
 /// The keyboard type macOS recorded for `keyboard` when it asked which kind it is, such as

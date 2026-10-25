@@ -3,7 +3,6 @@ declare const classes: {
   readonly note: string;
   readonly problem: string;
   readonly setting: string;
-  readonly tab: string;
   readonly window: string;
 };
 export default classes;

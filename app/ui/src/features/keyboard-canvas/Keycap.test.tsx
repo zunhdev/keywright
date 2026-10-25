@@ -15,6 +15,7 @@ function face(keycap: KeycapData, more: Partial<Key> = {}): Key {
     inherited: false,
     sentence: "Does something.",
     spoken: "Does something.",
+    secondary: null,
     changed: false,
     macWarning: false,
     restorable: false,
@@ -61,6 +62,9 @@ const variants: ReadonlyArray<[string, Key]> = [
   ["same as layer below, with nothing below", face({ kind: "nothing" }, { inherited: true })],
   ["an action Keywright doesn't know", face({ kind: "other", name: "Macro 1" })],
   ["changed, and no use on a Mac", face(label("Copy"), { changed: true, macWarning: true })],
+  ["a letter, and what it types in a second input source", face(label("A"), { secondary: "Ф" })],
+  ["that, changed", face(label("Q"), { secondary: "Й", changed: true })],
+  ["that, same as layer below", face(label("Q"), { secondary: "Й", inherited: true })],
 ];
 
 // Design §4.3's states.
