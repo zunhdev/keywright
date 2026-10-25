@@ -17,8 +17,18 @@ thiserror.workspace = true
 objc2.workspace = true
 objc2-app-kit.workspace = true
 objc2-core-bluetooth.workspace = true
+objc2-core-foundation.workspace = true
 objc2-foundation.workspace = true
 objc2-service-management.workspace = true
+
+[dev-dependencies]
+# A test harness like Rust's own, which can run tests on the main thread, where macOS's
+# input sources can be asked (tests/input_source.rs).
+libtest-mimic.workspace = true
+
+[[test]]
+name = "input_source"
+harness = false
 
 [lints]
 workspace = true

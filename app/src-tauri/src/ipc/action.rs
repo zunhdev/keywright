@@ -11,10 +11,13 @@ use keywright_core::behavior::{BehaviorId, BehaviorKind, BehaviorTable, ValueKin
 use keywright_core::hid::{self, HidUsage, Mods, UsagePage};
 use keywright_core::keycap;
 use keywright_core::keymap::{Keymap, LayerId};
+use keywright_core::keys::source::Labels;
 use keywright_core::keys::{self, KeyCategory};
 use keywright_core::mac::presets;
 use serde::{Deserialize, Serialize};
 use specta::Type;
+
+use super::AppState;
 
 /// A key or shortcut: a key, with modifiers held.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -549,8 +552,8 @@ const MEDIA: [u16; 8] = [0xCD, 0xB5, 0xB6, 0xE9, 0xEA, 0xE2, 0x6F, 0x70];
 /// The actions the keyboard's firmware can do that the inspector lists as they are, by
 /// group: only those it has a behavior for (EDIT-2). Power to the lights and display isn't
 /// offered: ZMK v0.3 doesn't describe its parameter, so it can't be assigned (tech spec
-/// §8.1).
-pub fn choices(keymap: &Keymap, behaviors: &BehaviorTable) -> Vec<Choice> {
+/// §8.1). Keys are named as `labels` names them.
+pub fn choices(keymap: &Keymap, behaviors: &BehaviorTable, labels: &Labels) -> Vec<Choice> {
     let media = MEDIA.map(|id| {
         core::Action::KeyPress(hid::Shortcut {
             mods: Mods::NONE,
@@ -590,7 +593,7 @@ pub fn choices(keymap: &Keymap, behaviors: &BehaviorTable) -> Vec<Choice> {
     groups
         .filter(|(_, action)| action.to_binding(behaviors).is_ok())
         .map(|(category, action)| {
-            let key = keycap::describe_action(keymap, behaviors, action);
+            let key = keycap::describe_action(keymap, behaviors, action, labels);
             Choice {
                 category,
                 label: match key.keycap {
@@ -607,9 +610,10 @@ pub fn choices(keymap: &Keymap, behaviors: &BehaviorTable) -> Vec<Choice> {
 }
 
 /// The Mac actions to offer on a macOS version: those verified on it (MAC-4, tech spec
-/// §8.2). On another system, or a version they weren't verified on, there are none.
+/// §8.2), with their shortcuts as `labels` names their keys. On another system, or a
+/// version they weren't verified on, there are none.
 #[must_use]
-pub fn mac_choices(version: Option<presets::MacOsVersion>) -> Vec<Choice> {
+pub fn mac_choices(version: Option<presets::MacOsVersion>, labels: &Labels) -> Vec<Choice> {
     version
         .into_iter()
         .flat_map(presets::offered)
@@ -623,18 +627,25 @@ pub fn mac_choices(version: Option<presets::MacOsVersion>) -> Vec<Choice> {
             icon: Some(preset.icon.to_owned()),
             default_shortcut: preset
                 .uses_default_shortcut
-                .then(|| keycap::shortcut_label(preset.shortcut)),
+                .then(|| keycap::shortcut_label(preset.shortcut, labels)),
         })
         .collect()
 }
 
 /// The Mac actions this Mac's macOS version offers, for the action picker. They don't
-/// depend on the keyboard, so the UI asks once.
+/// depend on the keyboard, so the UI asks once, and again in another input source.
 #[tauri::command]
 #[specta::specta]
 #[must_use]
-pub fn mac_actions() -> Vec<Choice> {
-    mac_choices(keywright_platform::system::macos_version().map(presets::MacOsVersion))
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Tauri hands a command its arguments by value"
+)]
+pub fn mac_actions(app: tauri::State<'_, AppState>) -> Vec<Choice> {
+    mac_choices(
+        keywright_platform::system::macos_version().map(presets::MacOsVersion),
+        &app.labels(),
+    )
 }
 
 /// A behavior Keywright doesn't know, which the inspector edits by its parameters
@@ -793,21 +804,31 @@ impl From<KeyCategory> for Group {
     }
 }
 
-/// Every key ZMK names, with its US labels and group, for the key popup. Right-hand
-/// modifiers are left out: the modifier toggles choose a side.
+/// Every key ZMK names, with its labels in the input source and its group, for the key
+/// popup. The UI asks once, and again in another input source.
 #[tauri::command]
 #[specta::specta]
 #[must_use]
-pub fn key_catalog() -> Vec<KeyEntry> {
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Tauri hands a command its arguments by value"
+)]
+pub fn key_catalog(app: tauri::State<'_, AppState>) -> Vec<KeyEntry> {
+    catalog(&app.labels())
+}
+
+/// Every key ZMK names, with its labels and group. Right-hand modifiers are left out: the
+/// modifier toggles choose a side.
+pub fn catalog(labels: &Labels) -> Vec<KeyEntry> {
     keys::named_usages()
         .filter(|usage| !(usage.page == UsagePage::Keyboard && (0xE4..=0xE7).contains(&usage.id)))
         .filter_map(|usage| {
-            let label = keys::us::label(usage)?;
+            let (cap, name) = labels.cap(usage)?;
             Some(KeyEntry {
                 page: usage.page.into(),
                 id: usage.id,
-                cap: label.cap.to_owned(),
-                name: label.name.to_owned(),
+                cap,
+                name,
                 group: KeyCategory::of(usage).into(),
             })
         })
@@ -862,11 +883,20 @@ pub struct ShortcutWords {
 #[tauri::command]
 #[specta::specta]
 #[must_use]
-pub fn shortcut_words(shortcut: Shortcut) -> ShortcutWords {
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Tauri hands a command its arguments by value"
+)]
+pub fn shortcut_words(app: tauri::State<'_, AppState>, shortcut: Shortcut) -> ShortcutWords {
+    words(shortcut, &app.labels())
+}
+
+/// What a key or shortcut is called, as `labels` names keys, and the Mac action it is.
+fn words(shortcut: Shortcut, labels: &Labels) -> ShortcutWords {
     let shortcut = hid::Shortcut::from(shortcut);
     ShortcutWords {
-        label: keycap::shortcut_label(shortcut),
-        name: keycap::shortcut_name(shortcut),
+        label: keycap::shortcut_label(shortcut, labels),
+        name: keycap::shortcut_name(shortcut, labels),
         preset: presets::PRESETS
             .iter()
             .find(|preset| preset.shortcut == shortcut)
@@ -880,13 +910,14 @@ mod tests {
     use keywright_core::behavior::BehaviorId;
     use keywright_core::hid::{self, HidUsage, Mods, UsagePage};
     use keywright_core::keymap::LayerId;
+    use keywright_core::keys::source::Labels;
     use keywright_device::{Connection, Peer, Session, State};
     use keywright_sim::Simulator;
     use serde_json::json;
 
     use super::{
-        Action, Category, LIGHTING, Page, Param, Shortcut, Value, dom_codes, key_catalog,
-        mac_choices, shortcut_words,
+        Action, Category, LIGHTING, Page, Param, Shortcut, Value, catalog, dom_codes, mac_choices,
+        words,
     };
     use crate::ipc::AppState;
     use crate::ipc::keymap::Keymap;
@@ -912,7 +943,7 @@ mod tests {
             .wait_for(|state| *state == State::Ready)
             .await
             .unwrap();
-        let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         (AppState::new(session), keymap)
     }
 
@@ -1002,7 +1033,7 @@ mod tests {
             param2: Param::Number { value: 0 },
         };
         app.set_action(0, vec![13], action, false).await.unwrap();
-        let keymap = Keymap::of(&app.session.snapshot().await.unwrap()).unwrap();
+        let keymap = Keymap::of(&app.session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         let key = &keymap.layers[0].keys[13];
         assert_eq!(key.action, action);
         assert_eq!(key.sentence, "Runs the firmware's Key Toggle action.");
@@ -1027,21 +1058,27 @@ mod tests {
 
     #[test]
     fn a_recorded_shortcut_is_named_and_matched_to_a_mac_action() {
-        let screenshot_area = shortcut_words(Shortcut {
-            mods: 0x0A,
-            page: Page::Keyboard,
-            id: 0x21,
-        });
+        let screenshot_area = words(
+            Shortcut {
+                mods: 0x0A,
+                page: Page::Keyboard,
+                id: 0x21,
+            },
+            &Labels::us(),
+        );
         assert_eq!(screenshot_area.label, "⇧⌘4");
         assert_eq!(
             screenshot_area.preset.as_deref(),
             Some("Screenshot of an area")
         );
-        let option = shortcut_words(Shortcut {
-            mods: 0,
-            page: Page::Keyboard,
-            id: 0xE2,
-        });
+        let option = words(
+            Shortcut {
+                mods: 0,
+                page: Page::Keyboard,
+                id: 0xE2,
+            },
+            &Labels::us(),
+        );
         assert_eq!(
             (option.label.as_str(), option.name.as_str()),
             ("⌥", "⌥ Option")
@@ -1107,7 +1144,7 @@ mod tests {
     /// another system, none is.
     #[test]
     fn mac_actions_are_offered_on_the_versions_they_were_verified_on() {
-        let offered = mac_choices(Some(MacOsVersion(27)));
+        let offered = mac_choices(Some(MacOsVersion(27)), &Labels::us());
         assert_eq!(offered.len(), 24);
         assert!(
             offered
@@ -1143,8 +1180,8 @@ mod tests {
             }
         );
         assert_eq!(find("Copy").default_shortcut, None);
-        assert_eq!(mac_choices(Some(MacOsVersion(14))), vec![]);
-        assert_eq!(mac_choices(None), vec![]);
+        assert_eq!(mac_choices(Some(MacOsVersion(14)), &Labels::us()), vec![]);
+        assert_eq!(mac_choices(None, &Labels::us()), vec![]);
     }
 
     /// MAC-1: the words the UI shows for keys and actions say Command, Option, Control and
@@ -1152,17 +1189,20 @@ mod tests {
     #[tokio::test]
     async fn the_words_for_keys_and_actions_are_the_macs() {
         let (_, keymap) = ready_sofle().await;
-        let catalog = key_catalog();
-        let all_mods = shortcut_words(Shortcut {
-            mods: 0x0F,
-            page: Page::Keyboard,
-            id: 0x04,
-        });
+        let catalog = catalog(&Labels::us());
+        let all_mods = words(
+            Shortcut {
+                mods: 0x0F,
+                page: Page::Keyboard,
+                id: 0x04,
+            },
+            &Labels::us(),
+        );
         assert_eq!(all_mods.label, "⌃⌥⇧⌘A");
         let words = serde_json::to_string(&(
             &keymap,
             &catalog,
-            mac_choices(Some(MacOsVersion(27))),
+            mac_choices(Some(MacOsVersion(27)), &Labels::us()),
             all_mods,
         ))
         .unwrap();
@@ -1197,7 +1237,7 @@ mod tests {
 
     #[test]
     fn the_key_catalog_has_every_key_zmk_names_by_group_but_right_modifiers() {
-        let catalog = key_catalog();
+        let catalog = catalog(&Labels::us());
         let find = |page, id| catalog.iter().find(|key| key.page == page && key.id == id);
         let delete = find(Page::Keyboard, 0x2A).unwrap();
         assert_eq!((delete.cap.as_str(), delete.name.as_str()), ("⌫", "Delete"));
@@ -1218,14 +1258,14 @@ mod tests {
         app.set_action(0, vec![13, 14], escape_control, false)
             .await
             .unwrap();
-        let keymap = Keymap::of(&app.session.snapshot().await.unwrap()).unwrap();
+        let keymap = Keymap::of(&app.session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         for position in [13, 14] {
             let key = &keymap.layers[0].keys[position];
             assert_eq!(key.action, escape_control);
             assert_eq!(key.sentence, "Tap for Escape, hold for ⌃ Control.");
         }
         app.session.undo().await.unwrap();
-        let keymap = Keymap::of(&app.session.snapshot().await.unwrap()).unwrap();
+        let keymap = Keymap::of(&app.session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         assert_eq!(keymap.layers[0].keys[13].sentence, "Types Q.");
         assert_eq!(keymap.layers[0].keys[14].sentence, "Types W.");
     }

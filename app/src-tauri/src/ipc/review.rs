@@ -11,6 +11,7 @@ use keywright_core::behavior::BehaviorTable;
 use keywright_core::editor::Change;
 use keywright_core::keycap;
 use keywright_core::keymap::{Keymap, LayerId};
+use keywright_core::keys::source::Labels;
 use keywright_core::support_packs::SupportPack;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -84,13 +85,15 @@ fn layer_name(layer: &keywright_core::keymap::Layer, index: usize) -> String {
     }
 }
 
-/// What the review sheet lists: the editor's review list, in words.
+/// What the review sheet lists: the editor's review list, in words, with keys as `labels`
+/// names them.
 fn rows(
     current: &Keymap,
     saved: &Keymap,
     behaviors: &BehaviorTable,
     pack: Option<&SupportPack>,
     changes: &[Change],
+    labels: &Labels,
 ) -> Vec<ReviewRow> {
     let named = |id: LayerId| {
         current
@@ -175,13 +178,14 @@ fn rows(
                     pack.and_then(|pack| pack.key_place(*position))
                         .unwrap_or_else(|| format!("Key {}", position.saturating_add(1))),
                 ),
-                before: keycap::label(current, behaviors, *before),
-                after: keycap::label(current, behaviors, *after),
+                before: keycap::label(current, behaviors, *before, labels),
+                after: keycap::label(current, behaviors, *after, labels),
                 sentence: Some(
                     keycap::describe_action(
                         current,
                         behaviors,
                         Action::from_binding(*after, behaviors),
+                        labels,
                     )
                     .sentence,
                 ),
@@ -223,6 +227,7 @@ impl AppState {
             &keyboard.behaviors,
             snapshot.support_pack(),
             &editor.changes(),
+            &self.labels(),
         ))
     }
 

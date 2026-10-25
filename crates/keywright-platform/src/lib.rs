@@ -2,7 +2,8 @@
 //!
 //! This crate provides:
 //!
-//! - key labels for the current input source, and events when it changes;
+//! - what each key types in the current input source, and when another is selected
+//!   (`input_source`);
 //! - detection of UF2 firmware volumes;
 //! - the login item (`login_item`);
 //! - whether Keywright may use Bluetooth, read without asking (`bluetooth`);
@@ -21,6 +22,7 @@
 pub mod bluetooth;
 #[cfg(target_os = "macos")]
 mod ffi;
+pub mod input_source;
 pub mod login_item;
 pub mod paths;
 pub mod system;

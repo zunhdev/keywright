@@ -6,8 +6,10 @@
 //! command line connects to each port itself.
 
 pub use keywright_studio::transport::TransportError;
-pub use keywright_transport::usb::UsbPort;
 use keywright_transport::usb::{self, UsbTransport};
+/// The USB vendor and product IDs every ZMK keyboard has, unless its firmware was built
+/// with others. macOS records which kind of keyboard it is (ANSI, ISO or JIS) under them.
+pub use keywright_transport::usb::{UsbPort, ZMK_PID, ZMK_VID};
 
 use crate::session::{Connection, Peer};
 

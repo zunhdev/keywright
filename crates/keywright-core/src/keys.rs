@@ -9,6 +9,8 @@
 //! - [`hid_name`] and [`KeyCategory`] describe a key.
 //! - [`us`] says what keys are called on a US keyboard, in Mac terms: `⌫` on the keycap,
 //!   `Delete` in text.
+//! - [`source`] says what they're called in the input source the person types in, from
+//!   what macOS says each key types there.
 //! - [`zmk`] reads and writes ZMK's names for keys, such as `N1` and `C_VOL_UP`.
 //! - [`dom`] maps `KeyboardEvent.code` values to keys, for the shortcut recorder.
 //!
@@ -16,6 +18,7 @@
 //! categories and the US labels are Keywright's own.
 
 pub mod dom;
+pub mod source;
 pub mod us;
 pub mod zmk;
 

@@ -85,8 +85,8 @@ export const commands = {
 	kinds: Kind[],
 } | null, AppError>(__TAURI_INVOKE("session_keymap")),
 	/**
-	 *  Every key ZMK names, with its US labels and group, for the key popup. Right-hand
-	 *  modifiers are left out: the modifier toggles choose a side.
+	 *  Every key ZMK names, with its labels in the input source and its group, for the key
+	 *  popup. The UI asks once, and again in another input source.
 	 */
 	keyCatalog: () => __TAURI_INVOKE<KeyEntry[]>("key_catalog"),
 	/**  Every `KeyboardEvent.code` value the recorder knows, with the key it stands for. */
@@ -95,7 +95,7 @@ export const commands = {
 	shortcutWords: (shortcut: Shortcut) => __TAURI_INVOKE<ShortcutWords>("shortcut_words", { shortcut }),
 	/**
 	 *  The Mac actions this Mac's macOS version offers, for the action picker. They don't
-	 *  depend on the keyboard, so the UI asks once.
+	 *  depend on the keyboard, so the UI asks once, and again in another input source.
 	 */
 	macActions: () => __TAURI_INVOKE<Choice[]>("mac_actions"),
 	/**
@@ -374,6 +374,7 @@ character: string } | null>("layer_name_problem", { name }),
 export const events = {
 	appQuitRequested: makeEvent<QuitRequested>("app://quit-requested"),
 	menuItem: makeEvent<MenuItemChosen>("menu://item"),
+	platformInputSource: makeEvent<InputSourceChanged>("platform://input-source"),
 	sessionBattery: makeEvent<BatteryChanged>("session://battery"),
 	sessionKeymap: makeEvent<KeymapChanged>("session://keymap"),
 	sessionState: makeEvent<SessionStateChanged>("session://state"),
@@ -686,6 +687,20 @@ text: string } |
 layer: number; 
 /**  The layer's name. */
 name: string };
+
+/**  An input source's keyboard layout. */
+export type InputSource = {
+	/**  Its ID, such as `com.apple.keylayout.German`. */
+	id: string,
+	/**  Its name, in the language the Mac is set to, such as `German`. */
+	name: string,
+};
+
+/**
+ *  `platform://input-source`: keys are called something else, since another input source
+ *  was selected.
+ */
+export type InputSourceChanged = InputSource;
 
 /**  What a key shows and does on a layer. */
 export type Key = {

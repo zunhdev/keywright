@@ -12,6 +12,7 @@ use keywright_core::action as core;
 use keywright_core::editor::{Change, Editor};
 use keywright_core::keycap;
 use keywright_core::keymap::{LayerId, PhysicalLayout};
+use keywright_core::keys::source::Labels;
 use keywright_core::mac::compat;
 use keywright_core::support_packs::SupportPack;
 use keywright_device::{MAX_NAME_LEN, Snapshot};
@@ -214,9 +215,10 @@ pub enum LayerMode {
 }
 
 impl Keymap {
-    /// The keymap the editor holds, once the session has read one. It stays while the
-    /// keyboard is locked or gone, for the canvas to show under its scrim.
-    pub fn of(snapshot: &Snapshot) -> Option<Self> {
+    /// The keymap the editor holds, once the session has read one, with keys as `labels`
+    /// names them. It stays while the keyboard is locked or gone, for the canvas to show
+    /// under its scrim.
+    pub fn of(snapshot: &Snapshot, labels: &Labels) -> Option<Self> {
         let keyboard = snapshot.keyboard.as_ref()?;
         let editor = snapshot.editor.as_ref()?;
         let keymap = editor.current();
@@ -232,8 +234,8 @@ impl Keymap {
 
         let place = |position: usize| key_place(pack, position);
 
-        let described = keycap::describe(keymap, &keyboard.behaviors, conditional_layers);
-        let reach = keycap::reach(keymap, &keyboard.behaviors, conditional_layers);
+        let described = keycap::describe(keymap, &keyboard.behaviors, conditional_layers, labels);
+        let reach = keycap::reach(keymap, &keyboard.behaviors, conditional_layers, labels);
         let (layer_warnings, unlockable) =
             guard::warnings(keymap, &keyboard.behaviors, conditional_layers);
         let (not_stock, layers_not_stock) = stock::differences(pack, keymap, &keyboard.behaviors);
@@ -286,7 +288,10 @@ impl Keymap {
                     .iter()
                     .map(|knob| Knob {
                         position: position(knob.position),
-                        turn: knob.turn.map(keycap::shortcut_name).to_vec(),
+                        turn: knob
+                            .turn
+                            .map(|turn| keycap::shortcut_name(turn, labels))
+                            .to_vec(),
                     })
                     .collect()
             }),
@@ -294,7 +299,7 @@ impl Keymap {
             free_layer_slots: keymap.free_layer_slots,
             layer_name_max: u32::try_from(MAX_NAME_LEN).unwrap_or(u32::MAX),
             unlockable,
-            choices: choices(keymap, &keyboard.behaviors),
+            choices: choices(keymap, &keyboard.behaviors, labels),
             others: other_behaviors(&keyboard.behaviors),
             kinds: kinds(&keyboard.behaviors),
         })
@@ -401,22 +406,31 @@ pub struct KeymapChanged(pub Option<Keymap>);
 #[specta::specta]
 pub async fn session_keymap(app: tauri::State<'_, AppState>) -> Result<Option<Keymap>, AppError> {
     let snapshot = app.session.snapshot().await?;
-    Ok(Keymap::of(&snapshot))
+    Ok(Keymap::of(&snapshot, &app.labels()))
 }
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use keywright_core::edit::Edit;
+    use keywright_core::keys::source::{Labels, Typed};
+    use keywright_core::mac::KeyboardType;
     use keywright_device::{Connection, Peer, Session, State};
     use keywright_sim::Simulator;
     use serde_json::json;
-    use tokio::sync::mpsc;
+    use tokio::sync::{mpsc, watch};
 
     use super::{Action, Hold, Key, Keycap, Keymap, LayerMode, Reach};
     use crate::ipc::{Update, follow};
 
-    /// The simulated Sofle, unlocked and ready, and the keymaps the UI hears from then on.
-    async fn ready_sofle() -> (Session, mpsc::UnboundedReceiver<Option<Keymap>>) {
+    /// The simulated Sofle, unlocked and ready; what keys are called, as on a US keyboard
+    /// to begin with; and the keymaps the UI hears from then on.
+    async fn ready_sofle() -> (
+        Session,
+        watch::Sender<Arc<Labels>>,
+        mpsc::UnboundedReceiver<Option<Keymap>>,
+    ) {
         let session = Session::start();
         let keyboard = Simulator::sofle().unwrap();
         keyboard.press_unlock_key();
@@ -429,12 +443,13 @@ mod tests {
             .await
             .unwrap();
         let (sender, keymaps) = mpsc::unbounded_channel();
-        tokio::spawn(follow(session.clone(), move |update| {
+        let labels = watch::Sender::new(Arc::new(Labels::us()));
+        tokio::spawn(follow(session.clone(), labels.subscribe(), move |update| {
             if let Update::Keymap(keymap) = update {
                 sender.send(keymap).unwrap();
             }
         }));
-        (session, keymaps)
+        (session, labels, keymaps)
     }
 
     fn label(text: &str) -> Keycap {
@@ -457,14 +472,17 @@ mod tests {
             .wait_for(|state| matches!(state, State::Locked { .. }))
             .await
             .unwrap();
-        assert_eq!(Keymap::of(&session.snapshot().await.unwrap()), None);
+        assert_eq!(
+            Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()),
+            None
+        );
 
         keyboard.press_unlock_key();
         session
             .wait_for(|state| *state == State::Ready)
             .await
             .unwrap();
-        let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         assert_eq!(keymap.keys.len(), 60);
         // The right thumb's inner key, rotated 24° anticlockwise around its corner.
         let thumb = &keymap.keys[55];
@@ -505,8 +523,8 @@ mod tests {
     /// work on a Mac (MAC-7), and are flagged.
     #[tokio::test]
     async fn keys_that_dont_work_on_a_mac_are_flagged() {
-        let (session, _) = ready_sofle().await;
-        let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
+        let (session, _, _) = ready_sofle().await;
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         let flagged: Vec<_> = keymap.layers[2]
             .keys
             .iter()
@@ -533,7 +551,7 @@ mod tests {
     /// clears the mark.
     #[tokio::test]
     async fn the_canvas_hears_each_change_to_the_keymap() {
-        let (session, mut keymaps) = ready_sofle().await;
+        let (session, _labels, mut keymaps) = ready_sofle().await;
         let editor = session.snapshot().await.unwrap().editor.unwrap();
         let base = &editor.current().layers[0];
         // Row 2's Q, as Escape.
@@ -563,12 +581,39 @@ mod tests {
         assert!(!keymap.layers[0].keys[13].changed);
     }
 
+    /// In another input source, the canvas hears the keymap again, with keys called what
+    /// they type there (MAC-5): under German, the key in the US Y's place is Z.
+    #[tokio::test]
+    async fn the_canvas_hears_the_keymap_again_in_another_input_source() {
+        let (session, labels, mut keymaps) = ready_sofle().await;
+        let us = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
+        let y = us.layers[0]
+            .keys
+            .iter()
+            .position(|key| key.keycap == label("Y"))
+            .unwrap();
+
+        // kVK_ANSI_Y types z.
+        let german = Labels::from_typed(KeyboardType::Ansi, |code| match code.0 {
+            0x10 => Typed {
+                plain: Some("z".to_owned()),
+                shifted: Some("Z".to_owned()),
+                command: Some("z".to_owned()),
+            },
+            _ => Typed::default(),
+        });
+        labels.send_replace(Arc::new(german));
+        let keymap = keymaps.recv().await.unwrap().unwrap();
+        assert_eq!(keymap.layers[0].keys[y].keycap, label("Z"));
+        assert_eq!(keymap.layers[0].keys[y].sentence, "Types Z.");
+    }
+
     /// Each layer says how it's reached, with the key's place, and whether it's being
     /// tried; the keymap says how many more layers fit (LAY-3, LAY-4).
     #[tokio::test]
     async fn each_layer_says_how_its_reached_and_whether_its_changed() {
-        let (session, mut keymaps) = ready_sofle().await;
-        let keymap = Keymap::of(&session.snapshot().await.unwrap()).unwrap();
+        let (session, _labels, mut keymaps) = ready_sofle().await;
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Labels::us()).unwrap();
         assert_eq!(keymap.free_layer_slots, 0);
         assert_eq!(
             keymap.layers[1].reach,

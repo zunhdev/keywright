@@ -58,7 +58,7 @@ fn binding(action: Action) -> Binding {
 fn stock(change: impl FnOnce(&mut Keymap)) -> Vec<Vec<Key>> {
     let mut keymap = stock_keymap();
     change(&mut keymap);
-    describe(&keymap, &zmk_v0_3_table(), &adjust())
+    describe(&keymap, &zmk_v0_3_table(), &adjust(), &Labels::us())
 }
 
 fn set(keymap: &mut Keymap, layer: LayerId, position: usize, action: Action) {
@@ -92,7 +92,7 @@ fn one_key_each(actions: &[Action]) -> Keymap {
 /// What a single key with this action shows and says, in a keymap with a "nav" layer.
 fn one(action: Action) -> Key {
     let keymap = one_key_each(&[action]);
-    describe(&keymap, &zmk_v0_3_table(), &[])[0][0].clone()
+    describe(&keymap, &zmk_v0_3_table(), &[], &Labels::us())[0][0].clone()
 }
 
 fn label(text: &str) -> Keycap {
@@ -108,62 +108,101 @@ mod shortcuts {
         let shift_command = Mods::LEFT_SHIFT | Mods::LEFT_COMMAND;
         let everything =
             Mods::RIGHT_COMMAND | Mods::LEFT_SHIFT | Mods::RIGHT_OPTION | Mods::LEFT_CONTROL;
-        assert_eq!(shortcut_label(with(command, C)), "⌘C");
+        assert_eq!(shortcut_label(with(command, C), &Labels::us()), "⌘C");
         // ZMK's LG(LS(N4)), which people often write as ⌘⇧4.
-        assert_eq!(shortcut_label(with(shift_command, N4)), "⇧⌘4");
-        assert_eq!(shortcut_label(with(everything, A)), "⌃⌥⇧⌘A");
+        assert_eq!(
+            shortcut_label(with(shift_command, N4), &Labels::us()),
+            "⇧⌘4"
+        );
+        assert_eq!(shortcut_label(with(everything, A), &Labels::us()), "⌃⌥⇧⌘A");
     }
 
     #[test]
     fn with_shift_alone_a_key_shows_what_it_types() {
-        assert_eq!(shortcut_label(with(Mods::LEFT_SHIFT, N1)), "!");
-        assert_eq!(shortcut_label(with(Mods::RIGHT_SHIFT, N1)), "!");
-        assert_eq!(shortcut_name(with(Mods::LEFT_SHIFT, N1)), "!");
+        assert_eq!(
+            shortcut_label(with(Mods::LEFT_SHIFT, N1), &Labels::us()),
+            "!"
+        );
+        assert_eq!(
+            shortcut_label(with(Mods::RIGHT_SHIFT, N1), &Labels::us()),
+            "!"
+        );
+        assert_eq!(
+            shortcut_name(with(Mods::LEFT_SHIFT, N1), &Labels::us()),
+            "!"
+        );
         // A letter types its capital, which the keycap already shows.
-        assert_eq!(shortcut_label(with(Mods::LEFT_SHIFT, A)), "⇧A");
+        assert_eq!(
+            shortcut_label(with(Mods::LEFT_SHIFT, A), &Labels::us()),
+            "⇧A"
+        );
         // With another modifier, the keycap shows the key, as menus do.
         let shift_command = Mods::LEFT_SHIFT | Mods::LEFT_COMMAND;
-        assert_eq!(shortcut_label(with(shift_command, N1)), "⇧⌘1");
+        assert_eq!(
+            shortcut_label(with(shift_command, N1), &Labels::us()),
+            "⇧⌘1"
+        );
     }
 
     #[test]
     fn modifier_keys_show_as_modifiers_whichever_side_they_are() {
-        assert_eq!(shortcut_label(plain(LEFT_CONTROL)), "⌃");
-        assert_eq!(shortcut_label(plain(RIGHT_CONTROL)), "⌃");
-        assert_eq!(shortcut_name(plain(RIGHT_CONTROL)), "⌃ Control");
+        assert_eq!(shortcut_label(plain(LEFT_CONTROL), &Labels::us()), "⌃");
+        assert_eq!(shortcut_label(plain(RIGHT_CONTROL), &Labels::us()), "⌃");
+        assert_eq!(
+            shortcut_name(plain(RIGHT_CONTROL), &Labels::us()),
+            "⌃ Control"
+        );
         // ZMK's LS(LCTRL): a modifier key with another modifier.
         let both = with(Mods::LEFT_SHIFT, LEFT_CONTROL);
-        assert_eq!(shortcut_label(both), "⌃⇧");
-        assert_eq!(shortcut_name(both), "⌃⇧ Control-Shift");
+        assert_eq!(shortcut_label(both, &Labels::us()), "⌃⇧");
+        assert_eq!(shortcut_name(both, &Labels::us()), "⌃⇧ Control-Shift");
     }
 
     #[test]
     fn text_names_keys_and_writes_shortcuts_as_keycaps_show_them() {
-        assert_eq!(shortcut_label(plain(ESCAPE)), "⎋ Esc");
-        assert_eq!(shortcut_name(plain(ESCAPE)), "Escape");
-        assert_eq!(shortcut_name(plain(consumer(0xE9))), "Volume Up");
-        assert_eq!(shortcut_name(with(Mods::LEFT_COMMAND, C)), "⌘C");
+        assert_eq!(shortcut_label(plain(ESCAPE), &Labels::us()), "⎋ Esc");
+        assert_eq!(shortcut_name(plain(ESCAPE), &Labels::us()), "Escape");
+        assert_eq!(
+            shortcut_name(plain(consumer(0xE9)), &Labels::us()),
+            "Volume Up"
+        );
+        assert_eq!(
+            shortcut_name(with(Mods::LEFT_COMMAND, C), &Labels::us()),
+            "⌘C"
+        );
     }
 
     #[test]
     fn voiceover_hears_names_rather_than_symbols() {
         let shift_command = Mods::LEFT_SHIFT | Mods::LEFT_COMMAND;
-        assert_eq!(shortcut_spoken(with(shift_command, N4)), "Shift-Command-4");
-        assert_eq!(shortcut_spoken(with(Mods::LEFT_COMMAND, C)), "Command-C");
-        assert_eq!(shortcut_spoken(plain(RIGHT_CONTROL)), "Control");
         assert_eq!(
-            shortcut_spoken(with(Mods::LEFT_SHIFT, LEFT_CONTROL)),
+            shortcut_spoken(with(shift_command, N4), &Labels::us()),
+            "Shift-Command-4"
+        );
+        assert_eq!(
+            shortcut_spoken(with(Mods::LEFT_COMMAND, C), &Labels::us()),
+            "Command-C"
+        );
+        assert_eq!(
+            shortcut_spoken(plain(RIGHT_CONTROL), &Labels::us()),
+            "Control"
+        );
+        assert_eq!(
+            shortcut_spoken(with(Mods::LEFT_SHIFT, LEFT_CONTROL), &Labels::us()),
             "Control-Shift"
         );
-        assert_eq!(shortcut_spoken(with(Mods::LEFT_SHIFT, N1)), "!");
-        assert_eq!(shortcut_spoken(plain(ESCAPE)), "Escape");
+        assert_eq!(
+            shortcut_spoken(with(Mods::LEFT_SHIFT, N1), &Labels::us()),
+            "!"
+        );
+        assert_eq!(shortcut_spoken(plain(ESCAPE), &Labels::us()), "Escape");
     }
 
     #[test]
     fn a_key_without_a_name_shows_its_usage() {
         let unnamed = plain(key(0xA5));
-        assert_eq!(shortcut_label(unnamed), "Key 07:00A5");
-        assert_eq!(shortcut_name(unnamed), "Key 07:00A5");
+        assert_eq!(shortcut_label(unnamed, &Labels::us()), "Key 07:00A5");
+        assert_eq!(shortcut_name(unnamed, &Labels::us()), "Key 07:00A5");
     }
 }
 
@@ -268,7 +307,7 @@ mod actions {
     fn unnamed_and_missing_layers_are_called_by_their_place() {
         // The second layer has no name; layer 9 isn't there.
         let keymap = one_key_each(&[Action::Momentary(LayerId(1)), Action::Momentary(LayerId(9))]);
-        let keys = describe(&keymap, &zmk_v0_3_table(), &[]);
+        let keys = describe(&keymap, &zmk_v0_3_table(), &[], &Labels::us());
         assert_eq!(layer_name(&keymap, LayerId(1)), "Layer 2");
         assert_eq!(keys[0][0].sentence, "Hold to use layer 2.");
         assert_eq!(layer_name(&keymap, LayerId(9)), "Missing layer");
@@ -337,9 +376,19 @@ mod actions {
     #[test]
     fn an_action_on_its_own_says_what_it_does() {
         let keymap = one_key_each(&[Action::None]);
-        let key = describe_action(&keymap, &zmk_v0_3_table(), Action::Momentary(LayerId(7)));
+        let key = describe_action(
+            &keymap,
+            &zmk_v0_3_table(),
+            Action::Momentary(LayerId(7)),
+            &Labels::us(),
+        );
         assert_eq!(key.sentence, "Hold to use the nav layer.");
-        let see_through = describe_action(&keymap, &zmk_v0_3_table(), Action::Transparent);
+        let see_through = describe_action(
+            &keymap,
+            &zmk_v0_3_table(),
+            Action::Transparent,
+            &Labels::us(),
+        );
         assert_eq!(see_through.sentence, "Same as the layer below.");
         assert_eq!(see_through.keycap, Keycap::Nothing);
     }
@@ -358,7 +407,7 @@ mod actions {
         let toggle = testing::binding(&table, "Key Toggle", plain(A).to_param(), 0);
         let mut keymap = one_key_each(&[Action::None]);
         keymap.layers[0].bindings[0] = toggle;
-        let key = &describe(&keymap, &table, &[])[0][0];
+        let key = &describe(&keymap, &table, &[], &Labels::us())[0][0];
         assert_eq!(key.keycap, Keycap::Other("Key Toggle".to_owned()));
         assert_eq!(key.sentence, "Runs the firmware's Key Toggle action.");
     }
@@ -440,7 +489,7 @@ mod same_as_layer_below {
         let mut keymap = stock_keymap();
         // Lower, then the base layer, then the rest.
         keymap.layers.swap(0, 1);
-        let keys = describe(&keymap, &zmk_v0_3_table(), &adjust());
+        let keys = describe(&keymap, &zmk_v0_3_table(), &adjust(), &Labels::us());
         assert_eq!(keys[0][GRAVE].keycap, Keycap::Nothing);
     }
 }
@@ -538,7 +587,7 @@ mod reach {
     use super::*;
 
     fn texts(keymap: &Keymap, conditional: &[ConditionalLayer]) -> Vec<Vec<String>> {
-        super::super::reach(keymap, &zmk_v0_3_table(), conditional)
+        super::super::reach(keymap, &zmk_v0_3_table(), conditional, &Labels::us())
             .into_iter()
             .map(|ways| ways.into_iter().map(|way| way.text).collect())
             .collect()
@@ -556,7 +605,7 @@ mod reach {
                 vec!["lower + raise, built into the firmware"],
             ]
         );
-        let ways = super::super::reach(&keymap, &zmk_v0_3_table(), &adjust());
+        let ways = super::super::reach(&keymap, &zmk_v0_3_table(), &adjust(), &Labels::us());
         assert_eq!(ways[1][0].position, Some(53));
         assert_eq!(ways[3][0].position, None);
     }
@@ -600,7 +649,7 @@ mod edits {
     use crate::edit::Edit;
 
     fn named(edits: &[Edit]) -> String {
-        super::super::describe_edits(&stock_keymap(), &zmk_v0_3_table(), edits)
+        super::super::describe_edits(&stock_keymap(), &zmk_v0_3_table(), edits, &Labels::us())
     }
 
     fn set(position: usize, before: Action, after: Action) -> Edit {
@@ -691,7 +740,7 @@ mod labels {
     /// What a key with `action` reads as in a review row, in a keymap with a "nav" layer.
     fn row(action: Action) -> String {
         let keymap = one_key_each(&[action]);
-        crate::keycap::label(&keymap, &zmk_v0_3_table(), binding(action))
+        crate::keycap::label(&keymap, &zmk_v0_3_table(), binding(action), &Labels::us())
     }
 
     #[test]

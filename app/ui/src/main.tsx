@@ -1,8 +1,8 @@
 /**
  * The UI's entry point, which index.html loads, for each of Keywright's windows: the main
- * window follows the session, its keymap, the keyboard's battery, the menu bar and its own
- * traffic lights, and the Settings window (`#settings`) shows the settings (tech spec
- * §12.2).
+ * window follows the session, its keymap, the keyboard's battery, the input source, the
+ * menu bar and its own traffic lights, and the Settings window (`#settings`) shows the
+ * settings (tech spec §12.2).
  */
 // First, before React loads.
 import "./no-performance-tracks.ts";
@@ -22,7 +22,7 @@ import { SettingsWindow } from "./features/settings/SettingsWindow.tsx";
 import { LOCALE } from "./i18n/messages.ts";
 import { followBattery } from "./ipc/battery.ts";
 import { followBluetoothPermission } from "./ipc/bluetooth.ts";
-import { followKeymap, loadKeyTables } from "./ipc/keymap.ts";
+import { followInputSource, followKeymap, loadKeyTables } from "./ipc/keymap.ts";
 import { followMenu } from "./ipc/menu.ts";
 import { followSession } from "./ipc/session.ts";
 import { followTrafficLights } from "./ipc/window.ts";
@@ -46,6 +46,7 @@ if (location.hash === "#settings") {
   void followBattery();
   void followBluetoothPermission();
   void loadKeyTables();
+  void followInputSource();
   void followMenu();
   void followTrafficLights();
   followTextFocus();
