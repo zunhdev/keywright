@@ -48,6 +48,10 @@ pub enum AppError {
     /// A finding of the Mac check was dismissed, but that couldn't be saved, so it comes
     /// back once Keywright quits.
     DismissalNotSaved,
+    /// Every key code Keywright can make act as Globe is in the keymap already (MAC-8).
+    NoGlobeCode,
+    /// macOS didn't take the Globe key's mapping, or its removal.
+    GlobeNotMapped,
     /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
     /// `force`, it is.
     WouldStrand {

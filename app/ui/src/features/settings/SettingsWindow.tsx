@@ -83,9 +83,20 @@ function General() {
 
 /**
  * The Keyboard tab: the input source whose labels keycaps show too, as dual-printed
- * keycaps do (MAC-6), from the layouts turned on in System Settings, or none.
+ * keycaps do (MAC-6), from the layouts turned on in System Settings, or none; and the
+ * Globe key (MAC-8), with Turn Off.
  */
 function Keyboard() {
+  return (
+    <>
+      <SecondaryLabelsSetting />
+      <GlobeSetting />
+    </>
+  );
+}
+
+/** Settings › Keyboard's secondary labels (MAC-6). */
+function SecondaryLabelsSetting() {
   const messages = useMessages();
   const [secondary, setSecondary] = useSettings(commands.secondaryLabels);
   const [failed, setFailed] = useState(false);
@@ -119,8 +130,39 @@ function Keyboard() {
 }
 
 /**
+ * Settings › Keyboard's Globe key (MAC-8): whether a key acts as Globe on this Mac, with
+ * Turn Off, which gives it back its own meaning. It's set up in the inspector's Globe
+ * helper.
+ */
+function GlobeSetting() {
+  const messages = useMessages();
+  const [on, setOn] = useSettings(commands.globeKey);
+  const [failed, setFailed] = useState(false);
+  if (on === null) return null;
+  const turnOff = async () => {
+    const result = await commands.turnOffGlobe();
+    setFailed(result.status === "error");
+    setOn(false);
+  };
+  return (
+    <section className={styles.setting} aria-label={messages.format("globe.setting")}>
+      <h2 className={styles.title}>{messages.format("globe.setting")}</h2>
+      <p className={styles.note}>{messages.format(on ? "globe.on" : "globe.off")}</p>
+      {on ? (
+        <Button size="compact" onPress={() => void turnOff()}>
+          {messages.format("globe.turn-off")}
+        </Button>
+      ) : null}
+      {failed ? (
+        <p className={styles.problem}>{messages.format("error.globe-not-mapped")}</p>
+      ) : null}
+    </section>
+  );
+}
+
+/**
  * The Settings window (design §9.4): the General tab, and the Keyboard tab with the
- * secondary labels (MAC-6). The other settings come with KEY-67.
+ * secondary labels (MAC-6) and the Globe key (MAC-8). The other settings come with KEY-67.
  */
 export function SettingsWindow() {
   const messages = useMessages();

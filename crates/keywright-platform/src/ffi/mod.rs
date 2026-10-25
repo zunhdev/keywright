@@ -5,4 +5,5 @@ pub mod appkit;
 pub mod carbon;
 pub mod core_bluetooth;
 pub mod foundation;
+pub mod iokit;
 pub mod service_management;

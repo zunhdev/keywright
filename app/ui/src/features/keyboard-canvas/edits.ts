@@ -90,6 +90,18 @@ export function setAction(action: Action): Promise<boolean> {
   return guarded((force) => commands.setAction(id, [...selection], action, force));
 }
 
+/**
+ * Makes the first selected key act as Globe on this Mac (MAC-8): it types a key code the
+ * keymap doesn't otherwise use, as a change to try, which macOS takes as Globe.
+ */
+export async function makeKeyGlobe(): Promise<void> {
+  const id = layer();
+  const [position] = useStore.getState().selection;
+  if (id !== null && position !== undefined) {
+    await guarded((force) => commands.useAsGlobe(id, position, force));
+  }
+}
+
 /** Makes the selected keys "same as layer below" or "does nothing". */
 export async function setKeys(action: KeyAction): Promise<void> {
   const id = layer();

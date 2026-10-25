@@ -55,6 +55,9 @@ const COMMANDS: &[&str] = &[
     "dismiss_mac_findings",
     "secondary_labels",
     "set_secondary_labels",
+    "use_as_globe",
+    "globe_key",
+    "turn_off_globe",
     "traffic_lights",
 ];
 

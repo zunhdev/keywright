@@ -35,6 +35,14 @@ export function rustSide(): Array<{ positions: unknown; action: unknown }> {
     if (command === "rename_layer" && args !== undefined && "name" in args) {
       set.push({ positions: [args["layer"]], action: args["name"] });
     }
+    // A key made to act as Globe, by its layer and position.
+    if (command === "use_as_globe" && args !== undefined && "position" in args) {
+      set.push({ positions: [args["position"]], action: "globe" });
+    }
+    // For the Globe helper's Open at login.
+    if (command === "general_settings") {
+      return { menuBar: true, openAtLogin: { on: false, problem: null } };
+    }
     if (command === "shortcut_words" && args !== undefined && "shortcut" in args) {
       const shortcut = JSON.stringify(args["shortcut"]);
       return shortcut === JSON.stringify({ mods: 10, page: "keyboard", id: 0x21 })

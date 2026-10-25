@@ -4,6 +4,7 @@ import type { Action, Choice } from "../../ipc/bindings.ts";
 import type { CategoryId } from "./categories.ts";
 import { ChoiceList } from "./ChoiceList.tsx";
 import { ShortcutField } from "./fields.tsx";
+import { GlobeHelper } from "./GlobeHelper.tsx";
 import { LayersEditor } from "./LayersEditor.tsx";
 import { OtherEditor } from "./OtherEditor.tsx";
 import { SpecialEditor } from "./SpecialEditor.tsx";
@@ -46,7 +47,7 @@ export function ActionEditor({
     category === "bluetooth" ||
     category === "lighting"
   ) {
-    return (
+    const list = (
       <ChoiceList
         label={messages.format(`category.${category}`)}
         category={category}
@@ -55,6 +56,15 @@ export function ActionEditor({
           onChange(choice.action, choice);
         }}
       />
+    );
+    // The Mac actions end with Globe, which isn't a shortcut to bind (MAC-8).
+    return category === "mac" ? (
+      <>
+        {list}
+        <GlobeHelper />
+      </>
+    ) : (
+      list
     );
   }
   if (category === "tap-hold") return <TapHoldEditor current={current} onChange={onChange} />;

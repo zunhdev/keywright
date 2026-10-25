@@ -1,10 +1,11 @@
 //! What Keywright knows about macOS: the virtual key code of each key (tech spec §11.1), the
-//! Mac action presets (MAC-4) and the compatibility rules (MAC-7).
+//! Mac action presets (MAC-4), the compatibility rules (MAC-7) and the Globe key (MAC-8).
 //!
 //! This is data and pure logic. Asking macOS anything, such as what a key types in the
 //! current input source, is `keywright-platform`'s job.
 
 pub mod compat;
+pub mod globe;
 pub mod presets;
 
 #[cfg(test)]

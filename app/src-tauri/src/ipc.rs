@@ -27,6 +27,7 @@ mod connection;
 mod edit;
 mod error;
 mod general;
+mod globe;
 mod guard;
 mod input_source;
 mod keymap;
@@ -55,6 +56,7 @@ use crate::mac_check::Dismissals;
 
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
 pub use self::general::SettingsState;
+pub use self::globe::follow as follow_globe;
 pub use self::input_source::{InputSourceChanged, follow as follow_input_source};
 pub use self::keymap::KeymapChanged;
 pub use self::menu::MenuItemChosen;
@@ -189,6 +191,9 @@ pub fn builder() -> Builder<tauri::Wry> {
             mac_check::dismiss_mac_findings,
             input_source::secondary_labels,
             input_source::set_secondary_labels,
+            globe::use_as_globe,
+            globe::globe_key,
+            globe::turn_off_globe,
             window::traffic_lights
         ])
         .events(collect_events![

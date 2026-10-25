@@ -524,7 +524,9 @@ impl Words<'_> {
         let layer = |id| layer_phrase(self.keymap, id);
         let name = |shortcut| (self.shortcut)(shortcut, self.labels);
         match action {
-            Action::KeyPress(shortcut) if modifier_bits(shortcut.usage).is_some() => {
+            Action::KeyPress(shortcut)
+                if modifier_bits(shortcut.usage).is_some() || is_globe(shortcut, self.labels) =>
+            {
                 format!("Acts as {}.", name(shortcut))
             }
             Action::KeyPress(shortcut) if shortcut.usage.page == UsagePage::Consumer => {
@@ -640,6 +642,11 @@ fn modifier_bits(usage: HidUsage) -> Option<u8> {
     }
 }
 
+/// Whether `shortcut`'s key is the code that acts as Globe on this Mac (MAC-8).
+fn is_globe(shortcut: Shortcut, labels: &Labels) -> bool {
+    labels.globe() == Some(shortcut.usage)
+}
+
 /// Whether Shift is the only modifier, so a key can show what it types with it.
 const fn only_shift(mods: Mods) -> bool {
     !mods.is_empty() && mods.bits() & !SHIFT == 0
@@ -675,6 +682,9 @@ fn names(shortcut: Shortcut, labels: &Labels) -> (String, String) {
 #[must_use]
 pub fn shortcut_label(shortcut: Shortcut, labels: &Labels) -> String {
     let mods = shortcut.mods;
+    if is_globe(shortcut, labels) {
+        return format!("{}🌐", symbols(mods.bits()));
+    }
     if let Some(bits) = modifier_bits(shortcut.usage) {
         return symbols(mods.bits() | bits);
     }
@@ -693,6 +703,9 @@ pub fn shortcut_label(shortcut: Shortcut, labels: &Labels) -> String {
 #[must_use]
 pub fn shortcut_name(shortcut: Shortcut, labels: &Labels) -> String {
     let mods = shortcut.mods;
+    if is_globe(shortcut, labels) {
+        return format!("{}🌐 Globe", symbols(mods.bits()));
+    }
     if let Some(bits) = modifier_bits(shortcut.usage) {
         let bits = mods.bits() | bits;
         let names: Vec<_> = held(bits).map(|(_, name)| name).collect();
@@ -712,6 +725,11 @@ pub fn shortcut_name(shortcut: Shortcut, labels: &Labels) -> String {
 pub fn shortcut_spoken(shortcut: Shortcut, labels: &Labels) -> String {
     let mods = shortcut.mods;
     let modifiers = |bits: u8| held(bits).map(|(_, name)| name).collect::<Vec<_>>();
+    if is_globe(shortcut, labels) {
+        let mut words = modifiers(mods.bits());
+        words.push("Globe");
+        return words.join("-");
+    }
     if let Some(bits) = modifier_bits(shortcut.usage) {
         return modifiers(mods.bits() | bits).join("-");
     }

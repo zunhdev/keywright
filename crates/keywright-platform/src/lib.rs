@@ -5,6 +5,7 @@
 //! - what each key types in the current input source, and when another is selected
 //!   (`input_source`);
 //! - detection of UF2 firmware volumes;
+//! - the Globe key, mapped for the keyboard, and when the keyboard appears (`globe`);
 //! - the login item (`login_item`);
 //! - whether Keywright may use Bluetooth, read without asking (`bluetooth`);
 //! - the window's "edited" dot, and the standard text-editing actions;
@@ -22,6 +23,7 @@
 pub mod bluetooth;
 #[cfg(target_os = "macos")]
 mod ffi;
+pub mod globe;
 pub mod input_source;
 pub mod login_item;
 pub mod paths;

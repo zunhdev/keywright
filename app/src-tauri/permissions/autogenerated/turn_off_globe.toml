@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-turn-off-globe"
+description = "Enables the turn_off_globe command without any pre-configured scope."
+commands.allow = ["turn_off_globe"]
+
+[[permission]]
+identifier = "deny-turn-off-globe"
+description = "Denies the turn_off_globe command without any pre-configured scope."
+commands.deny = ["turn_off_globe"]
