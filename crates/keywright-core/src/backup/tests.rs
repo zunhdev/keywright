@@ -915,3 +915,20 @@ proptest! {
         let _ = Backup::parse(&text);
     }
 }
+
+#[test]
+fn a_backup_file_is_named_after_the_keyboard_and_the_time() {
+    let created = "2026-10-23T14:03:09Z".parse().unwrap();
+    assert_eq!(
+        file_name("Sofle Choc BT", &created),
+        "sofle-choc-bt-20261023-140309.keywright"
+    );
+    assert_eq!(
+        file_name("Corne/42 (v4)", &created),
+        "corne-42-v4-20261023-140309.keywright"
+    );
+    assert_eq!(
+        file_name("", &created),
+        "keyboard-20261023-140309.keywright"
+    );
+}

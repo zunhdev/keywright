@@ -7,10 +7,12 @@ import { userEvent } from "@testing-library/user-event";
 import { I18nProvider } from "react-aria-components";
 
 import { useStore } from "../../app/store.ts";
+import { toasts } from "../../design-system/Toast.tsx";
 import { LOCALE } from "../../i18n/messages.ts";
 import type { BackupEntry, ImportPreview } from "../../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
 import { status } from "../../test/canvas.tsx";
+import { exportKeymap, importBackup } from "./actions.ts";
 import { BackupsWindow } from "./BackupsWindow.tsx";
 import { followImport, ImportSheet } from "./ImportSheet.tsx";
 
@@ -185,6 +187,26 @@ describe("the Import preview", () => {
     stop();
   });
 
+  test("a backup asked for while the sheet is open replaces the one shown", async () => {
+    const calls = rustSide();
+    const stop = await drawSheet();
+    await act(async () => {
+      await emit("import://requested", null);
+    });
+    await screen.findByRole("dialog", { name: "Import a backup" });
+    const asked = () => calls.filter(([command]) => command === "import_preview").length;
+    await waitFor(() => {
+      expect(asked()).toBe(1);
+    });
+    await act(async () => {
+      await emit("import://requested", null);
+    });
+    await waitFor(() => {
+      expect(asked()).toBe(2);
+    });
+    stop();
+  });
+
   test("Cancel forgets the backup", async () => {
     const calls = rustSide();
     const stop = await drawSheet();
@@ -196,6 +218,34 @@ describe("the Import preview", () => {
     expect(calls.map(([command]) => command)).toContain("cancel_import");
     expect(calls.map(([command]) => command)).not.toContain("apply_import");
     expect(useStore.getState().importing).toBe(false);
+    stop();
+  });
+});
+
+describe("File › Import… and Export…", () => {
+  test("export says where the file went, and nothing if cancelled", async () => {
+    let saved: string | null = "sofle-choc-bt-20261025-140300.keywright";
+    mockIPC((command) => (command === "export_keymap" ? saved : null));
+    await exportKeymap();
+    expect(toasts.visibleToasts.map((toast) => toast.content.title)).toEqual([
+      "Exported your keymap to sofle-choc-bt-20261025-140300.keywright.",
+    ]);
+    toasts.clear();
+    saved = null;
+    await exportKeymap();
+    expect(toasts.visibleToasts).toEqual([]);
+  });
+
+  test("import asks the shell, which opens the preview", async () => {
+    const calls = rustSide();
+    await importBackup();
+    expect(calls.map(([command]) => command)).toContain("import_file");
+  });
+
+  test("a backup opened before the window listened shows once it does", async () => {
+    mockIPC((command) => command === "import_pending", { shouldMockEvents: true });
+    const stop = await followImport();
+    expect(useStore.getState().importing).toBe(true);
     stop();
   });
 });

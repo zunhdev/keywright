@@ -34,6 +34,9 @@ pub use toml::value::Datetime;
 /// The format version this module writes and reads.
 pub const FORMAT: u32 = 1;
 
+/// The extension of a backup file: `.keywright`.
+pub const EXTENSION: &str = "keywright";
+
 /// The largest backup file read, in bytes.
 pub const MAX_FILE_LEN: usize = 1024 * 1024;
 
@@ -183,6 +186,38 @@ struct FileLayer {
     id: u32,
     name: String,
     bindings: Vec<String>,
+}
+
+/// A name for a backup's file, from the keyboard's name and when it was made, such as
+/// `sofle-choc-bt-20261023-140300.keywright`, as the command line and the app's Export…
+/// suggest.
+#[must_use]
+pub fn file_name(keyboard: &str, created: &Datetime) -> String {
+    let mut name = String::new();
+    for word in keyboard
+        .split(|c: char| !c.is_ascii_alphanumeric())
+        .filter(|word| !word.is_empty())
+    {
+        name.push_str(&word.to_ascii_lowercase());
+        name.push('-');
+    }
+    if name.is_empty() {
+        name.push_str("keyboard-");
+    }
+    if let (Some(date), Some(time)) = (created.date, created.time) {
+        // Writing to a `String` can't fail.
+        let _ = write!(
+            name,
+            "{:04}{:02}{:02}-{:02}{:02}{:02}",
+            date.year,
+            date.month,
+            date.day,
+            time.hour,
+            time.minute,
+            time.second.unwrap_or(0)
+        );
+    }
+    format!("{}.{EXTENSION}", name.trim_end_matches('-'))
 }
 
 impl Backup {

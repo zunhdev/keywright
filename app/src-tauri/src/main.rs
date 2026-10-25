@@ -40,7 +40,7 @@ use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
 
 use crate::ipc::{
-    AppState, BatteryChanged, BatteryState, KeymapChanged, MenuItemChosen, QuitGuard,
+    AppState, BatteryChanged, BatteryState, KeymapChanged, MenuItemChosen, OpenedEarly, QuitGuard,
     QuitRequested, SessionStateChanged, SessionStatus, SettingsState, TrafficLights, Update,
 };
 use crate::low_battery::LowBattery;
@@ -97,6 +97,7 @@ fn main() -> tauri::Result<()> {
         })
         .invoke_handler(ipc.invoke_handler())
         .manage(QuitGuard::default())
+        .manage(OpenedEarly::default())
         .manage(TrafficLights::default())
         .on_window_event(|window, event| {
             if window.label() != MAIN_WINDOW {
@@ -127,6 +128,7 @@ fn main() -> tauri::Result<()> {
             start_session(app)?;
             ipc::follow_input_source(app.handle());
             ipc::follow_globe(app.handle());
+            ipc::open_early_files(app.handle());
             Ok(())
         })
         .build(tauri::generate_context!())?
@@ -139,6 +141,15 @@ fn main() -> tauri::Result<()> {
                 has_visible_windows: false,
                 ..
             } => show_main_window(app),
+            // A `.keywright` file opened from Finder (BAK-6), which also starts Keywright.
+            #[cfg(target_os = "macos")]
+            RunEvent::Opened { urls } => {
+                let paths: Vec<_> = urls
+                    .iter()
+                    .filter_map(|url| url.to_file_path().ok())
+                    .collect();
+                ipc::open_files(app, &paths);
+            }
             _ => {}
         });
     Ok(())

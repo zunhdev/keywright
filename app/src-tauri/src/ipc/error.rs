@@ -62,6 +62,8 @@ pub enum AppError {
     UnreadableBackup,
     /// The Import preview has no backup to show or apply.
     NothingToImport,
+    /// The exported keymap couldn't be written.
+    ExportFailed,
     /// Finder didn't show the file.
     NotShownInFinder,
     /// Keywright doesn't know how to update the keyboard's firmware: it has no support

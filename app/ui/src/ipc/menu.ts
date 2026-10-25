@@ -1,4 +1,5 @@
 import { activeRecorder, shownLayer, type Store, useStore } from "../app/store.ts";
+import { exportKeymap, importBackup } from "../features/backups/actions.ts";
 import {
   copyAction,
   pasteAction,
@@ -34,6 +35,8 @@ function showLayerAt(index: number): void {
 
 /** What the UI does for each menu item it handles. The others stay disabled. */
 const handlers: Partial<Record<MenuItem, () => void>> = {
+  import: () => void importBackup(),
+  export: () => void exportKeymap(),
   undo: () => void undo(),
   redo: () => void redo(),
   "copy-action": () => void copyAction(),
@@ -87,6 +90,8 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
   const inspectorLabel = panels.inspector ? "menu.hide-inspector" : "menu.show-inspector";
   const [undoName, redoName] = [session?.undo ?? null, session?.redo ?? null];
   const states = new Map<MenuItem, ItemState>([
+    ["import", item(editable)],
+    ["export", item(keymap !== null)],
     [
       "undo",
       item(
