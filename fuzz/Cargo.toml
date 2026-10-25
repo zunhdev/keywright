@@ -25,6 +25,13 @@ doc = false
 bench = false
 
 [[bin]]
+name = "image_parse"
+path = "fuzz_targets/image_parse.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
 name = "frame_decode"
 path = "fuzz_targets/frame_decode.rs"
 test = false

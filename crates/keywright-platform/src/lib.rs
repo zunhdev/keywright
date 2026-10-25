@@ -4,7 +4,8 @@
 //!
 //! - what each key types in the current input source, and when another is selected
 //!   (`input_source`);
-//! - detection of UF2 firmware volumes;
+//! - UF2 drives: a half in update mode appearing and going away, and copying firmware
+//!   onto it (`uf2`);
 //! - the Globe key, mapped for the keyboard, and when the keyboard appears (`globe`);
 //! - the login item (`login_item`);
 //! - whether Keywright may use Bluetooth, read without asking (`bluetooth`);
@@ -28,4 +29,5 @@ pub mod input_source;
 pub mod login_item;
 pub mod paths;
 pub mod system;
+pub mod uf2;
 pub mod window;
