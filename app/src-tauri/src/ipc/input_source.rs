@@ -80,21 +80,21 @@ pub fn follow<R: Runtime>(app: &AppHandle<R>) {
 /// The keyboard Keywright edits, as macOS knows it: every ZMK keyboard has ZMK's USB IDs,
 /// so macOS records one kind (ANSI, ISO or JIS) for them all. Until it has asked, labels
 /// follow the keyboard last typed on, which may be the Mac's own.
-const ZMK: Keyboard = Keyboard {
+pub(super) const ZMK: Keyboard = Keyboard {
     vendor_id: ZMK_VID,
     product_id: ZMK_PID,
 };
 
 /// Reads the selected input source, and the one chosen for secondary labels, and keeps
-/// what keys are called in them. If what they're called in the selected one changed, says
-/// so. On the main thread.
-fn read<R: Runtime>(app: &AppHandle<R>) {
+/// what keys are called in them, with the key code that acts as Globe called Globe. If
+/// what they're called in the selected one changed, says so. On the main thread.
+pub(super) fn read<R: Runtime>(app: &AppHandle<R>) {
     // If macOS can't say, as for an input method without a keyboard layout, keys keep
     // what they were called.
     let Ok(layout) = input_source::current(ZMK) else {
         return;
     };
-    let primary = labels(&layout);
+    let primary = labels(&layout).with_globe(super::globe::code(app));
     // One that's been turned off since it was chosen labels nothing.
     let secondary = chosen(app)
         .and_then(|id| input_source::layout(&id, ZMK).ok())

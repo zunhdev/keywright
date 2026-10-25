@@ -27,11 +27,14 @@ function rustSide(
   general: GeneralSettings,
   turnedOn?: OpenAtLogin,
   secondary: SecondaryLabels = abcAndRussian,
+  globe = false,
 ) {
   const calls: [string, unknown][] = [];
   mockIPC((command, args) => {
     calls.push([command, args]);
     switch (command) {
+      case "globe_key":
+        return globe;
       case "general_settings":
         return general;
       case "set_open_at_login":
@@ -135,5 +138,23 @@ describe("the Keyboard tab", () => {
     await userEvent.click(await screen.findByRole("tab", { name: "Keyboard" }));
     const choice = await screen.findByRole("button", { name: /Secondary labels/u });
     expect(choice.textContent).toContain("Russian");
+  });
+
+  test("says whether a key acts as Globe, and Turn Off turns it off", async () => {
+    const calls = rustSide(
+      { menuBar: true, openAtLogin: { on: false, problem: null } },
+      undefined,
+      abcAndRussian,
+      true,
+    );
+    draw();
+    await userEvent.click(await screen.findByRole("tab", { name: "Keyboard" }));
+    const globe = await screen.findByRole("region", { name: "🌐 Globe key" });
+    expect(globe.textContent).toContain("acts as Globe on this Mac");
+    await userEvent.click(screen.getByRole("button", { name: "Turn Off" }));
+    expect(calls).toContainEqual(["turn_off_globe", {}]);
+    await waitFor(() => {
+      expect(globe.textContent).toContain("Off. To make a key act as Globe");
+    });
   });
 });

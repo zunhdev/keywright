@@ -458,3 +458,101 @@ mod compatibility {
         assert_eq!(findings[0].fix, None);
     }
 }
+
+mod globe {
+    use super::*;
+    use crate::action::Action;
+    use crate::hid::{Mods, Shortcut};
+    use crate::keycap::{describe_action, shortcut_label, shortcut_name, shortcut_spoken};
+    use crate::keymap::LayerId;
+    use crate::keys::source::Labels;
+    use crate::mac::globe::{CODES, free_code};
+    use crate::testing::{stock_keymap, zmk_v0_3_table};
+
+    const RIGHT_OPTION: HidUsage = key(0xE6);
+    const F18: HidUsage = key(0x6D);
+    /// The base layer's key that's to be Globe: row 5's leftmost, Command on the stock
+    /// keymap.
+    const GLOBE_KEY: usize = 50;
+
+    fn set(keymap: &mut crate::keymap::Keymap, layer: u32, position: usize, action: Action) {
+        let table = zmk_v0_3_table();
+        let layer = keymap
+            .layers
+            .iter_mut()
+            .find(|each| each.id == LayerId(layer))
+            .unwrap();
+        layer.bindings[position] = action.to_binding(&table).unwrap();
+    }
+
+    fn press(mods: Mods, usage: HidUsage) -> Action {
+        Action::KeyPress(Shortcut { mods, usage })
+    }
+
+    /// The stock keymap's right Option, on the right half's bottom row.
+    fn stock_right_option(keymap: &crate::keymap::Keymap) -> usize {
+        let table = zmk_v0_3_table();
+        keymap.layers[0]
+            .bindings
+            .iter()
+            .position(|binding| {
+                Action::from_binding(*binding, &table) == press(Mods::NONE, RIGHT_OPTION)
+            })
+            .unwrap()
+    }
+
+    #[test]
+    fn right_option_is_picked_if_its_free_and_then_f18() {
+        let table = zmk_v0_3_table();
+        let mut keymap = stock_keymap();
+        // The stock keymap types right Option on its base layer.
+        let option = stock_right_option(&keymap);
+        assert_eq!(free_code(&keymap, &table, LayerId(0), GLOBE_KEY), Some(F18));
+        // Unless that key is the one to be Globe: it'll go on typing the code.
+        assert_eq!(
+            free_code(&keymap, &table, LayerId(0), option),
+            Some(RIGHT_OPTION)
+        );
+        // Without it, right Option is free; held in a shortcut, it's in use again.
+        set(&mut keymap, 0, option, press(Mods::NONE, key(0x04)));
+        assert_eq!(
+            free_code(&keymap, &table, LayerId(0), GLOBE_KEY),
+            Some(RIGHT_OPTION)
+        );
+        set(&mut keymap, 1, 0, press(Mods::RIGHT_OPTION, key(0x04)));
+        assert_eq!(free_code(&keymap, &table, LayerId(0), GLOBE_KEY), Some(F18));
+        // With every code in use, there's none.
+        for (position, code) in CODES.into_iter().enumerate() {
+            set(&mut keymap, 2, position, press(Mods::NONE, code));
+        }
+        assert_eq!(free_code(&keymap, &table, LayerId(0), GLOBE_KEY), None);
+    }
+
+    #[test]
+    fn the_code_that_acts_as_globe_is_called_globe() {
+        let labels = Labels::us().with_globe(Some(RIGHT_OPTION));
+        assert_eq!(labels.globe(), Some(RIGHT_OPTION));
+        let globe = Shortcut {
+            mods: Mods::NONE,
+            usage: RIGHT_OPTION,
+        };
+        assert_eq!(shortcut_label(globe, &labels), "🌐");
+        assert_eq!(shortcut_name(globe, &labels), "🌐 Globe");
+        assert_eq!(shortcut_spoken(globe, &labels), "Globe");
+        let described = describe_action(
+            &stock_keymap(),
+            &zmk_v0_3_table(),
+            Action::KeyPress(globe),
+            &labels,
+        );
+        assert_eq!(described.sentence, "Acts as 🌐 Globe.");
+        // Left Option is still Option.
+        let left = Shortcut {
+            mods: Mods::NONE,
+            usage: key(0xE2),
+        };
+        assert_eq!(shortcut_label(left, &labels), "⌥");
+        // Without Globe, right Option is Option too.
+        assert_eq!(shortcut_label(globe, &Labels::us()), "⌥");
+    }
+}

@@ -85,6 +85,19 @@ describe("Mac actions", () => {
     const missing = macActions.filter((action) => MAC_ICONS[action.icon ?? ""] === undefined);
     expect(missing).toEqual([]);
   });
+
+  test("end with the Globe helper, which makes the selected key act as Globe", async () => {
+    const set = rustSide();
+    inspect([Q]);
+    await pick("Mac actions");
+    const helper = screen.getByRole("region", { name: "🌐 Globe" });
+    expect(
+      within(helper).getByText(/only takes the Globe key from Apple keyboards/u),
+    ).toBeDefined();
+    expect(await within(helper).findByRole("switch", { name: "Open at login" })).toBeDefined();
+    await userEvent.click(within(helper).getByRole("button", { name: "Use This Key as Globe" }));
+    expect(set).toContainEqual({ positions: [Q], action: "globe" });
+  });
 });
 
 test("the UI's words never call a modifier GUI, Win, Meta, Super or Alt (MAC-1)", () => {

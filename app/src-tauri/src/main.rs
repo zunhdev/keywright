@@ -120,6 +120,7 @@ fn main() -> tauri::Result<()> {
             ipc.mount_events(app);
             start_session(app)?;
             ipc::follow_input_source(app.handle());
+            ipc::follow_globe(app.handle());
             Ok(())
         })
         .build(tauri::generate_context!())?

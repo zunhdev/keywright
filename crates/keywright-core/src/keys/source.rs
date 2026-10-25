@@ -44,10 +44,12 @@ struct Label {
 }
 
 /// The labels of the keys that type characters, in one input source. Other keys, and keys
-/// it says nothing useful about, have their US labels.
+/// it says nothing useful about, have their US labels. A key code that acts as Globe on
+/// this Mac is called Globe ([`Labels::with_globe`]).
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Labels {
     keys: HashMap<HidUsage, Label>,
+    globe: Option<HidUsage>,
 }
 
 impl Labels {
@@ -85,7 +87,21 @@ impl Labels {
                 (!nothing).then_some((usage, label))
             })
             .collect();
-        Self { keys }
+        Self { keys, globe: None }
+    }
+
+    /// The same labels, with `code` called Globe: the key code Keywright makes act as Globe
+    /// on this Mac (MAC-8), if it makes one.
+    #[must_use]
+    pub fn with_globe(mut self, code: Option<HidUsage>) -> Self {
+        self.globe = code;
+        self
+    }
+
+    /// The key code that acts as Globe on this Mac, if one does.
+    #[must_use]
+    pub const fn globe(&self) -> Option<HidUsage> {
+        self.globe
     }
 
     /// What a key's keycap shows, such as `Ф`, and what text calls it: in this input

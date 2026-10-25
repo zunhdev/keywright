@@ -34,6 +34,9 @@ pub struct Settings {
     /// The input source whose labels keycaps show too, as dual-printed keycaps do (MAC-6),
     /// by ID, such as `com.apple.keylayout.Russian`. None at first.
     pub secondary_input_source: Option<String>,
+    /// The key code Keywright makes act as Globe on this Mac (MAC-8), as its keyboard-page
+    /// usage ID, such as 230 for right Option. None at first.
+    pub globe_key: Option<u16>,
 }
 
 impl Default for Settings {
@@ -42,6 +45,7 @@ impl Default for Settings {
             menu_bar: true,
             low_battery: 15,
             secondary_input_source: None,
+            globe_key: None,
         }
     }
 }
@@ -148,6 +152,7 @@ mod tests {
             menu_bar: false,
             low_battery: 20,
             secondary_input_source: Some("com.apple.keylayout.Russian".to_owned()),
+            globe_key: Some(0x6D),
         };
         settings.write(&file.0).unwrap();
         assert_eq!(Settings::read(&file.0), settings);

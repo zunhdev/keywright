@@ -147,6 +147,9 @@ export const en = {
   "error.reset-failed": "Your keyboard couldn't restore its stock settings.",
   "error.settings-not-opened": "System Settings didn't open.",
   "error.setting-not-changed": "Keywright couldn't change that setting.",
+  "error.no-globe-code":
+    "Your keymap uses every key code Keywright can make act as Globe: right Option, F18 and F19.",
+  "error.globe-not-mapped": "macOS didn't take the Globe key. Try again in a moment.",
   "error.dismissal-not-saved":
     "Dismissed for now. Keywright couldn't save that, so it comes back when you open Keywright again.",
   "settings.tabs": "Settings",

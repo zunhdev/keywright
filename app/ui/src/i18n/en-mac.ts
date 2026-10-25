@@ -16,4 +16,16 @@ export const macStrings = {
   "mac.dismiss": "Dismiss",
   "mac.fix-all": "Fix All",
   "mac.fix-note": "Fixes are tried on your keyboard right away. Review them, then save.",
+  // The Globe helper (design §5.4, MAC-8), and Settings › Keyboard's Globe key (§9.4).
+  "globe.title": "🌐 Globe",
+  "globe.explanation":
+    "macOS only takes the Globe key from Apple keyboards, so Keywright makes this key act as Globe on this Mac.",
+  "globe.use": "Use This Key as Globe",
+  "globe.while-running":
+    "It works while Keywright is running, so it's best to open Keywright at login.",
+  "globe.setting": "🌐 Globe key",
+  "globe.on": "A key on your keyboard acts as Globe on this Mac while Keywright runs.",
+  "globe.off":
+    "Off. To make a key act as Globe, select it, then choose Use This Key as Globe under Mac actions.",
+  "globe.turn-off": "Turn Off",
 } satisfies Record<string, LocalizedString>;

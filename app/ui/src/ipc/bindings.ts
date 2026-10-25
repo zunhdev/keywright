@@ -398,6 +398,29 @@ character: string } | null>("layer_name_problem", { name }),
 	 */
 	setSecondaryLabels: (id: string | null) => typedError<null, AppError>(__TAURI_INVOKE("set_secondary_labels", { id })),
 	/**
+	 *  _Use This Key as Globe_ (design §5.4): makes a key act as Globe on this Mac. The key's
+	 *  new action is a change to try, through the lockout guard unless `force` (SAF-2); macOS
+	 *  takes the mapping at once, and again whenever the keyboard connects while Keywright
+	 *  runs.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if every code Keywright can use is in the keymap, the keymap can't be changed
+	 *  now, the change would strand the user, or the keyboard doesn't carry it out; or, with
+	 *  the key changed, if the setting can't be saved or macOS doesn't take the mapping.
+	 */
+	useAsGlobe: (layer: number, position: number, force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("use_as_globe", { layer, position, force })),
+	/**  Whether Keywright makes a key act as Globe on this Mac, for Settings › Keyboard. */
+	globeKey: () => __TAURI_INVOKE<boolean>("globe_key"),
+	/**
+	 *  _Turn Off_ (design §9.4): the key that acted as Globe types its own code again.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the setting can't be saved, or macOS doesn't take the change.
+	 */
+	turnOffGlobe: () => typedError<null, AppError>(__TAURI_INVOKE("turn_off_globe")),
+	/**
 	 *  Where the main window's traffic lights end, in points from its left edge, or `null`
 	 *  while they're hidden, as in full screen.
 	 */
@@ -541,6 +564,10 @@ export type AppError =
  *  back once Keywright quits.
  */
 { code: "dismissal-not-saved" } | 
+/**  Every key code Keywright can make act as Globe is in the keymap already (MAC-8). */
+{ code: "no-globe-code" } | 
+/**  macOS didn't take the Globe key's mapping, or its removal. */
+{ code: "globe-not-mapped" } | 
 /**
  *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
  *  `force`, it is.
