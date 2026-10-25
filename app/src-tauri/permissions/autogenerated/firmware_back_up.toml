@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-firmware-back-up"
+description = "Enables the firmware_back_up command without any pre-configured scope."
+commands.allow = ["firmware_back_up"]
+
+[[permission]]
+identifier = "deny-firmware-back-up"
+description = "Denies the firmware_back_up command without any pre-configured scope."
+commands.deny = ["firmware_back_up"]

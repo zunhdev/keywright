@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-update-half"
+description = "Enables the update_half command without any pre-configured scope."
+commands.allow = ["update_half"]
+
+[[permission]]
+identifier = "deny-update-half"
+description = "Denies the update_half command without any pre-configured scope."
+commands.deny = ["update_half"]

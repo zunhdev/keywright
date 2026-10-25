@@ -481,11 +481,64 @@ character: string } | null>("layer_name_problem", { name }),
 	applyImport: (force: boolean) => typedError<null, AppError>(__TAURI_INVOKE("apply_import", { force })),
 	/**  _Cancel_ in the Import preview: forgets the pending import. */
 	cancelImport: () => __TAURI_INVOKE<void>("cancel_import"),
+	/**
+	 *  What the assistant says about the keyboard: its halves, how to put one into update
+	 *  mode, the drawing of its underside, and whether its keymap can be backed up.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if Keywright doesn't know how to update the keyboard, or the session has
+	 *  stopped.
+	 */
+	firmwareGuide: () => typedError<FirmwareGuide, AppError>(__TAURI_INVOKE("firmware_guide")),
+	/**
+	 *  Backs the keymap up before an update (FW-3). Gives the backup's file name, or `null` if
+	 *  Keywright keeps no backups.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keyboard isn't unlocked, or the backup can't be written.
+	 */
+	firmwareBackUp: () => typedError<string | null, AppError>(__TAURI_INVOKE("firmware_back_up")),
+	/**
+	 *  Shows the open panel for `half`'s firmware, then checks the file chosen and keeps it for
+	 *  that half. `null` if the person cancelled.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the file isn't firmware the keyboard takes, or Keywright doesn't know the
+	 *  keyboard.
+	 */
+	chooseFirmware: (half: HalfName) => typedError<{
+	/**  Its name, such as `sofle_choc_pro_bt_right.uf2`. */
+	name: string,
+	/**
+	 *  The other half, if the file looks like it's for that one instead: by its name, or
+	 *  by whether it has ZMK Studio's code.
+	 */
+	otherHalf: HalfName | null,
+	/**  Whether it resets the half's settings. */
+	settingsReset: boolean,
+} | null, AppError>(__TAURI_INVOKE("choose_firmware", { half })),
+	/**
+	 *  Updates `half` with the file chosen for it (FW-1): waits for its drive, copies the file
+	 *  and waits for the half to come back, telling the UI how far it's got with
+	 *  `firmware://progress`.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if no file is chosen for the half, an update is running, waiting is cancelled,
+	 *  or the copy, the restart or the half's coming back fails.
+	 */
+	updateHalf: (half: HalfName) => typedError<null, AppError>(__TAURI_INVOKE("update_half", { half })),
+	/**  Stops waiting for a half's drive (design §9.3, Cancel). */
+	cancelUpdate: () => __TAURI_INVOKE<void>("cancel_update"),
 };
 
 /** Events */
 export const events = {
 	appQuitRequested: makeEvent<QuitRequested>("app://quit-requested"),
+	firmwareProgress: makeEvent<FirmwareProgress>("firmware://progress"),
 	importRequested: makeEvent<ImportRequested>("import://requested"),
 	menuItem: makeEvent<MenuItemChosen>("menu://item"),
 	platformInputSource: makeEvent<InputSourceChanged>("platform://input-source"),
@@ -638,6 +691,29 @@ export type AppError =
 { code: "nothing-to-import" } | 
 /**  Finder didn't show the file. */
 { code: "not-shown-in-finder" } | 
+/**
+ *  Keywright doesn't know how to update the keyboard's firmware: it has no support
+ *  pack for it.
+ */
+{ code: "unknown-keyboard" } | 
+/**  The file chosen isn't firmware the keyboard takes. */
+{ code: "not-firmware"; 
+/**  Why not. */
+problem: FirmwareProblem } | 
+/**  No firmware file is chosen for the half. */
+{ code: "no-firmware-chosen" } | 
+/**  macOS can't say when a half's drive appears. */
+{ code: "drives-not-watched" } | 
+/**  Copying the firmware onto the half's drive failed, as when it's unplugged. */
+{ code: "copy-failed" } | 
+/**  The half didn't restart after the copy, so it may not take the file. */
+{ code: "did-not-restart" } | 
+/**  The half restarted, but didn't come back with its new firmware. */
+{ code: "did-not-come-back" } | 
+/**  Waiting for the half's drive was cancelled. */
+{ code: "update-cancelled" } | 
+/**  The update stopped unexpectedly. */
+{ code: "update-failed" } | 
 /**
  *  The change would strand the user (SAF-2), so it wasn't applied: sent again with
  *  `force`, it is.
@@ -820,6 +896,87 @@ export type FindingRef = {
 	id: number,
 };
 
+/**  A firmware file chosen for a half, checked. */
+export type FirmwareFile = {
+	/**  Its name, such as `sofle_choc_pro_bt_right.uf2`. */
+	name: string,
+	/**
+	 *  The other half, if the file looks like it's for that one instead: by its name, or
+	 *  by whether it has ZMK Studio's code.
+	 */
+	otherHalf: HalfName | null,
+	/**  Whether it resets the half's settings. */
+	settingsReset: boolean,
+};
+
+/**  What the assistant says about the keyboard (design §9.3), from its support pack. */
+export type FirmwareGuide = {
+	/**  The keyboard, as people know it, such as `Keebart Sofle Choc Pro BT`. */
+	keyboard: string,
+	/**  What it's called in System Settings › Bluetooth, such as `Sofle Choc BT`. */
+	bluetoothName: string,
+	/**  The halves, in the order to update them. */
+	halves: HalfName[],
+	/**  The half that talks to the computer, which holds the keymap. */
+	usbHalf: HalfName,
+	/**  How to put a half into update mode. */
+	updateMode: string,
+	/**  The drive a half shows up as in update mode, such as `KEEBART`. */
+	volume: string,
+	/**  The keyboard from below, as an SVG image, with the reset buttons, if the pack has it. */
+	underside: string | null,
+	/**  Whether the keyboard is connected and unlocked, so its keymap can be backed up. */
+	ready: boolean,
+	/**
+	 *  How many changes are being tried, which the half that holds the keymap forgets when
+	 *  it restarts (SAF-5).
+	 */
+	changes: number,
+};
+
+/**  Why a file isn't firmware the keyboard takes. In TypeScript, its kebab-case name. */
+export type FirmwareProblem = 
+/**  The file couldn't be read. */
+"unreadable" | 
+/**  It isn't a UF2 firmware image. */
+"not-uf2" | 
+/**  It's larger than firmware can be. */
+"too-large" | 
+/**  It's cut off, or damaged. */
+"damaged" | 
+/**  It's for another chip. */
+"wrong-chip";
+
+/**  `firmware://progress`: how far updating a half has got. */
+export type FirmwareProgress = {
+	/**  The half being updated. */
+	half: HalfName,
+	/**  How far it's got. */
+	stage: FirmwareStage,
+};
+
+/**
+ *  How far updating a half has got. In TypeScript, `{ kind: "copying", written, total }`
+ *  and so on.
+ */
+export type FirmwareStage = 
+/**  Waiting for the half's drive: for it to be put into update mode. */
+{ kind: "waiting" } | 
+/**  The other half's drive appeared, so it's waiting still. */
+{ kind: "other-half"; 
+/**  The half whose drive it is. */
+half: HalfName } | 
+/**  Copying the file: `written` of its `total` bytes are on the drive. */
+{ kind: "copying"; 
+/**  Bytes copied. */
+written: number; 
+/**  The file's bytes. */
+total: number } | 
+/**  The half restarted, and is starting its new firmware. */
+{ kind: "restarting" } | 
+/**  The half is back, running its new firmware. */
+{ kind: "done" };
+
 /**  The General tab. */
 export type GeneralSettings = {
 	/**  _Show in menu bar_: on keeps Keywright in the menu bar when the window closes. */
@@ -890,7 +1047,7 @@ export type GuideStep = {
 	place: string,
 };
 
-/**  A half of a split keyboard. */
+/**  A half of a split keyboard. In TypeScript, `"left"` or `"right"`. */
 export type HalfName = 
 /**  The left half. */
 "left" | 

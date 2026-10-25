@@ -3,6 +3,7 @@ import type { LocalizedString } from "@internationalized/string";
 import { backupStrings } from "./en-backups.ts";
 import { changeStrings } from "./en-changes.ts";
 import { connectionStrings } from "./en-connection.ts";
+import { firmwareStrings } from "./en-firmware.ts";
 import { macStrings } from "./en-mac.ts";
 import { safetyStrings } from "./en-safety.ts";
 import { text } from "./text.ts";
@@ -289,4 +290,5 @@ export const en = {
   ...safetyStrings,
   ...macStrings,
   ...backupStrings,
+  ...firmwareStrings,
 } satisfies Record<string, LocalizedString>;

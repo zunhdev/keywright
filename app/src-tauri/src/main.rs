@@ -77,14 +77,17 @@ fn main() -> tauri::Result<()> {
         .plugin(tauri_plugin_opener::init())
         .menu(menu::build)
         .on_menu_event(|app, event| {
-            // macOS handles its own items, such as Quit; the shell opens Settings and
-            // Backups, and the UI handles Keywright's other items.
+            // macOS handles its own items, such as Quit; the shell opens Settings, Backups
+            // and Update Firmware, and the UI handles Keywright's other items.
             match MenuItem::from_id(event.id().as_ref()) {
                 Some(MenuItem::Settings) => {
                     let _ = settings::open_window(app);
                 }
                 Some(MenuItem::Backups) => {
                     let _ = ipc::open_backups_window(app);
+                }
+                Some(MenuItem::UpdateFirmware) => {
+                    let _ = ipc::open_firmware_window(app);
                 }
                 Some(item) => {
                     let _ = MenuItemChosen(item).emit(app);
