@@ -1,0 +1,21 @@
+/* A bar that fills from the left, in the accent, as macOS's determinate progress bars do. */
+.progress {
+  display: block;
+  width: 100%;
+}
+
+.track {
+  display: block;
+  overflow: hidden;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-subtle);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+  transition: width var(--motion-hover) var(--ease-out);
+}

@@ -27,6 +27,7 @@ mod bluetooth;
 mod connection;
 mod edit;
 mod error;
+mod firmware;
 mod general;
 mod globe;
 mod guard;
@@ -57,6 +58,7 @@ use crate::mac_check::Dismissals;
 
 pub use self::backups::{ImportRequested, open_window as open_backups_window};
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
+pub use self::firmware::{FirmwareProgress, open_window as open_firmware_window};
 pub use self::general::SettingsState;
 pub use self::globe::follow as follow_globe;
 pub use self::input_source::{InputSourceChanged, follow as follow_input_source};
@@ -98,6 +100,8 @@ pub struct AppState {
     backups: Option<Backups>,
     /// The backup waiting in the Import preview.
     import: backups::PendingImport,
+    /// The Firmware Update assistant's files and update.
+    firmware: firmware::FirmwareState,
 }
 
 impl AppState {
@@ -111,6 +115,7 @@ impl AppState {
             dismissals: None,
             backups: None,
             import: backups::PendingImport::default(),
+            firmware: firmware::FirmwareState::default(),
         }
     }
 
@@ -217,7 +222,12 @@ pub fn builder() -> Builder<tauri::Wry> {
             backups::show_backup_in_finder,
             backups::import_preview,
             backups::apply_import,
-            backups::cancel_import
+            backups::cancel_import,
+            firmware::firmware_guide,
+            firmware::firmware_back_up,
+            firmware::choose_firmware,
+            firmware::update_half,
+            firmware::cancel_update
         ])
         .events(collect_events![
             SessionStateChanged,
@@ -227,7 +237,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             QuitRequested,
             TrafficLightsMoved,
             InputSourceChanged,
-            ImportRequested
+            ImportRequested,
+            FirmwareProgress
         ])
 }
 

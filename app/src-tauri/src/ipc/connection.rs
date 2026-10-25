@@ -10,7 +10,7 @@
 use keywright_core::support_packs::{self, Half, SupportPack};
 use keywright_device::{Connection, Peer, Session};
 use keywright_sim::Simulator;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use specta::Type;
 
 use super::AppState;
@@ -34,14 +34,32 @@ pub struct KeyboardGuide {
     pub bluetooth_hold: Option<String>,
 }
 
-/// A half of a split keyboard.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+/// A half of a split keyboard. In TypeScript, `"left"` or `"right"`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Type)]
 #[serde(rename_all = "kebab-case")]
 pub enum HalfName {
     /// The left half.
     Left,
     /// The right half.
     Right,
+}
+
+impl From<Half> for HalfName {
+    fn from(half: Half) -> Self {
+        match half {
+            Half::Left => Self::Left,
+            Half::Right => Self::Right,
+        }
+    }
+}
+
+impl From<HalfName> for Half {
+    fn from(half: HalfName) -> Self {
+        match half {
+            HalfName::Left => Self::Left,
+            HalfName::Right => Self::Right,
+        }
+    }
 }
 
 /// One key to press, in order (design §7: "① Hold Raise ② Tap B").
@@ -79,10 +97,7 @@ impl KeyboardGuide {
         Self {
             name: pack.name.clone(),
             keys: physical_keys(&pack.layout, Some(pack)),
-            usb_half: match pack.hints.usb_half {
-                Half::Left => HalfName::Left,
-                Half::Right => HalfName::Right,
-            },
+            usb_half: pack.hints.usb_half.into(),
             unlock: unlock
                 .hold
                 .iter()

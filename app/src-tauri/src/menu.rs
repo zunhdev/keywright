@@ -4,8 +4,8 @@
 //! check every shortcut. Items that macOS provides, such as Hide, Minimize or Quit, work
 //! from the start. Keywright's own items, each a [`MenuItem`], start disabled. The UI
 //! enables and renames them (`menu_set`), and hears when one is chosen (`menu://item`).
-//! Settings… and Backups… are the exceptions: the shell opens their windows, so they work
-//! from the start.
+//! Settings…, Backups… and Update Firmware… are the exceptions: the shell opens their
+//! windows, so they work from the start.
 
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -74,10 +74,10 @@ impl MenuItem {
         }
     }
 
-    /// Whether the shell handles the item itself, so it works from the start: Settings…
-    /// and Backups…, which open their own windows.
+    /// Whether the shell handles the item itself, so it works from the start: Settings…,
+    /// Backups… and Update Firmware…, which open their own windows.
     pub const fn handled_by_the_shell(self) -> bool {
-        matches!(self, Self::Settings | Self::Backups)
+        matches!(self, Self::Settings | Self::Backups | Self::UpdateFirmware)
     }
 
     /// The item with this ID, or `None` for one of macOS's own items.
@@ -477,7 +477,14 @@ mod tests {
             .map(|(item, _, _)| item)
             .filter(|item| item.handled_by_the_shell())
             .collect();
-        assert_eq!(shells, [MenuItem::Settings, MenuItem::Backups]);
+        assert_eq!(
+            shells,
+            [
+                MenuItem::Settings,
+                MenuItem::Backups,
+                MenuItem::UpdateFirmware
+            ]
+        );
     }
 
     /// The UI names items as their IDs, so an ID must lead back to its item.

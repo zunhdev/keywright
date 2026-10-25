@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "firmware-window",
+  "description": "What the Firmware Update assistant's UI may use (design §9.3): what to say about the keyboard, backing its keymap up, choosing each half's firmware file through the open panel, which the shell shows, updating a half and following how far it's got, cancelling while it waits, opening Bluetooth settings to pair the keyboard again after a settings reset, and closing itself when done.",
+  "windows": ["firmware"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "allow-firmware-guide",
+    "allow-firmware-back-up",
+    "allow-choose-firmware",
+    "allow-update-half",
+    "allow-cancel-update",
+    "allow-open-bluetooth-settings",
+    "core:window:allow-close"
+  ]
+}

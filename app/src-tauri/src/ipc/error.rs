@@ -6,6 +6,7 @@ use keywright_device::SessionError;
 use serde::Serialize;
 use specta::Type;
 
+use super::firmware::FirmwareProblem;
 use super::guard::GuardWarning;
 
 /// Why a command didn't do what it was asked. In TypeScript, `{ code: "not-ready" }` and
@@ -63,6 +64,28 @@ pub enum AppError {
     NothingToImport,
     /// Finder didn't show the file.
     NotShownInFinder,
+    /// Keywright doesn't know how to update the keyboard's firmware: it has no support
+    /// pack for it.
+    UnknownKeyboard,
+    /// The file chosen isn't firmware the keyboard takes.
+    NotFirmware {
+        /// Why not.
+        problem: FirmwareProblem,
+    },
+    /// No firmware file is chosen for the half.
+    NoFirmwareChosen,
+    /// macOS can't say when a half's drive appears.
+    DrivesNotWatched,
+    /// Copying the firmware onto the half's drive failed, as when it's unplugged.
+    CopyFailed,
+    /// The half didn't restart after the copy, so it may not take the file.
+    DidNotRestart,
+    /// The half restarted, but didn't come back with its new firmware.
+    DidNotComeBack,
+    /// Waiting for the half's drive was cancelled.
+    UpdateCancelled,
+    /// The update stopped unexpectedly.
+    UpdateFailed,
     /// The change would strand the user (SAF-2), so it wasn't applied: sent again with
     /// `force`, it is.
     WouldStrand {

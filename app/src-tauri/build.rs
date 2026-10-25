@@ -65,6 +65,11 @@ const COMMANDS: &[&str] = &[
     "import_preview",
     "apply_import",
     "cancel_import",
+    "firmware_guide",
+    "firmware_back_up",
+    "choose_firmware",
+    "update_half",
+    "cancel_update",
     "traffic_lights",
 ];
 
