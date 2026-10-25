@@ -15,13 +15,15 @@
 use std::path::PathBuf;
 
 /// Runs the cases of one scenario. Automatic backups go to a folder of their own, which
-/// outputs show as `[BACKUPS]`.
+/// outputs show as `[BACKUPS]`. The folder `KEEBART` in a case's `.in` folder stands in for
+/// a half's drive in update mode.
 fn scenario(name: &str) {
     let backups = Folder::new(name);
     let cases = trycmd::TestCases::new();
     cases
         .env("KEYWRIGHT_SIMULATOR", name)
         .env("KEYWRIGHT_BACKUPS_DIR", backups.0.display().to_string())
+        .env("KEYWRIGHT_UF2_DRIVE", "KEEBART")
         .insert_var("[BACKUPS]", backups.0.display().to_string())
         .unwrap()
         .case(format!("tests/cmd/{name}/*.md"));

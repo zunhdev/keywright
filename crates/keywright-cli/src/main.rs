@@ -1,17 +1,20 @@
 //! `keywright`, the command-line interface to Keywright.
 //!
-//! The CLI reports keyboard status, and backs up, restores and compares keymaps (CLI-1 to
-//! CLI-5):
+//! The CLI reports keyboard status, backs up, restores and compares keymaps, and updates
+//! firmware (CLI-1 to CLI-5):
 //!
 //! - `keywright status`: the keyboards connected, how, whether they're locked, and whether
 //!   their changes are saved;
 //! - `keywright backup [FILE]`: saves the keyboard's keymap to a `.keywright` file;
 //! - `keywright restore FILE`: makes the keyboard's keymap match a backup, after backing
 //!   it up, and saves it. `--dry-run` only shows what would change;
-//! - `keywright diff FILE`: shows how the keyboard's keymap differs from a backup.
+//! - `keywright diff FILE`: shows how the keyboard's keymap differs from a backup;
+//! - `keywright flash FILE --half left|right`: updates one half's firmware, after backing
+//!   up the keymap, and guides the person through putting the half into update mode.
 //!
-//! Every command takes `--json`, for scripts. Only `restore` changes the keyboard, and it
-//! asks first; when it can't ask, because it isn't run from a terminal, it needs `--yes`.
+//! Every command takes `--json`, for scripts. Only `restore` and `flash` change the
+//! keyboard, and they ask first; when they can't ask, because they aren't run from a
+//! terminal, they need `--yes`.
 //! The exit codes are in `keywright --help` ([`EXIT_CODES`]).
 //!
 //! The CLI is thin: each command maps to a `keywright-device` or `keywright-core` API and
@@ -29,6 +32,7 @@ mod backup;
 mod changes;
 mod diff;
 mod failure;
+mod flash;
 mod keyboards;
 mod output;
 mod restore;
@@ -42,20 +46,20 @@ use serde::Serialize;
 
 use crate::failure::{Exit, Failure};
 use crate::keyboards::Source;
-use crate::output::{print_json, tell};
+use crate::output::{print_json, print_json_line, tell};
 
 /// What `keywright --help` says about exit codes (CLI-4).
 const EXIT_CODES: &str = "\
 Exit codes:
   0  Done. For diff, the keyboard matches the file.
-  1  diff found differences, or you answered no when restore asked.
-  2  The command line is wrong, or restore needs --yes, because it can't ask you.
+  1  diff found differences, or you answered no when restore or flash asked.
+  2  The command line is wrong, or restore or flash needs --yes, because it can't ask you.
   3  No keyboard that Keywright can edit is connected.
   4  The keyboard stayed locked.
   5  The keyboard didn't do what it was asked, or its firmware doesn't work with Keywright.
-  6  A file couldn't be read or written, or isn't a backup for this keyboard.";
+  6  A file couldn't be read or written, or isn't a backup or firmware for this keyboard.";
 
-/// Back up, restore and compare the keymap of a ZMK keyboard.
+/// Back up, restore and compare the keymap of a ZMK keyboard, and update its firmware.
 #[derive(Debug, Parser)]
 #[command(name = "keywright", version, after_long_help = EXIT_CODES)]
 struct Cli {
@@ -79,6 +83,8 @@ enum Command {
     Restore(restore::Args),
     /// Show how the keyboard's keymap differs from a backup file.
     Diff(diff::Args),
+    /// Update one half's firmware with a .uf2 file, after backing up the keymap.
+    Flash(flash::Args),
 }
 
 fn main() -> ExitCode {
@@ -94,12 +100,19 @@ fn main() -> ExitCode {
         }
     };
     let json = cli.json;
+    // `flash` writes a JSON object a line as it goes, so its error takes one line too.
+    let lines = matches!(cli.command, Command::Flash(_));
     match runtime.block_on(run(cli)) {
         Ok(exit) => exit.code(),
         Err(failure) => {
             tell(&failure);
             if json {
-                let _ = print_json(&ErrorReport { error: &failure });
+                let report = ErrorReport { error: &failure };
+                let _ = if lines {
+                    print_json_line(&report)
+                } else {
+                    print_json(&report)
+                };
             }
             failure.exit_code()
         }
@@ -113,6 +126,7 @@ async fn run(cli: Cli) -> Result<Exit, Failure> {
         Command::Backup(args) => backup::run(source, args, cli.json).await,
         Command::Restore(args) => restore::run(source, args, cli.json).await,
         Command::Diff(args) => diff::run(source, args, cli.json).await,
+        Command::Flash(args) => flash::run(source, args, cli.json).await,
     }
 }
 

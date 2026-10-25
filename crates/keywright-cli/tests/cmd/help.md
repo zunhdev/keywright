@@ -4,7 +4,7 @@
 
 ```console
 $ keywright --help
-Back up, restore and compare the keymap of a ZMK keyboard
+Back up, restore and compare the keymap of a ZMK keyboard, and update its firmware
 
 Usage: keywright [OPTIONS] <COMMAND>
 
@@ -13,6 +13,7 @@ Commands:
   backup   Save the keyboard's keymap to a backup file
   restore  Make the keyboard's keymap match a backup file, and save it to the keyboard
   diff     Show how the keyboard's keymap differs from a backup file
+  flash    Update one half's firmware with a .uf2 file, after backing up the keymap
   help     Print this message or the help of the given subcommand(s)
 
 Options:
@@ -27,12 +28,12 @@ Options:
 
 Exit codes:
   0  Done. For diff, the keyboard matches the file.
-  1  diff found differences, or you answered no when restore asked.
-  2  The command line is wrong, or restore needs --yes, because it can't ask you.
+  1  diff found differences, or you answered no when restore or flash asked.
+  2  The command line is wrong, or restore or flash needs --yes, because it can't ask you.
   3  No keyboard that Keywright can edit is connected.
   4  The keyboard stayed locked.
   5  The keyboard didn't do what it was asked, or its firmware doesn't work with Keywright.
-  6  A file couldn't be read or written, or isn't a backup for this keyboard.
+  6  A file couldn't be read or written, or isn't a backup or firmware for this keyboard.
 
 ```
 
@@ -42,7 +43,7 @@ the command line.
 ```console
 $ keywright
 ? 2
-Back up, restore and compare the keymap of a ZMK keyboard
+Back up, restore and compare the keymap of a ZMK keyboard, and update its firmware
 
 Usage: keywright [OPTIONS] <COMMAND>
 ...
@@ -56,5 +57,38 @@ never run from a terminal, so `restore` can't ask.
 $ keywright restore my-keymap.keywright
 ? 2
 restore changes the keyboard, so it needs --yes when it can't ask you first.
+
+```
+
+`flash` takes the firmware file and the half it's for. The half can't be left out.
+
+```console
+$ keywright flash --help
+Update one half's firmware with a .uf2 file, after backing up the keymap
+
+Usage: keywright flash [OPTIONS] --half <HALF> <FILE>
+
+Arguments:
+  <FILE>  The firmware file, a .uf2 file
+
+Options:
+      --half <HALF>               The half to update [possible values: left, right]
+      --json                      Print the result as JSON, for scripts. Messages for people still go to standard error
+  -y, --yes                       Update without asking first. Needed when flash can't ask, because it isn't run from a terminal
+      --update-timeout <SECONDS>  How long to wait for the half to go into update mode, in seconds [default: 300]
+      --unlock-timeout <SECONDS>  How long to wait for the keyboard to be unlocked, in seconds [default: 120]
+  -h, --help                      Print help
+
+```
+
+```console
+$ keywright flash firmware.uf2
+? 2
+error: the following required arguments were not provided:
+  --half <HALF>
+
+Usage: keywright flash --half <HALF> <FILE>
+
+For more information, try '--help'.
 
 ```
