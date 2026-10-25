@@ -1,0 +1,5 @@
+UF2 Bootloader 466c2dc-dirty lib/nrfx (v2.0.0) lib/tinyusb (0.12.0-145-g9775e7691) lib/uf2 (remotes/origin/configupdate-9-gadbb8c7)
+Model: keebart_nrf52840
+Board-ID: keebart_nrf52840
+Date: Feb 27 2025
+SoftDevice: S140 6.1.1

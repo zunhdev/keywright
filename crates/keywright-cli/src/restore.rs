@@ -11,7 +11,7 @@
 use std::io::{self, BufRead as _, IsTerminal as _};
 use std::path::PathBuf;
 
-use keywright_device::{Backups, SessionError, SessionEvent, State};
+use keywright_device::{SessionError, SessionEvent, State};
 use serde::Serialize;
 use tokio::sync::broadcast::{self, error::TryRecvError};
 
@@ -72,7 +72,7 @@ pub(crate) async fn run(source: Source, args: Args, json: bool) -> Result<Exit, 
     let backups = if args.dry_run {
         None
     } else {
-        automatic_backups(source)?
+        keyboards::automatic_backups(source)?
     };
     let mut keyboard = keyboards::unlocked(source, backups.as_ref(), args.wait.timeout()).await?;
     let name = keyboard.name();
@@ -186,19 +186,6 @@ async fn apply(
         ))
     })?;
     Ok(backup)
-}
-
-/// The folder of automatic backups, which restoring backs up into first (SAF-3). A
-/// simulated keyboard may have none.
-fn automatic_backups(source: Source) -> Result<Option<Backups>, Failure> {
-    match (source.backups_dir(), source) {
-        (Some(dir), _) => Ok(Some(Backups::new(dir, Backups::DEFAULT_KEEP))),
-        (None, Source::Simulator(_)) => Ok(None),
-        (None, Source::Connected) => Err(Failure::file(
-            "Keywright doesn't know where to keep automatic backups, so it can't back up the \
-             keymap before restoring.",
-        )),
-    }
 }
 
 /// Asks whether to go ahead, on the terminal.

@@ -392,49 +392,93 @@ pub(crate) async fn unlocked(
     backups: Option<&Backups>,
     timeout: Duration,
 ) -> Result<Keyboard, Failure> {
-    let mut keyboard = only_keyboard(source.connect_all(backups).await?)?;
-    if let State::Locked { .. } = keyboard.snapshot.state {
-        let name = keyboard.name();
-        tell(format!(
-            "{name} is locked. {}",
-            words::unlock_instructions(keyboard.snapshot.support_pack())
-        ));
-        tell(format!(
-            "Waiting up to {} for it to be unlocked…",
-            words::duration(timeout)
-        ));
-        keyboard.press_unlock_keys();
-        let unlocked = keyboard.session.wait_for(|state| {
-            !matches!(
-                state,
-                State::Locked { .. } | State::Probing | State::Loading
-            )
-        });
-        match tokio::time::timeout(timeout, unlocked).await {
-            Ok(result) => {
-                result.map_err(|error| stopped(&error))?;
+    only_keyboard(source.connect_all(backups).await?)?
+        .unlocked(timeout)
+        .await
+}
+
+impl Keyboard {
+    /// The keyboard, unlocked, with its keymap read. While it's locked, says how to unlock
+    /// it, and waits up to `timeout`.
+    ///
+    /// # Errors
+    ///
+    /// Fails if it stays locked, or stops answering, or can't be edited once unlocked.
+    pub(crate) async fn unlocked(mut self, timeout: Duration) -> Result<Self, Failure> {
+        if let State::Locked { .. } = self.snapshot.state {
+            let name = self.name();
+            tell(format!(
+                "{name} is locked. {}",
+                words::unlock_instructions(self.snapshot.support_pack())
+            ));
+            tell(format!(
+                "Waiting up to {} for it to be unlocked…",
+                words::duration(timeout)
+            ));
+            self.press_unlock_keys();
+            let unlocked = self.session.wait_for(|state| {
+                !matches!(
+                    state,
+                    State::Locked { .. } | State::Probing | State::Loading
+                )
+            });
+            match tokio::time::timeout(timeout, unlocked).await {
+                Ok(result) => {
+                    result.map_err(|error| stopped(&error))?;
+                }
+                Err(_) => {
+                    return Err(Failure::new(
+                        Kind::Locked,
+                        format!(
+                            "{name} stayed locked for {}, so nothing was done. Run the \
+                             command again, and unlock it when asked.",
+                            words::duration(timeout)
+                        ),
+                    ));
+                }
             }
-            Err(_) => {
-                return Err(Failure::new(
-                    Kind::Locked,
-                    format!(
-                        "{name} stayed locked for {}, so nothing was done. Run the command \
-                         again, and unlock it when asked.",
-                        words::duration(timeout)
-                    ),
-                ));
-            }
+            self.refresh().await?;
         }
-        keyboard.refresh().await?;
+        match words::problem(&self.snapshot.state) {
+            None => Ok(self),
+            Some((kind, message)) => Err(Failure::new(kind, message)),
+        }
     }
-    match words::problem(&keyboard.snapshot.state) {
-        None => Ok(keyboard),
-        Some((kind, message)) => Err(Failure::new(kind, message)),
+
+    /// The microcontroller's hardware ID the keyboard reports, which is its USB serial
+    /// number. Empty if its firmware can't read it.
+    pub(crate) fn hardware_id(&self) -> &[u8] {
+        match (&self.snapshot.keyboard, &self.snapshot.state) {
+            (Some(keyboard), _) => &keyboard.identity.serial_number,
+            (None, State::Locked { device, .. }) => &device.serial_number,
+            (None, _) => &[],
+        }
+    }
+}
+
+/// The folder of automatic backups, which commands that change the keyboard back up into
+/// first (SAF-3). A simulated keyboard may have none.
+///
+/// # Errors
+///
+/// Fails for a real keyboard if Keywright doesn't know where its folder is.
+pub(crate) fn automatic_backups(source: Source) -> Result<Option<Backups>, Failure> {
+    match (source.backups_dir(), source) {
+        (Some(dir), _) => Ok(Some(Backups::new(dir, Backups::DEFAULT_KEEP))),
+        (None, Source::Simulator(_)) => Ok(None),
+        (None, Source::Connected) => Err(Failure::file(
+            "Keywright doesn't know where to keep automatic backups, so it can't back up the \
+             keymap first.",
+        )),
     }
 }
 
 /// The one keyboard that can be edited, locked or not, of those found.
-fn only_keyboard(found: Vec<Found>) -> Result<Keyboard, Failure> {
+///
+/// # Errors
+///
+/// Fails if there's no keyboard to edit, or more than one.
+pub(crate) fn only_keyboard(found: Vec<Found>) -> Result<Keyboard, Failure> {
     let mut problems = Vec::new();
     let mut keyboards = Vec::new();
     for found in found {

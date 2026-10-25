@@ -19,7 +19,8 @@ clap.workspace = true
 keywright-core = { path = "../keywright-core" }
 # The device session, which talks to the keyboard.
 keywright-device = { path = "../keywright-device" }
-# Where the app keeps automatic backups, which `restore` makes too.
+# Where the app keeps automatic backups, which `restore` and `flash` make too, and the
+# half's update drive, which `flash` copies firmware onto.
 keywright-platform = { path = "../keywright-platform" }
 # The simulated keyboard, for the CLI's tests (`KEYWRIGHT_SIMULATOR`).
 keywright-sim = { path = "../keywright-sim" }
