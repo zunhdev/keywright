@@ -1,9 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Merged into the app's Info.plist. macOS shows the text when Keywright first asks for Bluetooth (CON-6). -->
+<!--
+  Merged into the app's Info.plist.
+  - macOS shows NSBluetoothAlwaysUsageDescription when Keywright first asks for Bluetooth (CON-6).
+  - Keywright declares the .keywright backup file's type, plain text that text editors and
+    Quick Look open, and owns it: double-clicking a backup opens Keywright's Import preview
+    (BAK-6). macOS draws the document icon from the app's.
+-->
 <plist version="1.0">
   <dict>
     <key>NSBluetoothAlwaysUsageDescription</key>
     <string>Keywright connects to your keyboard over Bluetooth to edit its keymap and show its battery.</string>
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+      <dict>
+        <key>UTTypeIdentifier</key>
+        <string>dev.zunh.keywright.backup</string>
+        <key>UTTypeDescription</key>
+        <string>Keywright Backup</string>
+        <key>UTTypeConformsTo</key>
+        <array>
+          <string>public.plain-text</string>
+        </array>
+        <key>UTTypeTagSpecification</key>
+        <dict>
+          <key>public.filename-extension</key>
+          <array>
+            <string>keywright</string>
+          </array>
+        </dict>
+      </dict>
+    </array>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeName</key>
+        <string>Keywright Backup</string>
+        <key>CFBundleTypeRole</key>
+        <string>Viewer</string>
+        <key>LSHandlerRank</key>
+        <string>Owner</string>
+        <key>LSItemContentTypes</key>
+        <array>
+          <string>dev.zunh.keywright.backup</string>
+        </array>
+        <key>CFBundleTypeIconSystemGenerated</key>
+        <true/>
+      </dict>
+    </array>
   </dict>
 </plist>

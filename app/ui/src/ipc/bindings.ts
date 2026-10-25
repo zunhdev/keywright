@@ -482,6 +482,26 @@ character: string } | null>("layer_name_problem", { name }),
 	/**  _Cancel_ in the Import preview: forgets the pending import. */
 	cancelImport: () => __TAURI_INVOKE<void>("cancel_import"),
 	/**
+	 *  Whether a backup is waiting for the Import preview: the main window asks as it loads, in
+	 *  case Keywright was opened with one.
+	 */
+	importPending: () => __TAURI_INVOKE<boolean>("import_pending"),
+	/**
+	 *  File › Import… (⌘O, BAK-3): shows the open panel, then the Import preview for the file
+	 *  chosen. Nothing happens if the person cancels.
+	 */
+	importFile: () => typedError<null, AppError>(__TAURI_INVOKE("import_file")),
+	/**
+	 *  File › Export… (⇧⌘E, BAK-1): writes the keymap the keyboard holds now, changes being
+	 *  tried included, to a `.keywright` file where the save panel says. Gives the file's name,
+	 *  or `null` if the person cancelled.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the keymap isn't loaded, or the file can't be written.
+	 */
+	exportKeymap: () => typedError<string | null, AppError>(__TAURI_INVOKE("export_keymap")),
+	/**
 	 *  What the assistant says about the keyboard: its halves, how to put one into update
 	 *  mode, the drawing of its underside, and whether its keymap can be backed up.
 	 * 
@@ -689,6 +709,8 @@ export type AppError =
 { code: "unreadable-backup" } | 
 /**  The Import preview has no backup to show or apply. */
 { code: "nothing-to-import" } | 
+/**  The exported keymap couldn't be written. */
+{ code: "export-failed" } | 
 /**  Finder didn't show the file. */
 { code: "not-shown-in-finder" } | 
 /**

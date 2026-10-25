@@ -56,7 +56,9 @@ use tokio::sync::oneshot;
 
 use crate::mac_check::Dismissals;
 
-pub use self::backups::{ImportRequested, open_window as open_backups_window};
+pub use self::backups::{
+    ImportRequested, OpenedEarly, open_early_files, open_files, open_window as open_backups_window,
+};
 pub use self::battery::{BatteryChanged, BatteryState, BatteryStatus, follow as follow_battery};
 pub use self::firmware::{FirmwareProgress, open_window as open_firmware_window};
 pub use self::general::SettingsState;
@@ -223,6 +225,9 @@ pub fn builder() -> Builder<tauri::Wry> {
             backups::import_preview,
             backups::apply_import,
             backups::cancel_import,
+            backups::import_pending,
+            backups::import_file,
+            backups::export_keymap,
             firmware::firmware_guide,
             firmware::firmware_back_up,
             firmware::choose_firmware,

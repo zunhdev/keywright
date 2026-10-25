@@ -4,22 +4,18 @@
 //! The file is the same `.keywright` file the app exports (tech spec §9). A keyboard that
 //! is trying changes it hasn't saved is backed up as it is now, with those changes.
 
-use std::fmt::Write as _;
 use std::fs::OpenOptions;
 use std::io::{self, Write as _};
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
-use keywright_core::backup::{Backup, Datetime, Reason};
+use keywright_core::backup::{self, Backup, Reason};
 use keywright_device::backups::{self, ReadError};
 use serde::Serialize;
 
 use crate::failure::{Exit, Failure};
 use crate::keyboards::{self, Changes, Source, Wait};
 use crate::output::{print, print_json, tell};
-
-/// The extension of a backup file.
-const EXTENSION: &str = "keywright";
 
 #[derive(Debug, clap::Args)]
 pub(crate) struct Args {
@@ -83,7 +79,7 @@ pub(crate) async fn run(source: Source, args: Args, json: bool) -> Result<Exit, 
     }
     let path = args
         .file
-        .unwrap_or_else(|| default_file(&name, &backup.created));
+        .unwrap_or_else(|| backup::file_name(&name, &backup.created).into());
     write(&path, &text, args.force)?;
     if json {
         print_json(&Report {
@@ -148,56 +144,4 @@ fn exists(path: &Path) -> Failure {
         "{} already exists. Use --force to replace it, or give another name.",
         path.display()
     ))
-}
-
-/// A new backup's file name, from the keyboard's name and when it was made, such as
-/// `sofle-choc-bt-20261023-140300.keywright`.
-fn default_file(keyboard: &str, created: &Datetime) -> PathBuf {
-    let mut name = String::new();
-    for word in keyboard
-        .split(|c: char| !c.is_ascii_alphanumeric())
-        .filter(|word| !word.is_empty())
-    {
-        name.push_str(&word.to_ascii_lowercase());
-        name.push('-');
-    }
-    if name.is_empty() {
-        name.push_str("keyboard-");
-    }
-    if let (Some(date), Some(time)) = (created.date, created.time) {
-        // Writing to a `String` can't fail.
-        let _ = write!(
-            name,
-            "{:04}{:02}{:02}-{:02}{:02}{:02}",
-            date.year,
-            date.month,
-            date.day,
-            time.hour,
-            time.minute,
-            time.second.unwrap_or(0)
-        );
-    }
-    PathBuf::from(format!("{}.{EXTENSION}", name.trim_end_matches('-')))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn a_new_backup_is_named_after_the_keyboard_and_the_time() {
-        let created = "2026-10-23T14:03:09Z".parse().unwrap();
-        assert_eq!(
-            default_file("Sofle Choc BT", &created),
-            Path::new("sofle-choc-bt-20261023-140309.keywright")
-        );
-        assert_eq!(
-            default_file("Corne/42 (v4)", &created),
-            Path::new("corne-42-v4-20261023-140309.keywright")
-        );
-        assert_eq!(
-            default_file("", &created),
-            Path::new("keyboard-20261023-140309.keywright")
-        );
-    }
 }

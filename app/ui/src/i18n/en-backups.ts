@@ -51,10 +51,13 @@ export const backupStrings = {
   "import.cancel": "Cancel",
   "import.apply": "Apply as Changes",
   "import.done": "Imported. Review the changes, then save them to your keyboard.",
+  "import.not-ready": "Connect and unlock your keyboard to see what this backup would change.",
+  "export.done": (args) => `Exported your keymap to ${text(args, "file")}.`,
 
   "error.backups-not-read": "Keywright couldn't read its backups folder.",
   "error.no-such-backup": "That backup isn't there any more.",
   "error.unreadable-backup": "Keywright can't read that backup.",
   "error.nothing-to-import": "There's no backup to import.",
+  "error.export-failed": "Keywright couldn't write the file.",
   "error.not-shown-in-finder": "Finder didn't show the file.",
 } satisfies Record<string, LocalizedString>;

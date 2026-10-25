@@ -16,13 +16,17 @@ import styles from "./Backups.module.css";
 const TOAST = 6000;
 
 /**
- * Follows the shell's requests to show the Import preview, as Restore… in the Backups
- * window makes. Resolves, once listening, to a function that stops.
+ * Follows the shell's requests to show the Import preview: from Restore… in the Backups
+ * window, File › Import…, or a backup opened from Finder. A backup opened before the window
+ * listened, as when it started Keywright, shows once it does. Resolves, once listening, to
+ * a function that stops.
  */
-export function followImport(): Promise<() => void> {
-  return events.importRequested.listen(() => {
-    useStore.setState({ importing: true });
+export async function followImport(): Promise<() => void> {
+  const stop = await events.importRequested.listen(() => {
+    useStore.setState((store) => ({ importing: true, importRequests: store.importRequests + 1 }));
   });
+  if (await commands.importPending()) useStore.setState({ importing: true });
+  return stop;
 }
 
 /** Closes the sheet, forgetting the pending import. */
@@ -74,7 +78,9 @@ function ImportBody() {
       )}
       {preview === null ? null : "code" in preview ? (
         <p className={styles.problem} role="alert">
-          {messages.format(`error.${preview.code}`)}
+          {messages.format(
+            preview.code === "not-ready" ? "import.not-ready" : `error.${preview.code}`,
+          )}
         </p>
       ) : (
         <BackupPreview preview={preview} />
@@ -105,6 +111,11 @@ function ImportBody() {
 export function ImportSheet() {
   const messages = useMessages();
   const open = useStore((store) => store.importing);
+  // Asked again once the keyboard is ready, as when a backup opened from Finder started
+  // Keywright before the keyboard was unlocked, and for each backup asked for, even with
+  // the sheet open.
+  const ready = useStore((store) => store.session?.state.kind === "ready");
+  const requests = useStore((store) => store.importRequests);
   return (
     <Sheet
       title={messages.format("import.title")}
@@ -114,7 +125,7 @@ export function ImportSheet() {
         if (!isOpen) cancel();
       }}
     >
-      {() => <ImportBody />}
+      {() => <ImportBody key={`${ready}-${requests}`} />}
     </Sheet>
   );
 }

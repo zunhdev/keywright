@@ -6,25 +6,30 @@
 //! name, which has to be one of those in the backups folder. _Restore…_ there makes that
 //! backup the pending import, brings the main window forward, and tells it to show the
 //! Import preview ([`ImportRequested`], `import://requested`), which previews and applies
-//! the pending import. File › Import… will make a chosen file the pending import the same
-//! way (KEY-71).
+//! the pending import. File › Import… (⌘O) makes the file chosen in the open panel the
+//! pending import the same way, and so does opening a `.keywright` file from Finder
+//! ([`open_files`], BAK-6). A file that can't be read is pending too, so the preview says
+//! why. File › Export… (⇧⌘E) writes the keymap where the save panel says (BAK-1).
 //!
 //! The preview's rows are the review sheet's, for the edits that make the keymap match the
 //! backup ([`Import::preview`]), and what can't be applied is listed with why, never
 //! dropped. Applying goes through the lockout guard (SAF-2), and the session backs the
 //! keymap up first (SAF-3).
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
+use std::time::SystemTime;
 
-use keywright_core::backup::{Backup, Import, Reason, Unresolved};
+use keywright_core::backup::{self, Backup, Import, Reason, Unresolved};
 use keywright_core::keymap::LayerId;
 use keywright_core::support_packs::SupportPack;
 use keywright_device::backups::{self, ReadError};
 use serde::Serialize;
 use specta::Type;
 use tauri::{AppHandle, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_dialog::DialogExt;
 use tauri_specta::Event as _;
+use tokio::sync::oneshot;
 
 use super::AppState;
 use super::error::AppError;
@@ -154,19 +159,30 @@ pub enum CannotApply {
     },
 }
 
-/// A backup waiting in the Import preview to be applied or cancelled.
+/// A backup, by its file's name, read; or why it can't be.
+type Read = Result<(String, Backup), AppError>;
+
+/// A backup waiting in the Import preview to be applied or cancelled, or why the file
+/// chosen can't be.
 #[derive(Debug, Default)]
-pub struct PendingImport(Mutex<Option<(String, Backup)>>);
+pub struct PendingImport(Mutex<Option<Read>>);
 
 impl PendingImport {
-    fn set(&self, file: String, backup: Backup) {
+    fn set(&self, read: Read) {
         if let Ok(mut pending) = self.0.lock() {
-            *pending = Some((file, backup));
+            *pending = Some(read);
         }
     }
 
-    fn get(&self) -> Option<(String, Backup)> {
-        self.0.lock().ok()?.clone()
+    /// The pending backup, or why it can't be read.
+    fn get(&self) -> Result<(String, Backup), AppError> {
+        (self.0.lock().ok())
+            .and_then(|pending| pending.clone())
+            .unwrap_or(Err(AppError::NothingToImport))
+    }
+
+    fn is_set(&self) -> bool {
+        self.0.lock().is_ok_and(|pending| pending.is_some())
     }
 
     fn clear(&self) {
@@ -236,8 +252,38 @@ impl AppState {
     /// Makes the automatic backup `id` the pending import, for the Import preview.
     pub fn restore_backup(&self, id: &str) -> Result<(), AppError> {
         let backup = self.read_backup(id)?;
-        self.import.set(id.to_owned(), backup);
+        self.import.set(Ok((id.to_owned(), backup)));
         Ok(())
+    }
+
+    /// Makes the backup file at `path` the pending import, or, if it can't be read, why.
+    pub fn open_backup(&self, path: &Path) {
+        let name = path
+            .file_name()
+            .map_or_else(String::new, |name| name.to_string_lossy().into_owned());
+        let read = backups::read(path)
+            .map(|backup| (name, backup))
+            .map_err(|error| unreadable(&error));
+        self.import.set(read);
+    }
+
+    /// Whether a backup is waiting for the Import preview, as when Keywright was opened
+    /// with one before the window was ready to show it.
+    pub fn import_pending(&self) -> bool {
+        self.import.is_set()
+    }
+
+    /// The keymap as a backup file's text (BAK-1), with the name to suggest for it.
+    pub async fn exported(&self) -> Result<(String, String), AppError> {
+        let snapshot = self.session.snapshot().await?;
+        let created =
+            keywright_device::backups::created(SystemTime::now()).ok_or(AppError::ExportFailed)?;
+        let exported = snapshot
+            .backup(created, Reason::Export)
+            .ok_or(AppError::NotReady)?;
+        let rows = snapshot.support_pack().map_or(&[][..], |pack| &pack.rows);
+        let name = backup::file_name(&exported.keyboard.name, &exported.created);
+        Ok((name, exported.to_toml(rows)))
     }
 
     /// Shows the automatic backup `id` in Finder.
@@ -248,7 +294,7 @@ impl AppState {
 
     /// The pending import, compared with the keymap.
     pub async fn import_preview(&self) -> Result<ImportPreview, AppError> {
-        let (file, backup) = self.import.get().ok_or(AppError::NothingToImport)?;
+        let (file, backup) = self.import.get()?;
         self.preview(&file, &backup).await
     }
 
@@ -256,7 +302,7 @@ impl AppState {
     /// up (SAF-3), unless that would strand the user and not `force` (SAF-2). It stays
     /// pending if it isn't applied.
     pub async fn apply_import(&self, force: bool) -> Result<(), AppError> {
-        let (_, backup) = self.import.get().ok_or(AppError::NothingToImport)?;
+        let (_, backup) = self.import.get()?;
         let edits = self
             .checked_edits(force, |keymap, behaviors| {
                 Ok(backup.import(keymap, behaviors).edits)
@@ -441,9 +487,7 @@ pub fn restore_backup(
     id: String,
 ) -> Result<(), AppError> {
     app.restore_backup(&id)?;
-    crate::show_main_window(&handle);
-    // The main window is there for as long as the app runs.
-    let _ = ImportRequested.emit(&handle);
+    request_import(&handle);
     Ok(())
 }
 
@@ -486,6 +530,125 @@ pub async fn import_preview(app: tauri::State<'_, AppState>) -> Result<ImportPre
 #[specta::specta]
 pub async fn apply_import(app: tauri::State<'_, AppState>, force: bool) -> Result<(), AppError> {
     app.apply_import(force).await
+}
+
+/// Tells the main window to show the Import preview, bringing it forward.
+fn request_import<R: Runtime>(handle: &AppHandle<R>) {
+    crate::show_main_window(handle);
+    // The main window is there for as long as the app runs.
+    let _ = ImportRequested.emit(handle);
+}
+
+/// Backup files opened from Finder while Keywright was starting, kept until it has: macOS
+/// hands over the files that start an app before the app has finished launching.
+#[derive(Debug, Default)]
+pub struct OpenedEarly(Mutex<Vec<PathBuf>>);
+
+/// Opens backup files from Finder (BAK-6), as when one is double-clicked: the first becomes
+/// the pending import, in the Import preview. Keywright imports one at a time. Files opened
+/// while Keywright is starting wait for [`open_early_files`].
+pub fn open_files<R: Runtime>(handle: &AppHandle<R>, paths: &[PathBuf]) {
+    let Some(app) = handle.try_state::<AppState>() else {
+        if let Some(early) = handle.try_state::<OpenedEarly>()
+            && let Ok(mut waiting) = early.0.lock()
+        {
+            waiting.extend_from_slice(paths);
+        }
+        return;
+    };
+    let Some(path) = paths.first() else {
+        return;
+    };
+    app.open_backup(path);
+    request_import(handle);
+}
+
+/// Opens the backup files opened from Finder while Keywright was starting. Call it once the
+/// commands' state is there.
+pub fn open_early_files<R: Runtime>(handle: &AppHandle<R>) {
+    let paths = (handle.try_state::<OpenedEarly>())
+        .and_then(|early| {
+            early
+                .0
+                .lock()
+                .ok()
+                .map(|mut waiting| std::mem::take(&mut *waiting))
+        })
+        .unwrap_or_default();
+    open_files(handle, &paths);
+}
+
+/// Whether a backup is waiting for the Import preview: the main window asks as it loads, in
+/// case Keywright was opened with one.
+#[tauri::command]
+#[specta::specta]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Tauri hands a command its arguments by value"
+)]
+pub fn import_pending(app: tauri::State<'_, AppState>) -> bool {
+    app.import_pending()
+}
+
+/// File › Import… (⌘O, BAK-3): shows the open panel, then the Import preview for the file
+/// chosen. Nothing happens if the person cancels.
+#[tauri::command]
+#[specta::specta]
+pub async fn import_file(
+    handle: AppHandle,
+    app: tauri::State<'_, AppState>,
+) -> Result<(), AppError> {
+    let (chosen, path) = oneshot::channel();
+    let mut panel = handle
+        .dialog()
+        .file()
+        .add_filter("Keywright backup", &[backup::EXTENSION]);
+    if let Some(window) = handle.get_webview_window(crate::MAIN_WINDOW) {
+        panel = panel.set_parent(&window);
+    }
+    panel.pick_file(move |path| {
+        let _ = chosen.send(path.and_then(|path| path.into_path().ok()));
+    });
+    if let Some(path) = path.await.ok().flatten() {
+        app.open_backup(&path);
+        request_import(&handle);
+    }
+    Ok(())
+}
+
+/// File › Export… (⇧⌘E, BAK-1): writes the keymap the keyboard holds now, changes being
+/// tried included, to a `.keywright` file where the save panel says. Gives the file's name,
+/// or `null` if the person cancelled.
+///
+/// # Errors
+///
+/// Fails if the keymap isn't loaded, or the file can't be written.
+#[tauri::command]
+#[specta::specta]
+pub async fn export_keymap(
+    handle: AppHandle,
+    app: tauri::State<'_, AppState>,
+) -> Result<Option<String>, AppError> {
+    let (name, text) = app.exported().await?;
+    let (chosen, path) = oneshot::channel();
+    let mut panel = handle
+        .dialog()
+        .file()
+        .set_file_name(&name)
+        .add_filter("Keywright backup", &[backup::EXTENSION]);
+    if let Some(window) = handle.get_webview_window(crate::MAIN_WINDOW) {
+        panel = panel.set_parent(&window);
+    }
+    panel.save_file(move |path| {
+        let _ = chosen.send(path.and_then(|path| path.into_path().ok()));
+    });
+    let Some(path) = path.await.ok().flatten() else {
+        return Ok(None);
+    };
+    std::fs::write(&path, text).map_err(|_| AppError::ExportFailed)?;
+    Ok(path
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned()))
 }
 
 /// _Cancel_ in the Import preview: forgets the pending import.
@@ -670,6 +833,61 @@ mod tests {
             app.apply_import(false).await,
             Err(AppError::NothingToImport)
         );
+    }
+
+    #[tokio::test]
+    async fn an_export_edited_as_text_imports_as_the_edit() {
+        let folder = Folder::new("export");
+        let app = ready_sofle(&folder).await;
+        let (name, text) = app.exported().await.unwrap();
+        assert!(name.starts_with("sofle-choc-bt-"), "{name}");
+        assert!(name.ends_with(".keywright"), "{name}");
+        std::fs::create_dir_all(&folder.0).unwrap();
+        let path = folder.0.join("mine.keywright");
+
+        // As exported, it's the keymap.
+        std::fs::write(&path, &text).unwrap();
+        app.open_backup(&path);
+        assert!(app.import_pending());
+        let preview = app.import_preview().await.unwrap();
+        assert_eq!(preview.file, "mine.keywright");
+        assert_eq!((preview.rows.len(), preview.cannot_apply.len()), (0, 0));
+
+        // Edited in a text editor: Q becomes X.
+        std::fs::write(&path, text.replacen("\"kp Q\",", "\"kp X\",", 1)).unwrap();
+        app.open_backup(&path);
+        let preview = app.import_preview().await.unwrap();
+        assert_eq!(preview.keys, 1);
+        assert_eq!(
+            (
+                preview.rows[0].before.as_str(),
+                preview.rows[0].after.as_str()
+            ),
+            ("Q", "X")
+        );
+        app.apply_import(false).await.unwrap();
+        assert_eq!(app.review().await.unwrap(), preview.rows);
+        assert!(!app.import_pending());
+    }
+
+    #[tokio::test]
+    async fn a_file_that_cant_be_read_says_why_in_the_preview() {
+        let folder = Folder::new("unreadable");
+        let app = ready_sofle(&folder).await;
+        std::fs::create_dir_all(&folder.0).unwrap();
+        let notes = folder.0.join("notes.keywright");
+        std::fs::write(&notes, "Not a backup.").unwrap();
+        app.open_backup(&notes);
+        assert!(app.import_pending());
+        assert_eq!(app.import_preview().await, Err(AppError::UnreadableBackup));
+        assert_eq!(
+            app.apply_import(false).await,
+            Err(AppError::UnreadableBackup)
+        );
+        app.open_backup(&folder.0.join("gone.keywright"));
+        assert_eq!(app.import_preview().await, Err(AppError::NoSuchBackup));
+        app.cancel_import();
+        assert!(!app.import_pending());
     }
 
     #[tokio::test]
