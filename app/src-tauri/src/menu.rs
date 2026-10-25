@@ -136,6 +136,9 @@ enum SystemItem {
     Minimize,
     Zoom,
     BringAllToFront,
+    /// Enter Full Screen, with ⌃⌘F. The one AppKit adds to a View menu without one has
+    /// 🌐F instead, so ⌃⌘F did nothing (KEY-105).
+    FullScreen,
 }
 
 const fn item(item: MenuItem, label: &'static str, shortcut: &'static str) -> Entry {
@@ -244,6 +247,8 @@ const MENUS: &[MenuSpec] = &[
             item(MenuItem::ZoomIn, "Zoom In", "Cmd+="),
             item(MenuItem::ZoomOut, "Zoom Out", "Cmd+-"),
             item(MenuItem::ActualSize, "Actual Size", "Cmd+0"),
+            Entry::Separator,
+            system(SystemItem::FullScreen, "Enter Full Screen"),
         ],
     },
     MenuSpec {
@@ -358,6 +363,8 @@ fn system_item<R: Runtime>(
         SystemItem::Minimize => PredefinedMenuItem::minimize(app, label),
         SystemItem::Zoom => PredefinedMenuItem::maximize(app, label),
         SystemItem::BringAllToFront => PredefinedMenuItem::bring_all_to_front(app, label),
+        // AppKit names it Exit Full Screen while the window is full screen.
+        SystemItem::FullScreen => PredefinedMenuItem::fullscreen(app, label),
     }
 }
 
@@ -367,10 +374,10 @@ mod tests {
 
     use muda::accelerator::Accelerator;
 
-    use super::{Entry, MENUS, MenuItem};
+    use super::{Entry, MENUS, MenuItem, SystemItem};
 
-    /// The shortcuts macOS gives its own items, and Enter Full Screen, which it adds to
-    /// the View menu.
+    /// The shortcuts of the items macOS provides: Hide, Hide Others, Quit, Close Window,
+    /// Minimize and Enter Full Screen.
     const SYSTEM_SHORTCUTS: &[&str] = &[
         "Cmd+H",
         "Alt+Cmd+H",
@@ -439,6 +446,19 @@ mod tests {
                 );
             }
         }
+    }
+
+    /// ⌃⌘F needs an item of Keywright's own: the one AppKit adds has 🌐F (KEY-105).
+    #[test]
+    fn the_view_menu_ends_with_enter_full_screen() {
+        let view = MENUS.iter().find(|spec| spec.title == "View").unwrap();
+        assert!(matches!(
+            view.entries.last(),
+            Some(Entry::System {
+                item: SystemItem::FullScreen,
+                label: "Enter Full Screen",
+            })
+        ));
     }
 
     #[test]
