@@ -5,6 +5,7 @@ import { changeStrings } from "./en-changes.ts";
 import { connectionStrings } from "./en-connection.ts";
 import { firmwareStrings } from "./en-firmware.ts";
 import { macStrings } from "./en-mac.ts";
+import { onboardingStrings } from "./en-onboarding.ts";
 import { pickerStrings } from "./en-picker.ts";
 import { safetyStrings } from "./en-safety.ts";
 import { text } from "./text.ts";
@@ -293,4 +294,5 @@ export const en = {
   ...backupStrings,
   ...firmwareStrings,
   ...pickerStrings,
+  ...onboardingStrings,
 } satisfies Record<string, LocalizedString>;

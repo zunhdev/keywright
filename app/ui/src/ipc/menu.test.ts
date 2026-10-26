@@ -277,3 +277,13 @@ describe("with the Sofle's keymap", () => {
     stop();
   });
 });
+
+test("Help › Run First-Time Setup starts the first run, and is disabled while it runs", async () => {
+  const { stop } = await readySofle();
+  expect(menu.get("first-time-setup")).toBe("first-time-setup: null");
+  await emit("menu://item", "first-time-setup");
+  // The keyboard is unlocked already: the first run starts at its Mac check.
+  expect(useStore.getState().firstRun).toEqual({ step: "mac-check" });
+  expect(menu.get("first-time-setup")).toBe("first-time-setup (disabled): null");
+  stop();
+});

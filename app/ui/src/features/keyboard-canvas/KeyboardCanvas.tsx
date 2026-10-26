@@ -38,7 +38,8 @@ function useSize(ref: RefObject<HTMLElement | null>): { width: number; height: n
  * keyboard is locked, the canvas shows under a scrim that says why.
  *
  * Before there's a keymap, it shows the connection's state (design §7): how to connect a
- * keyboard, or a skeleton while one connects. A card says what's wrong and what to do,
+ * keyboard, or a skeleton while one connects. The first run's welcome shows how to connect
+ * one too, even after a keyboard was edited (§8). A card says what's wrong and what to do,
  * after a moment for a silent port, and a banner says when the keyboard locked itself.
  */
 export function KeyboardCanvas() {
@@ -51,8 +52,10 @@ export function KeyboardCanvas() {
   const announcement = useStore((store) => store.announcement);
   const relocked = useStore((store) => store.relocked);
   const editable = session?.state.kind === "ready";
-  const drawn = keymap !== null && layer !== null;
   const kind = session?.state.kind ?? "no-device";
+  // The first run's Connect step welcomes, even over a keymap read before (design §8).
+  const welcome = useStore((store) => store.firstRun?.step === "connect") && kind === "no-device";
+  const drawn = keymap !== null && layer !== null && !welcome;
   const card = session !== null && hasCard(session);
   // A port that's silent may be about to answer (design §7): it gets a moment first.
   const silent = isSilent(session);

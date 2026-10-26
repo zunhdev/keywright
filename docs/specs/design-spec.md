@@ -2,8 +2,8 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.29 — for review                                                       |
-| **Date**      | 2026-10-25                                                                     |
+| **Status**    | Draft v0.30 — for review                                                       |
+| **Date**      | 2026-10-26                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
 | **Companion** | [Tech spec](tech-spec.md)                                                      |
@@ -30,7 +30,7 @@ This document defines how Keywright looks, reads and behaves for v1.0: informati
 | ------------------- | ------------------------------------------------- | ------------------------------------------- | -------------------------- |
 | **Main window**     | Window, three panes                               | App launch, Dock, menu bar item             | VIEW-_, EDIT-_, LAY-*      |
 | **Connect state**   | Main-window content when no keyboard is connected | Automatic                                   | CON-1, CON-2, CON-5, DEV-6 |
-| **First run**       | Sequence of sheets on first connect               | Automatic once; Help › Run First-Time Setup | §8                         |
+| **First run**       | Sheets and coach marks, from the first launch     | Automatic once; Help › Run First-Time Setup | §8                         |
 | **Unlock sheet**    | Sheet                                             | Automatic when locked; toolbar lock chip    | SAF-1                      |
 | **Review changes**  | Sheet                                             | ⌘S, toolbar changes button                  | CHG-2, CHG-3               |
 | **Import preview**  | Sheet                                             | File › Import…                              | BAK-3                      |
@@ -345,13 +345,15 @@ The picker is a popover anchored to the key field. It opens to the field's left,
 
 ## 8. First run
 
-The first run shows once, on first connect. Every step has _Skip_, and Help › _Run First-Time Setup_ repeats it.
+The first run shows once, from the first launch: Keywright remembers when it has been through, its last step answered or skipped. Every step has _Skip_, and Help › _Run First-Time Setup_ repeats it.
 
-1. **Connect.** The "No keyboard" state, with friendlier copy: "Welcome to Keywright."
-2. **Unlock.** The unlock sheet, with one extra line: "You'll do this whenever you start editing."
-3. **Mac check** (MAC-7). "We found 4 keys that don't work on a Mac" lists each key → its fix. The buttons are _Fix all_ (applied as trying changes) and _Not now_.
-4. **Try it.** A coach mark points at the Tab-position key: "Click a key, then press any shortcut to put it there." After the first change, a second coach mark points at Save: "Changes work right away. Save to keep them when your keyboard restarts or sleeps."
-5. **Menu bar** (BAR-1, resolves product Q4). A sheet reads: "Show your keyboard's battery in the menu bar?" with a pre-checked box. If it stays on, closing the window keeps Keywright in the menu bar; if off, closing the window quits the app. It also states: "Your keyboard reports the left half's battery over Bluetooth only."
+A step that's done already is passed: Connect and Unlock for a keyboard that's connected and unlocked, and the Mac check when every key works on a Mac. Otherwise a step waits for the keyboard, such as the Mac check for it to be unlocked. _Skip_ passes a step and the steps that need it: skipping Connect or Unlock goes straight to the menu bar question, since the steps between need an unlocked keyboard. The first run's sheets and coach marks wait while another sheet covers the window, such as Review.
+
+1. **Connect.** The "No keyboard" state, with friendlier copy: "Welcome to Keywright.", over how to connect the keyboard, and _Skip_ beside _Explore Without a Keyboard_. Run again without a keyboard, it shows even over a keymap read before.
+2. **Unlock.** The unlock sheet, with one extra line: "You'll do this whenever you start editing." Its _Cancel_ reads _Skip_.
+3. **Mac check** (MAC-7). "We found 4 keys that don't work on a Mac" lists each key → its fix, by layer, as the toolbar's list does, with _Use ⌘C_ and _Dismiss_ for each. The buttons are _Fix All_ (applied as trying changes) and _Not Now_; both go on to Try it.
+4. **Try it.** A coach mark points at the Tab-position key (the key that types Tab on the first layer): "Click a key, then press any shortcut to put it there." During this step, a click on a key starts the shortcut recorder for it, so that's true; ⇧-click, ⌘-click and ↩ work as always. After the first change, a second coach mark points at Save: "Changes work right away. Save to keep them when your keyboard restarts or sleeps." Its _OK_, saving or discarding goes on. A coach mark is a callout in the accent colour that leaves the window working and doesn't take focus; VoiceOver reads it as it appears.
+5. **Menu bar** (BAR-1, resolves product Q4). A sheet reads: "Show your keyboard's battery in the menu bar?" with a pre-checked box (as the setting is). If it stays on, closing the window keeps Keywright in the menu bar; if off, closing the window quits the app. It also states: "Your keyboard reports the left half's battery over Bluetooth only." _Done_ saves the choice; _Skip_ leaves the setting as it is.
 
 macOS's Bluetooth permission is requested **in context**: the first time the user chooses _Use Bluetooth_, or when a paired keyboard is detected over USB and the user enables Bluetooth editing: from the connection chip's details, or a silent cable's card (§7). It is preceded by a one-line explanation (CON-6).
 
@@ -608,3 +610,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.27    | 2026-10-25 | Globe key (§5.4, §9.4, KEY-64): the helper ends the Mac actions list, the key shows 🌐, and Settings › Keyboard says whether one acts as Globe.                                                                                                                                                                                                      |
 | 0.28    | 2026-10-25 | View menu (§9.6, KEY-105): Enter Full Screen with ⌃⌘F, as Keywright's own item.                                                                                                                                                                                                                                                                      |
 | 0.29    | 2026-10-25 | Key picker (§5.4, §5.6, §11.2, §12, KEY-104): a popover of keycaps in place of the long key list, with a drawn Mac keyboard, a Symbols tab of the characters programming needs, and other tabs, Recent, search by any name, character or ZMK name, and the keys that do nothing on a Mac under More. Dictation, Eisu and Kana are named as on a Mac. |
+| 0.30    | 2026-10-26 | First run (§8, KEY-72): it shows from the first launch, passes steps that are done, and Skip passes the steps that need the one skipped; in Try it, a click on a key records a shortcut for it; the menu bar question's Skip leaves the setting as it is.                                                                                            |

@@ -12,6 +12,7 @@ import { useStore } from "../../app/store.ts";
 import { LOCALE, type Messages } from "../../i18n/messages.ts";
 import type { Keymap, Knob, Layer } from "../../ipc/bindings.ts";
 import { focusPicker } from "../inspector/focus.ts";
+import { recordOnClick } from "../onboarding/first-run.ts";
 import { keyMatches } from "../search/search.ts";
 import { setKeys } from "./edits.ts";
 import { bounds, keySize, place } from "./geometry.ts";
@@ -200,8 +201,10 @@ export function Keyboard({
                   if (command) toggleKey(position);
                   else if (shift) extendSelection(position);
                   else select([position]);
-                  // ↩ goes on to the inspector's action picker (design §4.7).
+                  // ↩ goes on to the inspector's action picker (design §4.7); in the first
+                  // run's Try it, a click records a shortcut for the key (§8).
                   if (enter) focusPicker();
+                  else if (!command && !shift) recordOnClick();
                 }}
               />
             </Fragment>

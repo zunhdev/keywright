@@ -5,6 +5,7 @@ import { Button } from "../../design-system/Button.tsx";
 import { Sheet } from "../../design-system/Sheet.tsx";
 import { useMessages } from "../../i18n/messages.ts";
 import type { KeyboardGuide } from "../../ipc/bindings.ts";
+import { passStep } from "../onboarding/first-run.ts";
 import { BoardOutline } from "./BoardOutline.tsx";
 import { useKeyboardGuide } from "./guide.ts";
 
@@ -47,25 +48,32 @@ export function UnlockSteps({ guide }: { guide: KeyboardGuide | null }) {
  * The unlock sheet (design §7, SAF-1): the keyboard as its support pack draws it, with its
  * unlock keys numbered, and the steps in words: ① Hold raise ② Tap B. Keywright notices
  * the unlock by itself, and the sheet closes. Cancel leaves the window locked; a keyboard
- * without a pack gets generic words.
+ * without a pack gets generic words. In the first run, it's the Unlock step (design §8): it
+ * adds that this is done whenever editing starts, and Cancel is Skip.
  */
 export function UnlockSheet() {
   const messages = useMessages();
   const session = useStore((store) => store.session);
   const open = useStore((store) => store.unlockSheet && store.session?.state.kind === "locked");
   const guide = useKeyboardGuide(session?.pack ?? null);
+  const firstRun = useStore((store) => store.firstRun?.step === "unlock");
   const [why, setWhy] = useState(false);
   return (
     <Sheet
       title={messages.format("unlock.title")}
       isOpen={open}
       onOpenChange={(isOpen) => {
-        if (!isOpen) useStore.setState({ unlockSheet: false });
+        if (isOpen) return;
+        useStore.setState({ unlockSheet: false });
+        if (firstRun) passStep();
       }}
     >
       {(close) => (
         <div className={styles.unlock}>
           <UnlockSteps guide={guide} />
+          {firstRun ? (
+            <p className={styles.description}>{messages.format("first-run.unlock-every-time")}</p>
+          ) : null}
           <p className={styles.description}>{messages.format("unlock.automatic")}</p>
           <div className={styles.why}>
             <Button
@@ -82,7 +90,7 @@ export function UnlockSheet() {
           </div>
           <div className={styles.buttons}>
             <Button variant="quiet" onPress={close}>
-              {messages.format("unlock.cancel")}
+              {messages.format(firstRun ? "first-run.skip" : "unlock.cancel")}
             </Button>
           </div>
         </div>

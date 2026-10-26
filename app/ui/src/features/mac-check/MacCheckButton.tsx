@@ -7,8 +7,7 @@ import { Icon } from "../../design-system/Icon.tsx";
 import { Popover } from "../../design-system/Popover.tsx";
 import { TooltipTrigger } from "../../design-system/Tooltip.tsx";
 import { useMessages } from "../../i18n/messages.ts";
-import { LayerName } from "../keyboard-canvas/Keycap.tsx";
-import { FixAll, MacFindings } from "./MacFindings.tsx";
+import { FindingsByLayer, FixAll } from "./MacFindings.tsx";
 
 import styles from "./MacCheck.module.css";
 
@@ -37,16 +36,7 @@ export function MacCheckButton() {
       <Popover label={title}>
         <div className={styles.summary}>
           <h2 className={styles.title}>{title}</h2>
-          <div className={styles.layers}>
-            {layers.map((layer) => (
-              <section key={layer.id} className={styles.layer}>
-                <h3 className={styles.layerName}>
-                  <LayerName id={layer.id} name={layer.name} />
-                </h3>
-                <MacFindings findings={layer.macFindings} />
-              </section>
-            ))}
-          </div>
+          <FindingsByLayer layers={layers} />
           <FixAll findings={findings} />
         </div>
       </Popover>

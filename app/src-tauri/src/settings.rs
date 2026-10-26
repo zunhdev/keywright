@@ -5,7 +5,8 @@
 //! file that doesn't read gets the defaults too, and stays as it is until a setting
 //! changes. The window has the General tab, with _Show in menu bar_ and _Open at login_,
 //! and the Keyboard tab, with the secondary labels' input source (KEY-63). The other
-//! settings come with KEY-67, and the first run's menu bar step with KEY-72.
+//! settings come with KEY-67. The file also remembers whether the first run (KEY-72) has
+//! been through.
 
 use std::io;
 use std::path::Path;
@@ -37,6 +38,9 @@ pub struct Settings {
     /// The key code Keywright makes act as Globe on this Mac (MAC-8), as its keyboard-page
     /// usage ID, such as 230 for right Option. None at first.
     pub globe_key: Option<u16>,
+    /// Whether the first run (design §8) has been through, its steps done or skipped, so it
+    /// doesn't show again. Help › Run First-Time Setup shows it all the same.
+    pub first_run_done: bool,
 }
 
 impl Default for Settings {
@@ -46,6 +50,7 @@ impl Default for Settings {
             low_battery: 15,
             secondary_input_source: None,
             globe_key: None,
+            first_run_done: false,
         }
     }
 }
@@ -131,6 +136,7 @@ mod tests {
         assert_eq!(Settings::read(&missing), Settings::default());
         assert!(Settings::default().menu_bar);
         assert_eq!(Settings::default().low_battery, 15);
+        assert!(!Settings::default().first_run_done);
     }
 
     #[test]
@@ -153,6 +159,7 @@ mod tests {
             low_battery: 20,
             secondary_input_source: Some("com.apple.keylayout.Russian".to_owned()),
             globe_key: Some(0x6D),
+            first_run_done: true,
         };
         settings.write(&file.0).unwrap();
         assert_eq!(Settings::read(&file.0), settings);

@@ -9,6 +9,7 @@ declare const classes: {
   readonly description: string;
   readonly indeterminate: string;
   readonly key: string;
+  readonly lead: string;
   readonly mark: string;
   readonly number: string;
   readonly permission: string;
@@ -22,6 +23,7 @@ declare const classes: {
   readonly steps: string;
   readonly title: string;
   readonly unlock: string;
+  readonly welcome: string;
   readonly why: string;
 };
 export default classes;
