@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { Button } from "../design-system/Button.tsx";
 import { Toolbar } from "../design-system/Toolbar.tsx";
 import { MacCheckButton } from "../features/mac-check/MacCheckButton.tsx";
+import { SAVE_BUTTON } from "../features/onboarding/first-run.ts";
 import { KeySearch } from "../features/search/KeySearch.tsx";
 import { useMessages } from "../i18n/messages.ts";
 import { ConnectionChip } from "./ConnectionChip.tsx";
@@ -65,7 +66,13 @@ export function WindowToolbar() {
           </Button>
         ) : null}
         {/* Saving always goes through Review (design §6). */}
-        <Button variant="primary" size="compact" isDisabled={changes === 0} onPress={openReview}>
+        <Button
+          id={SAVE_BUTTON}
+          variant="primary"
+          size="compact"
+          isDisabled={changes === 0}
+          onPress={openReview}
+        >
           {messages.format("toolbar.save")}
         </Button>
       </Toolbar>

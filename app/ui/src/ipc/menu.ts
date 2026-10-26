@@ -9,6 +9,7 @@ import {
   undo,
 } from "../features/keyboard-canvas/edits.ts";
 import { ZOOMS } from "../features/keyboard-canvas/geometry.ts";
+import { startFirstRun } from "../features/onboarding/first-run.ts";
 import { focusSearch } from "../features/search/focus.ts";
 import { restoreStockKeys, selectionRestorable } from "../features/stock/actions.ts";
 import { type MessageKey, messages } from "../i18n/messages.ts";
@@ -56,6 +57,7 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
   "zoom-in": () => useStore.getState().zoomCanvas("in"),
   "zoom-out": () => useStore.getState().zoomCanvas("out"),
   "actual-size": () => useStore.getState().zoomCanvas("actual-size"),
+  "first-time-setup": startFirstRun,
   ...Object.fromEntries(LAYER_ITEMS.map((item, index) => [item, () => showLayerAt(index)])),
 };
 
@@ -130,6 +132,7 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
     ["zoom-in", item(keymap !== null && zoom < Math.max(...ZOOMS))],
     ["zoom-out", item(keymap !== null && zoom > Math.min(...ZOOMS))],
     ["actual-size", item(keymap !== null && zoom !== 1)],
+    ["first-time-setup", item(store.firstRun === null)],
     ...LAYER_ITEMS.map((menuItem, index): [MenuItem, ItemState] => {
       const layer = keymap?.layers[index];
       const fallback = strings.format("menu.layer", { number: index + 1 });

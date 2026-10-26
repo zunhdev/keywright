@@ -4,8 +4,9 @@ import { useStore } from "../../app/store.ts";
 import { Button } from "../../design-system/Button.tsx";
 import { Icon } from "../../design-system/Icon.tsx";
 import { useMessages } from "../../i18n/messages.ts";
-import type { MacFinding } from "../../ipc/bindings.ts";
+import type { Layer, MacFinding } from "../../ipc/bindings.ts";
 import { showKeys } from "../keyboard-canvas/edits.ts";
+import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { dismiss, fixKeys, keyOf } from "./actions.ts";
 
 import styles from "./MacCheck.module.css";
@@ -64,6 +65,25 @@ export function MacFindings({ findings }: { findings: readonly MacFinding[] }) {
         />
       ))}
     </ul>
+  );
+}
+
+/**
+ * The layers' findings, each layer under its name, as the toolbar's ⚠ and the first run's
+ * Mac check list them. A long list scrolls.
+ */
+export function FindingsByLayer({ layers }: { layers: readonly Layer[] }) {
+  return (
+    <div className={styles.layers}>
+      {layers.map((layer) => (
+        <section key={layer.id} className={styles.layer}>
+          <h3 className={styles.layerName}>
+            <LayerName id={layer.id} name={layer.name} />
+          </h3>
+          <MacFindings findings={layer.macFindings} />
+        </section>
+      ))}
+    </div>
   );
 }
 

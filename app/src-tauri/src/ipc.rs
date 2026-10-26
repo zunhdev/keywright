@@ -28,6 +28,7 @@ mod connection;
 mod edit;
 mod error;
 mod firmware;
+mod first_run;
 mod general;
 mod globe;
 mod guard;
@@ -175,6 +176,8 @@ pub fn builder() -> Builder<tauri::Wry> {
             general::set_menu_bar,
             general::set_open_at_login,
             general::open_login_items_settings,
+            first_run::first_run_pending,
+            first_run::finish_first_run,
             keymap::session_keymap,
             action::key_catalog,
             action::keyboard_type,

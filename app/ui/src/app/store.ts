@@ -2,6 +2,7 @@ import { type StateCreator, create } from "zustand";
 
 import { bounds, zoomIn, zoomOut } from "../features/keyboard-canvas/geometry.ts";
 import { keysBetween } from "../features/keyboard-canvas/navigation.ts";
+import type { FirstRun } from "../features/onboarding/first-run.ts";
 import type {
   BatteryStatus,
   BluetoothPermission,
@@ -95,6 +96,8 @@ export interface UiSlice {
    * asked for last, even if it was open already.
    */
   readonly importRequests: number;
+  /** Where the first run is (design §8), or `null` while it isn't running. */
+  readonly firstRun: FirstRun | null;
   /** What the toolbar's search looks for across layers (design §4.6), or `""`. */
   readonly search: string;
   /** Whether a text field has keyboard focus, so Edit's items edit its text. */
@@ -196,6 +199,7 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   restoring: false,
   importing: false,
   importRequests: 0,
+  firstRun: null,
   search: "",
   textFocused: false,
   zoom: 1,

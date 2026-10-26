@@ -1,0 +1,24 @@
+/* The first run's sheets (design §8). */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.description {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.problem {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  align-self: stretch;
+}

@@ -16,6 +16,8 @@ const COMMANDS: &[&str] = &[
     "set_menu_bar",
     "set_open_at_login",
     "open_login_items_settings",
+    "first_run_pending",
+    "finish_first_run",
     "session_keymap",
     "key_catalog",
     "keyboard_type",

@@ -1,9 +1,9 @@
 /**
  * The UI's entry point, which index.html loads, for each of Keywright's windows: the main
  * window follows the session, its keymap, the keyboard's battery, the input source, the
- * menu bar and its own traffic lights; the Settings window (`#settings`) shows the
- * settings, the Backups window (`#backups`) the automatic backups, and the Firmware Update
- * assistant (`#firmware`) updates the keyboard's firmware (tech spec §12.2).
+ * menu bar, its own traffic lights and the first run; the Settings window (`#settings`)
+ * shows the settings, the Backups window (`#backups`) the automatic backups, and the
+ * Firmware Update assistant (`#firmware`) updates the keyboard's firmware (tech spec §12.2).
  */
 // First, before React loads.
 import "./no-performance-tracks.ts";
@@ -22,6 +22,7 @@ import { followImport } from "./features/backups/ImportSheet.tsx";
 import { followQuit } from "./features/changes/QuitDialog.tsx";
 import { followConnection } from "./features/connection/follow.ts";
 import { FirmwareWindow } from "./features/firmware/FirmwareWindow.tsx";
+import { followFirstRun } from "./features/onboarding/first-run.ts";
 import { SettingsWindow } from "./features/settings/SettingsWindow.tsx";
 import { LOCALE } from "./i18n/messages.ts";
 import { followBattery } from "./ipc/battery.ts";
@@ -73,6 +74,7 @@ if (location.hash === "#settings") {
   followConnection();
   void followQuit();
   void followImport();
+  void followFirstRun();
   createRoot(root).render(
     <StrictMode>
       <App />

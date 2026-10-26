@@ -57,6 +57,16 @@ export const commands = {
 	setOpenAtLogin: (on: boolean) => __TAURI_INVOKE<OpenAtLogin>("set_open_at_login", { on }),
 	/**  Opens System Settings at Login Items, where the person can allow Keywright. */
 	openLoginItemsSettings: () => __TAURI_INVOKE<void>("open_login_items_settings"),
+	/**  Whether the first run is still to come: Keywright hasn't been through it on this Mac. */
+	firstRunPending: () => __TAURI_INVOKE<boolean>("first_run_pending"),
+	/**
+	 *  Remembers that the first run is through, so it doesn't show again by itself.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the setting can't be saved; the first run shows again next time then.
+	 */
+	finishFirstRun: () => typedError<null, AppError>(__TAURI_INVOKE("finish_first_run")),
 	/**
 	 *  The keymap the canvas draws, or `null` before the session has read one.
 	 * 
