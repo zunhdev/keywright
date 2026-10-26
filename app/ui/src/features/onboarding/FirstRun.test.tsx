@@ -78,6 +78,14 @@ async function findCoachMark(text: string): Promise<HTMLElement> {
   return coachMark;
 }
 
+/**
+ * Whether nothing with `role` (and `name`) shows. Tests check a boolean: a failing match
+ * on an element hangs while bun prints it.
+ */
+function none(role: string, name?: string | RegExp): boolean {
+  return screen.queryByRole(role, name === undefined ? {} : { name }) === null;
+}
+
 /** What Try it's coach marks say. */
 const TRY_KEY = "Click a key, then press any shortcut to put it there.";
 const TRY_SAVE =
@@ -120,7 +128,7 @@ describe("the first run", () => {
 
     // 4. Try it: a click on a key records a shortcut for it.
     await findCoachMark(TRY_KEY);
-    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(none("dialog")).toBe(true);
     // VoiceOver says it too.
     expect(useStore.getState().announcement).toBe(TRY_KEY);
     await userEvent.click(keyAt(tabKey(sofleKeymap)));
@@ -153,7 +161,9 @@ describe("the first run", () => {
     await userEvent.click(within(menuBar).getByRole("button", { name: "Done" }));
     expect(calls.slice(-2)).toEqual(['set_menu_bar {"on":false}', "finish_first_run"]);
     expect(useStore.getState().firstRun).toBeNull();
-    expect(screen.queryByRole("dialog")).toBeNull();
+    await waitFor(() => {
+      expect(none("dialog")).toBe(true);
+    });
     stop();
   });
 
@@ -183,7 +193,7 @@ describe("the first run", () => {
     expect(useStore.getState().unlockSheet).toBe(false);
     // The keyboard can still be unlocked later, as always.
     unlock();
-    expect(screen.queryByRole("dialog", { name: /don't work on a Mac/u })).toBeNull();
+    expect(none("dialog", /don't work on a Mac/u)).toBe(true);
     stop();
   });
 
@@ -201,7 +211,7 @@ describe("the first run", () => {
   test("a keyboard whose keys all work on a Mac goes straight to Try it", async () => {
     const { stop } = await drawFirstRun({ kind: "ready" }, allFine);
     await findCoachMark(TRY_KEY);
-    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(none("dialog")).toBe(true);
     stop();
   });
 
@@ -223,7 +233,7 @@ describe("the first run", () => {
     act(() => {
       useStore.setState({ review: true });
     });
-    expect(screen.queryByRole("note")).toBeNull();
+    expect(none("note")).toBe(true);
     act(() => {
       useStore.setState({ review: false });
     });
@@ -237,7 +247,7 @@ describe("the first run", () => {
       useStore.setState({ firstRun: null });
     });
     report(sofle({ kind: "no-device" }));
-    expect(screen.queryByRole("heading", { name: "Welcome to Keywright" })).toBeNull();
+    expect(none("heading", "Welcome to Keywright")).toBe(true);
     act(startFirstRun);
     expect(await screen.findByRole("heading", { name: "Welcome to Keywright" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Skip" })).toBeDefined();
