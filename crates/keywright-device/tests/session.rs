@@ -1647,6 +1647,21 @@ mod automatic_backups {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn how_many_are_kept_changes_from_the_next_backup() {
+        let folder = Folder::new();
+        let (session, _keyboard) = ready_with_backups(&folder).await;
+        for _ in 0..7 {
+            session.back_up(Reason::BeforeFirmware).await.unwrap();
+        }
+        // The first connect's, and seven more.
+        assert_eq!(folder.read().len(), 8);
+        session.keep_backups(6).await.unwrap();
+        assert_eq!(folder.read().len(), 8);
+        session.back_up(Reason::BeforeFirmware).await.unwrap();
+        assert_eq!(reasons(&folder.read()), [Reason::BeforeFirmware; 6]);
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn a_destructive_command_whose_backup_fails_changes_nothing() {
         let folder = Folder::new();
         // A file where the folder should be.

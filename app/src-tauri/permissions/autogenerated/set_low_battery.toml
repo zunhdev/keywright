@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-set-low-battery"
+description = "Enables the set_low_battery command without any pre-configured scope."
+commands.allow = ["set_low_battery"]
+
+[[permission]]
+identifier = "deny-set-low-battery"
+description = "Denies the set_low_battery command without any pre-configured scope."
+commands.deny = ["set_low_battery"]

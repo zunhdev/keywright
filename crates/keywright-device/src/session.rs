@@ -302,6 +302,7 @@ enum Command {
         Reason,
         oneshot::Sender<Result<Option<PathBuf>, SessionError>>,
     ),
+    KeepBackups(usize),
     Snapshot(oneshot::Sender<Snapshot>),
 }
 
@@ -543,6 +544,17 @@ impl Session {
         let (reply, result) = oneshot::channel();
         self.send(Command::BackUp(reason, reply)).await?;
         result.await.map_err(|_| SessionError::Stopped)?
+    }
+
+    /// Keeps the newest `keep` automatic backups from the next one on, and at least
+    /// [`Backups::MIN_KEEP`], as when the setting changes. Nothing if the session keeps no
+    /// backups.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the session has stopped.
+    pub async fn keep_backups(&self, keep: usize) -> Result<(), SessionError> {
+        self.send(Command::KeepBackups(keep)).await
     }
 
     /// What the session knows now.

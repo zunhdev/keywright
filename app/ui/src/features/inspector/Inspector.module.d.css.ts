@@ -26,5 +26,6 @@ declare const classes: {
   readonly sentence: string;
   readonly sheetBody: string;
   readonly title: string;
+  readonly zmk: string;
 };
 export default classes;

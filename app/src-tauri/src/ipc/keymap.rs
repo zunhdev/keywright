@@ -9,9 +9,11 @@
 use std::collections::HashSet;
 
 use keywright_core::action as core;
+use keywright_core::backup::ActionText;
 use keywright_core::editor::{Change, Editor};
 use keywright_core::keycap;
 use keywright_core::keymap::{LayerId, PhysicalLayout};
+use keywright_core::keys::source::Labels;
 use keywright_core::support_packs::SupportPack;
 use keywright_device::{MAX_NAME_LEN, Snapshot};
 use serde::Serialize;
@@ -45,6 +47,9 @@ pub struct Keymap {
     pub others: Vec<OtherBehavior>,
     /// The kinds of action the inspector edits that the firmware can do.
     pub kinds: Vec<Kind>,
+    /// Whether _Show ZMK names_ is on (EDIT-6): the inspector shows a key's raw binding,
+    /// search finds it, and the key picker names keys as ZMK does too.
+    pub zmk_names: bool,
 }
 
 /// A key's place, size and rotation, as the keyboard reports them. Lengths are in
@@ -146,6 +151,9 @@ pub struct Key {
     /// Whether it does something else than on the stock keymap, so Restore Stock would
     /// change it (CHG-4).
     pub restorable: bool,
+    /// Its raw binding, as a ZMK keymap writes it, such as `&mt LCTRL ESC` (EDIT-6). Layers
+    /// are by ID, and a behavior Keywright doesn't know by its name, as backups write them.
+    pub zmk: String,
 }
 
 /// What a keycap shows (design §4.2). In TypeScript, `{ kind: "label", text: "A" }` and so
@@ -286,19 +294,21 @@ impl Keymap {
                         .into_iter()
                         .zip(&layer.bindings)
                         .enumerate()
-                        .map(|(position, (key, binding))| Key {
-                            action: Action::of(
-                                core::Action::from_binding(*binding, &keyboard.behaviors),
-                                &keyboard.behaviors,
-                            ),
-                            keycap: key.keycap.into(),
-                            inherited: key.inherited,
-                            sentence: key.sentence,
-                            spoken: key.spoken,
-                            secondary: key.secondary,
-                            changed: changed.contains(&(layer.id, position)),
-                            mac_warning: warnings.contains(&(layer.id.0, self::position(position))),
-                            restorable: not_stock.contains(&(layer.id, position)),
+                        .map(|(position, (key, binding))| {
+                            let action = core::Action::from_binding(*binding, &keyboard.behaviors);
+                            Key {
+                                action: Action::of(action, &keyboard.behaviors),
+                                keycap: key.keycap.into(),
+                                inherited: key.inherited,
+                                sentence: key.sentence,
+                                spoken: key.spoken,
+                                secondary: key.secondary,
+                                changed: changed.contains(&(layer.id, position)),
+                                mac_warning: warnings
+                                    .contains(&(layer.id.0, self::position(position))),
+                                restorable: not_stock.contains(&(layer.id, position)),
+                                zmk: format!("&{}", ActionText::of(action, &keyboard.behaviors)),
+                            }
                         })
                         .collect(),
                 },
@@ -307,19 +317,7 @@ impl Keymap {
 
         Some(Self {
             keys: physical_keys(&keyboard.layout, pack),
-            knobs: pack.map_or_else(Vec::new, |pack| {
-                pack.hints
-                    .knobs
-                    .iter()
-                    .map(|knob| Knob {
-                        position: position(knob.position),
-                        turn: knob
-                            .turn
-                            .map(|turn| keycap::shortcut_name(turn, labels))
-                            .to_vec(),
-                    })
-                    .collect()
-            }),
+            knobs: knobs(pack, labels),
             layers,
             free_layer_slots: keymap.free_layer_slots,
             layer_name_max: u32::try_from(MAX_NAME_LEN).unwrap_or(u32::MAX),
@@ -327,8 +325,26 @@ impl Keymap {
             choices: choices(keymap, &keyboard.behaviors, labels),
             others: other_behaviors(&keyboard.behaviors),
             kinds: kinds(&keyboard.behaviors),
+            zmk_names: context.zmk_names,
         })
     }
+}
+
+/// The knobs the support pack names, each with what turning it does (VIEW-4), or none.
+fn knobs(pack: Option<&SupportPack>, labels: &Labels) -> Vec<Knob> {
+    pack.map_or_else(Vec::new, |pack| {
+        pack.hints
+            .knobs
+            .iter()
+            .map(|knob| Knob {
+                position: position(knob.position),
+                turn: knob
+                    .turn
+                    .map(|turn| keycap::shortcut_name(turn, labels))
+                    .to_vec(),
+            })
+            .collect()
+    })
 }
 
 /// A layout's keys, each with where it is in words: from the support pack, or by number.
@@ -641,6 +657,34 @@ mod tests {
         assert_eq!(keymap.layers[0].keys[y].sentence, "Types Z.");
     }
 
+    /// Each key carries its raw binding as ZMK writes it, and the canvas hears the keymap
+    /// again when _Show ZMK names_ changes (EDIT-6).
+    #[tokio::test]
+    async fn keys_carry_their_zmk_names_and_the_canvas_hears_when_to_show_them() {
+        let (session, context, mut keymaps) = ready_sofle().await;
+        let keymap = Keymap::of(&session.snapshot().await.unwrap(), &Context::default()).unwrap();
+        assert!(!keymap.zmk_names);
+        let zmk = |sentence: &str| {
+            keymap
+                .layers
+                .iter()
+                .flat_map(|layer| &layer.keys)
+                .find(|key| key.sentence == sentence)
+                .map(|key| key.zmk.clone())
+        };
+        assert_eq!(zmk("Types Tab.").as_deref(), Some("&kp TAB"));
+        assert_eq!(
+            zmk("Unlocks the keyboard, so Keywright can change it.").as_deref(),
+            Some("&studio_unlock")
+        );
+
+        context.send_replace(Arc::new(Context {
+            zmk_names: true,
+            ..Context::default()
+        }));
+        assert!(keymaps.recv().await.unwrap().unwrap().zmk_names);
+    }
+
     /// With a second input source chosen, keys that type something else there say what
     /// (MAC-6): with Russian, the key in the US A's place also types Ф.
     #[tokio::test]
@@ -731,6 +775,7 @@ mod tests {
             changed: true,
             mac_warning: false,
             restorable: false,
+            zmk: "&mt LCTRL ESC".to_owned(),
         };
         assert_eq!(
             serde_json::to_value(key).unwrap(),
@@ -744,6 +789,7 @@ mod tests {
                 "changed": true,
                 "macWarning": false,
                 "restorable": false,
+                "zmk": "&mt LCTRL ESC",
             })
         );
         assert_eq!(

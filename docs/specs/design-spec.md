@@ -2,8 +2,8 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.30 — for review                                                       |
-| **Date**      | 2026-10-26                                                                     |
+| **Status**    | Draft v0.31 — for review                                                       |
+| **Date**      | 2026-10-27                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
 | **Companion** | [Tech spec](tech-spec.md)                                                      |
@@ -270,7 +270,7 @@ The picker is a popover anchored to the key field. It opens to the field's left,
 2. **Tabs**: _Keyboard_, _Symbols_, _Numpad_, _Media_, _International_ and _More_. The picker opens on Symbols when the field's key, with or without ⇧, is one of its characters, otherwise on the tab with the field's key, or on Keyboard.
 3. **Recent**: the 8 keys or characters chosen last in any key picker, the latest first, kept between launches. It's left out until there's one.
 4. **The tab's keys**, as keycaps labelled the way the canvas labels them, for the input source (MAC-5). A key that types another character with Shift shows it above, as printed keycaps do (`!` over `1`). The field's key has the selection ring; on Symbols, the character it types with the ⇧ it holds, so `{` for ⇧[.
-5. **A footer line** with the name of the key under the pointer or focus, such as "⌦ Forward Delete", and its ZMK name in mono with _Show ZMK names_ on (EDIT-6).
+5. **A footer line** with the name of the key under the pointer or focus, such as "⌦ Forward Delete", and its ZMK name in mono with _Show ZMK names_ on (EDIT-6): for a Shift character, ZMK's name for it, such as `EXCL` for !.
 
 | Tab               | What it shows                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -387,12 +387,12 @@ A dedicated window with a step indicator: **Prepare → Back up → one half →
 
 ### 9.4 Settings window
 
-| Tab          | Contents                                                                                                                                                                                                                                                                                   |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **General**  | Show in menu bar · Open at login · Appearance (System / Light / Dark) · Show ZMK names                                                                                                                                                                                                     |
-| **Keyboard** | _Secondary labels_ (MAC-6): None, or one of the keyboard layouts turned on in System Settings, as a pop-up menu · Bluetooth permission status with a _Open System Settings_ button · _🌐 Globe key_ (MAC-8): whether a key acts as Globe on this Mac, with _Turn Off_, or how to set it up |
-| **Backups**  | Number of automatic backups kept (default 20, minimum 5) · _Show backups folder_                                                                                                                                                                                                           |
-| **Advanced** | _Copy diagnostics_ (NFR-4) · _Reset first-time setup_                                                                                                                                                                                                                                      |
+| Tab          | Contents                                                                                                                                                                                                                                                                                                                                                   |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **General**  | Show in menu bar · Low battery level (5–50 %, BAR-3): below it the menu bar icon gets a dot and macOS notifies · Open at login · Appearance (System / Light / Dark), which every window, the menus and the menu bar item's menu follow at once · Show ZMK names (EDIT-6)                                                                                   |
+| **Keyboard** | _Secondary labels_ (MAC-6): None, or one of the keyboard layouts turned on in System Settings, as a pop-up menu · _Bluetooth_: whether Keywright may use it, with _Allow Bluetooth…_ before macOS has asked and _Open System Settings_ once it has · _🌐 Globe key_ (MAC-8): whether a key acts as Globe on this Mac, with _Turn Off_, or how to set it up |
+| **Backups**  | Number of automatic backups kept (default 20, from 5 to 100), from the next backup on: lowering it deletes nothing until then · _Show Backups Folder_                                                                                                                                                                                                      |
+| **Advanced** | _Copy diagnostics_ (NFR-4, KEY-68) · _Reset First-Time Setup_: the first run (§8) shows again the next time Keywright opens; Help › _Run First-Time Setup_ runs it now                                                                                                                                                                                     |
 
 ### 9.5 Menu bar item (BAR-*)
 
@@ -611,3 +611,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.28    | 2026-10-25 | View menu (§9.6, KEY-105): Enter Full Screen with ⌃⌘F, as Keywright's own item.                                                                                                                                                                                                                                                                      |
 | 0.29    | 2026-10-25 | Key picker (§5.4, §5.6, §11.2, §12, KEY-104): a popover of keycaps in place of the long key list, with a drawn Mac keyboard, a Symbols tab of the characters programming needs, and other tabs, Recent, search by any name, character or ZMK name, and the keys that do nothing on a Mac under More. Dictation, Eisu and Kana are named as on a Mac. |
 | 0.30    | 2026-10-26 | First run (§8, KEY-72): it shows from the first launch, passes steps that are done, and Skip passes the steps that need the one skipped; in Try it, a click on a key records a shortcut for it; the menu bar question's Skip leaves the setting as it is.                                                                                            |
+| 0.31    | 2026-10-27 | Settings window (§5.6, §9.4, KEY-67): the low-battery level under General, Appearance for every window, the Keyboard tab's Bluetooth, the backups kept (5 to 100) from the next backup on, and Reset First-Time Setup for the next launch; the key picker's footer names a Shift character as ZMK does.                                              |

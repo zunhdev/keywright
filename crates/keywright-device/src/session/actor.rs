@@ -205,6 +205,11 @@ impl Actor {
                 };
                 let _ = reply.send(result);
             }
+            Command::KeepBackups(keep) => {
+                if let Some(backups) = &mut self.backups {
+                    backups.set_keep(keep);
+                }
+            }
             Command::Snapshot(reply) => {
                 let _ = reply.send(self.snapshot());
             }

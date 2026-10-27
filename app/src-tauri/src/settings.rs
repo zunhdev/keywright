@@ -4,15 +4,18 @@
 //! Each setting has a default, which a missing file, or a setting missing from it, gets; a
 //! file that doesn't read gets the defaults too, and stays as it is until a setting
 //! changes. The window has the General tab, with _Show in menu bar_ and _Open at login_,
-//! and the Keyboard tab, with the secondary labels' input source (KEY-63). The other
-//! settings come with KEY-67. The file also remembers whether the first run (KEY-72) has
+//! the Keyboard tab, with the secondary labels' input source (KEY-63), the Backups tab and
+//! the Advanced tab (KEY-67). The file also remembers whether the first run (KEY-72) has
 //! been through.
 
 use std::io;
+use std::ops::RangeInclusive;
 use std::path::Path;
 
+use keywright_device::Backups;
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
+use specta::Type;
+use tauri::{AppHandle, Manager, Runtime, Theme, WebviewUrl, WebviewWindowBuilder};
 
 use crate::json_file;
 
@@ -22,6 +25,36 @@ pub const WINDOW: &str = "settings";
 /// The file's name, in Keywright's folder.
 const FILE: &str = "settings.json";
 
+/// The low-battery levels the setting takes, in percent (BAR-3).
+pub const LOW_BATTERY: RangeInclusive<u8> = 5..=50;
+
+/// How many automatic backups the setting can keep (BAK-4): at least the folder's fewest.
+pub const BACKUPS_KEPT: RangeInclusive<usize> = Backups::MIN_KEEP..=100;
+
+/// How Keywright looks (design §9.4).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "kebab-case")]
+pub enum Appearance {
+    /// As macOS looks, light or dark as System Settings says.
+    #[default]
+    System,
+    /// Always light.
+    Light,
+    /// Always dark.
+    Dark,
+}
+
+impl Appearance {
+    /// The theme every window gets: none to follow macOS.
+    pub const fn theme(self) -> Option<Theme> {
+        match self {
+            Self::System => None,
+            Self::Light => Some(Theme::Light),
+            Self::Dark => Some(Theme::Dark),
+        }
+    }
+}
+
 /// Keywright's settings.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default, rename_all = "kebab-case")]
@@ -30,8 +63,16 @@ pub struct Settings {
     /// Keywright there rather than quitting. On from the first run.
     pub menu_bar: bool,
     /// The level, in percent, below which a half's battery counts as low (BAR-3): the menu
-    /// bar icon gets a dot.
+    /// bar icon gets a dot, and macOS shows a notification. One of [`LOW_BATTERY`].
     pub low_battery: u8,
+    /// How Keywright looks: as macOS does at first.
+    pub appearance: Appearance,
+    /// _Show ZMK names_ (EDIT-6): keys' raw bindings, such as `&mt LCTRL ESC`, beside the
+    /// words. Off at first.
+    pub zmk_names: bool,
+    /// How many automatic backups the folder keeps (BAK-4): 20 at first. One of
+    /// [`BACKUPS_KEPT`].
+    pub backups_kept: usize,
     /// The input source whose labels keycaps show too, as dual-printed keycaps do (MAC-6),
     /// by ID, such as `com.apple.keylayout.Russian`. None at first.
     pub secondary_input_source: Option<String>,
@@ -48,6 +89,9 @@ impl Default for Settings {
         Self {
             menu_bar: true,
             low_battery: 15,
+            appearance: Appearance::System,
+            zmk_names: false,
+            backups_kept: Backups::DEFAULT_KEEP,
             secondary_input_source: None,
             globe_key: None,
             first_run_done: false,
@@ -97,7 +141,7 @@ pub fn open_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     // The bundled UI, which draws the Settings window for this address.
     WebviewWindowBuilder::new(app, WINDOW, WebviewUrl::App("index.html#settings".into()))
         .title("Settings")
-        .inner_size(560.0, 340.0)
+        .inner_size(560.0, 560.0)
         .resizable(false)
         .minimizable(false)
         .center()
@@ -137,6 +181,16 @@ mod tests {
         assert!(Settings::default().menu_bar);
         assert_eq!(Settings::default().low_battery, 15);
         assert!(!Settings::default().first_run_done);
+        assert_eq!(Settings::default().appearance, Appearance::System);
+        assert!(!Settings::default().zmk_names);
+        assert_eq!(Settings::default().backups_kept, 20);
+    }
+
+    #[test]
+    fn the_system_appearance_follows_macos() {
+        assert_eq!(Appearance::System.theme(), None);
+        assert_eq!(Appearance::Light.theme(), Some(Theme::Light));
+        assert_eq!(Appearance::Dark.theme(), Some(Theme::Dark));
     }
 
     #[test]
@@ -157,6 +211,9 @@ mod tests {
         let settings = Settings {
             menu_bar: false,
             low_battery: 20,
+            appearance: Appearance::Dark,
+            zmk_names: true,
+            backups_kept: 30,
             secondary_input_source: Some("com.apple.keylayout.Russian".to_owned()),
             globe_key: Some(0x6D),
             first_run_done: true,

@@ -20,7 +20,14 @@ import { followFirstRun, startFirstRun, tabKey } from "./first-run.ts";
 import { FirstRun } from "./FirstRun.tsx";
 
 /** What Settings › General says, with the menu bar item on. */
-const general: GeneralSettings = { menuBar: true, openAtLogin: { on: false, problem: null } };
+const general: GeneralSettings = {
+  menuBar: true,
+  lowBattery: 15,
+  lowBatteryRange: { min: 5, max: 50 },
+  openAtLogin: { on: false, problem: null },
+  appearance: "system",
+  zmkNames: false,
+};
 
 /** The Sofle's stock keymap with no keys that don't work on a Mac. */
 const allFine: Keymap = {

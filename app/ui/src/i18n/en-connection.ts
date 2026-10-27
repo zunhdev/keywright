@@ -31,6 +31,8 @@ export const connectionStrings = {
   "bluetooth.denied":
     "Keywright isn't allowed to use Bluetooth, so it edits over the cable only. You can allow it in System Settings.",
   "bluetooth.open-settings": "Open System Settings",
+  "bluetooth.allowed":
+    "Keywright may use Bluetooth, so it edits your keyboard and reads its battery without a cable.",
   "bluetooth.restricted":
     "This Mac doesn't let apps use Bluetooth, so Keywright edits over the cable only.",
   "connection.wrong-half": (args) =>

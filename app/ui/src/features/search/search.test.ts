@@ -19,6 +19,10 @@ function withKey(position: number, action: Action) {
   return keymap;
 }
 
+/** The keys a search for the unlock key's raw binding finds in `keymap`. */
+const unlock = (keymap: typeof sofleKeymap) =>
+  [...findKeys(keymap, "studio_unlock", []).values()].flat();
+
 describe("a search finds a key", () => {
   const base = sofleKeymap.layers[0]?.keys ?? [];
   const key = (position: number) => {
@@ -36,6 +40,13 @@ describe("a search finds a key", () => {
 
   test("by the layer a layer key turns on", () => {
     expect(keyMatches(key(RAISE), "raise", [])).toBe(true);
+  });
+
+  test("by its raw binding, with Show ZMK names on (EDIT-6)", () => {
+    expect(keyMatches(key(RAISE), "&mo 2", [], true)).toBe(true);
+    expect(keyMatches(key(RAISE), "&mo 2", [])).toBe(false);
+    expect(unlock({ ...sofleKeymap, zmkNames: true })).toHaveLength(1);
+    expect(unlock(sofleKeymap)).toHaveLength(0);
   });
 
   test("by the Mac action it is, and its keys' names", () => {

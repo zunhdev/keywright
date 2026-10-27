@@ -8,7 +8,7 @@ import { useStore } from "../../app/store.ts";
 import { LOCALE } from "../../i18n/messages.ts";
 import type { KeyEntry, Page } from "../../ipc/bindings.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
-import { keyCatalog } from "../../test/sofle.ts";
+import { keyCatalog, sofleKeymap } from "../../test/sofle.ts";
 import { KeyField } from "./KeyField.tsx";
 
 /**
@@ -224,6 +224,34 @@ describe("the keyboard", () => {
     const searchbox = within(picker).getByRole("searchbox");
     expect(searchbox).toHaveProperty("value", "f1");
     expect(document.activeElement === searchbox).toBe(true);
+  });
+});
+
+/** The picker's footer, once a key has the focus: the last paragraph in it. */
+const footer = (picker: HTMLElement) => [...picker.querySelectorAll("p")].at(-1)?.textContent;
+
+describe("with Show ZMK names on", () => {
+  test("the footer names a key as ZMK does", async () => {
+    field({ page: "keyboard", id: 0x2a });
+    useStore.setState({ keymap: { ...sofleKeymap, zmkNames: true } });
+    const picker = await open();
+    await search(picker, "{ArrowDown}");
+    expect(footer(picker)).toContain("BSPC");
+  });
+
+  test("and a character with Shift by ZMK's name for it", async () => {
+    field({ page: "keyboard", id: 0x2f }, true);
+    useStore.setState({ keymap: { ...sofleKeymap, zmkNames: true } });
+    const picker = await open();
+    await search(picker, "{ArrowDown}");
+    expect(footer(picker)).toContain("LBRC");
+  });
+
+  test("but not while it's off", async () => {
+    field({ page: "keyboard", id: 0x2a });
+    const picker = await open();
+    await search(picker, "{ArrowDown}");
+    expect(footer(picker)).not.toContain("BSPC");
   });
 });
 

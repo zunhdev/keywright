@@ -21,6 +21,7 @@
 //! that file up to date too, and `tsc` checks it against the bindings.
 
 mod action;
+mod backup_settings;
 mod backups;
 mod battery;
 mod bluetooth;
@@ -73,8 +74,8 @@ pub use self::session::{
 };
 pub use self::window::{TrafficLights, TrafficLightsMoved, follow as follow_traffic_lights};
 
-/// What the payloads say besides what the session holds: what keys are called, and which
-/// of the Mac check's findings the person dismissed.
+/// What the payloads say besides what the session holds: what keys are called, which of the
+/// Mac check's findings the person dismissed, and whether keys show their ZMK names.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Context {
     /// What keys are called in the input source the person types in (MAC-5), which
@@ -86,6 +87,9 @@ pub struct Context {
     /// The Mac check's findings dismissed, by keyboard (MAC-7), which [`mac_check`]
     /// changes.
     pub dismissed: Dismissals,
+    /// Whether keys show their raw bindings too (_Show ZMK names_, EDIT-6), which
+    /// [`general`] changes.
+    pub zmk_names: bool,
 }
 
 /// What the commands share.
@@ -138,6 +142,22 @@ impl AppState {
         self
     }
 
+    /// The same, with keys showing their raw bindings too, or not (EDIT-6).
+    #[must_use]
+    pub fn with_zmk_names(self, on: bool) -> Self {
+        self.set_zmk_names(on);
+        self
+    }
+
+    /// Shows keys' raw bindings too, or stops: the canvas gets its keymap again.
+    fn set_zmk_names(&self, on: bool) {
+        self.context.send_if_modified(|context| {
+            let changed = context.zmk_names != on;
+            Arc::make_mut(context).zmk_names = on;
+            changed
+        });
+    }
+
     /// What the payloads say now besides what the session holds.
     fn context(&self) -> Arc<Context> {
         Arc::clone(&self.context.borrow())
@@ -176,8 +196,15 @@ pub fn builder() -> Builder<tauri::Wry> {
             general::set_menu_bar,
             general::set_open_at_login,
             general::open_login_items_settings,
+            general::set_low_battery,
+            general::set_appearance,
+            general::set_zmk_names,
+            backup_settings::backup_settings,
+            backup_settings::set_backups_kept,
+            backup_settings::show_backups_folder,
             first_run::first_run_pending,
             first_run::finish_first_run,
+            first_run::reset_first_run,
             keymap::session_keymap,
             action::key_catalog,
             action::keyboard_type,

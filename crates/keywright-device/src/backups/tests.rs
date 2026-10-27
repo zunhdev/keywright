@@ -87,6 +87,11 @@ fn a_backup_is_made_now_in_utc_to_the_second() {
 fn the_folder_keeps_at_least_five() {
     assert_eq!(Backups::new("/b", 1).keep(), Backups::MIN_KEEP);
     assert_eq!(Backups::new("/b", 50).keep(), 50);
+    let mut backups = Backups::new("/b", 50);
+    backups.set_keep(2);
+    assert_eq!(backups.keep(), Backups::MIN_KEEP);
+    backups.set_keep(30);
+    assert_eq!(backups.keep(), 30);
     assert_eq!(
         Backups::new("/b", Backups::DEFAULT_KEEP).dir(),
         Path::new("/b")

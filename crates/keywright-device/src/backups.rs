@@ -75,6 +75,12 @@ impl Backups {
         self.keep
     }
 
+    /// Keeps the newest `keep` backups from the next one written, and at least
+    /// [`MIN_KEEP`](Self::MIN_KEEP), as when the setting changes.
+    pub fn set_keep(&mut self, keep: usize) {
+        self.keep = keep.max(Self::MIN_KEEP);
+    }
+
     /// Writes a backup, with a comment before each of `rows`, and returns its path. Then
     /// deletes the oldest backups beyond what the folder keeps. The file appears whole or
     /// not at all.
