@@ -23,14 +23,21 @@ const same = (a: Action, b: Action) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
  * Whether a search finds a key: by what it does, its keycap, its keys' names, or the Mac
- * action it is, such as Copy for ⌘C. A key that's "same as layer below" is found on the
- * layer it comes from, not on each one above.
+ * action it is, such as Copy for ⌘C, and with `zmkNames`, Show ZMK names, by its raw
+ * binding, such as `&mt LCTRL ESC` (EDIT-6). A key that's "same as layer below" is found
+ * on the layer it comes from, not on each one above.
  */
-export function keyMatches(key: Key, query: string, macActions: readonly Choice[]): boolean {
+export function keyMatches(
+  key: Key,
+  query: string,
+  macActions: readonly Choice[],
+  zmkNames = false,
+): boolean {
   const wanted = normalize(query);
   if (wanted === "" || key.inherited) return false;
   const macAction = macActions.find((choice) => same(choice.action, key.action));
   const words = [key.sentence, key.spoken, ...keycapWords(key), macAction?.label ?? ""];
+  if (zmkNames) words.push(key.zmk);
   return words.some((word) => normalize(word).includes(wanted));
 }
 
@@ -43,7 +50,9 @@ export function findKeys(
   return new Map(
     keymap.layers.map((layer) => [
       layer.id,
-      layer.keys.flatMap((key, position) => (keyMatches(key, query, macActions) ? [position] : [])),
+      layer.keys.flatMap((key, position) =>
+        keyMatches(key, query, macActions, keymap.zmkNames) ? [position] : [],
+      ),
     ]),
   );
 }

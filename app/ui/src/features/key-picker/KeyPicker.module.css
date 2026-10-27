@@ -134,6 +134,12 @@
   white-space: nowrap;
 }
 
+/* With Show ZMK names on, what ZMK calls the key (EDIT-6). */
+.zmk {
+  margin-inline-start: var(--space-3);
+  font-family: var(--font-mono);
+}
+
 /* A board: keycaps where its model puts them, under their groups' titles. */
 .board {
   position: relative;

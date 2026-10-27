@@ -76,6 +76,20 @@ describe("a selected key", () => {
     expect(screen.getByRole("button", { name: "Key: Q" })).toBeDefined();
   });
 
+  test("with Show ZMK names on, shows one key's raw binding (EDIT-6)", () => {
+    const { unmount } = inspect([Q], "ready", { ...sofleKeymap, zmkNames: true });
+    expect(screen.getByText("&kp Q")).toBeDefined();
+    unmount();
+    // Not for several keys, and not with it off.
+    inspect([Q, Q + 1], "ready", { ...sofleKeymap, zmkNames: true });
+    expect(screen.queryByText("&kp Q") === null).toBe(true);
+  });
+
+  test("shows no raw binding while Show ZMK names is off", () => {
+    inspect([Q]);
+    expect(screen.queryByText("&kp Q") === null).toBe(true);
+  });
+
   test("gets a modifier from the toggles, as a shortcut", async () => {
     const set = rustSide();
     inspect([Q]);

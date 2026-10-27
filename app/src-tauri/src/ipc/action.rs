@@ -748,6 +748,7 @@ pub fn other_behaviors(behaviors: &BehaviorTable) -> Vec<OtherBehavior> {
 
 /// A key the key picker offers (design §5.6), in its group.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct KeyEntry {
     /// The key's usage page.
     pub page: Page,
@@ -759,6 +760,9 @@ pub struct KeyEntry {
     pub name: String,
     /// What it types with Shift, if that's another character, such as `!` for 1.
     pub shifted: Option<String>,
+    /// What ZMK calls it with Shift, as Keywright writes that, such as `EXCL` for ⇧1, if
+    /// it types another character with Shift.
+    pub shifted_zmk: Option<String>,
     /// What ZMK calls it alone, without modifiers: the name Keywright writes first, such as
     /// `BSPC`, then the others, such as `BACKSPACE`. The key picker's search finds keys by
     /// them.
@@ -836,13 +840,16 @@ pub fn catalog(labels: &Labels) -> Vec<KeyEntry> {
         .filter(|usage| !(usage.page == UsagePage::Keyboard && (0xE4..=0xE7).contains(&usage.id)))
         .filter_map(|usage| {
             let (cap, name) = labels.cap(usage)?;
+            let shifted = labels.shifted(usage);
+            let zmk = zmk_names(usage);
             Some(KeyEntry {
                 page: usage.page.into(),
                 id: usage.id,
                 cap,
                 name,
-                shifted: labels.shifted(usage),
-                zmk: zmk_names(usage),
+                shifted_zmk: shifted.as_ref().map(|_| shifted_zmk_name(usage, &zmk)),
+                shifted,
+                zmk,
                 group: KeyCategory::of(usage).into(),
             })
         })
@@ -866,6 +873,19 @@ fn zmk_names(usage: HidUsage) -> Vec<String> {
         )
         .map(str::to_owned)
         .collect()
+}
+
+/// What ZMK calls a key with Shift, as Keywright writes it: its own name, such as `EXCL`
+/// for ⇧1, or the key's name in Shift's modifier function, such as `LS(A)`.
+fn shifted_zmk_name(usage: HidUsage, alone: &[String]) -> String {
+    let with_shift = hid::Shortcut {
+        mods: Mods::LEFT_SHIFT,
+        usage,
+    };
+    keys::zmk::name(with_shift).map_or_else(
+        || format!("LS({})", alone.first().map_or("", String::as_str)),
+        str::to_owned,
+    )
 }
 
 /// The kind of keyboard macOS takes the keyboard to be (tech spec §11.1), which the key
@@ -1324,16 +1344,21 @@ mod tests {
     }
 
     /// The key picker shows Shift's character on a keycap, and its search finds keys by
-    /// their ZMK names, the one Keywright writes first.
+    /// their ZMK names, the one Keywright writes first; with Show ZMK names on, it names a
+    /// Shift character as ZMK does too.
     #[test]
     fn the_key_catalog_has_shift_characters_and_zmk_names() {
         let catalog = catalog(&Labels::us());
         let find = |page, id| catalog.iter().find(|key| key.page == page && key.id == id);
         let one = find(Page::Keyboard, 0x1E).unwrap();
         assert_eq!(one.shifted.as_deref(), Some("!"));
+        assert_eq!(one.shifted_zmk.as_deref(), Some("EXCL"));
         assert_eq!(one.zmk, ["N1", "NUMBER_1", "NUM_1"]);
+        let bracket = find(Page::Keyboard, 0x2F).unwrap();
+        assert_eq!(bracket.shifted_zmk.as_deref(), Some("LBRC"));
         let delete = find(Page::Keyboard, 0x2A).unwrap();
         assert_eq!(delete.shifted, None);
+        assert_eq!(delete.shifted_zmk, None);
         assert_eq!(delete.zmk.first().map(String::as_str), Some("BSPC"));
         assert!(delete.zmk.iter().any(|name| name == "BACKSPACE"));
         assert_eq!(

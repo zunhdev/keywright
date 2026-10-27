@@ -19,6 +19,7 @@ function face(keycap: KeycapData, more: Partial<Key> = {}): Key {
     changed: false,
     macWarning: false,
     restorable: false,
+    zmk: "&none",
     ...more,
   };
 }

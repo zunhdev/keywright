@@ -8,6 +8,7 @@ import { macStrings } from "./en-mac.ts";
 import { onboardingStrings } from "./en-onboarding.ts";
 import { pickerStrings } from "./en-picker.ts";
 import { safetyStrings } from "./en-safety.ts";
+import { settingsStrings } from "./en-settings.ts";
 import { text } from "./text.ts";
 
 /**
@@ -156,21 +157,6 @@ export const en = {
   "error.globe-not-mapped": "macOS didn't take the Globe key. Try again in a moment.",
   "error.dismissal-not-saved":
     "Dismissed for now. Keywright couldn't save that, so it comes back when you open Keywright again.",
-  "settings.tabs": "Settings",
-  "settings.general": "General",
-  "settings.keyboard": "Keyboard",
-  "settings.secondary": "Secondary labels",
-  "settings.secondary-none": "None",
-  "settings.secondary-note":
-    "Keys also show what they type in this input source, in their top-right corner, like keycaps printed for two languages.",
-  "settings.menu-bar": "Show in menu bar",
-  "settings.menu-bar-note":
-    "Shows your keyboard's battery in the menu bar. Closing the window keeps Keywright there; with it off, closing the window quits.",
-  "settings.open-at-login": "Open at login",
-  "settings.login-requires-approval":
-    "macOS needs you to allow Keywright in System Settings › Login Items first.",
-  "settings.login-refused": "macOS didn't let Keywright open at login.",
-  "settings.open-login-items": "Open Login Items Settings",
   "error.would-strand": "That change would leave you stuck, so Keywright didn't make it.",
   "inspector.label": "Inspector",
   "inspector.empty": "Select a key to see what it does.",
@@ -295,4 +281,5 @@ export const en = {
   ...firmwareStrings,
   ...pickerStrings,
   ...onboardingStrings,
+  ...settingsStrings,
 } satisfies Record<string, LocalizedString>;

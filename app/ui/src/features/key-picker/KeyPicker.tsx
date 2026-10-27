@@ -35,6 +35,12 @@ function described(placed: Placed): string {
   return shift ? `${key.shifted ?? ""}  ⇧${named}` : named;
 }
 
+/** What ZMK calls the key, or Shift's character, as Keywright writes it (EDIT-6). */
+function zmkName(placed: Placed): string {
+  const { key, shift } = placed;
+  return (shift ? key.shiftedZmk : key.zmk[0]) ?? "";
+}
+
 /**
  * What choosing a key means for ⇧: a character holds it just when it needs it, and
  * another key leaves the modifiers as they are (`null`).
@@ -61,6 +67,7 @@ export function KeyPicker({
 }) {
   const messages = useMessages();
   const keys = useStore((store) => store.keyCatalog);
+  const zmkNames = useStore((store) => store.keymap?.zmkNames === true);
   const keyboard = useStore((store) => store.keyboardType);
   const all = useMemo(() => boards(keys, keyboard), [keys, keyboard]);
   const [tab, setTab] = useState<TabId>(() => tabOf(all, chosen) ?? "keyboard");
@@ -194,7 +201,10 @@ export function KeyPicker({
           </div>
         ) : null}
       </div>
-      <p className={styles.footer}>{footer === null ? " " : described(footer)}</p>
+      <p className={styles.footer}>
+        {footer === null ? " " : described(footer)}
+        {footer !== null && zmkNames ? <code className={styles.zmk}>{zmkName(footer)}</code> : null}
+      </p>
     </div>
   );
 }

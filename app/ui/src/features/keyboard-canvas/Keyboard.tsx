@@ -166,7 +166,7 @@ export function Keyboard({
           const found =
             search.trim() === ""
               ? null
-              : keyMatches(face, search, macActions)
+              : keyMatches(face, search, macActions, keymap.zmkNames)
                 ? "match"
                 : "no-match";
           return (

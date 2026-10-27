@@ -17,6 +17,7 @@
 //! is dimmed while no keyboard is connected. The battery is read again whenever the menu
 //! opens.
 
+use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use tauri::image::Image;
@@ -43,8 +44,8 @@ pub struct MenuBar<R: Runtime> {
     tray: Mutex<Option<Tray<R>>>,
     /// What the session and the battery last said.
     last: Mutex<(Option<SessionStatus>, BatteryStatus)>,
-    /// The level below which a half's battery counts as low.
-    threshold: u8,
+    /// The level below which a half's battery counts as low, in percent.
+    threshold: AtomicU8,
     /// Hears the menu's items chosen.
     on_menu: fn(&AppHandle<R>, &MenuEvent),
     /// Hears the menu opening.
@@ -76,7 +77,7 @@ impl<R: Runtime> MenuBar<R> {
         Self {
             tray: Mutex::new(None),
             last: Mutex::new((None, BatteryStatus::default())),
-            threshold,
+            threshold: AtomicU8::new(threshold),
             on_menu,
             on_open: Arc::new(on_open),
         }
@@ -125,10 +126,20 @@ impl<R: Runtime> MenuBar<R> {
         self.refresh();
     }
 
+    /// Shows a dot below `threshold` percent from now on, as when the setting changes.
+    pub fn set_threshold(&self, threshold: u8) {
+        self.threshold.store(threshold, Ordering::Relaxed);
+        self.refresh();
+    }
+
     /// What the item shows now.
     fn shown(&self) -> Shown {
         let last = lock(&self.last);
-        Shown::of(last.0.as_ref(), last.1, self.threshold)
+        Shown::of(
+            last.0.as_ref(),
+            last.1,
+            self.threshold.load(Ordering::Relaxed),
+        )
     }
 
     /// Shows what was last heard, if the item is on.

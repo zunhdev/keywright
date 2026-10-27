@@ -171,11 +171,13 @@ fn ask_before_quitting<R: Runtime>(app: &AppHandle<R>) -> bool {
 /// and the item the session's state, keymap and battery from then on.
 fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     let settings = Settings::load();
+    app.set_theme(settings.appearance.theme());
+    let kept = settings.backups_kept;
     let scenario = Scenario::from_env()?;
     let (state, battery) = tauri::async_runtime::block_on(async {
         let Some(scenario) = scenario else {
-            let backups = keywright_platform::paths::backups_dir()
-                .map(|dir| Backups::new(dir, Backups::DEFAULT_KEEP));
+            let backups =
+                keywright_platform::paths::backups_dir().map(|dir| Backups::new(dir, kept));
             let session = session_with(backups.clone());
             let keyboards = ThisMac::new(bluetooth_allowed);
             tauri::async_runtime::spawn(selection::select(session.clone(), keyboards));
@@ -185,16 +187,17 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
         };
         // Like the CLI, a simulated keyboard's backups go to `KEYWRIGHT_BACKUPS_DIR`, or
         // nowhere. It has no battery.
-        let backups = simulator::backups_dir().map(|dir| Backups::new(dir, Backups::DEFAULT_KEEP));
+        let backups = simulator::backups_dir().map(|dir| Backups::new(dir, kept));
         let session = session_with(backups.clone());
         scenario.connect(&session).await?;
         Ok((AppState::new(session).with_backups(backups), None))
     })?;
     // A simulated keyboard has a serial number of its own, so its dismissals are its own.
-    let state = state.with_dismissals(Dismissals::path());
+    let state = state
+        .with_dismissals(Dismissals::path())
+        .with_zmk_names(settings.zmk_names);
     let handle = app.handle().clone();
-    let low_battery = settings.low_battery;
-    let menu_bar = menu_bar(low_battery, battery.clone());
+    let menu_bar = menu_bar(settings.low_battery, battery.clone());
     menu_bar.show(&handle, settings.menu_bar)?;
     app.manage(menu_bar);
     app.manage(SettingsState(std::sync::Mutex::new(settings)));
@@ -206,7 +209,9 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
             state.session.clone(),
             move |status, keyboard| {
                 handle.state::<MenuBar<Wry>>().battery_changed(status);
-                for (half, percent) in low.update(status, low_battery) {
+                // The level as it is now: the setting can change while Keywright runs.
+                let level = handle.state::<SettingsState>().lock().low_battery;
+                for (half, percent) in low.update(status, level) {
                     notify(&handle, &low_battery::message(keyboard, half, percent));
                 }
                 let _ = BatteryChanged(status).emit(&handle);

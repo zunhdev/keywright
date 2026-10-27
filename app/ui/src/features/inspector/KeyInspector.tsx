@@ -88,7 +88,8 @@ export function KeyInspector({
           void apply(action, choice);
         }}
       />
-      {/* The footer (design §5.2): back to what the keyboard shipped with (CHG-4). */}
+      {/* The footer (design §5.2): back to what the keyboard shipped with (CHG-4), and with
+          Show ZMK names on, one key's raw binding (EDIT-6). */}
       <footer className={styles.footer}>
         <Button
           variant="quiet"
@@ -98,6 +99,9 @@ export function KeyInspector({
         >
           {messages.format("restore.key")}
         </Button>
+        {keymap.zmkNames && positions.length === 1 ? (
+          <code className={styles.zmk}>{key.zmk}</code>
+        ) : null}
       </footer>
     </div>
   );

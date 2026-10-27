@@ -191,10 +191,24 @@
   }
 }
 
-/* The key inspector's footer: Restore Stock (design §5.2). */
+/* The key inspector's footer: Restore Stock, and the raw binding (design §5.2). */
 .footer {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   margin-top: auto;
   padding-top: var(--space-3);
   border-top: 1px solid var(--border-subtle);
+}
+
+/* A raw binding, such as &mt LCTRL ESC (EDIT-6). */
+.zmk {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font: var(--type-caption);
+  font-family: var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: text;
 }

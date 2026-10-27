@@ -57,6 +57,56 @@ export const commands = {
 	setOpenAtLogin: (on: boolean) => __TAURI_INVOKE<OpenAtLogin>("set_open_at_login", { on }),
 	/**  Opens System Settings at Login Items, where the person can allow Keywright. */
 	openLoginItemsSettings: () => __TAURI_INVOKE<void>("open_login_items_settings"),
+	/**
+	 *  Sets the low-battery level (BAR-3) to `percent`, within the levels it can be, and
+	 *  returns the level set. The menu bar item's dot follows at once, and the battery is read
+	 *  again, so a half now below the level is notified about.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the setting can't be saved; it's set until Keywright quits then.
+	 */
+	setLowBattery: (percent: number) => typedError<number, AppError>(__TAURI_INVOKE("set_low_battery", { percent })),
+	/**
+	 *  Sets how Keywright looks: every window, its menus and the menu bar item's menu follow at
+	 *  once.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the setting can't be saved; it's set until Keywright quits then.
+	 */
+	setAppearance: (appearance: Appearance) => typedError<null, AppError>(__TAURI_INVOKE("set_appearance", { appearance })),
+	/**
+	 *  Turns _Show ZMK names_ (EDIT-6) on or off: the canvas gets its keymap again, with keys'
+	 *  raw bindings shown or not.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the setting can't be saved; it's set until Keywright quits then.
+	 */
+	setZmkNames: (on: boolean) => typedError<null, AppError>(__TAURI_INVOKE("set_zmk_names", { on })),
+	/**  The Backups tab, as it is now. */
+	backupSettings: () => __TAURI_INVOKE<BackupSettings>("backup_settings"),
+	/**
+	 *  Sets how many automatic backups the folder keeps, within how many it can, and returns
+	 *  that. The folder keeps that many from the next backup on: lowering it deletes nothing
+	 *  until then.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the session has stopped, or the setting can't be saved; it's set until
+	 *  Keywright quits then.
+	 */
+	setBackupsKept: (kept: number) => typedError<number, AppError>(__TAURI_INVOKE("set_backups_kept", { kept })),
+	/**
+	 *  _Show Backups Folder_: opens the automatic backups' folder in Finder, making it if no
+	 *  backup has been made yet.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if there's no folder, as for a simulated keyboard, or Finder doesn't open it.
+	 */
+	showBackupsFolder: () => typedError<null, AppError>(__TAURI_INVOKE("show_backups_folder")),
 	/**  Whether the first run is still to come: Keywright hasn't been through it on this Mac. */
 	firstRunPending: () => __TAURI_INVOKE<boolean>("first_run_pending"),
 	/**
@@ -67,6 +117,15 @@ export const commands = {
 	 *  Fails if the setting can't be saved; the first run shows again next time then.
 	 */
 	finishFirstRun: () => typedError<null, AppError>(__TAURI_INVOKE("finish_first_run")),
+	/**
+	 *  _Reset First-Time Setup_ (design §9.4): the first run shows again the next time
+	 *  Keywright opens.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the setting can't be saved.
+	 */
+	resetFirstRun: () => typedError<null, AppError>(__TAURI_INVOKE("reset_first_run")),
 	/**
 	 *  The keymap the canvas draws, or `null` before the session has read one.
 	 * 
@@ -93,6 +152,11 @@ export const commands = {
 	others: OtherBehavior[],
 	/**  The kinds of action the inspector edits that the firmware can do. */
 	kinds: Kind[],
+	/**
+	 *  Whether _Show ZMK names_ is on (EDIT-6): the inspector shows a key's raw binding,
+	 *  search finds it, and the key picker names keys as ZMK does too.
+	 */
+	zmkNames: boolean,
 } | null, AppError>(__TAURI_INVOKE("session_keymap")),
 	/**
 	 *  Every key ZMK names, with its labels in the input source and its group, for the key
@@ -759,6 +823,15 @@ problem: FirmwareProblem } |
 /**  What it would break. */
 findings: GuardWarning[] };
 
+/**  How Keywright looks (design §9.4). */
+export type Appearance = 
+/**  As macOS looks, light or dark as System Settings says. */
+"system" | 
+/**  Always light. */
+"light" | 
+/**  Always dark. */
+"dark";
+
 /**  One backup, as the Backups window lists it. */
 export type BackupEntry = {
 	/**  Its file's name in the backups folder, which names it to the other commands. */
@@ -783,6 +856,16 @@ export type BackupReason =
 "before-import" | 
 /**  Before updating the keyboard's firmware. */
 "before-firmware";
+
+/**  The Backups tab. */
+export type BackupSettings = {
+	/**  How many automatic backups the folder keeps. */
+	kept: number,
+	/**  How many it can keep. */
+	keptRange: Range,
+	/**  Whether there's a folder to show: a simulated keyboard may have none. */
+	folder: boolean,
+};
 
 /**  `session://battery`: a half's battery level changed, or went unreported. */
 export type BatteryChanged = BatteryStatus;
@@ -1018,8 +1101,16 @@ total: number } |
 export type GeneralSettings = {
 	/**  _Show in menu bar_: on keeps Keywright in the menu bar when the window closes. */
 	menuBar: boolean,
+	/**  The level, in percent, below which a half's battery counts as low (BAR-3). */
+	lowBattery: number,
+	/**  The levels it can be. */
+	lowBatteryRange: Range,
 	/**  _Open at login_. */
 	openAtLogin: OpenAtLogin,
+	/**  How Keywright looks. */
+	appearance: Appearance,
+	/**  _Show ZMK names_ (EDIT-6). */
+	zmkNames: boolean,
 };
 
 /**  A group of keys in the key picker's More tab. */
@@ -1177,6 +1268,11 @@ export type Key = {
 	 *  change it (CHG-4).
 	 */
 	restorable: boolean,
+	/**
+	 *  Its raw binding, as a ZMK keymap writes it, such as `&mt LCTRL ESC` (EDIT-6). Layers
+	 *  are by ID, and a behavior Keywright doesn't know by its name, as backups write them.
+	 */
+	zmk: string,
 };
 
 /**  What [`set_keys`] makes keys do. */
@@ -1198,6 +1294,11 @@ export type KeyEntry = {
 	name: string,
 	/**  What it types with Shift, if that's another character, such as `!` for 1. */
 	shifted: string | null,
+	/**
+	 *  What ZMK calls it with Shift, as Keywright writes that, such as `EXCL` for ⇧1, if
+	 *  it types another character with Shift.
+	 */
+	shiftedZmk: string | null,
 	/**
 	 *  What ZMK calls it alone, without modifiers: the name Keywright writes first, such as
 	 *  `BSPC`, then the others, such as `BACKSPACE`. The key picker's search finds keys by
@@ -1299,6 +1400,11 @@ export type Keymap = {
 	others: OtherBehavior[],
 	/**  The kinds of action the inspector edits that the firmware can do. */
 	kinds: Kind[],
+	/**
+	 *  Whether _Show ZMK names_ is on (EDIT-6): the inspector shows a key's raw binding,
+	 *  search finds it, and the key picker names keys as ZMK does too.
+	 */
+	zmkNames: boolean,
 };
 
 /**  `session://keymap`: the keymap the canvas draws changed, or the session has none. */
@@ -1585,6 +1691,14 @@ export type Problem =
  *  being tried. The UI asks whether to save them.
  */
 export type QuitRequested = null;
+
+/**  The values a number setting takes, from `min` to `max`. */
+export type Range = {
+	/**  The least. */
+	min: number,
+	/**  The most. */
+	max: number,
+};
 
 /**  One way to reach a layer (LAY-4), such as "Hold lower". */
 export type Reach = {

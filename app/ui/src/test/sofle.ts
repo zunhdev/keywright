@@ -648,7 +648,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp GRAVE"
         },
         {
           "action": {
@@ -669,7 +670,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N1"
         },
         {
           "action": {
@@ -690,7 +692,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N2"
         },
         {
           "action": {
@@ -711,7 +714,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N3"
         },
         {
           "action": {
@@ -732,7 +736,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N4"
         },
         {
           "action": {
@@ -753,7 +758,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N5"
         },
         {
           "action": {
@@ -774,7 +780,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N6"
         },
         {
           "action": {
@@ -795,7 +802,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N7"
         },
         {
           "action": {
@@ -816,7 +824,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N8"
         },
         {
           "action": {
@@ -837,7 +846,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N9"
         },
         {
           "action": {
@@ -858,7 +868,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N0"
         },
         {
           "action": {
@@ -879,7 +890,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp GRAVE"
         },
         {
           "action": {
@@ -900,7 +912,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp ESC"
         },
         {
           "action": {
@@ -921,7 +934,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp Q"
         },
         {
           "action": {
@@ -942,7 +956,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp W"
         },
         {
           "action": {
@@ -963,7 +978,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp E"
         },
         {
           "action": {
@@ -984,7 +1000,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp R"
         },
         {
           "action": {
@@ -1005,7 +1022,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp T"
         },
         {
           "action": {
@@ -1026,7 +1044,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp Y"
         },
         {
           "action": {
@@ -1047,7 +1066,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp U"
         },
         {
           "action": {
@@ -1068,7 +1088,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp I"
         },
         {
           "action": {
@@ -1089,7 +1110,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp O"
         },
         {
           "action": {
@@ -1110,7 +1132,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp P"
         },
         {
           "action": {
@@ -1131,7 +1154,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp BSPC"
         },
         {
           "action": {
@@ -1152,7 +1176,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp TAB"
         },
         {
           "action": {
@@ -1173,7 +1198,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp A"
         },
         {
           "action": {
@@ -1194,7 +1220,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp S"
         },
         {
           "action": {
@@ -1215,7 +1242,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp D"
         },
         {
           "action": {
@@ -1236,7 +1264,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F"
         },
         {
           "action": {
@@ -1257,7 +1286,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp G"
         },
         {
           "action": {
@@ -1278,7 +1308,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp H"
         },
         {
           "action": {
@@ -1299,7 +1330,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp J"
         },
         {
           "action": {
@@ -1320,7 +1352,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp K"
         },
         {
           "action": {
@@ -1341,7 +1374,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp L"
         },
         {
           "action": {
@@ -1362,7 +1396,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp SEMI"
         },
         {
           "action": {
@@ -1383,7 +1418,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp SQT"
         },
         {
           "action": {
@@ -1404,7 +1440,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LSHFT"
         },
         {
           "action": {
@@ -1425,7 +1462,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp Z"
         },
         {
           "action": {
@@ -1446,7 +1484,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp X"
         },
         {
           "action": {
@@ -1467,7 +1506,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp C"
         },
         {
           "action": {
@@ -1488,7 +1528,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp V"
         },
         {
           "action": {
@@ -1509,7 +1550,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp B"
         },
         {
           "action": {
@@ -1530,7 +1572,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp C_MUTE"
         },
         {
           "action": {
@@ -1551,7 +1594,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp C_PLAY"
         },
         {
           "action": {
@@ -1572,7 +1616,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N"
         },
         {
           "action": {
@@ -1593,7 +1638,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp M"
         },
         {
           "action": {
@@ -1614,7 +1660,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp COMMA"
         },
         {
           "action": {
@@ -1635,7 +1682,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp DOT"
         },
         {
           "action": {
@@ -1656,7 +1704,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp FSLH"
         },
         {
           "action": {
@@ -1677,7 +1726,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RSHFT"
         },
         {
           "action": {
@@ -1698,7 +1748,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LGUI"
         },
         {
           "action": {
@@ -1719,7 +1770,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LALT"
         },
         {
           "action": {
@@ -1740,7 +1792,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LCTRL"
         },
         {
           "action": {
@@ -1759,7 +1812,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&mo 1"
         },
         {
           "action": {
@@ -1780,7 +1834,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RET"
         },
         {
           "action": {
@@ -1801,7 +1856,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp SPACE"
         },
         {
           "action": {
@@ -1820,7 +1876,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&mo 2"
         },
         {
           "action": {
@@ -1841,7 +1898,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RCTRL"
         },
         {
           "action": {
@@ -1862,7 +1920,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RALT"
         },
         {
           "action": {
@@ -1883,7 +1942,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RGUI"
         }
       ],
       "reach": [
@@ -1916,7 +1976,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -1937,7 +1998,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F1"
         },
         {
           "action": {
@@ -1958,7 +2020,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F2"
         },
         {
           "action": {
@@ -1979,7 +2042,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F3"
         },
         {
           "action": {
@@ -2000,7 +2064,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F4"
         },
         {
           "action": {
@@ -2021,7 +2086,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F5"
         },
         {
           "action": {
@@ -2042,7 +2108,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F6"
         },
         {
           "action": {
@@ -2063,7 +2130,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F7"
         },
         {
           "action": {
@@ -2084,7 +2152,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F8"
         },
         {
           "action": {
@@ -2105,7 +2174,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F9"
         },
         {
           "action": {
@@ -2126,7 +2196,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F10"
         },
         {
           "action": {
@@ -2147,7 +2218,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F11"
         },
         {
           "action": {
@@ -2168,7 +2240,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp GRAVE"
         },
         {
           "action": {
@@ -2189,7 +2262,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N1"
         },
         {
           "action": {
@@ -2210,7 +2284,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N2"
         },
         {
           "action": {
@@ -2231,7 +2306,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N3"
         },
         {
           "action": {
@@ -2252,7 +2328,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N4"
         },
         {
           "action": {
@@ -2273,7 +2350,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N5"
         },
         {
           "action": {
@@ -2294,7 +2372,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N6"
         },
         {
           "action": {
@@ -2315,7 +2394,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N7"
         },
         {
           "action": {
@@ -2336,7 +2416,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N8"
         },
         {
           "action": {
@@ -2357,7 +2438,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N9"
         },
         {
           "action": {
@@ -2378,7 +2460,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N0"
         },
         {
           "action": {
@@ -2399,7 +2482,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp F12"
         },
         {
           "action": {
@@ -2415,7 +2499,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2436,7 +2521,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp EXCL"
         },
         {
           "action": {
@@ -2457,7 +2543,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp AT"
         },
         {
           "action": {
@@ -2478,7 +2565,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp HASH"
         },
         {
           "action": {
@@ -2499,7 +2587,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp DLLR"
         },
         {
           "action": {
@@ -2520,7 +2609,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp PRCNT"
         },
         {
           "action": {
@@ -2541,7 +2631,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp CARET"
         },
         {
           "action": {
@@ -2562,7 +2653,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp AMPS"
         },
         {
           "action": {
@@ -2583,7 +2675,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp STAR"
         },
         {
           "action": {
@@ -2604,7 +2697,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LPAR"
         },
         {
           "action": {
@@ -2625,7 +2719,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RPAR"
         },
         {
           "action": {
@@ -2646,7 +2741,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp PIPE"
         },
         {
           "action": {
@@ -2662,7 +2758,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2683,7 +2780,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp EQUAL"
         },
         {
           "action": {
@@ -2704,7 +2802,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp MINUS"
         },
         {
           "action": {
@@ -2725,7 +2824,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp PLUS"
         },
         {
           "action": {
@@ -2746,7 +2846,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LBRC"
         },
         {
           "action": {
@@ -2767,7 +2868,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RBRC"
         },
         {
           "action": {
@@ -2783,7 +2885,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2799,7 +2902,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2820,7 +2924,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LBKT"
         },
         {
           "action": {
@@ -2841,7 +2946,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RBKT"
         },
         {
           "action": {
@@ -2862,7 +2968,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp SEMI"
         },
         {
           "action": {
@@ -2883,7 +2990,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp COLON"
         },
         {
           "action": {
@@ -2904,7 +3012,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp BSLH"
         },
         {
           "action": {
@@ -2920,7 +3029,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2936,7 +3046,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2952,7 +3063,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2968,7 +3080,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -2986,7 +3099,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3002,7 +3116,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3018,7 +3133,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3036,7 +3152,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3052,7 +3169,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3068,7 +3186,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3084,7 +3203,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         }
       ],
       "reach": [
@@ -3119,7 +3239,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_CLR"
         },
         {
           "action": {
@@ -3137,7 +3258,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 0"
         },
         {
           "action": {
@@ -3155,7 +3277,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 1"
         },
         {
           "action": {
@@ -3173,7 +3296,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 2"
         },
         {
           "action": {
@@ -3191,7 +3315,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 3"
         },
         {
           "action": {
@@ -3209,7 +3334,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 4"
         },
         {
           "action": {
@@ -3225,7 +3351,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3241,7 +3368,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3257,7 +3385,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3273,7 +3402,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3289,7 +3419,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3305,7 +3436,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3321,7 +3453,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3342,7 +3475,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": true,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp INS"
         },
         {
           "action": {
@@ -3363,7 +3497,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": true,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp PSCRN"
         },
         {
           "action": {
@@ -3384,7 +3519,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": true,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp K_APP"
         },
         {
           "action": {
@@ -3400,7 +3536,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3416,7 +3553,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3437,7 +3575,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp PG_UP"
         },
         {
           "action": {
@@ -3453,7 +3592,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3474,7 +3614,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp UP"
         },
         {
           "action": {
@@ -3490,7 +3631,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3511,7 +3653,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp N0"
         },
         {
           "action": {
@@ -3527,7 +3670,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3543,7 +3687,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3564,7 +3709,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LALT"
         },
         {
           "action": {
@@ -3585,7 +3731,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LCTRL"
         },
         {
           "action": {
@@ -3606,7 +3753,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LSHFT"
         },
         {
           "action": {
@@ -3622,7 +3770,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3643,7 +3792,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp CAPS"
         },
         {
           "action": {
@@ -3664,7 +3814,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp PG_DN"
         },
         {
           "action": {
@@ -3685,7 +3836,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp LEFT"
         },
         {
           "action": {
@@ -3706,7 +3858,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp DOWN"
         },
         {
           "action": {
@@ -3727,7 +3880,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp RIGHT"
         },
         {
           "action": {
@@ -3748,7 +3902,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp DEL"
         },
         {
           "action": {
@@ -3769,7 +3924,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp BSPC"
         },
         {
           "action": {
@@ -3785,7 +3941,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3806,7 +3963,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": true,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp K_UNDO"
         },
         {
           "action": {
@@ -3827,7 +3985,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": true,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp K_CUT"
         },
         {
           "action": {
@@ -3848,7 +4007,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": true,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp K_COPY"
         },
         {
           "action": {
@@ -3869,7 +4029,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": true,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&kp K_PASTE"
         },
         {
           "action": {
@@ -3885,7 +4046,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&studio_unlock"
         },
         {
           "action": {
@@ -3901,7 +4063,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3917,7 +4080,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3933,7 +4097,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3949,7 +4114,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3965,7 +4131,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3981,7 +4148,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -3997,7 +4165,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4013,7 +4182,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4029,7 +4199,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4045,7 +4216,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4061,7 +4233,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4079,7 +4252,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4095,7 +4269,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4111,7 +4286,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4129,7 +4305,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4145,7 +4322,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4161,7 +4339,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         },
         {
           "action": {
@@ -4177,7 +4356,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&trans"
         }
       ],
       "reach": [
@@ -4297,7 +4477,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_CLR"
         },
         {
           "action": {
@@ -4315,7 +4496,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 0"
         },
         {
           "action": {
@@ -4333,7 +4515,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 1"
         },
         {
           "action": {
@@ -4351,7 +4534,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 2"
         },
         {
           "action": {
@@ -4369,7 +4553,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 3"
         },
         {
           "action": {
@@ -4387,7 +4572,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&bt BT_SEL 4"
         },
         {
           "action": {
@@ -4402,7 +4588,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4417,7 +4604,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4432,7 +4620,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4447,7 +4636,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4462,7 +4652,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4477,7 +4668,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4494,7 +4686,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&ext_power EP_TOG"
         },
         {
           "action": {
@@ -4511,7 +4704,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_HUD"
         },
         {
           "action": {
@@ -4528,7 +4722,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_HUI"
         },
         {
           "action": {
@@ -4545,7 +4740,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_SAD"
         },
         {
           "action": {
@@ -4562,7 +4758,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_SAI"
         },
         {
           "action": {
@@ -4579,7 +4776,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_EFF"
         },
         {
           "action": {
@@ -4594,7 +4792,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4609,7 +4808,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4624,7 +4824,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4639,7 +4840,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4654,7 +4856,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4669,7 +4872,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4684,7 +4888,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4701,7 +4906,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_BRD"
         },
         {
           "action": {
@@ -4718,7 +4924,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_BRI"
         },
         {
           "action": {
@@ -4733,7 +4940,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4748,7 +4956,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4763,7 +4972,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4778,7 +4988,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4793,7 +5004,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4808,7 +5020,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4823,7 +5036,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4838,7 +5052,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4853,7 +5068,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4868,7 +5084,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4883,7 +5100,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4898,7 +5116,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4913,7 +5132,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4928,7 +5148,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4943,7 +5164,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4960,7 +5182,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&rgb_ug RGB_TOG"
         },
         {
           "action": {
@@ -4975,7 +5198,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -4990,7 +5214,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5005,7 +5230,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5020,7 +5246,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5035,7 +5262,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5050,7 +5278,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5065,7 +5294,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5080,7 +5310,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5095,7 +5326,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5110,7 +5342,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5125,7 +5358,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5140,7 +5374,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5155,7 +5390,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5170,7 +5406,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5185,7 +5422,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5200,7 +5438,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         },
         {
           "action": {
@@ -5215,7 +5454,8 @@ export const sofleKeymap: Keymap = {
           "secondary": null,
           "changed": false,
           "macWarning": false,
-          "restorable": false
+          "restorable": false,
+          "zmk": "&none"
         }
       ],
       "reach": [
@@ -5730,7 +5970,8 @@ export const sofleKeymap: Keymap = {
     "sticky-key",
     "transparent",
     "nothing"
-  ]
+  ],
+  "zmkNames": false
 };
 
 export const keyCatalog: KeyEntry[] = [
@@ -5740,6 +5981,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "A",
     "name": "A",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "A"
     ],
@@ -5751,6 +5993,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "B",
     "name": "B",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "B"
     ],
@@ -5762,6 +6005,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "C",
     "name": "C",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C"
     ],
@@ -5773,6 +6017,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "D",
     "name": "D",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "D"
     ],
@@ -5784,6 +6029,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "E",
     "name": "E",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "E"
     ],
@@ -5795,6 +6041,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F",
     "name": "F",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F"
     ],
@@ -5806,6 +6053,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "G",
     "name": "G",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "G"
     ],
@@ -5817,6 +6065,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "H",
     "name": "H",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "H"
     ],
@@ -5828,6 +6077,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "I",
     "name": "I",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "I"
     ],
@@ -5839,6 +6089,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "J",
     "name": "J",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "J"
     ],
@@ -5850,6 +6101,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "K",
     "name": "K",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K"
     ],
@@ -5861,6 +6113,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "L",
     "name": "L",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "L"
     ],
@@ -5872,6 +6125,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "M",
     "name": "M",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "M"
     ],
@@ -5883,6 +6137,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "N",
     "name": "N",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "N"
     ],
@@ -5894,6 +6149,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "O",
     "name": "O",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "O"
     ],
@@ -5905,6 +6161,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "P",
     "name": "P",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "P"
     ],
@@ -5916,6 +6173,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Q",
     "name": "Q",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "Q"
     ],
@@ -5927,6 +6185,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "R",
     "name": "R",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "R"
     ],
@@ -5938,6 +6197,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "S",
     "name": "S",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "S"
     ],
@@ -5949,6 +6209,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "T",
     "name": "T",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "T"
     ],
@@ -5960,6 +6221,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "U",
     "name": "U",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "U"
     ],
@@ -5971,6 +6233,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "V",
     "name": "V",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "V"
     ],
@@ -5982,6 +6245,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "W",
     "name": "W",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "W"
     ],
@@ -5993,6 +6257,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "X",
     "name": "X",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "X"
     ],
@@ -6004,6 +6269,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Y",
     "name": "Y",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "Y"
     ],
@@ -6015,6 +6281,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Z",
     "name": "Z",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "Z"
     ],
@@ -6026,6 +6293,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "1",
     "name": "1",
     "shifted": "!",
+    "shiftedZmk": "EXCL",
     "zmk": [
       "N1",
       "NUMBER_1",
@@ -6039,6 +6307,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "2",
     "name": "2",
     "shifted": "@",
+    "shiftedZmk": "AT",
     "zmk": [
       "N2",
       "NUMBER_2",
@@ -6052,6 +6321,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "3",
     "name": "3",
     "shifted": "#",
+    "shiftedZmk": "HASH",
     "zmk": [
       "N3",
       "NUMBER_3",
@@ -6065,6 +6335,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "4",
     "name": "4",
     "shifted": "$",
+    "shiftedZmk": "DLLR",
     "zmk": [
       "N4",
       "NUMBER_4",
@@ -6078,6 +6349,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "5",
     "name": "5",
     "shifted": "%",
+    "shiftedZmk": "PRCNT",
     "zmk": [
       "N5",
       "NUMBER_5",
@@ -6091,6 +6363,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "6",
     "name": "6",
     "shifted": "^",
+    "shiftedZmk": "CARET",
     "zmk": [
       "N6",
       "NUMBER_6",
@@ -6104,6 +6377,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "7",
     "name": "7",
     "shifted": "&",
+    "shiftedZmk": "AMPS",
     "zmk": [
       "N7",
       "NUMBER_7",
@@ -6117,6 +6391,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "8",
     "name": "8",
     "shifted": "*",
+    "shiftedZmk": "STAR",
     "zmk": [
       "N8",
       "NUMBER_8",
@@ -6130,6 +6405,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "9",
     "name": "9",
     "shifted": "(",
+    "shiftedZmk": "LPAR",
     "zmk": [
       "N9",
       "NUMBER_9",
@@ -6143,6 +6419,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "0",
     "name": "0",
     "shifted": ")",
+    "shiftedZmk": "RPAR",
     "zmk": [
       "N0",
       "NUMBER_0",
@@ -6156,6 +6433,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "↩",
     "name": "Return",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "RET",
       "RETURN",
@@ -6169,6 +6447,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⎋ Esc",
     "name": "Escape",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "ESC",
       "ESCAPE"
@@ -6181,6 +6460,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⌫",
     "name": "Delete",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "BSPC",
       "BACKSPACE",
@@ -6194,6 +6474,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⇥",
     "name": "Tab",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "TAB"
     ],
@@ -6205,6 +6486,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "␣",
     "name": "Space",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "SPACE",
       "SPC"
@@ -6217,6 +6499,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "-",
     "name": "-",
     "shifted": "_",
+    "shiftedZmk": "UNDER",
     "zmk": [
       "MINUS"
     ],
@@ -6228,6 +6511,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "=",
     "name": "=",
     "shifted": "+",
+    "shiftedZmk": "PLUS",
     "zmk": [
       "EQUAL",
       "EQL"
@@ -6240,6 +6524,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "[",
     "name": "[",
     "shifted": "{",
+    "shiftedZmk": "LBRC",
     "zmk": [
       "LBKT",
       "LEFT_BRACKET"
@@ -6252,6 +6537,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "]",
     "name": "]",
     "shifted": "}",
+    "shiftedZmk": "RBRC",
     "zmk": [
       "RBKT",
       "RIGHT_BRACKET"
@@ -6264,6 +6550,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "\\",
     "name": "\\",
     "shifted": "|",
+    "shiftedZmk": "PIPE",
     "zmk": [
       "BSLH",
       "BACKSLASH"
@@ -6276,6 +6563,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "#",
     "name": "ISO #",
     "shifted": "~",
+    "shiftedZmk": "TILDE2",
     "zmk": [
       "NUHS",
       "NON_US_HASH"
@@ -6288,6 +6576,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": ";",
     "name": ";",
     "shifted": ":",
+    "shiftedZmk": "COLON",
     "zmk": [
       "SEMI",
       "SEMICOLON",
@@ -6301,6 +6590,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "'",
     "name": "'",
     "shifted": "\"",
+    "shiftedZmk": "DQT",
     "zmk": [
       "SQT",
       "SINGLE_QUOTE",
@@ -6316,6 +6606,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "`",
     "name": "`",
     "shifted": "~",
+    "shiftedZmk": "TILDE",
     "zmk": [
       "GRAVE",
       "GRAV"
@@ -6328,6 +6619,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": ",",
     "name": ",",
     "shifted": "<",
+    "shiftedZmk": "LT",
     "zmk": [
       "COMMA",
       "CMMA"
@@ -6340,6 +6632,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": ".",
     "name": ".",
     "shifted": ">",
+    "shiftedZmk": "GT",
     "zmk": [
       "DOT",
       "PERIOD"
@@ -6352,6 +6645,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "/",
     "name": "/",
     "shifted": "?",
+    "shiftedZmk": "QMARK",
     "zmk": [
       "FSLH",
       "SLASH"
@@ -6364,6 +6658,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⇪",
     "name": "Caps Lock",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "CAPS",
       "CAPSLOCK",
@@ -6377,6 +6672,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F1",
     "name": "F1",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F1"
     ],
@@ -6388,6 +6684,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F2",
     "name": "F2",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F2"
     ],
@@ -6399,6 +6696,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F3",
     "name": "F3",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F3"
     ],
@@ -6410,6 +6708,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F4",
     "name": "F4",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F4"
     ],
@@ -6421,6 +6720,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F5",
     "name": "F5",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F5"
     ],
@@ -6432,6 +6732,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F6",
     "name": "F6",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F6"
     ],
@@ -6443,6 +6744,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F7",
     "name": "F7",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F7"
     ],
@@ -6454,6 +6756,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F8",
     "name": "F8",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F8"
     ],
@@ -6465,6 +6768,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F9",
     "name": "F9",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F9"
     ],
@@ -6476,6 +6780,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F10",
     "name": "F10",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F10"
     ],
@@ -6487,6 +6792,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F11",
     "name": "F11",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F11"
     ],
@@ -6498,6 +6804,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F12",
     "name": "F12",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F12"
     ],
@@ -6509,6 +6816,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Print Screen",
     "name": "Print Screen",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "PSCRN",
       "PRINTSCREEN",
@@ -6522,6 +6830,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Scroll Lock",
     "name": "Scroll Lock",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "SLCK",
       "SCROLLLOCK",
@@ -6535,6 +6844,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Pause",
     "name": "Pause",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "PAUSE_BREAK",
       "PAUS"
@@ -6547,6 +6857,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Insert",
     "name": "Insert",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INS",
       "INSERT"
@@ -6559,6 +6870,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "↖",
     "name": "Home",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "HOME"
     ],
@@ -6570,6 +6882,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⇞",
     "name": "Page Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "PG_UP",
       "PAGE_UP",
@@ -6583,6 +6896,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⌦",
     "name": "Forward Delete",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "DEL",
       "DELETE"
@@ -6595,6 +6909,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "↘",
     "name": "End",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "END"
     ],
@@ -6606,6 +6921,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⇟",
     "name": "Page Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "PG_DN",
       "PAGE_DOWN",
@@ -6619,6 +6935,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "→",
     "name": "Right Arrow",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "RIGHT",
       "RIGHT_ARROW",
@@ -6632,6 +6949,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "←",
     "name": "Left Arrow",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LEFT",
       "LEFT_ARROW",
@@ -6645,6 +6963,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "↓",
     "name": "Down Arrow",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "DOWN",
       "DOWN_ARROW",
@@ -6658,6 +6977,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "↑",
     "name": "Up Arrow",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "UP",
       "UP_ARROW",
@@ -6671,6 +6991,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⌧",
     "name": "Clear",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_NUM",
       "KP_NUMLOCK",
@@ -6684,6 +7005,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "/",
     "name": "Keypad /",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_SLASH",
       "KP_DIVIDE",
@@ -6697,6 +7019,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "*",
     "name": "Keypad *",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_MULTIPLY",
       "KP_ASTERISK",
@@ -6710,6 +7033,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "-",
     "name": "Keypad -",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_MINUS",
       "KP_SUBTRACT",
@@ -6723,6 +7047,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "+",
     "name": "Keypad +",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_PLUS",
       "KPLS"
@@ -6735,6 +7060,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⌤",
     "name": "Keypad Enter",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_ENTER"
     ],
@@ -6746,6 +7072,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "1",
     "name": "Keypad 1",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N1",
       "KP_NUMBER_1"
@@ -6758,6 +7085,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "2",
     "name": "Keypad 2",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N2",
       "KP_NUMBER_2"
@@ -6770,6 +7098,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "3",
     "name": "Keypad 3",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N3",
       "KP_NUMBER_3"
@@ -6782,6 +7111,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "4",
     "name": "Keypad 4",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N4",
       "KP_NUMBER_4"
@@ -6794,6 +7124,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "5",
     "name": "Keypad 5",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N5",
       "KP_NUMBER_5"
@@ -6806,6 +7137,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "6",
     "name": "Keypad 6",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N6",
       "KP_NUMBER_6"
@@ -6818,6 +7150,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "7",
     "name": "Keypad 7",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N7",
       "KP_NUMBER_7"
@@ -6830,6 +7163,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "8",
     "name": "Keypad 8",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N8",
       "KP_NUMBER_8"
@@ -6842,6 +7176,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "9",
     "name": "Keypad 9",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N9",
       "KP_NUMBER_9"
@@ -6854,6 +7189,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "0",
     "name": "Keypad 0",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_N0",
       "KP_NUMBER_0"
@@ -6866,6 +7202,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": ".",
     "name": "Keypad .",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_DOT"
     ],
@@ -6877,6 +7214,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "\\",
     "name": "ISO \\",
     "shifted": "|",
+    "shiftedZmk": "PIPE2",
     "zmk": [
       "NUBS",
       "NON_US_BACKSLASH",
@@ -6890,6 +7228,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu",
     "name": "Menu",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_APP",
       "K_APPLICATION",
@@ -6905,6 +7244,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Power",
     "name": "Power",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_PWR",
       "K_POWER"
@@ -6917,6 +7257,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "=",
     "name": "Keypad =",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_EQUAL"
     ],
@@ -6928,6 +7269,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F13",
     "name": "F13",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F13"
     ],
@@ -6939,6 +7281,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F14",
     "name": "F14",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F14"
     ],
@@ -6950,6 +7293,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F15",
     "name": "F15",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F15"
     ],
@@ -6961,6 +7305,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F16",
     "name": "F16",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F16"
     ],
@@ -6972,6 +7317,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F17",
     "name": "F17",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F17"
     ],
@@ -6983,6 +7329,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F18",
     "name": "F18",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F18"
     ],
@@ -6994,6 +7341,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F19",
     "name": "F19",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F19"
     ],
@@ -7005,6 +7353,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F20",
     "name": "F20",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F20"
     ],
@@ -7016,6 +7365,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F21",
     "name": "F21",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F21"
     ],
@@ -7027,6 +7377,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F22",
     "name": "F22",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F22"
     ],
@@ -7038,6 +7389,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F23",
     "name": "F23",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F23"
     ],
@@ -7049,6 +7401,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "F24",
     "name": "F24",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "F24"
     ],
@@ -7060,6 +7413,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Execute",
     "name": "Execute",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_EXEC",
       "K_EXECUTE"
@@ -7072,6 +7426,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Help",
     "name": "Help",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_HELP"
     ],
@@ -7083,6 +7438,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu",
     "name": "Menu",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_MENU"
     ],
@@ -7094,6 +7450,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Select",
     "name": "Select",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_SELECT"
     ],
@@ -7105,6 +7462,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Stop",
     "name": "Stop",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_STOP"
     ],
@@ -7116,6 +7474,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Again",
     "name": "Again",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_REDO",
       "K_AGAIN"
@@ -7128,6 +7487,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Undo",
     "name": "Undo",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_UNDO",
       "UNDO"
@@ -7140,6 +7500,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Cut",
     "name": "Cut",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_CUT",
       "CUT"
@@ -7152,6 +7513,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Copy",
     "name": "Copy",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_COPY",
       "COPY"
@@ -7164,6 +7526,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Paste",
     "name": "Paste",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_PASTE",
       "PSTE"
@@ -7176,6 +7539,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Find",
     "name": "Find",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_FIND"
     ],
@@ -7187,6 +7551,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Mute",
     "name": "Mute",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_MUTE"
     ],
@@ -7198,6 +7563,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Volume Up",
     "name": "Volume Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_VOL_UP",
       "K_VOLUME_UP",
@@ -7211,6 +7577,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Volume Down",
     "name": "Volume Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_VOL_DN",
       "K_VOLUME_DOWN",
@@ -7224,6 +7591,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Locking Caps Lock",
     "name": "Locking Caps Lock",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LCAPS",
       "LOCKING_CAPS"
@@ -7236,6 +7604,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Locking Num Lock",
     "name": "Locking Num Lock",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LNLCK",
       "LOCKING_NUM"
@@ -7248,6 +7617,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Locking Scroll Lock",
     "name": "Locking Scroll Lock",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LSLCK",
       "LOCKING_SCROLL"
@@ -7260,6 +7630,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keypad ,",
     "name": "Keypad ,",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_COMMA"
     ],
@@ -7271,6 +7642,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keypad = (Equal) AS/400",
     "name": "Keypad = (Equal) AS/400",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_EQUAL_AS400"
     ],
@@ -7282,6 +7654,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "_",
     "name": "Ro",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT1",
       "INTERNATIONAL_1",
@@ -7295,6 +7668,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "International 2",
     "name": "International 2",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT2",
       "INTERNATIONAL_2",
@@ -7309,6 +7683,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "¥",
     "name": "Yen",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT3",
       "INTERNATIONAL_3",
@@ -7322,6 +7697,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "International 4",
     "name": "International 4",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT4",
       "INTERNATIONAL_4",
@@ -7335,6 +7711,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "International 5",
     "name": "International 5",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT5",
       "INTERNATIONAL_5",
@@ -7348,6 +7725,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "International 6",
     "name": "International 6",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT6",
       "INTERNATIONAL_6",
@@ -7361,6 +7739,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "International 7",
     "name": "International 7",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT7",
       "INTERNATIONAL_7"
@@ -7373,6 +7752,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "International 8",
     "name": "International 8",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT8",
       "INTERNATIONAL_8"
@@ -7385,6 +7765,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "International 9",
     "name": "International 9",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "INT9",
       "INTERNATIONAL_9"
@@ -7397,6 +7778,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "かな",
     "name": "Kana",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG1",
       "LANGUAGE_1",
@@ -7410,6 +7792,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "英数",
     "name": "Eisu",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG2",
       "LANGUAGE_2",
@@ -7423,6 +7806,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Language 3",
     "name": "Language 3",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG3",
       "LANGUAGE_3",
@@ -7436,6 +7820,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Language 4",
     "name": "Language 4",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG4",
       "LANGUAGE_4",
@@ -7449,6 +7834,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Language 5",
     "name": "Language 5",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG5",
       "LANGUAGE_5",
@@ -7462,6 +7848,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Language 6",
     "name": "Language 6",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG6",
       "LANGUAGE_6"
@@ -7474,6 +7861,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Language 7",
     "name": "Language 7",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG7",
       "LANGUAGE_7"
@@ -7486,6 +7874,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Language 8",
     "name": "Language 8",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG8",
       "LANGUAGE_8"
@@ -7498,6 +7887,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Language 9",
     "name": "Language 9",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LANG9",
       "LANGUAGE_9"
@@ -7510,6 +7900,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Alternate Erase",
     "name": "Alternate Erase",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "ALT_ERASE"
     ],
@@ -7521,6 +7912,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "SysReq/Attention",
     "name": "SysReq/Attention",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "SYSREQ",
       "ATTENTION"
@@ -7533,6 +7925,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Cancel",
     "name": "Cancel",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_CANCEL"
     ],
@@ -7544,6 +7937,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Clear",
     "name": "Clear",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "CLEAR"
     ],
@@ -7555,6 +7949,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Prior",
     "name": "Prior",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "PRIOR"
     ],
@@ -7566,6 +7961,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Return",
     "name": "Return",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "RET2",
       "RETURN2"
@@ -7578,6 +7974,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Separator",
     "name": "Separator",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "SEPARATOR"
     ],
@@ -7589,6 +7986,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Out",
     "name": "Out",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "OUT"
     ],
@@ -7600,6 +7998,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Oper",
     "name": "Oper",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "OPER"
     ],
@@ -7611,6 +8010,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Clear/Again",
     "name": "Clear/Again",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "CLEAR_AGAIN"
     ],
@@ -7622,6 +8022,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "CrSel/Props",
     "name": "CrSel/Props",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "CRSEL"
     ],
@@ -7633,6 +8034,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "ExSel",
     "name": "ExSel",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "EXSEL"
     ],
@@ -7644,6 +8046,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Currency Unit",
     "name": "Currency Unit",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "CURU"
     ],
@@ -7655,6 +8058,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keypad (",
     "name": "Keypad (",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_LPAR",
       "KP_LEFT_PARENTHESIS"
@@ -7667,6 +8071,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keypad )",
     "name": "Keypad )",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_RPAR",
       "KP_RIGHT_PARENTHESIS"
@@ -7679,6 +8084,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keypad Space",
     "name": "Keypad Space",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KSPC"
     ],
@@ -7690,6 +8096,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keypad Clear",
     "name": "Keypad Clear",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "KP_CLEAR"
     ],
@@ -7701,6 +8108,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⌃",
     "name": "Control",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LCTRL",
       "LEFT_CONTROL",
@@ -7714,6 +8122,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⇧",
     "name": "Shift",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LSHFT",
       "LEFT_SHIFT",
@@ -7728,6 +8137,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⌥",
     "name": "Option",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LALT",
       "LEFT_ALT"
@@ -7740,6 +8150,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "⌘",
     "name": "Command",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "LGUI",
       "LEFT_GUI",
@@ -7758,6 +8169,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Play/Pause",
     "name": "Play/Pause",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_PP",
       "K_PLAY_PAUSE"
@@ -7770,6 +8182,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Stop",
     "name": "Stop",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_STOP2"
     ],
@@ -7781,6 +8194,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Previous",
     "name": "Previous",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_PREV",
       "K_PREVIOUS"
@@ -7793,6 +8207,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Next",
     "name": "Next",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_NEXT"
     ],
@@ -7804,6 +8219,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Eject",
     "name": "Eject",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_EJECT"
     ],
@@ -7815,6 +8231,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Volume Up",
     "name": "Volume Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_VOL_UP2",
       "K_VOLUME_UP2"
@@ -7827,6 +8244,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Volume Down",
     "name": "Volume Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_VOL_DN2",
       "K_VOLUME_DOWN2"
@@ -7839,6 +8257,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Mute",
     "name": "Mute",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_MUTE2"
     ],
@@ -7850,6 +8269,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "WWW",
     "name": "WWW",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_WWW"
     ],
@@ -7861,6 +8281,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Back",
     "name": "Back",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_BACK"
     ],
@@ -7872,6 +8293,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Forward",
     "name": "Forward",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_FORWARD"
     ],
@@ -7883,6 +8305,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Stop",
     "name": "Stop",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_STOP3"
     ],
@@ -7894,6 +8317,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Find",
     "name": "Find",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_FIND2"
     ],
@@ -7905,6 +8329,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Scroll Up",
     "name": "Scroll Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_SCROLL_UP"
     ],
@@ -7916,6 +8341,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Scroll Down",
     "name": "Scroll Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_SCROLL_DOWN"
     ],
@@ -7927,6 +8353,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Edit",
     "name": "Edit",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_EDIT"
     ],
@@ -7938,6 +8365,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Sleep",
     "name": "Sleep",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_SLEEP"
     ],
@@ -7949,6 +8377,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Lock",
     "name": "Lock",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_LOCK",
       "K_SCREENSAVER",
@@ -7962,6 +8391,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Refresh",
     "name": "Refresh",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_REFRESH"
     ],
@@ -7973,6 +8403,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Calculator",
     "name": "Calculator",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "K_CALC",
       "K_CALCULATOR"
@@ -7985,6 +8416,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Power",
     "name": "Power",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_PWR",
       "C_POWER"
@@ -7997,6 +8429,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Reset",
     "name": "Reset",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_RESET"
     ],
@@ -8008,6 +8441,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Sleep",
     "name": "Sleep",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_SLEEP"
     ],
@@ -8019,6 +8453,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Sleep Mode",
     "name": "Sleep Mode",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_SLEEP_MODE"
     ],
@@ -8030,6 +8465,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu",
     "name": "Menu",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU"
     ],
@@ -8041,6 +8477,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Pick",
     "name": "Menu Pick",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_PICK",
       "C_MENU_SELECT"
@@ -8053,6 +8490,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Up",
     "name": "Menu Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_UP"
     ],
@@ -8064,6 +8502,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Down",
     "name": "Menu Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_DOWN"
     ],
@@ -8075,6 +8514,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Left",
     "name": "Menu Left",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_LEFT"
     ],
@@ -8086,6 +8526,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Right",
     "name": "Menu Right",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_RIGHT"
     ],
@@ -8097,6 +8538,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Escape",
     "name": "Menu Escape",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_ESC",
       "C_MENU_ESCAPE"
@@ -8109,6 +8551,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Value Increase",
     "name": "Menu Value Increase",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_INC",
       "C_MENU_INCREASE"
@@ -8121,6 +8564,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Menu Value Decrease",
     "name": "Menu Value Decrease",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MENU_DEC",
       "C_MENU_DECREASE"
@@ -8133,6 +8577,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Data On Screen",
     "name": "Data On Screen",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_DATA_ON_SCREEN"
     ],
@@ -8144,6 +8589,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Closed Caption",
     "name": "Closed Caption",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_CAPTIONS",
       "C_SUBTITLES"
@@ -8156,6 +8602,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Snapshot",
     "name": "Snapshot",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_SNAPSHOT"
     ],
@@ -8167,6 +8614,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Picture-in-Picture Toggle",
     "name": "Picture-in-Picture Toggle",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_PIP"
     ],
@@ -8178,6 +8626,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Red Menu Button",
     "name": "Red Menu Button",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_RED",
       "C_RED_BUTTON"
@@ -8190,6 +8639,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Green Menu Button",
     "name": "Green Menu Button",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_GREEN",
       "C_GREEN_BUTTON"
@@ -8202,6 +8652,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Blue Menu Button",
     "name": "Blue Menu Button",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BLUE",
       "C_BLUE_BUTTON"
@@ -8214,6 +8665,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Yellow Menu Button",
     "name": "Yellow Menu Button",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_YELLOW",
       "C_YELLOW_BUTTON"
@@ -8226,6 +8678,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Aspect",
     "name": "Aspect",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_ASPECT"
     ],
@@ -8237,6 +8690,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Brightness Up",
     "name": "Brightness Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BRI_UP",
       "C_BRIGHTNESS_INC",
@@ -8250,6 +8704,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Brightness Down",
     "name": "Brightness Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BRI_DN",
       "C_BRIGHTNESS_DEC",
@@ -8263,6 +8718,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Display Backlight Toggle",
     "name": "Display Backlight Toggle",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BKLT_TOG",
       "C_BACKLIGHT_TOGGLE"
@@ -8275,6 +8731,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Display Set Brightness to Minimum",
     "name": "Display Set Brightness to Minimum",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BRI_MIN",
       "C_BRIGHTNESS_MINIMUM"
@@ -8287,6 +8744,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Display Set Brightness to Maximum",
     "name": "Display Set Brightness to Maximum",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BRI_MAX",
       "C_BRIGHTNESS_MAXIMUM"
@@ -8299,6 +8757,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Display Set Auto Brightness",
     "name": "Display Set Auto Brightness",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BRI_AUTO",
       "C_BRIGHTNESS_AUTO"
@@ -8311,6 +8770,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Mode Step",
     "name": "Mode Step",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MODE_STEP",
       "C_MEDIA_STEP"
@@ -8323,6 +8783,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Recall Last",
     "name": "Recall Last",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_CHAN_LAST",
       "C_RECALL_LAST"
@@ -8335,6 +8796,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Computer",
     "name": "Media Select Computer",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_COMPUTER"
     ],
@@ -8346,6 +8808,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select TV",
     "name": "Media Select TV",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_TV"
     ],
@@ -8357,6 +8820,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select WWW",
     "name": "Media Select WWW",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_WWW"
     ],
@@ -8368,6 +8832,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select DVD",
     "name": "Media Select DVD",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_DVD"
     ],
@@ -8379,6 +8844,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Telephone",
     "name": "Media Select Telephone",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_PHONE"
     ],
@@ -8390,6 +8856,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Program Guide",
     "name": "Media Select Program Guide",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_GUIDE"
     ],
@@ -8401,6 +8868,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Video Phone",
     "name": "Media Select Video Phone",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_VIDEOPHONE"
     ],
@@ -8412,6 +8880,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Games",
     "name": "Media Select Games",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_GAMES"
     ],
@@ -8423,6 +8892,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Messages",
     "name": "Media Select Messages",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_MESSAGES"
     ],
@@ -8434,6 +8904,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select CD",
     "name": "Media Select CD",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_CD"
     ],
@@ -8445,6 +8916,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select VCR",
     "name": "Media Select VCR",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_VCR"
     ],
@@ -8456,6 +8928,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Tuner",
     "name": "Media Select Tuner",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_TUNER"
     ],
@@ -8467,6 +8940,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Quit",
     "name": "Quit",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_QUIT"
     ],
@@ -8478,6 +8952,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Help",
     "name": "Help",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_HELP"
     ],
@@ -8489,6 +8964,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Tape",
     "name": "Media Select Tape",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_TAPE"
     ],
@@ -8500,6 +8976,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Cable",
     "name": "Media Select Cable",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_CABLE"
     ],
@@ -8511,6 +8988,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Satellite",
     "name": "Media Select Satellite",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_SATELLITE"
     ],
@@ -8522,6 +9000,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Media Select Home",
     "name": "Media Select Home",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_HOME"
     ],
@@ -8533,6 +9012,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Channel Increment",
     "name": "Channel Increment",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_CHAN_INC",
       "C_CHANNEL_INC"
@@ -8545,6 +9025,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Channel Decrement",
     "name": "Channel Decrement",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_CHAN_DEC",
       "C_CHANNEL_DEC"
@@ -8557,6 +9038,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "VCR Plus",
     "name": "VCR Plus",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_VCR_PLUS"
     ],
@@ -8568,6 +9050,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Play",
     "name": "Play",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_PLAY"
     ],
@@ -8579,6 +9062,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Pause",
     "name": "Pause",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_PAUSE"
     ],
@@ -8590,6 +9074,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Record",
     "name": "Record",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_REC",
       "C_RECORD"
@@ -8602,6 +9087,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Fast Forward",
     "name": "Fast Forward",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_FF",
       "C_FAST_FORWARD"
@@ -8614,6 +9100,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Rewind",
     "name": "Rewind",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_RW",
       "C_REWIND"
@@ -8626,6 +9113,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Next Track",
     "name": "Next Track",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_NEXT",
       "M_NEXT"
@@ -8638,6 +9126,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Previous Track",
     "name": "Previous Track",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_PREV",
       "C_PREVIOUS",
@@ -8651,6 +9140,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Stop",
     "name": "Stop",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_STOP",
       "M_STOP"
@@ -8663,6 +9153,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Eject",
     "name": "Eject",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_EJECT",
       "M_EJCT"
@@ -8675,6 +9166,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Random Play",
     "name": "Random Play",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_SHUFFLE",
       "C_RANDOM_PLAY"
@@ -8687,6 +9179,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Repeat",
     "name": "Repeat",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_REPEAT"
     ],
@@ -8698,6 +9191,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Slow Tracking",
     "name": "Slow Tracking",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_SLOW2",
       "C_SLOW_TRACKING"
@@ -8710,6 +9204,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Stop/Eject",
     "name": "Stop/Eject",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_STOP_EJECT"
     ],
@@ -8721,6 +9216,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Play/Pause",
     "name": "Play/Pause",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_PP",
       "C_PLAY_PAUSE",
@@ -8734,6 +9230,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Dictation",
     "name": "Dictation",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_VOICE_COMMAND"
     ],
@@ -8745,6 +9242,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Mute",
     "name": "Mute",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_MUTE",
       "M_MUTE"
@@ -8757,6 +9255,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Bass Boost",
     "name": "Bass Boost",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_BASS_BOOST"
     ],
@@ -8768,6 +9267,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Volume Up",
     "name": "Volume Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_VOL_UP",
       "C_VOLUME_UP",
@@ -8781,6 +9281,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Volume Down",
     "name": "Volume Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_VOL_DN",
       "C_VOLUME_DOWN",
@@ -8794,6 +9295,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Slow",
     "name": "Slow",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_SLOW"
     ],
@@ -8805,6 +9307,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Alternate Audio Increment",
     "name": "Alternate Audio Increment",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_ALT_AUDIO_INC",
       "C_ALTERNATE_AUDIO_INCREMENT"
@@ -8817,6 +9320,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Consumer Control Configuration",
     "name": "Consumer Control Configuration",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_CCC"
     ],
@@ -8828,6 +9332,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Word Processor",
     "name": "Word Processor",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_WORD"
     ],
@@ -8839,6 +9344,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Text Editor",
     "name": "Text Editor",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_TEXT_EDITOR"
     ],
@@ -8850,6 +9356,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Spreadsheet",
     "name": "Spreadsheet",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_SHEET",
       "C_AL_SPREADSHEET"
@@ -8862,6 +9369,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Graphics Editor",
     "name": "Graphics Editor",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_GRAPHICS_EDITOR"
     ],
@@ -8873,6 +9381,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Presentation App",
     "name": "Presentation App",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_PRESENTATION"
     ],
@@ -8884,6 +9393,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Database App",
     "name": "Database App",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_DB",
       "C_AL_DATABASE"
@@ -8896,6 +9406,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Email Reader",
     "name": "Email Reader",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_MAIL",
       "C_AL_EMAIL"
@@ -8908,6 +9419,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Newsreader",
     "name": "Newsreader",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_NEWS"
     ],
@@ -8919,6 +9431,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Voicemail",
     "name": "Voicemail",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_VOICEMAIL"
     ],
@@ -8930,6 +9443,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Contacts/Address Book",
     "name": "Contacts/Address Book",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_CONTACTS",
       "C_AL_ADDRESS_BOOK"
@@ -8942,6 +9456,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Calendar/Schedule",
     "name": "Calendar/Schedule",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_CAL",
       "C_AL_CALENDAR"
@@ -8954,6 +9469,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Task/Project Manager",
     "name": "Task/Project Manager",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_TASK_MANAGER"
     ],
@@ -8965,6 +9481,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Log/Journal/Timecard",
     "name": "Log/Journal/Timecard",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_JOURNAL"
     ],
@@ -8976,6 +9493,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Checkbook/Finance",
     "name": "Checkbook/Finance",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_FINANCE"
     ],
@@ -8987,6 +9505,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Calculator",
     "name": "Calculator",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_CALC",
       "C_AL_CALCULATOR"
@@ -8999,6 +9518,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "A/V Capture/Playback",
     "name": "A/V Capture/Playback",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_AV_CAPTURE_PLAYBACK"
     ],
@@ -9010,6 +9530,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Local Machine Browser",
     "name": "Local Machine Browser",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_MY_COMPUTER"
     ],
@@ -9021,6 +9542,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Internet Browser",
     "name": "Internet Browser",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_WWW"
     ],
@@ -9032,6 +9554,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Network Chat",
     "name": "Network Chat",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_CHAT",
       "C_AL_NETWORK_CHAT"
@@ -9044,6 +9567,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Logoff",
     "name": "Logoff",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_LOGOFF"
     ],
@@ -9055,6 +9579,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Terminal Lock/Screensaver",
     "name": "Terminal Lock/Screensaver",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_LOCK",
       "C_AL_SCREENSAVER",
@@ -9068,6 +9593,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Control Panel",
     "name": "Control Panel",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_CONTROL_PANEL"
     ],
@@ -9079,6 +9605,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Select Task/Application",
     "name": "Select Task/Application",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_SELECT_TASK"
     ],
@@ -9090,6 +9617,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Next Task/Application",
     "name": "Next Task/Application",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_NEXT_TASK"
     ],
@@ -9101,6 +9629,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Previous Task/Application",
     "name": "Previous Task/Application",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_PREV_TASK",
       "C_AL_PREVIOUS_TASK"
@@ -9113,6 +9642,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Integrated Help Center",
     "name": "Integrated Help Center",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_HELP"
     ],
@@ -9124,6 +9654,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Documents",
     "name": "Documents",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_DOCS",
       "C_AL_DOCUMENTS"
@@ -9136,6 +9667,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Spell Check",
     "name": "Spell Check",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_SPELL",
       "C_AL_SPELLCHECK"
@@ -9148,6 +9680,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Layout",
     "name": "Keyboard Layout",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_KEYBOARD_LAYOUT"
     ],
@@ -9159,6 +9692,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Screen Saver",
     "name": "Screen Saver",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_SCREEN_SAVER"
     ],
@@ -9170,6 +9704,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "File Browser",
     "name": "File Browser",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_FILES",
       "C_AL_FILE_BROWSER"
@@ -9182,6 +9717,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Image Browser",
     "name": "Image Browser",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_IMAGES",
       "C_AL_IMAGE_BROWSER"
@@ -9194,6 +9730,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Audio Browser",
     "name": "Audio Browser",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_AUDIO",
       "C_AL_AUDIO_BROWSER",
@@ -9207,6 +9744,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Movie Browser",
     "name": "Movie Browser",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_MOVIES",
       "C_AL_MOVIE_BROWSER"
@@ -9219,6 +9757,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Instant Messaging",
     "name": "Instant Messaging",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_IM",
       "C_AL_INSTANT_MESSAGING"
@@ -9231,6 +9770,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "OEM Features/Tips/Tutorial Browser",
     "name": "OEM Features/Tips/Tutorial Browser",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AL_TIPS",
       "C_AL_OEM_FEATURES",
@@ -9244,6 +9784,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "New",
     "name": "New",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_NEW"
     ],
@@ -9255,6 +9796,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Open",
     "name": "Open",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_OPEN"
     ],
@@ -9266,6 +9808,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Close",
     "name": "Close",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_CLOSE"
     ],
@@ -9277,6 +9820,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Exit",
     "name": "Exit",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_EXIT"
     ],
@@ -9288,6 +9832,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Save",
     "name": "Save",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_SAVE"
     ],
@@ -9299,6 +9844,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Print",
     "name": "Print",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_PRINT"
     ],
@@ -9310,6 +9856,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Properties",
     "name": "Properties",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_PROPS",
       "C_AC_PROPERTIES"
@@ -9322,6 +9869,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Undo",
     "name": "Undo",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_UNDO"
     ],
@@ -9333,6 +9881,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Copy",
     "name": "Copy",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_COPY"
     ],
@@ -9344,6 +9893,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Cut",
     "name": "Cut",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_CUT"
     ],
@@ -9355,6 +9905,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Paste",
     "name": "Paste",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_PASTE"
     ],
@@ -9366,6 +9917,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Find",
     "name": "Find",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_FIND"
     ],
@@ -9377,6 +9929,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Spotlight",
     "name": "Spotlight",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_SEARCH"
     ],
@@ -9388,6 +9941,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Go To",
     "name": "Go To",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_GOTO"
     ],
@@ -9399,6 +9953,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Home",
     "name": "Home",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_HOME"
     ],
@@ -9410,6 +9965,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Back",
     "name": "Back",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_BACK"
     ],
@@ -9421,6 +9977,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Forward",
     "name": "Forward",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_FORWARD"
     ],
@@ -9432,6 +9989,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Stop",
     "name": "Stop",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_STOP"
     ],
@@ -9443,6 +10001,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Refresh",
     "name": "Refresh",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_REFRESH"
     ],
@@ -9454,6 +10013,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Bookmarks",
     "name": "Bookmarks",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_BOOKMARKS",
       "C_AC_FAVORITES",
@@ -9467,6 +10027,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Zoom In",
     "name": "Zoom In",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_ZOOM_IN"
     ],
@@ -9478,6 +10039,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Zoom Out",
     "name": "Zoom Out",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_ZOOM_OUT"
     ],
@@ -9489,6 +10051,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Zoom",
     "name": "Zoom",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_ZOOM"
     ],
@@ -9500,6 +10063,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "View Toggle",
     "name": "View Toggle",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_VIEW_TOGGLE"
     ],
@@ -9511,6 +10075,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Scroll Up",
     "name": "Scroll Up",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_SCROLL_UP"
     ],
@@ -9522,6 +10087,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Scroll Down",
     "name": "Scroll Down",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_SCROLL_DOWN"
     ],
@@ -9533,6 +10099,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Edit",
     "name": "Edit",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_EDIT"
     ],
@@ -9544,6 +10111,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Cancel",
     "name": "Cancel",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_CANCEL"
     ],
@@ -9555,6 +10123,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Insert Mode",
     "name": "Insert Mode",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_INS",
       "C_AC_INSERT"
@@ -9567,6 +10136,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Delete",
     "name": "Delete",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_DEL"
     ],
@@ -9578,6 +10148,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Redo/Repeat",
     "name": "Redo/Repeat",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_REDO"
     ],
@@ -9589,6 +10160,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Reply",
     "name": "Reply",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_REPLY"
     ],
@@ -9600,6 +10172,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Forward Msg",
     "name": "Forward Msg",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_FORWARD_MAIL"
     ],
@@ -9611,6 +10184,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Send",
     "name": "Send",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_SEND"
     ],
@@ -9622,6 +10196,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "🌐",
     "name": "Globe",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "GLOBE",
       "C_AC_NEXT_KEYBOARD_LAYOUT_SELECT"
@@ -9634,6 +10209,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Mission Control",
     "name": "Mission Control",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_DESKTOP_SHOW_ALL_WINDOWS"
     ],
@@ -9645,6 +10221,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Apps",
     "name": "Apps",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_AC_DESKTOP_SHOW_ALL_APPLICATIONS"
     ],
@@ -9656,6 +10233,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Input Assist Previous",
     "name": "Keyboard Input Assist Previous",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_KBIA_PREV",
       "C_KEYBOARD_INPUT_ASSIST_PREVIOUS"
@@ -9668,6 +10246,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Input Assist Next",
     "name": "Keyboard Input Assist Next",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_KBIA_NEXT",
       "C_KEYBOARD_INPUT_ASSIST_NEXT"
@@ -9680,6 +10259,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Input Assist Previous Group",
     "name": "Keyboard Input Assist Previous Group",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_KBIA_PREV_GRP",
       "C_KEYBOARD_INPUT_ASSIST_PREVIOUS_GROUP"
@@ -9692,6 +10272,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Input Assist Next Group",
     "name": "Keyboard Input Assist Next Group",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_KBIA_NEXT_GRP",
       "C_KEYBOARD_INPUT_ASSIST_NEXT_GROUP"
@@ -9704,6 +10285,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Input Assist Accept",
     "name": "Keyboard Input Assist Accept",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_KBIA_ACCEPT",
       "C_KEYBOARD_INPUT_ASSIST_ACCEPT"
@@ -9716,6 +10298,7 @@ export const keyCatalog: KeyEntry[] = [
     "cap": "Keyboard Input Assist Cancel",
     "name": "Keyboard Input Assist Cancel",
     "shifted": null,
+    "shiftedZmk": null,
     "zmk": [
       "C_KBIA_CANCEL",
       "C_KEYBOARD_INPUT_ASSIST_CANCEL"

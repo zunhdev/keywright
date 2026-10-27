@@ -29,5 +29,6 @@ declare const classes: {
   readonly tabsInner: string;
   readonly title: string;
   readonly upper: string;
+  readonly zmk: string;
 };
 export default classes;

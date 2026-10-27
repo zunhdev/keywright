@@ -21,6 +21,11 @@
   }
 }
 
+/* A number, such as the low-battery level: as wide as a few digits and its steppers. */
+.number {
+  width: 160px;
+}
+
 .title {
   margin: 0;
   font: var(--type-body-strong);
@@ -31,7 +36,8 @@
   color: var(--text-secondary);
 }
 
-.problem {
+.problem,
+.status {
   margin: 0;
   color: var(--text-primary);
 }
