@@ -38,7 +38,7 @@
 
   /* Status, always with an icon or words too */
   --warning: light-dark(#a65800, #f2a541);
-  --danger: light-dark(#c2333b, #ff6b70);
+  --danger: light-dark(#be3139, #ff6b70);
   --success: light-dark(#1f7a4d, #4cc38a);
 
   /*

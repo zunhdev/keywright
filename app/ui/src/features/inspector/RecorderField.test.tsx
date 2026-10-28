@@ -1,10 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
-import { act, fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 
 import { useStore } from "../../app/store.ts";
 import type { Action } from "../../ipc/bindings.ts";
+import { expectNoAxeViolations } from "../../test/axe.ts";
 import { status } from "../../test/canvas.tsx";
 import { inspect, rustSide } from "../../test/inspector.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
@@ -44,6 +45,7 @@ describe("the shortcut recorder", () => {
     await record();
     expect(screen.getByText("Press a shortcut…")).toBeDefined();
     expect(useStore.getState().recording).toBe("key");
+    await expectNoAxeViolations(document.body);
     // With ABC.
     await press("ShiftLeft", "Shift", { shiftKey: true });
     await press("MetaLeft", "Meta", { shiftKey: true, metaKey: true });
@@ -138,6 +140,26 @@ describe("the shortcut recorder", () => {
       useStore.setState({ session: status("locked") });
     });
     expect(screen.queryByText("Press a shortcut…")).toBeNull();
+  });
+
+  test("VoiceOver hears it start and what it recorded, in words, not each key selected", async () => {
+    rustSide();
+    inspect([Q]);
+    // The field isn't a live region, so selecting another key isn't said twice.
+    const field = screen.getByRole("button", { name: "Record" }).previousElementSibling;
+    expect(field !== null && field.closest("[aria-live]") === null).toBe(true);
+    await record();
+    expect(useStore.getState().announcement).toBe("Press a shortcut. Escape cancels.");
+    // The field says it in words too, for VoiceOver reading the inspector.
+    expect(screen.getByText("Press a shortcut. Escape cancels.")).toBeDefined();
+    await press("ShiftLeft", "Shift", { shiftKey: true });
+    await press("MetaLeft", "Meta", { shiftKey: true, metaKey: true });
+    await press("Digit4", "$", { shiftKey: true, metaKey: true });
+    await waitFor(() => {
+      expect(useStore.getState().announcement).toBe(
+        "Recorded Shift-Command-4, Screenshot of an area.",
+      );
+    });
   });
 
   test("names the Mac action a shortcut is, and explains the shortcuts macOS keeps", async () => {

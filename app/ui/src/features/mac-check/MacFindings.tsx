@@ -1,4 +1,5 @@
 import { TriangleAlert } from "lucide-react";
+import { useId } from "react";
 
 import { useStore } from "../../app/store.ts";
 import { Button } from "../../design-system/Button.tsx";
@@ -18,18 +19,20 @@ function useEditable(): boolean {
 
 /**
  * One finding (design §11.3): what the key types and where it is, which shows it, why it
- * doesn't work on a Mac, and Use ⌘C, where there's a fix, and Dismiss.
+ * doesn't work on a Mac, and Use ⌘C, where there's a fix, and Dismiss. Its buttons say
+ * which finding they're for, so each of a list's Dismiss buttons can be told apart.
  */
 function Finding({ found }: { found: MacFinding }) {
   const messages = useMessages();
   const editable = useEditable();
+  const name = useId();
   return (
     <li className={styles.finding}>
       <span className={styles.icon}>
         <Icon icon={TriangleAlert} />
       </span>
       <span className={styles.text}>
-        <strong>{found.name}</strong>
+        <strong id={name}>{found.name}</strong>
         <Button
           variant="quiet"
           size="compact"
@@ -41,11 +44,21 @@ function Finding({ found }: { found: MacFinding }) {
         <span>{found.reason}</span>
         <span className={styles.buttons}>
           {found.fix === null ? null : (
-            <Button size="compact" isDisabled={!editable} onPress={() => void fixKeys([found])}>
+            <Button
+              size="compact"
+              isDisabled={!editable}
+              aria-describedby={name}
+              onPress={() => void fixKeys([found])}
+            >
               {messages.format("mac.fix", { fix: found.fix })}
             </Button>
           )}
-          <Button variant="quiet" size="compact" onPress={() => void dismiss([found])}>
+          <Button
+            variant="quiet"
+            size="compact"
+            aria-describedby={name}
+            onPress={() => void dismiss([found])}
+          >
             {messages.format("mac.dismiss")}
           </Button>
         </span>
@@ -57,7 +70,7 @@ function Finding({ found }: { found: MacFinding }) {
 /** Findings of the Mac compatibility check, each with its fix (MAC-7). */
 export function MacFindings({ findings }: { findings: readonly MacFinding[] }) {
   return (
-    <ul className={styles.findings}>
+    <ul className={styles.findings} role="list">
       {findings.map((found) => (
         <Finding
           key={`${found.finding.layer}:${found.finding.position}:${found.finding.page}:${found.finding.id}`}

@@ -58,6 +58,12 @@ export const connectionStrings = {
   "connection.reapply": "Re-apply",
   "connection.discard": "Discard",
   "connection.keep": "Keep Them",
+  "connection.lost": (args) => {
+    const keyboard = text(args, "keyboard") || "your keyboard";
+    return Number(args?.["count"] ?? 0) > 0
+      ? `Lost connection to ${keyboard}. Your changes are kept here; reconnect to continue.`
+      : `Lost connection to ${keyboard}.`;
+  },
   "connection.moved": (args) =>
     `Now connected over ${text(args, "transport")}. Unlock again to continue.`,
 } satisfies Record<string, LocalizedString>;

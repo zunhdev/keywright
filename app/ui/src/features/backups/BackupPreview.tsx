@@ -63,7 +63,7 @@ export function BackupPreview({ preview }: { preview: ImportPreview }) {
       {preview.cannotApply.length > 0 ? (
         <section className={styles.cannot}>
           <h3 className={styles.heading}>{messages.format("import.cannot-apply")}</h3>
-          <ul className={styles.items}>
+          <ul className={styles.items} role="list">
             {preview.cannotApply.map((item, index) => {
               const { where, why } = cannotApply(messages, item);
               return (

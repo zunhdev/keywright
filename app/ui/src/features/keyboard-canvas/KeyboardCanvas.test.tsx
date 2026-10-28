@@ -129,9 +129,12 @@ describe("selecting", () => {
 describe("while the keymap can't be changed", () => {
   test("the keyboard is drawn faded, under a scrim that says why", () => {
     drawSofle("locked");
-    const scrim = screen.getByRole("status");
-    expect(scrim.textContent).toBe("Locked");
-    expect(scrim.dataset["over"]).toBe("keyboard");
+    const scrim = scrimOf();
+    expect(scrim?.textContent).toBe("Locked");
+    expect(scrim?.dataset["over"]).toBe("keyboard");
+    // VoiceOver hears it once, from the status.
+    expect(scrim?.getAttribute("aria-hidden")).toBe("true");
+    expect(screen.getByRole("status").textContent).toBe("Locked");
     const keyboard = keys()[0]?.parentElement;
     expect(keyboard?.inert).toBe(true);
   });
@@ -141,10 +144,16 @@ describe("while the keymap can't be changed", () => {
     act(() => {
       useStore.setState({ session: status("ready") });
     });
-    expect(screen.getByRole("status").dataset["over"]).toBe("nothing");
+    expect(scrimOf() === null).toBe(true);
+    expect(screen.getByRole("status").textContent).toBe("Unlocked");
     expect(keys()[0]?.parentElement?.inert).toBe(false);
   });
 });
+
+/** What the canvas shows of the session's state, if it shows it. */
+function scrimOf(): HTMLElement | null {
+  return document.querySelector<HTMLElement>("[data-over]");
+}
 
 test("before a keymap is read, the canvas says what the session is doing", () => {
   useStore.setState({ session: status("no-device") });
@@ -153,10 +162,9 @@ test("before a keymap is read, the canvas says what the session is doing", () =>
       <KeyboardCanvas />
     </I18nProvider>,
   );
-  const state = screen.getByRole("status");
-  expect(state.textContent).toBe("Not connected");
+  expect(screen.getByRole("status").textContent).toBe("Not connected");
   // The canvas shows how to connect one; the state is for VoiceOver.
-  expect(state.dataset["over"]).toBe("nothing");
+  expect(scrimOf() === null).toBe(true);
   // The one thing to do without a keyboard is explore the demo.
   expect(
     within(document.body)

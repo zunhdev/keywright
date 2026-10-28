@@ -5,6 +5,7 @@ import { act, fireEvent, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 
 import { useStore } from "../../app/store.ts";
+import { expectNoAxeViolations } from "../../test/axe.ts";
 import { drawSofle, keyAt } from "../../test/canvas.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
 
@@ -181,6 +182,7 @@ describe("the keys' menu", () => {
       within(menu).getByRole("menuitem", { name: new RegExp(name, "u") });
     expect(item("Record Shortcut").getAttribute("aria-disabled")).toBeNull();
     expect(item("Paste Action").getAttribute("aria-disabled")).toBe("true");
+    await expectNoAxeViolations(menu);
     await userEvent.click(item("Copy Action"));
     expect(screen.queryByRole("menu")).toBeNull();
     expect(calls).toEqual([{ command: "copy_action", args: { layer: 0, position: Q } }]);

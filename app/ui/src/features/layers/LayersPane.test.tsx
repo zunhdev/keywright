@@ -121,6 +121,7 @@ describe("removing a layer", () => {
     const sheet = screen.getByRole("dialog", { name: "Remove the raise layer?" });
     expect(within(sheet).getByText("Hold raise: Right half, row 5, key 2")).toBeDefined();
     expect(within(sheet).getByText("You can undo this with ⌘Z.")).toBeDefined();
+    await expectNoAxeViolations(sheet);
     await userEvent.click(within(sheet).getByRole("button", { name: "Remove Layer" }));
     expect(calls).toEqual([`remove_layer {"layer":2,"force":false}`]);
   });

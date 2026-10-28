@@ -8,10 +8,7 @@
   box-shadow: var(--shadow-overlay);
   color: var(--accent-contrast);
   outline: none;
-
-  &[data-entering] {
-    animation: coach-mark-in var(--motion-panel) var(--ease-out);
-  }
+  animation: coach-mark-in var(--motion-panel) var(--ease-out);
 }
 
 /* The arrow points down as drawn: at the target below it, for a coach mark on top. */

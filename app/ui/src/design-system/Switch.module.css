@@ -48,7 +48,8 @@
   border-radius: 50%;
   background: var(--surface-key);
   box-shadow: var(--shadow-key);
-  transition: transform var(--motion-hover) var(--ease-out);
+  /* It slides, so with Reduce Motion it moves at once. */
+  transition: transform calc(var(--motion-hover) * var(--motion-distance)) var(--ease-out);
 
   .switch[data-selected] & {
     transform: translateX(14px);
