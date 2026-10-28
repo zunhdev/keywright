@@ -8,7 +8,7 @@ import type { LocalizedString } from "@internationalized/string";
 export const diagnosticsStrings = {
   "diagnostics.title": "Diagnostics",
   "diagnostics.note":
-    "A report for a bug report: which Keywright and macOS you have, your keyboard and how it's connected, and Keywright's latest log lines. Serial numbers and your home folder's name are left out.",
+    "Copies a report to paste into a bug report: which Keywright and macOS you have, your keyboard and how it's connected, and Keywright's latest log lines. Serial numbers and your home folder's name are left out.",
   "diagnostics.copy": "Copy Diagnostics",
   "diagnostics.copied": "Copied. Read it through before you paste it anywhere.",
   "diagnostics.report": "Diagnostics report",
