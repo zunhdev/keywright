@@ -4,8 +4,9 @@
 //! check every shortcut. Items that macOS provides, such as Hide, Minimize or Quit, work
 //! from the start. Keywright's own items, each a [`MenuItem`], start disabled. The UI
 //! enables and renames them (`menu_set`), and hears when one is chosen (`menu://item`).
-//! Settings…, Backups… and Update Firmware… are the exceptions: the shell opens their
-//! windows, so they work from the start.
+//! The shell's own items are the exceptions, and work from the start: Settings…, Backups…
+//! and Update Firmware… open their windows, and Keywright Help and Keyboard Shortcuts open
+//! the user guide (`docs/user/`).
 
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -75,9 +76,27 @@ impl MenuItem {
     }
 
     /// Whether the shell handles the item itself, so it works from the start: Settings…,
-    /// Backups… and Update Firmware…, which open their own windows.
+    /// Backups… and Update Firmware…, which open their own windows, and Help's items that
+    /// open the user guide.
     pub const fn handled_by_the_shell(self) -> bool {
         matches!(self, Self::Settings | Self::Backups | Self::UpdateFirmware)
+            || self.guide_page().is_some()
+    }
+
+    /// The page of the user guide the item opens: the guide's contents for Keywright Help,
+    /// and its list of shortcuts for Keyboard Shortcuts.
+    pub const fn guide_page(self) -> Option<&'static str> {
+        match self {
+            Self::Help => Some(concat!(
+                env!("CARGO_PKG_REPOSITORY"),
+                "/blob/main/docs/user/README.md"
+            )),
+            Self::KeyboardShortcuts => Some(concat!(
+                env!("CARGO_PKG_REPOSITORY"),
+                "/blob/main/docs/user/keyboard-shortcuts.md"
+            )),
+            _ => None,
+        }
     }
 
     /// The item with this ID, or `None` for one of macOS's own items.
@@ -472,7 +491,7 @@ mod tests {
 
     /// The UI enables the items it handles; the shell's work without it.
     #[test]
-    fn only_the_windows_the_shell_opens_work_without_the_ui() {
+    fn only_the_shells_own_items_work_without_the_ui() {
         let shells: Vec<MenuItem> = items()
             .map(|(item, _, _)| item)
             .filter(|item| item.handled_by_the_shell())
@@ -482,9 +501,24 @@ mod tests {
             [
                 MenuItem::Settings,
                 MenuItem::Backups,
-                MenuItem::UpdateFirmware
+                MenuItem::UpdateFirmware,
+                MenuItem::Help,
+                MenuItem::KeyboardShortcuts
             ]
         );
+    }
+
+    /// Help's items open pages of the user guide in the repository, which must be there.
+    #[test]
+    fn help_opens_pages_of_the_user_guide_that_exist() {
+        let repository = concat!(env!("CARGO_PKG_REPOSITORY"), "/blob/main/");
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        for item in [MenuItem::Help, MenuItem::KeyboardShortcuts] {
+            let page = item.guide_page().unwrap();
+            let path = page.strip_prefix(repository).unwrap();
+            assert!(path.starts_with("docs/user/"), "{page}");
+            assert!(root.join(path).is_file(), "{page} isn't in the repository");
+        }
     }
 
     /// The UI names items as their IDs, so an ID must lead back to its item.

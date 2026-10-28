@@ -128,6 +128,26 @@ test("a sheet takes focus, names itself, and gives focus back when it closes", a
   expect(document.activeElement).toBe(trigger);
 });
 
+test("a sheet that goes with its page leaves the next page's focus alone", async () => {
+  // A sheet that closes gives focus to its page's home, a moment later. One that goes with
+  // its page has none: what's drawn next, such as the next test, keeps its focus.
+  const page = render(
+    <Sheet title="Unlock your keyboard" isOpen>
+      <p>Hold raise, then tap B.</p>
+    </Sheet>,
+  );
+  page.unmount();
+  render(
+    <div data-focus-home>
+      <button type="button">Home</button>
+    </div>,
+  );
+  await new Promise((resolve) => {
+    setTimeout(resolve, 100);
+  });
+  expect(document.activeElement === document.body).toBe(true);
+});
+
 test("a popover shows its details by what opened it", async () => {
   render(
     <DialogTrigger>
