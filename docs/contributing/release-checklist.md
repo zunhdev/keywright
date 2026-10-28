@@ -68,7 +68,7 @@ The task is the newcomer task (product §11): remap a key to a Mac shortcut and 
 
 1. **VoiceOver** (⌘F5): go through the first run, then change the Tab key to a shortcut with Record, and save it with ⌘S. Check that:
    - each sheet says its title, and each key where it is and what it does, such as "Left half, row 3, key 1. Types Tab.";
-   - VoiceOver says "Unlocked", the layer shown with ⌘2, "Press a shortcut. Escape cancels.", "Recorded Control-Option-Command-K." and "Saved to keyboard";
+   - VoiceOver says "Unlocked", the layer shown with ⌘2, "Press a shortcut. Escape cancels.", "Recorded Control-Option-Command-K." and "Saved to keyboard", the last once, without interrupting and without "check mark";
    - after saving, focus is back where it was before ⌘S.
 
    With `KEYWRIGHT_SIMULATOR=sofle-relocks`, the keyboard locks itself after 20 seconds, and VoiceOver says "Your keyboard locked itself. Unlock to keep editing."
@@ -81,7 +81,7 @@ The task is the newcomer task (product §11): remap a key to a Mac shortcut and 
 | Item                                                        | How                      | Result |
 | ----------------------------------------------------------- | ------------------------ | ------ |
 | Every key, sheet and banner says its name and role          | VoiceOver                | ✓      |
-| Live regions: lock, unlock, layer, recording, saved, relock | VoiceOver                | ✓ (\*) |
+| Live regions: lock, unlock, layer, recording, saved, relock | VoiceOver                | ✓      |
 | A keyboard lost says so at once                             | `Connection.test.tsx`    | ✓      |
 | Focus comes back after a sheet closes                       | VoiceOver, keyboard      | ✓ (†)  |
 | The newcomer task with the keyboard alone                   | Full Keyboard Access     | ✓      |
@@ -89,8 +89,6 @@ The task is the newcomer task (product §11): remap a key to a Mac shortcut and 
 | Colour is never the only signal                             | By eye                   | ✓      |
 | Reduce Motion: nothing moves, scales or shimmers            | `motion.test.ts`, by eye | ✓      |
 | axe in every feature's component tests                      | `mise run test`          | ✓      |
-
-(\*) Toasts, such as "Saved to keyboard", interrupt rather than wait their turn: KEY-112.
 
 (†) For the sheets the person opens. Those that open by themselves leave focus on the page: KEY-113.
 
@@ -113,5 +111,5 @@ Gaps found, filed as bugs:
 
 - [KEY-114](https://linear.app/zunhdev/issue/KEY-114): VoiceOver said nothing for punctuation keys, so "Types ;." was heard as "Types", on the canvas and in the key picker. Fixed since: they're said by name, such as "Types Semicolon."
 - [KEY-111](https://linear.app/zunhdev/issue/KEY-111): the review's, Import's and Backups' rows read their keys as symbols. Fixed since: each row is said in words.
-- [KEY-112](https://linear.app/zunhdev/issue/KEY-112): toasts interrupt VoiceOver, maybe twice.
+- [KEY-112](https://linear.app/zunhdev/issue/KEY-112): toasts interrupted VoiceOver, twice: "Saved to keyboard" came as two alerts. Fixed since: a toast is said once, politely, without its ✓.
 - [KEY-113](https://linear.app/zunhdev/issue/KEY-113): sheets that open by themselves leave focus on the page when they close.

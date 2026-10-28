@@ -13,7 +13,9 @@ const TOAST = 4000;
 /** Saves the changes being tried to the keyboard. Resolves to whether it worked. */
 export async function saveChanges(): Promise<boolean> {
   const saved = await run(commands.saveChanges());
-  if (saved) toasts.add({ title: messages().format("review.saved") }, { timeout: TOAST });
+  if (saved) {
+    toasts.add({ title: messages().format("review.saved"), done: true }, { timeout: TOAST });
+  }
   return saved;
 }
 
