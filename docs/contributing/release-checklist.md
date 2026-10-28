@@ -40,16 +40,25 @@ The first release has no previous one to update from: use two test releases inst
 
 | Item                                                        | How    | Result |
 | ----------------------------------------------------------- | ------ | ------ |
-| The download opens after _Open Anyway_                      | Step 1 |        |
-| macOS asks for Bluetooth once, when it's first needed       | Step 2 |        |
-| _Open at login_ opens Keywright at the next login           | Step 2 |        |
-| The update needs _Open Anyway_ once more, and nothing else  | Step 3 |        |
-| Bluetooth, removable drives and _Open at login_ stay as set | Step 4 |        |
-| The checksums and attestations verify                       | Step 5 |        |
+| The download opens after _Open Anyway_                      | Step 1 | ✓      |
+| macOS asks for Bluetooth once, when it's first needed       | Step 2 | ✓      |
+| _Open at login_ opens Keywright at the next login           | Step 2 | (\*)   |
+| The update needs _Open Anyway_ once more, and nothing else  | Step 3 | ✓      |
+| Bluetooth, removable drives and _Open at login_ stay as set | Step 4 | ✓ (\*) |
+| The checksums and attestations verify                       | Step 5 | ✓      |
+
+(\*) Not logged out and in, and no removable drive: see _Last run_.
 
 ### Last run
 
-Not run yet.
+2026-10-28, `1.0.0-rc.1`, macOS 27.2 (KEY-79). There was no earlier release, so the run went through two test releases, `0.0.1-test` and `0.0.2-test`, to the candidate. Each one was downloaded from its draft, marked as downloaded (quarantined), and moved into Applications over the one before.
+
+- Each needed _Open Anyway_ once, and nothing else.
+- macOS asked for Bluetooth once, on `0.0.1-test`. The two updates kept it, and kept _Open at login_ on, with the login item still pointing to `/Applications/Keywright.app`.
+- Not logged out and in: that would have ended the session running the checks. Spike S9 found registering reliable.
+- Removable drives weren't used: the firmware section didn't run.
+- The checksums and attestations of both test releases and of the candidate verify; an unattested file fails.
+- The apps were moved into Applications by a script, not dragged with Finder, so they ran translocated. Their permissions applied all the same (spike S8).
 
 ## The newcomer task (product §11)
 
@@ -65,13 +74,15 @@ The task product §11 measures with first-time users in the public launch, run b
 
 | Item                                                 | How           | Result |
 | ---------------------------------------------------- | ------------- | ------ |
-| The first run leads from connecting to a saved key   | Steps 1 and 2 |        |
-| It takes under two minutes, without reading the docs | The stopwatch |        |
-| The key does the shortcut after saving               | Step 3        |        |
+| The first run leads from connecting to a saved key   | Steps 1 and 2 | ✓      |
+| It takes under two minutes, without reading the docs | The stopwatch | (\*)   |
+| The key does the shortcut after saving               | Step 3        | ✓      |
+
+(\*) Not timed: see _Last run_.
 
 ### Last run
 
-Not run yet.
+2026-10-28, `1.0.0-rc.1` (KEY-79): the maintainer went from a reset first run to the right ⌘ key set to ⌃⌥⌘K and saved, and the key did the shortcut. Not timed, by the maintainer's choice; every step took effect at once. The key went back with the automatic backup from that connection (Backups window › Restore…).
 
 ## Mac presets and rules (MAC-4, MAC-7)
 
@@ -89,13 +100,20 @@ With the Sofle unlocked over USB, on the raise layer:
 
 | Item                                                | How    | macOS 27 |
 | --------------------------------------------------- | ------ | -------- |
-| Every preset does what S7 found                     | Step 1 |          |
-| ⌃Space switches the input source (not a preset yet) | Step 2 |          |
-| The rules' keys do nothing, and their fixes work    | Step 3 |          |
+| Every preset does what S7 found                     | Step 1 | ✓        |
+| ⌃Space switches the input source (not a preset yet) | Step 2 | —        |
+| The rules' keys do nothing, and their fixes work    | Step 3 | ✓        |
 
 ### Last run
 
-Spike S7, 2026-10-23, macOS 27.2: every preset worked, and no rule's key did anything; ⌃Space wasn't checked. Not run on a release candidate yet.
+Spike S7, 2026-10-23, macOS 27.2: every preset worked, and no rule's key did anything; ⌃Space wasn't checked.
+
+2026-10-28, `1.0.0-rc.1`, macOS 27.2 (KEY-79):
+
+- All 24 presets did what S7 found. They were tried in two batches of 12, on keys of the raise layer, as changes to try, discarded afterwards.
+- The seven Windows-style keys on the stock raise layer did nothing.
+- The fixes bind the same shortcuts as the Copy, Cut, Paste, Undo and Screenshot presets, which worked.
+- ⌃Space wasn't checked: its shortcut is still off on this Mac.
 
 ## Input sources (MAC-5, MAC-6)
 
@@ -115,7 +133,9 @@ Turn on German and Dvorak in System Settings › Keyboard › Text Input, if the
 
 ### Last run
 
-M4 (KEY-61, 2026-10-25), macOS 27.2: Russian was switched live in the app; German and Dvorak weren't turned on, so the tests checked them against macOS's layouts instead. Not run live on a release candidate yet.
+M4 (KEY-61, 2026-10-25), macOS 27.2: Russian was switched live in the app; German and Dvorak weren't turned on, so the tests checked them against macOS's layouts instead.
+
+Not run on `1.0.0-rc.1` (2026-10-28), by the maintainer's choice: left to the real-world trial (KEY-106).
 
 ## Backups (BAK-1 to BAK-4)
 
@@ -133,13 +153,19 @@ With the Sofle unlocked over USB:
 
 | Item                                                  | How        | Result |
 | ----------------------------------------------------- | ---------- | ------ |
-| Export, then import shows what would change           | Steps 1, 2 |        |
-| Apply and save; the keyboard keeps it after a restart | Step 2     |        |
-| An automatic backup restores                          | Step 3     |        |
+| Export, then import shows what would change           | Steps 1, 2 | ✓      |
+| Apply and save; the keyboard keeps it after a restart | Step 2     | ✓      |
+| An automatic backup restores                          | Step 3     | ✓      |
 
 ### Last run
 
-M4 (KEY-66, KEY-71, 2026-10-25): export, editing the file and the import preview, on the Sofle; that run stopped before applying. Not run whole on a release candidate yet.
+M4 (KEY-66, KEY-71, 2026-10-25): export, editing the file and the import preview, on the Sofle; that run stopped before applying.
+
+2026-10-28, `1.0.0-rc.1`, over USB (KEY-79):
+
+- The keymap was exported, then R and T on the raise layer were changed and saved.
+- Importing the export listed exactly those two keys. Applied and saved, they stayed as in the file after both halves were switched off and on.
+- An automatic backup ("first connect") restored a key the newcomer task had changed.
 
 ## Firmware update (FW-1 to FW-4)
 
@@ -147,7 +173,7 @@ The Firmware Update assistant updates each half on the real keyboard, and the ke
 
 ### How to run it
 
-1. Back up first, as the assistant offers. Then update the left half, then the right, as the assistant says: each goes into update mode with its reset button, shows up as a drive, takes the file, and restarts. The first time, macOS asks to allow the accessory, and for removable drives.
+1. Back up first, as the assistant offers. Then update the halves in the order the assistant gives, the right half first on the Sofle: each goes into update mode with its reset button, shows up as a drive, takes the file, and restarts. The first time, macOS asks to allow the accessory, and for removable drives.
 2. Afterwards the keyboard connects and unlocks as before, with the same keymap. Choosing the right half's file for the left half is refused.
 3. `keywright flash` does the same from the command line, for one half.
 
@@ -163,7 +189,9 @@ The settings-reset path erases the keymap and the pairings: run it only when a r
 
 ### Last run
 
-M4 (KEY-69, KEY-70, 2026-10-25): both halves were flashed with the assistant on the Sofle, with the keymap intact; the settings-reset path wasn't run on hardware. Not run on a release candidate yet.
+M4 (KEY-69, KEY-70, 2026-10-25): both halves were flashed with the assistant on the Sofle, with the keymap intact; the settings-reset path wasn't run on hardware.
+
+Not run on `1.0.0-rc.1` (2026-10-28), by the maintainer's choice: left to the real-world trial (KEY-106).
 
 ## Wireless parity (USB × Bluetooth)
 
@@ -212,7 +240,18 @@ Everything works the same over Bluetooth as over USB (CON-2, CON-3, product §11
 
 ### Last run
 
-2026-10-24, the Keebart Sofle Choc Pro BT with its stock firmware (ZMK v0.3), macOS 27.2 (KEY-60). Every item passed over both connections. The parity test took 6.6 s over USB and 22.6 s over Bluetooth, which sends about 0.8 KB/s (spike S2).
+2026-10-28, `1.0.0-rc.1`, macOS 27.2, the same Sofle and firmware (KEY-79). Every item passed over both connections, with the candidate's own CLI:
+
+- The parity test took 1.6 s over USB, and 91 s over Bluetooth, counting the wait for the unlock.
+- The switching test took 35 s, from USB to Bluetooth and back.
+- In the window over Bluetooth:
+  - the chip read "Bluetooth · Unlocked", and a change and its undo worked;
+  - plugging the cable back in showed "USB · Locked" and the "locked itself" banner. The toast had gone by the time it was looked at.
+- After the unlock, reading the keymap took 5.0 s over Bluetooth, over NFR-2's 4 s target, and 0.2 s over USB.
+
+The keyboard had first forgotten its pairing with the Mac, probably through ᛒ Clear next to ᛒ1. macOS listed it as _Not Connected_, with only _Forget…_, and connecting failed with "Peer removed pairing information". Clearing the slot on the keyboard (Raise › ᛒ Clear), forgetting it on the Mac, and pairing again fixed it. [KEY-123](https://linear.app/zunhdev/issue/KEY-123) is for Keywright to say so.
+
+Before that, 2026-10-24, the Keebart Sofle Choc Pro BT with its stock firmware (ZMK v0.3), macOS 27.2 (KEY-60). Every item passed over both connections. The parity test took 6.6 s over USB and 22.6 s over Bluetooth, which sends about 0.8 KB/s (spike S2).
 
 Gaps found, filed as bugs:
 
@@ -252,6 +291,8 @@ The task is the newcomer task (product §11): remap a key to a Mac shortcut and 
 | axe in every feature's component tests                      | `mise run test`          | ✓      |
 
 ### Last run
+
+Not run again on `1.0.0-rc.1` (2026-10-28), by the maintainer's choice: listening with VoiceOver, Full Keyboard Access, Increase Contrast and Reduce Motion are left to the real-world trial (KEY-106). The run before:
 
 2026-10-28, macOS 27.2, a dev build with the simulated Sofle (KEY-73). VoiceOver itself wasn't on: the walkthrough read what it reads, the window's accessibility tree and the announcements WebKit posts, through the macOS accessibility API. The keyboard-only run used Tab, Shift-Tab, the arrow keys, Return, Space and ⌘S with macOS's default keyboard settings, so Full Keyboard Access wasn't on either. Increase Contrast and Reduce Motion were checked by the token check and the motion test, without turning them on. The next release candidate's run should listen to VoiceOver and turn the settings on.
 
@@ -303,4 +344,9 @@ The default UI speaks Mac, never ZMK: no firmware terms such as "binding" or "be
 - Ten errors said what happened but not what to do next, such as "Keywright couldn't write the file." Each has a next step now, such as "Try saving it in another folder."
 - Design §11.1 asked for sentence case everywhere, while the UI, like macOS, gives buttons and menu items title case (_Save to Keyboard_). The design spec says so now.
 
-The next release candidate's run should go through the window by eye (step 2).
+2026-10-28, `1.0.0-rc.1` and a dev build with the simulated Sofle (KEY-79), by eye (step 2). Checked: every kind of action's editor, the Mac check, the connection chip, Settings' four tabs, the Backups window, Import and the Firmware Update assistant. No firmware terms showed. Found, and fixed before v1.0.0:
+
+- [KEY-120](https://linear.app/zunhdev/issue/KEY-120): the Layers editor's "Next key" ran out of its control.
+- [KEY-121](https://linear.app/zunhdev/issue/KEY-121): Settings › Advanced began "A report for a bug report".
+- [KEY-122](https://linear.app/zunhdev/issue/KEY-122): a right-hand modifier, such as the Sofle's right ⌘, showed "Choose a key".
+- [KEY-124](https://linear.app/zunhdev/issue/KEY-124): after an undo, discard or import, the action picker kept the kind chosen last.
