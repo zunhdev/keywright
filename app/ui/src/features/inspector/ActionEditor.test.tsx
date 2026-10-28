@@ -25,6 +25,13 @@ describe("the editors", () => {
     const set = rustSide();
     inspect([Q]);
     await pick("Tap & hold");
+    // Each slot reads from its label down: the label, then its fields.
+    const tapped = screen.getByRole("group", { name: "When tapped" });
+    expect(tapped.firstElementChild?.textContent).toBe("When tapped");
+    expect(within(tapped).getByRole("button", { name: "Key: Q" }).isConnected).toBe(true);
+    const held = screen.getByRole("group", { name: "When held" });
+    expect(held.firstElementChild?.textContent).toBe("When held");
+    expect(within(held).getByRole("radio", { name: "Modifier" }).isConnected).toBe(true);
     // Q is kept for tapping, and holding is ⌃ Control until changed.
     await choose("Modifier", /Shift/u);
     expect(set.at(-1)?.action).toEqual({

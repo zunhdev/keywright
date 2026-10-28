@@ -16,7 +16,8 @@ const CONTROL: Shortcut = { mods: 0, page: "keyboard", id: 0xe0 };
 
 /**
  * Tap & hold (design §5.4): what tapping the key types, and what holding it does, a
- * modifier or a layer. Once both are set, each change goes to `onChange`.
+ * modifier or a layer. Each slot is a fieldset under its label, which VoiceOver says on
+ * the way in. Once both are set, each change goes to `onChange`.
  */
 export function TapHoldEditor({
   current,
@@ -49,15 +50,18 @@ export function TapHoldEditor({
   };
   return (
     <div className={styles.fields}>
-      <ShortcutField
-        label={messages.format("tap-hold.tapped")}
-        value={tap}
-        onChange={(shortcut) => {
-          change(shortcut, held);
-        }}
-      />
-      <div className={styles.fields}>
-        <span className={styles.label}>{messages.format("tap-hold.held")}</span>
+      <fieldset className={styles.slot}>
+        <legend className={styles.label}>{messages.format("tap-hold.tapped")}</legend>
+        <ShortcutField
+          label={messages.format("key.field")}
+          value={tap}
+          onChange={(shortcut) => {
+            change(shortcut, held);
+          }}
+        />
+      </fieldset>
+      <fieldset className={styles.slot}>
+        <legend className={styles.label}>{messages.format("tap-hold.held")}</legend>
         <SegmentedControl
           aria-label={messages.format("tap-hold.holds")}
           selectedKeys={[held.kind]}
@@ -95,7 +99,7 @@ export function TapHoldEditor({
             }}
           />
         )}
-      </div>
+      </fieldset>
       <p className={styles.note}>{messages.format("tap-hold.note")}</p>
     </div>
   );

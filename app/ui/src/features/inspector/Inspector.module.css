@@ -59,6 +59,23 @@
   font: var(--type-caption);
 }
 
+/* A slot of an editor, such as Tap & hold's "When tapped": a fieldset without its frame,
+   under its legend. */
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  & > legend {
+    margin-bottom: var(--space-2);
+    padding: 0;
+  }
+}
+
 .note {
   margin: 0;
   color: var(--text-secondary);
