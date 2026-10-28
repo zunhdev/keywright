@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.37 — for review                                                       |
+| **Status**    | Draft v0.38 — for review                                                       |
 | **Date**      | 2026-10-28                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -422,7 +422,7 @@ Following platform convention, it is a **menu**, not a popover:
 | **Keyboard**  | Save to Keyboard ⌘S · Review Changes ⇧⌘R · Discard Changes… · Record Shortcut ⌘R · Same as Layer Below · Does Nothing · Restore Stock for Key · Restore Stock Settings… (canvas-only single keys are listed in Help › Keyboard Shortcuts, not as menu equivalents)                                                                                                                           |
 | **View**      | Show/Hide Layers ⌃⌘S · Show/Hide Inspector ⌥⌘0 · Layer 1–9 ⌘1–⌘9 · Zoom In ⌘= · Zoom Out ⌘− · Actual Size ⌘0 · Enter Full Screen ⌃⌘F (Keywright's own item: the one macOS adds by itself has 🌐F, so ⌃⌘F did nothing; macOS names it Exit Full Screen in full screen, and lists it with 🌐F) (Zoom In is the + key: the menu shows ⌘=, since Tauri's menus name keys rather than characters) |
 | **Window**    | Minimize ⌘M · Zoom · Bring All to Front, and the open windows, which macOS adds                                                                                                                                                                                                                                                                                                              |
-| **Help**      | Keywright Help · Keyboard Shortcuts ⌘/ · Run First-Time Setup · Report an Issue…: a sheet with the diagnostics report (§9.4) to read through, then _Copy and Open GitHub_, which copies it and opens a new issue in the browser                                                                                                                                                              |
+| **Help**      | Keywright Help, which opens the user guide in the browser · Keyboard Shortcuts ⌘/, which opens its page of shortcuts · Run First-Time Setup · Report an Issue…: a sheet with the diagnostics report (§9.4) to read through, then _Copy and Open GitHub_, which copies it and opens a new issue in the browser                                                                                |
 
 ---
 
@@ -620,3 +620,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.35    | 2026-10-28 | Change rows (§12, KEY-111): Review, the Import preview and the Backups window say each change to VoiceOver as one line in words, what it was and is, rather than its keycaps.                                                                                                                                                                        |
 | 0.36    | 2026-10-28 | Toasts (§12, KEY-112): VoiceOver hears a toast once, politely, without its ✓, rather than at once and twice.                                                                                                                                                                                                                                         |
 | 0.37    | 2026-10-28 | Focus (§12, KEY-113): a sheet that opened by itself gives focus to the keyboard when it closes, or to the window's first control while there's no keyboard.                                                                                                                                                                                          |
+| 0.38    | 2026-10-28 | Help (§9.6, KEY-74): Keywright Help opens the user guide, and Keyboard Shortcuts its page of shortcuts.                                                                                                                                                                                                                                              |

@@ -40,6 +40,7 @@ use keywright_platform::bluetooth::{self, Permission};
 use tauri::menu::MenuEvent;
 use tauri::{App, AppHandle, Manager, RunEvent, Runtime, WindowEvent, Wry};
 use tauri_plugin_notification::NotificationExt;
+use tauri_plugin_opener::OpenerExt;
 use tauri_plugin_window_state::StateFlags;
 use tauri_specta::Event;
 
@@ -88,8 +89,8 @@ fn main() -> tauri::Result<()> {
         .plugin(tauri_plugin_opener::init())
         .menu(menu::build)
         .on_menu_event(|app, event| {
-            // macOS handles its own items, such as Quit; the shell opens Settings, Backups
-            // and Update Firmware, and the UI handles Keywright's other items.
+            // macOS handles its own items, such as Quit; the shell opens Settings, Backups,
+            // Update Firmware and the user guide, and the UI handles Keywright's other items.
             match MenuItem::from_id(event.id().as_ref()) {
                 Some(MenuItem::Settings) => {
                     let _ = settings::open_window(app);
@@ -99,6 +100,11 @@ fn main() -> tauri::Result<()> {
                 }
                 Some(MenuItem::UpdateFirmware) => {
                     let _ = ipc::open_firmware_window(app);
+                }
+                Some(item @ (MenuItem::Help | MenuItem::KeyboardShortcuts)) => {
+                    if let Some(page) = item.guide_page() {
+                        let _ = app.opener().open_url(page, None::<&str>);
+                    }
                 }
                 Some(item) => {
                     let _ = MenuItemChosen(item).emit(app);

@@ -1,4 +1,4 @@
-import { type ReactNode, useLayoutEffect } from "react";
+import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useRef } from "react";
 import {
   Dialog,
   Heading,
@@ -29,13 +29,22 @@ export interface SheetProps extends Omit<ModalOverlayProps, "className" | "style
  * from a `DialogTrigger`, or with `isOpen`.
  */
 export function Sheet({ title, size = "default", children, ...props }: SheetProps) {
+  // Whether the sheet is still on the page, closed. One that went with its page, such as
+  // when another window's content replaces it, has no page to give focus to.
+  const onPage = useRef(true);
+  useEffect(() => {
+    onPage.current = true;
+    return () => {
+      onPage.current = false;
+    };
+  }, []);
   return (
     <ModalOverlay {...props} className={styles.overlay}>
       <Modal className={styles.sheet} data-size={size}>
         <Dialog className={styles.dialog}>
           {({ close }) => (
             <>
-              <ReturnsFocus />
+              <ReturnsFocus onPage={onPage} />
               <Heading slot="title" className={styles.title}>
                 {title}
               </Heading>
@@ -52,19 +61,19 @@ export function Sheet({ title, size = "default", children, ...props }: SheetProp
  * Gives focus somewhere to go when the sheet closes. React Aria gives it back, a frame
  * later, to what had it when the sheet opened. For a sheet that opened by itself nothing
  * did, and what did may be gone by then: focus still on nothing a frame after that goes
- * home.
+ * home, if the sheet is still `onPage`.
  */
-function ReturnsFocus() {
+function ReturnsFocus({ onPage }: { onPage: RefObject<boolean> }) {
   useLayoutEffect(
     () => () => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           const focused = document.activeElement;
-          if (focused === null || focused === document.body) focusHome();
+          if (onPage.current && (focused === null || focused === document.body)) focusHome();
         });
       });
     },
-    [],
+    [onPage],
   );
   return null;
 }
