@@ -1,6 +1,7 @@
 /** Draws the inspector for its tests, against a fake Rust side. */
 import { mockIPC } from "@tauri-apps/api/mocks";
-import { render } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
 import { I18nProvider } from "react-aria-components";
 
 import { useStore } from "../app/store.ts";
@@ -77,4 +78,34 @@ export function inspect(
       <Inspector />
     </I18nProvider>,
   );
+}
+
+/** Opens a combobox by its label, with its button, and chooses an option by its name. */
+export async function choose(label: string, option: RegExp | string) {
+  const box = screen.getByRole("combobox", { name: label });
+  const button = box.parentElement?.querySelector("button");
+  if (!button) throw new Error(`the ${label} combobox has no button`);
+  await userEvent.click(button);
+  await userEvent.click(await screen.findByRole("option", { name: option }));
+}
+
+/** Opens a key field by its label, and chooses a key in the key picker by its name. */
+export async function chooseKey(label: string, key: string) {
+  await userEvent.click(screen.getByRole("button", { name: new RegExp(`^${label}: `, "u") }));
+  const picker = await screen.findByRole("dialog", { name: "Choose a key" });
+  const [option] = within(picker).getAllByRole("option", { name: key });
+  if (option === undefined) throw new Error(`the key picker has no ${key}`);
+  await userEvent.click(option);
+}
+
+/** Opens the action picker's menu. */
+export async function openPicker(): Promise<HTMLElement> {
+  await userEvent.click(screen.getByRole("button", { name: /^Action: /u }));
+  return screen.getByRole("menu");
+}
+
+/** Opens the action picker, and chooses a kind of action or an action by its name. */
+export async function pick(item: RegExp | string) {
+  const menu = await openPicker();
+  await userEvent.click(within(menu).getByRole("menuitem", { name: item }));
 }

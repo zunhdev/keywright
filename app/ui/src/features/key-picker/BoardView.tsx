@@ -67,16 +67,18 @@ function delegate(board: Board): Delegate {
 }
 
 /**
- * What VoiceOver calls a key: its name, and what it types with Shift. A character with
- * Shift is that character, and the key with Shift; one without is its name alone.
+ * What VoiceOver calls a key: its name, and what it types with Shift, by names rather than
+ * symbols ("Semicolon, Colon with Shift"). A character with Shift is that character, and
+ * the key with Shift; one without is its name alone.
  */
 function spoken(placed: Placed, messages: Messages): string {
   const { key, shift } = placed;
-  const shifted = key.shifted ?? "";
-  if (shift) return messages.format("picker.key.with-shift", { name: key.name, shifted });
-  return key.shifted === null || placed.character
-    ? key.name
-    : messages.format("picker.key.shifted", { name: key.name, shifted });
+  const name = key.spoken;
+  const shifted = key.shiftedSpoken ?? "";
+  if (shift) return messages.format("picker.key.with-shift", { name, shifted });
+  return key.shiftedSpoken === null || placed.character
+    ? name
+    : messages.format("picker.key.shifted", { name, shifted });
 }
 
 /** What a board's callers hear about. */

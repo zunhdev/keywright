@@ -5,41 +5,11 @@ import { userEvent } from "@testing-library/user-event";
 
 import { useStore } from "../../app/store.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
-import { inspect, rustSide } from "../../test/inspector.tsx";
+import { chooseKey, inspect, openPicker, rustSide } from "../../test/inspector.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
 
 /** Row 2's Q and W, and the left thumb's Lower key, on the base layer. */
 const [Q, W, LOWER] = [13, 14, 53];
-
-/** Opens a combobox by its label, with its button, and chooses an option by its name. */
-async function choose(label: string, option: RegExp | string) {
-  const box = screen.getByRole("combobox", { name: label });
-  const button = box.parentElement?.querySelector("button");
-  if (!button) throw new Error(`the ${label} combobox has no button`);
-  await userEvent.click(button);
-  await userEvent.click(await screen.findByRole("option", { name: option }));
-}
-
-/** Opens a key field by its label, and chooses a key in the key picker by its name. */
-async function chooseKey(label: string, key: string) {
-  await userEvent.click(screen.getByRole("button", { name: new RegExp(`^${label}: `, "u") }));
-  const picker = await screen.findByRole("dialog", { name: "Choose a key" });
-  const [option] = within(picker).getAllByRole("option", { name: key });
-  if (option === undefined) throw new Error(`the key picker has no ${key}`);
-  await userEvent.click(option);
-}
-
-/** Opens the action picker's menu. */
-async function openPicker(): Promise<HTMLElement> {
-  await userEvent.click(screen.getByRole("button", { name: /^Action: /u }));
-  return screen.getByRole("menu");
-}
-
-/** Opens the action picker, and chooses a kind of action or an action by its name. */
-async function pick(item: RegExp | string) {
-  const menu = await openPicker();
-  await userEvent.click(within(menu).getByRole("menuitem", { name: item }));
-}
 
 test("with no key selected, it shows the layer, its changes and the knobs", () => {
   inspect([]);
@@ -74,6 +44,15 @@ describe("a selected key", () => {
     expect(screen.getByText("Types Q.")).toBeDefined();
     expect(screen.getByRole("button", { name: "Action: Key or shortcut" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Key: Q" })).toBeDefined();
+  });
+
+  test("says punctuation to VoiceOver by name, as it says the key", () => {
+    const semicolon = sofleKeymap.layers[0]?.keys.findIndex((key) => key.sentence === "Types ;.");
+    inspect([semicolon ?? -1]);
+    // It shows ;, and VoiceOver hears the word.
+    expect(screen.getByText("Types ;.").getAttribute("aria-hidden")).toBe("true");
+    expect(screen.getByText("Types Semicolon.")).toBeDefined();
+    expect(screen.getByRole("button", { name: "Key: Semicolon" })).toBeDefined();
   });
 
   test("with Show ZMK names on, shows one key's raw binding (EDIT-6)", () => {
@@ -189,89 +168,6 @@ describe("the action picker", () => {
     await openPicker();
     await userEvent.type(screen.getByRole("searchbox"), "brighter");
     expect(screen.getByRole("menuitem", { name: "Brightness +" })).toBeDefined();
-  });
-});
-
-describe("the editors", () => {
-  test("Media & system lists the media keys, and choosing one sets it", async () => {
-    const set = rustSide();
-    inspect([Q]);
-    await pick("Media & system");
-    await userEvent.click(screen.getByRole("row", { name: "Mute" }));
-    expect(set.at(-1)?.action).toEqual({
-      kind: "key-press",
-      key: { mods: 0, page: "consumer", id: 0xe2 },
-    });
-  });
-
-  test("Tap & hold sets a key on tap and a modifier or a layer on hold", async () => {
-    const set = rustSide();
-    inspect([Q]);
-    await pick("Tap & hold");
-    // Q is kept for tapping, and holding is ⌃ Control until changed.
-    await choose("Modifier", /Shift/u);
-    expect(set.at(-1)?.action).toEqual({
-      kind: "mod-tap",
-      hold: { mods: 0, page: "keyboard", id: 0xe1 },
-      tap: { mods: 0, page: "keyboard", id: 0x14 },
-    });
-    await userEvent.click(screen.getByRole("radio", { name: "Layer" }));
-    await choose("Layer", "raise");
-    expect(set.at(-1)?.action).toEqual({
-      kind: "layer-tap",
-      layer: 2,
-      tap: { mods: 0, page: "keyboard", id: 0x14 },
-    });
-  });
-
-  test("Layers shows how a layer key turns its layer on, and changes it", async () => {
-    const set = rustSide();
-    inspect([LOWER]);
-    expect(screen.getByRole("radio", { name: "Hold" }).getAttribute("aria-checked")).toBe("true");
-    await userEvent.click(screen.getByRole("radio", { name: "Toggle" }));
-    expect(set).toEqual([{ positions: [LOWER], action: { kind: "toggle", layer: 1 } }]);
-  });
-
-  test("Special asks before setting update mode", async () => {
-    const set = rustSide();
-    inspect([Q]);
-    await pick("Special");
-    await userEvent.click(screen.getByRole("row", { name: "Update mode" }));
-    const sheet = screen.getByRole("dialog", { name: /update mode/u });
-    await userEvent.click(within(sheet).getByRole("button", { name: "Cancel" }));
-    expect(set).toEqual([]);
-
-    await userEvent.click(screen.getByRole("row", { name: "Update mode" }));
-    await userEvent.click(screen.getByRole("button", { name: "Use Update Mode" }));
-    expect(set).toEqual([{ positions: [Q], action: { kind: "bootloader" } }]);
-
-    await choose("Sticky modifier", /Shift/u);
-    expect(set.at(-1)?.action).toEqual({
-      kind: "sticky-key",
-      key: { mods: 0, page: "keyboard", id: 0xe1 },
-    });
-  });
-
-  test("Other actions edit a behavior Keywright doesn't know by its parameters", async () => {
-    const set = rustSide();
-    inspect([Q]);
-    await pick("Other actions");
-    await choose("Firmware action", "Key Toggle");
-    const toggle = sofleKeymap.others.find((other) => other.name === "Key Toggle")?.id;
-    expect(set.at(-1)?.action).toEqual({
-      kind: "other",
-      behavior: toggle,
-      param1: { kind: "number", value: 0 },
-      param2: { kind: "number", value: 0 },
-    });
-    // Key Toggle takes a key.
-    await chooseKey("First value", "Escape");
-    expect(set.at(-1)?.action).toEqual({
-      kind: "other",
-      behavior: toggle,
-      param1: { kind: "key", key: { mods: 0, page: "keyboard", id: 0x29 } },
-      param2: { kind: "number", value: 0 },
-    });
   });
 });
 

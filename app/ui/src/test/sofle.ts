@@ -644,7 +644,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types `.",
-          "spoken": "Types `.",
+          "spoken": "Types Grave Accent.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -886,7 +886,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types `.",
-          "spoken": "Types `.",
+          "spoken": "Types Grave Accent.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -1392,7 +1392,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types ;.",
-          "spoken": "Types ;.",
+          "spoken": "Types Semicolon.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -1414,7 +1414,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types '.",
-          "spoken": "Types '.",
+          "spoken": "Types Apostrophe.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -1656,7 +1656,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types ,.",
-          "spoken": "Types ,.",
+          "spoken": "Types Comma.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -1678,7 +1678,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types ..",
-          "spoken": "Types ..",
+          "spoken": "Types Period.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -1700,7 +1700,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types /.",
-          "spoken": "Types /.",
+          "spoken": "Types Slash.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -1972,7 +1972,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": true,
           "sentence": "Same as the layer below: types `.",
-          "spoken": "Same as the layer below: types `.",
+          "spoken": "Same as the layer below: types Grave Accent.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2236,7 +2236,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types `.",
-          "spoken": "Types `.",
+          "spoken": "Types Grave Accent.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2517,7 +2517,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types !.",
-          "spoken": "Types !.",
+          "spoken": "Types Exclamation Mark.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2539,7 +2539,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types @.",
-          "spoken": "Types @.",
+          "spoken": "Types At Sign.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2561,7 +2561,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types #.",
-          "spoken": "Types #.",
+          "spoken": "Types Number Sign.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2583,7 +2583,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types $.",
-          "spoken": "Types $.",
+          "spoken": "Types Dollar Sign.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2605,7 +2605,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types %.",
-          "spoken": "Types %.",
+          "spoken": "Types Percent Sign.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2627,7 +2627,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types ^.",
-          "spoken": "Types ^.",
+          "spoken": "Types Caret.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2649,7 +2649,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types &.",
-          "spoken": "Types &.",
+          "spoken": "Types Ampersand.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2671,7 +2671,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types *.",
-          "spoken": "Types *.",
+          "spoken": "Types Asterisk.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2693,7 +2693,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types (.",
-          "spoken": "Types (.",
+          "spoken": "Types Left Parenthesis.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2715,7 +2715,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types ).",
-          "spoken": "Types ).",
+          "spoken": "Types Right Parenthesis.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2737,7 +2737,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types |.",
-          "spoken": "Types |.",
+          "spoken": "Types Vertical Bar.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2776,7 +2776,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types =.",
-          "spoken": "Types =.",
+          "spoken": "Types Equals Sign.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2798,7 +2798,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types -.",
-          "spoken": "Types -.",
+          "spoken": "Types Minus.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2820,7 +2820,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types +.",
-          "spoken": "Types +.",
+          "spoken": "Types Plus Sign.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2842,7 +2842,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types {.",
-          "spoken": "Types {.",
+          "spoken": "Types Left Brace.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2864,7 +2864,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types }.",
-          "spoken": "Types }.",
+          "spoken": "Types Right Brace.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2920,7 +2920,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types [.",
-          "spoken": "Types [.",
+          "spoken": "Types Left Bracket.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2942,7 +2942,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types ].",
-          "spoken": "Types ].",
+          "spoken": "Types Right Bracket.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2964,7 +2964,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types ;.",
-          "spoken": "Types ;.",
+          "spoken": "Types Semicolon.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -2986,7 +2986,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types :.",
-          "spoken": "Types :.",
+          "spoken": "Types Colon.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -3008,7 +3008,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": false,
           "sentence": "Types \\.",
-          "spoken": "Types \\.",
+          "spoken": "Types Backslash.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -3432,7 +3432,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": true,
           "sentence": "Same as the layer below: types `.",
-          "spoken": "Same as the layer below: types `.",
+          "spoken": "Same as the layer below: types Grave Accent.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -4127,7 +4127,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": true,
           "sentence": "Same as the layer below: types ,.",
-          "spoken": "Same as the layer below: types ,.",
+          "spoken": "Same as the layer below: types Comma.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -4144,7 +4144,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": true,
           "sentence": "Same as the layer below: types ..",
-          "spoken": "Same as the layer below: types ..",
+          "spoken": "Same as the layer below: types Period.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -4161,7 +4161,7 @@ export const sofleKeymap: Keymap = {
           },
           "inherited": true,
           "sentence": "Same as the layer below: types /.",
-          "spoken": "Same as the layer below: types /.",
+          "spoken": "Same as the layer below: types Slash.",
           "secondary": null,
           "changed": false,
           "macWarning": false,
@@ -5980,7 +5980,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 4,
     "cap": "A",
     "name": "A",
+    "spoken": "A",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "A"
@@ -5992,7 +5994,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 5,
     "cap": "B",
     "name": "B",
+    "spoken": "B",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "B"
@@ -6004,7 +6008,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 6,
     "cap": "C",
     "name": "C",
+    "spoken": "C",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C"
@@ -6016,7 +6022,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 7,
     "cap": "D",
     "name": "D",
+    "spoken": "D",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "D"
@@ -6028,7 +6036,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 8,
     "cap": "E",
     "name": "E",
+    "spoken": "E",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "E"
@@ -6040,7 +6050,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 9,
     "cap": "F",
     "name": "F",
+    "spoken": "F",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F"
@@ -6052,7 +6064,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 10,
     "cap": "G",
     "name": "G",
+    "spoken": "G",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "G"
@@ -6064,7 +6078,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 11,
     "cap": "H",
     "name": "H",
+    "spoken": "H",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "H"
@@ -6076,7 +6092,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 12,
     "cap": "I",
     "name": "I",
+    "spoken": "I",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "I"
@@ -6088,7 +6106,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 13,
     "cap": "J",
     "name": "J",
+    "spoken": "J",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "J"
@@ -6100,7 +6120,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 14,
     "cap": "K",
     "name": "K",
+    "spoken": "K",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K"
@@ -6112,7 +6134,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 15,
     "cap": "L",
     "name": "L",
+    "spoken": "L",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "L"
@@ -6124,7 +6148,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 16,
     "cap": "M",
     "name": "M",
+    "spoken": "M",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "M"
@@ -6136,7 +6162,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 17,
     "cap": "N",
     "name": "N",
+    "spoken": "N",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "N"
@@ -6148,7 +6176,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 18,
     "cap": "O",
     "name": "O",
+    "spoken": "O",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "O"
@@ -6160,7 +6190,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 19,
     "cap": "P",
     "name": "P",
+    "spoken": "P",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "P"
@@ -6172,7 +6204,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 20,
     "cap": "Q",
     "name": "Q",
+    "spoken": "Q",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "Q"
@@ -6184,7 +6218,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 21,
     "cap": "R",
     "name": "R",
+    "spoken": "R",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "R"
@@ -6196,7 +6232,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 22,
     "cap": "S",
     "name": "S",
+    "spoken": "S",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "S"
@@ -6208,7 +6246,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 23,
     "cap": "T",
     "name": "T",
+    "spoken": "T",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "T"
@@ -6220,7 +6260,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 24,
     "cap": "U",
     "name": "U",
+    "spoken": "U",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "U"
@@ -6232,7 +6274,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 25,
     "cap": "V",
     "name": "V",
+    "spoken": "V",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "V"
@@ -6244,7 +6288,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 26,
     "cap": "W",
     "name": "W",
+    "spoken": "W",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "W"
@@ -6256,7 +6302,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 27,
     "cap": "X",
     "name": "X",
+    "spoken": "X",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "X"
@@ -6268,7 +6316,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 28,
     "cap": "Y",
     "name": "Y",
+    "spoken": "Y",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "Y"
@@ -6280,7 +6330,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 29,
     "cap": "Z",
     "name": "Z",
+    "spoken": "Z",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "Z"
@@ -6292,7 +6344,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 30,
     "cap": "1",
     "name": "1",
+    "spoken": "1",
     "shifted": "!",
+    "shiftedSpoken": "Exclamation Mark",
     "shiftedZmk": "EXCL",
     "zmk": [
       "N1",
@@ -6306,7 +6360,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 31,
     "cap": "2",
     "name": "2",
+    "spoken": "2",
     "shifted": "@",
+    "shiftedSpoken": "At Sign",
     "shiftedZmk": "AT",
     "zmk": [
       "N2",
@@ -6320,7 +6376,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 32,
     "cap": "3",
     "name": "3",
+    "spoken": "3",
     "shifted": "#",
+    "shiftedSpoken": "Number Sign",
     "shiftedZmk": "HASH",
     "zmk": [
       "N3",
@@ -6334,7 +6392,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 33,
     "cap": "4",
     "name": "4",
+    "spoken": "4",
     "shifted": "$",
+    "shiftedSpoken": "Dollar Sign",
     "shiftedZmk": "DLLR",
     "zmk": [
       "N4",
@@ -6348,7 +6408,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 34,
     "cap": "5",
     "name": "5",
+    "spoken": "5",
     "shifted": "%",
+    "shiftedSpoken": "Percent Sign",
     "shiftedZmk": "PRCNT",
     "zmk": [
       "N5",
@@ -6362,7 +6424,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 35,
     "cap": "6",
     "name": "6",
+    "spoken": "6",
     "shifted": "^",
+    "shiftedSpoken": "Caret",
     "shiftedZmk": "CARET",
     "zmk": [
       "N6",
@@ -6376,7 +6440,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 36,
     "cap": "7",
     "name": "7",
+    "spoken": "7",
     "shifted": "&",
+    "shiftedSpoken": "Ampersand",
     "shiftedZmk": "AMPS",
     "zmk": [
       "N7",
@@ -6390,7 +6456,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 37,
     "cap": "8",
     "name": "8",
+    "spoken": "8",
     "shifted": "*",
+    "shiftedSpoken": "Asterisk",
     "shiftedZmk": "STAR",
     "zmk": [
       "N8",
@@ -6404,7 +6472,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 38,
     "cap": "9",
     "name": "9",
+    "spoken": "9",
     "shifted": "(",
+    "shiftedSpoken": "Left Parenthesis",
     "shiftedZmk": "LPAR",
     "zmk": [
       "N9",
@@ -6418,7 +6488,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 39,
     "cap": "0",
     "name": "0",
+    "spoken": "0",
     "shifted": ")",
+    "shiftedSpoken": "Right Parenthesis",
     "shiftedZmk": "RPAR",
     "zmk": [
       "N0",
@@ -6432,7 +6504,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 40,
     "cap": "↩",
     "name": "Return",
+    "spoken": "Return",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "RET",
@@ -6446,7 +6520,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 41,
     "cap": "⎋ Esc",
     "name": "Escape",
+    "spoken": "Escape",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "ESC",
@@ -6459,7 +6535,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 42,
     "cap": "⌫",
     "name": "Delete",
+    "spoken": "Delete",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "BSPC",
@@ -6473,7 +6551,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 43,
     "cap": "⇥",
     "name": "Tab",
+    "spoken": "Tab",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "TAB"
@@ -6485,7 +6565,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 44,
     "cap": "␣",
     "name": "Space",
+    "spoken": "Space",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "SPACE",
@@ -6498,7 +6580,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 45,
     "cap": "-",
     "name": "-",
+    "spoken": "Minus",
     "shifted": "_",
+    "shiftedSpoken": "Underscore",
     "shiftedZmk": "UNDER",
     "zmk": [
       "MINUS"
@@ -6510,7 +6594,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 46,
     "cap": "=",
     "name": "=",
+    "spoken": "Equals Sign",
     "shifted": "+",
+    "shiftedSpoken": "Plus Sign",
     "shiftedZmk": "PLUS",
     "zmk": [
       "EQUAL",
@@ -6523,7 +6609,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 47,
     "cap": "[",
     "name": "[",
+    "spoken": "Left Bracket",
     "shifted": "{",
+    "shiftedSpoken": "Left Brace",
     "shiftedZmk": "LBRC",
     "zmk": [
       "LBKT",
@@ -6536,7 +6624,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 48,
     "cap": "]",
     "name": "]",
+    "spoken": "Right Bracket",
     "shifted": "}",
+    "shiftedSpoken": "Right Brace",
     "shiftedZmk": "RBRC",
     "zmk": [
       "RBKT",
@@ -6549,7 +6639,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 49,
     "cap": "\\",
     "name": "\\",
+    "spoken": "Backslash",
     "shifted": "|",
+    "shiftedSpoken": "Vertical Bar",
     "shiftedZmk": "PIPE",
     "zmk": [
       "BSLH",
@@ -6562,7 +6654,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 50,
     "cap": "#",
     "name": "ISO #",
+    "spoken": "ISO Number Sign",
     "shifted": "~",
+    "shiftedSpoken": "Tilde",
     "shiftedZmk": "TILDE2",
     "zmk": [
       "NUHS",
@@ -6575,7 +6669,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 51,
     "cap": ";",
     "name": ";",
+    "spoken": "Semicolon",
     "shifted": ":",
+    "shiftedSpoken": "Colon",
     "shiftedZmk": "COLON",
     "zmk": [
       "SEMI",
@@ -6589,7 +6685,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 52,
     "cap": "'",
     "name": "'",
+    "spoken": "Apostrophe",
     "shifted": "\"",
+    "shiftedSpoken": "Quotation Mark",
     "shiftedZmk": "DQT",
     "zmk": [
       "SQT",
@@ -6605,7 +6703,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 53,
     "cap": "`",
     "name": "`",
+    "spoken": "Grave Accent",
     "shifted": "~",
+    "shiftedSpoken": "Tilde",
     "shiftedZmk": "TILDE",
     "zmk": [
       "GRAVE",
@@ -6618,7 +6718,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 54,
     "cap": ",",
     "name": ",",
+    "spoken": "Comma",
     "shifted": "<",
+    "shiftedSpoken": "Less-Than Sign",
     "shiftedZmk": "LT",
     "zmk": [
       "COMMA",
@@ -6631,7 +6733,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 55,
     "cap": ".",
     "name": ".",
+    "spoken": "Period",
     "shifted": ">",
+    "shiftedSpoken": "Greater-Than Sign",
     "shiftedZmk": "GT",
     "zmk": [
       "DOT",
@@ -6644,7 +6748,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 56,
     "cap": "/",
     "name": "/",
+    "spoken": "Slash",
     "shifted": "?",
+    "shiftedSpoken": "Question Mark",
     "shiftedZmk": "QMARK",
     "zmk": [
       "FSLH",
@@ -6657,7 +6763,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 57,
     "cap": "⇪",
     "name": "Caps Lock",
+    "spoken": "Caps Lock",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "CAPS",
@@ -6671,7 +6779,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 58,
     "cap": "F1",
     "name": "F1",
+    "spoken": "F1",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F1"
@@ -6683,7 +6793,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 59,
     "cap": "F2",
     "name": "F2",
+    "spoken": "F2",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F2"
@@ -6695,7 +6807,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 60,
     "cap": "F3",
     "name": "F3",
+    "spoken": "F3",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F3"
@@ -6707,7 +6821,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 61,
     "cap": "F4",
     "name": "F4",
+    "spoken": "F4",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F4"
@@ -6719,7 +6835,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 62,
     "cap": "F5",
     "name": "F5",
+    "spoken": "F5",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F5"
@@ -6731,7 +6849,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 63,
     "cap": "F6",
     "name": "F6",
+    "spoken": "F6",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F6"
@@ -6743,7 +6863,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 64,
     "cap": "F7",
     "name": "F7",
+    "spoken": "F7",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F7"
@@ -6755,7 +6877,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 65,
     "cap": "F8",
     "name": "F8",
+    "spoken": "F8",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F8"
@@ -6767,7 +6891,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 66,
     "cap": "F9",
     "name": "F9",
+    "spoken": "F9",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F9"
@@ -6779,7 +6905,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 67,
     "cap": "F10",
     "name": "F10",
+    "spoken": "F10",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F10"
@@ -6791,7 +6919,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 68,
     "cap": "F11",
     "name": "F11",
+    "spoken": "F11",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F11"
@@ -6803,7 +6933,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 69,
     "cap": "F12",
     "name": "F12",
+    "spoken": "F12",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F12"
@@ -6815,7 +6947,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 70,
     "cap": "Print Screen",
     "name": "Print Screen",
+    "spoken": "Print Screen",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "PSCRN",
@@ -6829,7 +6963,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 71,
     "cap": "Scroll Lock",
     "name": "Scroll Lock",
+    "spoken": "Scroll Lock",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "SLCK",
@@ -6843,7 +6979,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 72,
     "cap": "Pause",
     "name": "Pause",
+    "spoken": "Pause",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "PAUSE_BREAK",
@@ -6856,7 +6994,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 73,
     "cap": "Insert",
     "name": "Insert",
+    "spoken": "Insert",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INS",
@@ -6869,7 +7009,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 74,
     "cap": "↖",
     "name": "Home",
+    "spoken": "Home",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "HOME"
@@ -6881,7 +7023,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 75,
     "cap": "⇞",
     "name": "Page Up",
+    "spoken": "Page Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "PG_UP",
@@ -6895,7 +7039,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 76,
     "cap": "⌦",
     "name": "Forward Delete",
+    "spoken": "Forward Delete",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "DEL",
@@ -6908,7 +7054,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 77,
     "cap": "↘",
     "name": "End",
+    "spoken": "End",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "END"
@@ -6920,7 +7068,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 78,
     "cap": "⇟",
     "name": "Page Down",
+    "spoken": "Page Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "PG_DN",
@@ -6934,7 +7084,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 79,
     "cap": "→",
     "name": "Right Arrow",
+    "spoken": "Right Arrow",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "RIGHT",
@@ -6948,7 +7100,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 80,
     "cap": "←",
     "name": "Left Arrow",
+    "spoken": "Left Arrow",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LEFT",
@@ -6962,7 +7116,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 81,
     "cap": "↓",
     "name": "Down Arrow",
+    "spoken": "Down Arrow",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "DOWN",
@@ -6976,7 +7132,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 82,
     "cap": "↑",
     "name": "Up Arrow",
+    "spoken": "Up Arrow",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "UP",
@@ -6990,7 +7148,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 83,
     "cap": "⌧",
     "name": "Clear",
+    "spoken": "Clear",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_NUM",
@@ -7004,7 +7164,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 84,
     "cap": "/",
     "name": "Keypad /",
+    "spoken": "Keypad Slash",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_SLASH",
@@ -7018,7 +7180,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 85,
     "cap": "*",
     "name": "Keypad *",
+    "spoken": "Keypad Asterisk",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_MULTIPLY",
@@ -7032,7 +7196,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 86,
     "cap": "-",
     "name": "Keypad -",
+    "spoken": "Keypad Minus",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_MINUS",
@@ -7046,7 +7212,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 87,
     "cap": "+",
     "name": "Keypad +",
+    "spoken": "Keypad Plus Sign",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_PLUS",
@@ -7059,7 +7227,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 88,
     "cap": "⌤",
     "name": "Keypad Enter",
+    "spoken": "Keypad Enter",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_ENTER"
@@ -7071,7 +7241,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 89,
     "cap": "1",
     "name": "Keypad 1",
+    "spoken": "Keypad 1",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N1",
@@ -7084,7 +7256,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 90,
     "cap": "2",
     "name": "Keypad 2",
+    "spoken": "Keypad 2",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N2",
@@ -7097,7 +7271,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 91,
     "cap": "3",
     "name": "Keypad 3",
+    "spoken": "Keypad 3",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N3",
@@ -7110,7 +7286,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 92,
     "cap": "4",
     "name": "Keypad 4",
+    "spoken": "Keypad 4",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N4",
@@ -7123,7 +7301,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 93,
     "cap": "5",
     "name": "Keypad 5",
+    "spoken": "Keypad 5",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N5",
@@ -7136,7 +7316,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 94,
     "cap": "6",
     "name": "Keypad 6",
+    "spoken": "Keypad 6",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N6",
@@ -7149,7 +7331,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 95,
     "cap": "7",
     "name": "Keypad 7",
+    "spoken": "Keypad 7",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N7",
@@ -7162,7 +7346,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 96,
     "cap": "8",
     "name": "Keypad 8",
+    "spoken": "Keypad 8",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N8",
@@ -7175,7 +7361,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 97,
     "cap": "9",
     "name": "Keypad 9",
+    "spoken": "Keypad 9",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N9",
@@ -7188,7 +7376,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 98,
     "cap": "0",
     "name": "Keypad 0",
+    "spoken": "Keypad 0",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_N0",
@@ -7201,7 +7391,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 99,
     "cap": ".",
     "name": "Keypad .",
+    "spoken": "Keypad Period",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_DOT"
@@ -7213,7 +7405,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 100,
     "cap": "\\",
     "name": "ISO \\",
+    "spoken": "ISO Backslash",
     "shifted": "|",
+    "shiftedSpoken": "Vertical Bar",
     "shiftedZmk": "PIPE2",
     "zmk": [
       "NUBS",
@@ -7227,7 +7421,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 101,
     "cap": "Menu",
     "name": "Menu",
+    "spoken": "Menu",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_APP",
@@ -7243,7 +7439,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 102,
     "cap": "Power",
     "name": "Power",
+    "spoken": "Power",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_PWR",
@@ -7256,7 +7454,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 103,
     "cap": "=",
     "name": "Keypad =",
+    "spoken": "Keypad Equals Sign",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_EQUAL"
@@ -7268,7 +7468,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 104,
     "cap": "F13",
     "name": "F13",
+    "spoken": "F13",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F13"
@@ -7280,7 +7482,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 105,
     "cap": "F14",
     "name": "F14",
+    "spoken": "F14",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F14"
@@ -7292,7 +7496,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 106,
     "cap": "F15",
     "name": "F15",
+    "spoken": "F15",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F15"
@@ -7304,7 +7510,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 107,
     "cap": "F16",
     "name": "F16",
+    "spoken": "F16",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F16"
@@ -7316,7 +7524,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 108,
     "cap": "F17",
     "name": "F17",
+    "spoken": "F17",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F17"
@@ -7328,7 +7538,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 109,
     "cap": "F18",
     "name": "F18",
+    "spoken": "F18",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F18"
@@ -7340,7 +7552,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 110,
     "cap": "F19",
     "name": "F19",
+    "spoken": "F19",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F19"
@@ -7352,7 +7566,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 111,
     "cap": "F20",
     "name": "F20",
+    "spoken": "F20",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F20"
@@ -7364,7 +7580,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 112,
     "cap": "F21",
     "name": "F21",
+    "spoken": "F21",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F21"
@@ -7376,7 +7594,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 113,
     "cap": "F22",
     "name": "F22",
+    "spoken": "F22",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F22"
@@ -7388,7 +7608,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 114,
     "cap": "F23",
     "name": "F23",
+    "spoken": "F23",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F23"
@@ -7400,7 +7622,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 115,
     "cap": "F24",
     "name": "F24",
+    "spoken": "F24",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "F24"
@@ -7412,7 +7636,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 116,
     "cap": "Execute",
     "name": "Execute",
+    "spoken": "Execute",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_EXEC",
@@ -7425,7 +7651,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 117,
     "cap": "Help",
     "name": "Help",
+    "spoken": "Help",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_HELP"
@@ -7437,7 +7665,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 118,
     "cap": "Menu",
     "name": "Menu",
+    "spoken": "Menu",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_MENU"
@@ -7449,7 +7679,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 119,
     "cap": "Select",
     "name": "Select",
+    "spoken": "Select",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_SELECT"
@@ -7461,7 +7693,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 120,
     "cap": "Stop",
     "name": "Stop",
+    "spoken": "Stop",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_STOP"
@@ -7473,7 +7707,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 121,
     "cap": "Again",
     "name": "Again",
+    "spoken": "Again",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_REDO",
@@ -7486,7 +7722,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 122,
     "cap": "Undo",
     "name": "Undo",
+    "spoken": "Undo",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_UNDO",
@@ -7499,7 +7737,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 123,
     "cap": "Cut",
     "name": "Cut",
+    "spoken": "Cut",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_CUT",
@@ -7512,7 +7752,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 124,
     "cap": "Copy",
     "name": "Copy",
+    "spoken": "Copy",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_COPY",
@@ -7525,7 +7767,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 125,
     "cap": "Paste",
     "name": "Paste",
+    "spoken": "Paste",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_PASTE",
@@ -7538,7 +7782,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 126,
     "cap": "Find",
     "name": "Find",
+    "spoken": "Find",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_FIND"
@@ -7550,7 +7796,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 127,
     "cap": "Mute",
     "name": "Mute",
+    "spoken": "Mute",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_MUTE"
@@ -7562,7 +7810,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 128,
     "cap": "Volume Up",
     "name": "Volume Up",
+    "spoken": "Volume Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_VOL_UP",
@@ -7576,7 +7826,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 129,
     "cap": "Volume Down",
     "name": "Volume Down",
+    "spoken": "Volume Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_VOL_DN",
@@ -7590,7 +7842,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 130,
     "cap": "Locking Caps Lock",
     "name": "Locking Caps Lock",
+    "spoken": "Locking Caps Lock",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LCAPS",
@@ -7603,7 +7857,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 131,
     "cap": "Locking Num Lock",
     "name": "Locking Num Lock",
+    "spoken": "Locking Num Lock",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LNLCK",
@@ -7616,7 +7872,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 132,
     "cap": "Locking Scroll Lock",
     "name": "Locking Scroll Lock",
+    "spoken": "Locking Scroll Lock",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LSLCK",
@@ -7629,7 +7887,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 133,
     "cap": "Keypad ,",
     "name": "Keypad ,",
+    "spoken": "Keypad Comma",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_COMMA"
@@ -7641,7 +7901,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 134,
     "cap": "Keypad = (Equal) AS/400",
     "name": "Keypad = (Equal) AS/400",
+    "spoken": "Keypad Equals Sign (Equal) AS/400",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_EQUAL_AS400"
@@ -7653,7 +7915,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 135,
     "cap": "_",
     "name": "Ro",
+    "spoken": "Ro",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT1",
@@ -7667,7 +7931,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 136,
     "cap": "International 2",
     "name": "International 2",
+    "spoken": "International 2",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT2",
@@ -7682,7 +7948,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 137,
     "cap": "¥",
     "name": "Yen",
+    "spoken": "Yen",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT3",
@@ -7696,7 +7964,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 138,
     "cap": "International 4",
     "name": "International 4",
+    "spoken": "International 4",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT4",
@@ -7710,7 +7980,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 139,
     "cap": "International 5",
     "name": "International 5",
+    "spoken": "International 5",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT5",
@@ -7724,7 +7996,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 140,
     "cap": "International 6",
     "name": "International 6",
+    "spoken": "International 6",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT6",
@@ -7738,7 +8012,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 141,
     "cap": "International 7",
     "name": "International 7",
+    "spoken": "International 7",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT7",
@@ -7751,7 +8027,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 142,
     "cap": "International 8",
     "name": "International 8",
+    "spoken": "International 8",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT8",
@@ -7764,7 +8042,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 143,
     "cap": "International 9",
     "name": "International 9",
+    "spoken": "International 9",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "INT9",
@@ -7777,7 +8057,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 144,
     "cap": "かな",
     "name": "Kana",
+    "spoken": "Kana",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG1",
@@ -7791,7 +8073,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 145,
     "cap": "英数",
     "name": "Eisu",
+    "spoken": "Eisu",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG2",
@@ -7805,7 +8089,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 146,
     "cap": "Language 3",
     "name": "Language 3",
+    "spoken": "Language 3",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG3",
@@ -7819,7 +8105,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 147,
     "cap": "Language 4",
     "name": "Language 4",
+    "spoken": "Language 4",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG4",
@@ -7833,7 +8121,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 148,
     "cap": "Language 5",
     "name": "Language 5",
+    "spoken": "Language 5",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG5",
@@ -7847,7 +8137,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 149,
     "cap": "Language 6",
     "name": "Language 6",
+    "spoken": "Language 6",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG6",
@@ -7860,7 +8152,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 150,
     "cap": "Language 7",
     "name": "Language 7",
+    "spoken": "Language 7",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG7",
@@ -7873,7 +8167,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 151,
     "cap": "Language 8",
     "name": "Language 8",
+    "spoken": "Language 8",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG8",
@@ -7886,7 +8182,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 152,
     "cap": "Language 9",
     "name": "Language 9",
+    "spoken": "Language 9",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LANG9",
@@ -7899,7 +8197,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 153,
     "cap": "Alternate Erase",
     "name": "Alternate Erase",
+    "spoken": "Alternate Erase",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "ALT_ERASE"
@@ -7911,7 +8211,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 154,
     "cap": "SysReq/Attention",
     "name": "SysReq/Attention",
+    "spoken": "SysReq/Attention",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "SYSREQ",
@@ -7924,7 +8226,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 155,
     "cap": "Cancel",
     "name": "Cancel",
+    "spoken": "Cancel",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_CANCEL"
@@ -7936,7 +8240,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 156,
     "cap": "Clear",
     "name": "Clear",
+    "spoken": "Clear",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "CLEAR"
@@ -7948,7 +8254,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 157,
     "cap": "Prior",
     "name": "Prior",
+    "spoken": "Prior",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "PRIOR"
@@ -7960,7 +8268,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 158,
     "cap": "Return",
     "name": "Return",
+    "spoken": "Return",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "RET2",
@@ -7973,7 +8283,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 159,
     "cap": "Separator",
     "name": "Separator",
+    "spoken": "Separator",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "SEPARATOR"
@@ -7985,7 +8297,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 160,
     "cap": "Out",
     "name": "Out",
+    "spoken": "Out",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "OUT"
@@ -7997,7 +8311,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 161,
     "cap": "Oper",
     "name": "Oper",
+    "spoken": "Oper",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "OPER"
@@ -8009,7 +8325,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 162,
     "cap": "Clear/Again",
     "name": "Clear/Again",
+    "spoken": "Clear/Again",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "CLEAR_AGAIN"
@@ -8021,7 +8339,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 163,
     "cap": "CrSel/Props",
     "name": "CrSel/Props",
+    "spoken": "CrSel/Props",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "CRSEL"
@@ -8033,7 +8353,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 164,
     "cap": "ExSel",
     "name": "ExSel",
+    "spoken": "ExSel",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "EXSEL"
@@ -8045,7 +8367,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 180,
     "cap": "Currency Unit",
     "name": "Currency Unit",
+    "spoken": "Currency Unit",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "CURU"
@@ -8057,7 +8381,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 182,
     "cap": "Keypad (",
     "name": "Keypad (",
+    "spoken": "Keypad Left Parenthesis",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_LPAR",
@@ -8070,7 +8396,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 183,
     "cap": "Keypad )",
     "name": "Keypad )",
+    "spoken": "Keypad Right Parenthesis",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_RPAR",
@@ -8083,7 +8411,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 205,
     "cap": "Keypad Space",
     "name": "Keypad Space",
+    "spoken": "Keypad Space",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KSPC"
@@ -8095,7 +8425,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 216,
     "cap": "Keypad Clear",
     "name": "Keypad Clear",
+    "spoken": "Keypad Clear",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "KP_CLEAR"
@@ -8107,7 +8439,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 224,
     "cap": "⌃",
     "name": "Control",
+    "spoken": "Control",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LCTRL",
@@ -8121,7 +8455,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 225,
     "cap": "⇧",
     "name": "Shift",
+    "spoken": "Shift",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LSHFT",
@@ -8136,7 +8472,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 226,
     "cap": "⌥",
     "name": "Option",
+    "spoken": "Option",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LALT",
@@ -8149,7 +8487,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 227,
     "cap": "⌘",
     "name": "Command",
+    "spoken": "Command",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "LGUI",
@@ -8168,7 +8508,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 232,
     "cap": "Play/Pause",
     "name": "Play/Pause",
+    "spoken": "Play/Pause",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_PP",
@@ -8181,7 +8523,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 233,
     "cap": "Stop",
     "name": "Stop",
+    "spoken": "Stop",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_STOP2"
@@ -8193,7 +8537,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 234,
     "cap": "Previous",
     "name": "Previous",
+    "spoken": "Previous",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_PREV",
@@ -8206,7 +8552,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 235,
     "cap": "Next",
     "name": "Next",
+    "spoken": "Next",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_NEXT"
@@ -8218,7 +8566,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 236,
     "cap": "Eject",
     "name": "Eject",
+    "spoken": "Eject",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_EJECT"
@@ -8230,7 +8580,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 237,
     "cap": "Volume Up",
     "name": "Volume Up",
+    "spoken": "Volume Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_VOL_UP2",
@@ -8243,7 +8595,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 238,
     "cap": "Volume Down",
     "name": "Volume Down",
+    "spoken": "Volume Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_VOL_DN2",
@@ -8256,7 +8610,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 239,
     "cap": "Mute",
     "name": "Mute",
+    "spoken": "Mute",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_MUTE2"
@@ -8268,7 +8624,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 240,
     "cap": "WWW",
     "name": "WWW",
+    "spoken": "WWW",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_WWW"
@@ -8280,7 +8638,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 241,
     "cap": "Back",
     "name": "Back",
+    "spoken": "Back",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_BACK"
@@ -8292,7 +8652,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 242,
     "cap": "Forward",
     "name": "Forward",
+    "spoken": "Forward",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_FORWARD"
@@ -8304,7 +8666,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 243,
     "cap": "Stop",
     "name": "Stop",
+    "spoken": "Stop",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_STOP3"
@@ -8316,7 +8680,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 244,
     "cap": "Find",
     "name": "Find",
+    "spoken": "Find",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_FIND2"
@@ -8328,7 +8694,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 245,
     "cap": "Scroll Up",
     "name": "Scroll Up",
+    "spoken": "Scroll Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_SCROLL_UP"
@@ -8340,7 +8708,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 246,
     "cap": "Scroll Down",
     "name": "Scroll Down",
+    "spoken": "Scroll Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_SCROLL_DOWN"
@@ -8352,7 +8722,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 247,
     "cap": "Edit",
     "name": "Edit",
+    "spoken": "Edit",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_EDIT"
@@ -8364,7 +8736,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 248,
     "cap": "Sleep",
     "name": "Sleep",
+    "spoken": "Sleep",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_SLEEP"
@@ -8376,7 +8750,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 249,
     "cap": "Lock",
     "name": "Lock",
+    "spoken": "Lock",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_LOCK",
@@ -8390,7 +8766,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 250,
     "cap": "Refresh",
     "name": "Refresh",
+    "spoken": "Refresh",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_REFRESH"
@@ -8402,7 +8780,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 251,
     "cap": "Calculator",
     "name": "Calculator",
+    "spoken": "Calculator",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "K_CALC",
@@ -8415,7 +8795,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 48,
     "cap": "Power",
     "name": "Power",
+    "spoken": "Power",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_PWR",
@@ -8428,7 +8810,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 49,
     "cap": "Reset",
     "name": "Reset",
+    "spoken": "Reset",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_RESET"
@@ -8440,7 +8824,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 50,
     "cap": "Sleep",
     "name": "Sleep",
+    "spoken": "Sleep",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_SLEEP"
@@ -8452,7 +8838,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 52,
     "cap": "Sleep Mode",
     "name": "Sleep Mode",
+    "spoken": "Sleep Mode",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_SLEEP_MODE"
@@ -8464,7 +8852,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 64,
     "cap": "Menu",
     "name": "Menu",
+    "spoken": "Menu",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU"
@@ -8476,7 +8866,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 65,
     "cap": "Menu Pick",
     "name": "Menu Pick",
+    "spoken": "Menu Pick",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_PICK",
@@ -8489,7 +8881,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 66,
     "cap": "Menu Up",
     "name": "Menu Up",
+    "spoken": "Menu Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_UP"
@@ -8501,7 +8895,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 67,
     "cap": "Menu Down",
     "name": "Menu Down",
+    "spoken": "Menu Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_DOWN"
@@ -8513,7 +8909,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 68,
     "cap": "Menu Left",
     "name": "Menu Left",
+    "spoken": "Menu Left",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_LEFT"
@@ -8525,7 +8923,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 69,
     "cap": "Menu Right",
     "name": "Menu Right",
+    "spoken": "Menu Right",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_RIGHT"
@@ -8537,7 +8937,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 70,
     "cap": "Menu Escape",
     "name": "Menu Escape",
+    "spoken": "Menu Escape",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_ESC",
@@ -8550,7 +8952,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 71,
     "cap": "Menu Value Increase",
     "name": "Menu Value Increase",
+    "spoken": "Menu Value Increase",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_INC",
@@ -8563,7 +8967,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 72,
     "cap": "Menu Value Decrease",
     "name": "Menu Value Decrease",
+    "spoken": "Menu Value Decrease",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MENU_DEC",
@@ -8576,7 +8982,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 96,
     "cap": "Data On Screen",
     "name": "Data On Screen",
+    "spoken": "Data On Screen",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_DATA_ON_SCREEN"
@@ -8588,7 +8996,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 97,
     "cap": "Closed Caption",
     "name": "Closed Caption",
+    "spoken": "Closed Caption",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_CAPTIONS",
@@ -8601,7 +9011,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 101,
     "cap": "Snapshot",
     "name": "Snapshot",
+    "spoken": "Snapshot",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_SNAPSHOT"
@@ -8613,7 +9025,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 103,
     "cap": "Picture-in-Picture Toggle",
     "name": "Picture-in-Picture Toggle",
+    "spoken": "Picture-in-Picture Toggle",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_PIP"
@@ -8625,7 +9039,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 105,
     "cap": "Red Menu Button",
     "name": "Red Menu Button",
+    "spoken": "Red Menu Button",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_RED",
@@ -8638,7 +9054,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 106,
     "cap": "Green Menu Button",
     "name": "Green Menu Button",
+    "spoken": "Green Menu Button",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_GREEN",
@@ -8651,7 +9069,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 107,
     "cap": "Blue Menu Button",
     "name": "Blue Menu Button",
+    "spoken": "Blue Menu Button",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BLUE",
@@ -8664,7 +9084,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 108,
     "cap": "Yellow Menu Button",
     "name": "Yellow Menu Button",
+    "spoken": "Yellow Menu Button",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_YELLOW",
@@ -8677,7 +9099,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 109,
     "cap": "Aspect",
     "name": "Aspect",
+    "spoken": "Aspect",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_ASPECT"
@@ -8689,7 +9113,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 111,
     "cap": "Brightness Up",
     "name": "Brightness Up",
+    "spoken": "Brightness Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BRI_UP",
@@ -8703,7 +9129,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 112,
     "cap": "Brightness Down",
     "name": "Brightness Down",
+    "spoken": "Brightness Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BRI_DN",
@@ -8717,7 +9145,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 114,
     "cap": "Display Backlight Toggle",
     "name": "Display Backlight Toggle",
+    "spoken": "Display Backlight Toggle",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BKLT_TOG",
@@ -8730,7 +9160,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 115,
     "cap": "Display Set Brightness to Minimum",
     "name": "Display Set Brightness to Minimum",
+    "spoken": "Display Set Brightness to Minimum",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BRI_MIN",
@@ -8743,7 +9175,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 116,
     "cap": "Display Set Brightness to Maximum",
     "name": "Display Set Brightness to Maximum",
+    "spoken": "Display Set Brightness to Maximum",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BRI_MAX",
@@ -8756,7 +9190,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 117,
     "cap": "Display Set Auto Brightness",
     "name": "Display Set Auto Brightness",
+    "spoken": "Display Set Auto Brightness",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BRI_AUTO",
@@ -8769,7 +9205,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 130,
     "cap": "Mode Step",
     "name": "Mode Step",
+    "spoken": "Mode Step",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MODE_STEP",
@@ -8782,7 +9220,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 131,
     "cap": "Recall Last",
     "name": "Recall Last",
+    "spoken": "Recall Last",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_CHAN_LAST",
@@ -8795,7 +9235,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 136,
     "cap": "Media Select Computer",
     "name": "Media Select Computer",
+    "spoken": "Media Select Computer",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_COMPUTER"
@@ -8807,7 +9249,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 137,
     "cap": "Media Select TV",
     "name": "Media Select TV",
+    "spoken": "Media Select TV",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_TV"
@@ -8819,7 +9263,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 138,
     "cap": "Media Select WWW",
     "name": "Media Select WWW",
+    "spoken": "Media Select WWW",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_WWW"
@@ -8831,7 +9277,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 139,
     "cap": "Media Select DVD",
     "name": "Media Select DVD",
+    "spoken": "Media Select DVD",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_DVD"
@@ -8843,7 +9291,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 140,
     "cap": "Media Select Telephone",
     "name": "Media Select Telephone",
+    "spoken": "Media Select Telephone",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_PHONE"
@@ -8855,7 +9305,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 141,
     "cap": "Media Select Program Guide",
     "name": "Media Select Program Guide",
+    "spoken": "Media Select Program Guide",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_GUIDE"
@@ -8867,7 +9319,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 142,
     "cap": "Media Select Video Phone",
     "name": "Media Select Video Phone",
+    "spoken": "Media Select Video Phone",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_VIDEOPHONE"
@@ -8879,7 +9333,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 143,
     "cap": "Media Select Games",
     "name": "Media Select Games",
+    "spoken": "Media Select Games",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_GAMES"
@@ -8891,7 +9347,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 144,
     "cap": "Media Select Messages",
     "name": "Media Select Messages",
+    "spoken": "Media Select Messages",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_MESSAGES"
@@ -8903,7 +9361,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 145,
     "cap": "Media Select CD",
     "name": "Media Select CD",
+    "spoken": "Media Select CD",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_CD"
@@ -8915,7 +9375,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 146,
     "cap": "Media Select VCR",
     "name": "Media Select VCR",
+    "spoken": "Media Select VCR",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_VCR"
@@ -8927,7 +9389,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 147,
     "cap": "Media Select Tuner",
     "name": "Media Select Tuner",
+    "spoken": "Media Select Tuner",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_TUNER"
@@ -8939,7 +9403,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 148,
     "cap": "Quit",
     "name": "Quit",
+    "spoken": "Quit",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_QUIT"
@@ -8951,7 +9417,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 149,
     "cap": "Help",
     "name": "Help",
+    "spoken": "Help",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_HELP"
@@ -8963,7 +9431,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 150,
     "cap": "Media Select Tape",
     "name": "Media Select Tape",
+    "spoken": "Media Select Tape",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_TAPE"
@@ -8975,7 +9445,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 151,
     "cap": "Media Select Cable",
     "name": "Media Select Cable",
+    "spoken": "Media Select Cable",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_CABLE"
@@ -8987,7 +9459,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 152,
     "cap": "Media Select Satellite",
     "name": "Media Select Satellite",
+    "spoken": "Media Select Satellite",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_SATELLITE"
@@ -8999,7 +9473,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 154,
     "cap": "Media Select Home",
     "name": "Media Select Home",
+    "spoken": "Media Select Home",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_HOME"
@@ -9011,7 +9487,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 156,
     "cap": "Channel Increment",
     "name": "Channel Increment",
+    "spoken": "Channel Increment",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_CHAN_INC",
@@ -9024,7 +9502,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 157,
     "cap": "Channel Decrement",
     "name": "Channel Decrement",
+    "spoken": "Channel Decrement",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_CHAN_DEC",
@@ -9037,7 +9517,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 160,
     "cap": "VCR Plus",
     "name": "VCR Plus",
+    "spoken": "VCR Plus",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MEDIA_VCR_PLUS"
@@ -9049,7 +9531,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 176,
     "cap": "Play",
     "name": "Play",
+    "spoken": "Play",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_PLAY"
@@ -9061,7 +9545,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 177,
     "cap": "Pause",
     "name": "Pause",
+    "spoken": "Pause",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_PAUSE"
@@ -9073,7 +9559,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 178,
     "cap": "Record",
     "name": "Record",
+    "spoken": "Record",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_REC",
@@ -9086,7 +9574,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 179,
     "cap": "Fast Forward",
     "name": "Fast Forward",
+    "spoken": "Fast Forward",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_FF",
@@ -9099,7 +9589,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 180,
     "cap": "Rewind",
     "name": "Rewind",
+    "spoken": "Rewind",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_RW",
@@ -9112,7 +9604,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 181,
     "cap": "Next Track",
     "name": "Next Track",
+    "spoken": "Next Track",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_NEXT",
@@ -9125,7 +9619,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 182,
     "cap": "Previous Track",
     "name": "Previous Track",
+    "spoken": "Previous Track",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_PREV",
@@ -9139,7 +9635,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 183,
     "cap": "Stop",
     "name": "Stop",
+    "spoken": "Stop",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_STOP",
@@ -9152,7 +9650,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 184,
     "cap": "Eject",
     "name": "Eject",
+    "spoken": "Eject",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_EJECT",
@@ -9165,7 +9665,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 185,
     "cap": "Random Play",
     "name": "Random Play",
+    "spoken": "Random Play",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_SHUFFLE",
@@ -9178,7 +9680,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 188,
     "cap": "Repeat",
     "name": "Repeat",
+    "spoken": "Repeat",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_REPEAT"
@@ -9190,7 +9694,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 191,
     "cap": "Slow Tracking",
     "name": "Slow Tracking",
+    "spoken": "Slow Tracking",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_SLOW2",
@@ -9203,7 +9709,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 204,
     "cap": "Stop/Eject",
     "name": "Stop/Eject",
+    "spoken": "Stop/Eject",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_STOP_EJECT"
@@ -9215,7 +9723,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 205,
     "cap": "Play/Pause",
     "name": "Play/Pause",
+    "spoken": "Play/Pause",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_PP",
@@ -9229,7 +9739,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 207,
     "cap": "Dictation",
     "name": "Dictation",
+    "spoken": "Dictation",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_VOICE_COMMAND"
@@ -9241,7 +9753,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 226,
     "cap": "Mute",
     "name": "Mute",
+    "spoken": "Mute",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_MUTE",
@@ -9254,7 +9768,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 229,
     "cap": "Bass Boost",
     "name": "Bass Boost",
+    "spoken": "Bass Boost",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_BASS_BOOST"
@@ -9266,7 +9782,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 233,
     "cap": "Volume Up",
     "name": "Volume Up",
+    "spoken": "Volume Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_VOL_UP",
@@ -9280,7 +9798,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 234,
     "cap": "Volume Down",
     "name": "Volume Down",
+    "spoken": "Volume Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_VOL_DN",
@@ -9294,7 +9814,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 245,
     "cap": "Slow",
     "name": "Slow",
+    "spoken": "Slow",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_SLOW"
@@ -9306,7 +9828,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 371,
     "cap": "Alternate Audio Increment",
     "name": "Alternate Audio Increment",
+    "spoken": "Alternate Audio Increment",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_ALT_AUDIO_INC",
@@ -9319,7 +9843,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 387,
     "cap": "Consumer Control Configuration",
     "name": "Consumer Control Configuration",
+    "spoken": "Consumer Control Configuration",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_CCC"
@@ -9331,7 +9857,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 388,
     "cap": "Word Processor",
     "name": "Word Processor",
+    "spoken": "Word Processor",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_WORD"
@@ -9343,7 +9871,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 389,
     "cap": "Text Editor",
     "name": "Text Editor",
+    "spoken": "Text Editor",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_TEXT_EDITOR"
@@ -9355,7 +9885,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 390,
     "cap": "Spreadsheet",
     "name": "Spreadsheet",
+    "spoken": "Spreadsheet",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_SHEET",
@@ -9368,7 +9900,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 391,
     "cap": "Graphics Editor",
     "name": "Graphics Editor",
+    "spoken": "Graphics Editor",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_GRAPHICS_EDITOR"
@@ -9380,7 +9914,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 392,
     "cap": "Presentation App",
     "name": "Presentation App",
+    "spoken": "Presentation App",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_PRESENTATION"
@@ -9392,7 +9928,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 393,
     "cap": "Database App",
     "name": "Database App",
+    "spoken": "Database App",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_DB",
@@ -9405,7 +9943,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 394,
     "cap": "Email Reader",
     "name": "Email Reader",
+    "spoken": "Email Reader",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_MAIL",
@@ -9418,7 +9958,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 395,
     "cap": "Newsreader",
     "name": "Newsreader",
+    "spoken": "Newsreader",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_NEWS"
@@ -9430,7 +9972,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 396,
     "cap": "Voicemail",
     "name": "Voicemail",
+    "spoken": "Voicemail",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_VOICEMAIL"
@@ -9442,7 +9986,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 397,
     "cap": "Contacts/Address Book",
     "name": "Contacts/Address Book",
+    "spoken": "Contacts/Address Book",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_CONTACTS",
@@ -9455,7 +10001,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 398,
     "cap": "Calendar/Schedule",
     "name": "Calendar/Schedule",
+    "spoken": "Calendar/Schedule",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_CAL",
@@ -9468,7 +10016,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 399,
     "cap": "Task/Project Manager",
     "name": "Task/Project Manager",
+    "spoken": "Task/Project Manager",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_TASK_MANAGER"
@@ -9480,7 +10030,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 400,
     "cap": "Log/Journal/Timecard",
     "name": "Log/Journal/Timecard",
+    "spoken": "Log/Journal/Timecard",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_JOURNAL"
@@ -9492,7 +10044,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 401,
     "cap": "Checkbook/Finance",
     "name": "Checkbook/Finance",
+    "spoken": "Checkbook/Finance",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_FINANCE"
@@ -9504,7 +10058,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 402,
     "cap": "Calculator",
     "name": "Calculator",
+    "spoken": "Calculator",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_CALC",
@@ -9517,7 +10073,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 403,
     "cap": "A/V Capture/Playback",
     "name": "A/V Capture/Playback",
+    "spoken": "A/V Capture/Playback",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_AV_CAPTURE_PLAYBACK"
@@ -9529,7 +10087,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 404,
     "cap": "Local Machine Browser",
     "name": "Local Machine Browser",
+    "spoken": "Local Machine Browser",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_MY_COMPUTER"
@@ -9541,7 +10101,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 406,
     "cap": "Internet Browser",
     "name": "Internet Browser",
+    "spoken": "Internet Browser",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_WWW"
@@ -9553,7 +10115,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 409,
     "cap": "Network Chat",
     "name": "Network Chat",
+    "spoken": "Network Chat",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_CHAT",
@@ -9566,7 +10130,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 412,
     "cap": "Logoff",
     "name": "Logoff",
+    "spoken": "Logoff",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_LOGOFF"
@@ -9578,7 +10144,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 414,
     "cap": "Terminal Lock/Screensaver",
     "name": "Terminal Lock/Screensaver",
+    "spoken": "Terminal Lock/Screensaver",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_LOCK",
@@ -9592,7 +10160,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 415,
     "cap": "Control Panel",
     "name": "Control Panel",
+    "spoken": "Control Panel",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_CONTROL_PANEL"
@@ -9604,7 +10174,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 418,
     "cap": "Select Task/Application",
     "name": "Select Task/Application",
+    "spoken": "Select Task/Application",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_SELECT_TASK"
@@ -9616,7 +10188,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 419,
     "cap": "Next Task/Application",
     "name": "Next Task/Application",
+    "spoken": "Next Task/Application",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_NEXT_TASK"
@@ -9628,7 +10202,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 420,
     "cap": "Previous Task/Application",
     "name": "Previous Task/Application",
+    "spoken": "Previous Task/Application",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_PREV_TASK",
@@ -9641,7 +10217,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 422,
     "cap": "Integrated Help Center",
     "name": "Integrated Help Center",
+    "spoken": "Integrated Help Center",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_HELP"
@@ -9653,7 +10231,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 423,
     "cap": "Documents",
     "name": "Documents",
+    "spoken": "Documents",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_DOCS",
@@ -9666,7 +10246,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 427,
     "cap": "Spell Check",
     "name": "Spell Check",
+    "spoken": "Spell Check",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_SPELL",
@@ -9679,7 +10261,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 430,
     "cap": "Keyboard Layout",
     "name": "Keyboard Layout",
+    "spoken": "Keyboard Layout",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_KEYBOARD_LAYOUT"
@@ -9691,7 +10275,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 433,
     "cap": "Screen Saver",
     "name": "Screen Saver",
+    "spoken": "Screen Saver",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_SCREEN_SAVER"
@@ -9703,7 +10289,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 436,
     "cap": "File Browser",
     "name": "File Browser",
+    "spoken": "File Browser",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_FILES",
@@ -9716,7 +10304,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 438,
     "cap": "Image Browser",
     "name": "Image Browser",
+    "spoken": "Image Browser",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_IMAGES",
@@ -9729,7 +10319,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 439,
     "cap": "Audio Browser",
     "name": "Audio Browser",
+    "spoken": "Audio Browser",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_AUDIO",
@@ -9743,7 +10335,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 440,
     "cap": "Movie Browser",
     "name": "Movie Browser",
+    "spoken": "Movie Browser",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_MOVIES",
@@ -9756,7 +10350,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 444,
     "cap": "Instant Messaging",
     "name": "Instant Messaging",
+    "spoken": "Instant Messaging",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_IM",
@@ -9769,7 +10365,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 445,
     "cap": "OEM Features/Tips/Tutorial Browser",
     "name": "OEM Features/Tips/Tutorial Browser",
+    "spoken": "OEM Features/Tips/Tutorial Browser",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AL_TIPS",
@@ -9783,7 +10381,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 513,
     "cap": "New",
     "name": "New",
+    "spoken": "New",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_NEW"
@@ -9795,7 +10395,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 514,
     "cap": "Open",
     "name": "Open",
+    "spoken": "Open",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_OPEN"
@@ -9807,7 +10409,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 515,
     "cap": "Close",
     "name": "Close",
+    "spoken": "Close",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_CLOSE"
@@ -9819,7 +10423,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 516,
     "cap": "Exit",
     "name": "Exit",
+    "spoken": "Exit",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_EXIT"
@@ -9831,7 +10437,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 519,
     "cap": "Save",
     "name": "Save",
+    "spoken": "Save",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_SAVE"
@@ -9843,7 +10451,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 520,
     "cap": "Print",
     "name": "Print",
+    "spoken": "Print",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_PRINT"
@@ -9855,7 +10465,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 521,
     "cap": "Properties",
     "name": "Properties",
+    "spoken": "Properties",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_PROPS",
@@ -9868,7 +10480,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 538,
     "cap": "Undo",
     "name": "Undo",
+    "spoken": "Undo",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_UNDO"
@@ -9880,7 +10494,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 539,
     "cap": "Copy",
     "name": "Copy",
+    "spoken": "Copy",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_COPY"
@@ -9892,7 +10508,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 540,
     "cap": "Cut",
     "name": "Cut",
+    "spoken": "Cut",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_CUT"
@@ -9904,7 +10522,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 541,
     "cap": "Paste",
     "name": "Paste",
+    "spoken": "Paste",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_PASTE"
@@ -9916,7 +10536,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 543,
     "cap": "Find",
     "name": "Find",
+    "spoken": "Find",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_FIND"
@@ -9928,7 +10550,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 545,
     "cap": "Spotlight",
     "name": "Spotlight",
+    "spoken": "Spotlight",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_SEARCH"
@@ -9940,7 +10564,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 546,
     "cap": "Go To",
     "name": "Go To",
+    "spoken": "Go To",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_GOTO"
@@ -9952,7 +10578,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 547,
     "cap": "Home",
     "name": "Home",
+    "spoken": "Home",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_HOME"
@@ -9964,7 +10592,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 548,
     "cap": "Back",
     "name": "Back",
+    "spoken": "Back",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_BACK"
@@ -9976,7 +10606,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 549,
     "cap": "Forward",
     "name": "Forward",
+    "spoken": "Forward",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_FORWARD"
@@ -9988,7 +10620,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 550,
     "cap": "Stop",
     "name": "Stop",
+    "spoken": "Stop",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_STOP"
@@ -10000,7 +10634,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 551,
     "cap": "Refresh",
     "name": "Refresh",
+    "spoken": "Refresh",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_REFRESH"
@@ -10012,7 +10648,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 554,
     "cap": "Bookmarks",
     "name": "Bookmarks",
+    "spoken": "Bookmarks",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_BOOKMARKS",
@@ -10026,7 +10664,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 557,
     "cap": "Zoom In",
     "name": "Zoom In",
+    "spoken": "Zoom In",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_ZOOM_IN"
@@ -10038,7 +10678,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 558,
     "cap": "Zoom Out",
     "name": "Zoom Out",
+    "spoken": "Zoom Out",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_ZOOM_OUT"
@@ -10050,7 +10692,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 559,
     "cap": "Zoom",
     "name": "Zoom",
+    "spoken": "Zoom",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_ZOOM"
@@ -10062,7 +10706,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 562,
     "cap": "View Toggle",
     "name": "View Toggle",
+    "spoken": "View Toggle",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_VIEW_TOGGLE"
@@ -10074,7 +10720,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 563,
     "cap": "Scroll Up",
     "name": "Scroll Up",
+    "spoken": "Scroll Up",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_SCROLL_UP"
@@ -10086,7 +10734,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 564,
     "cap": "Scroll Down",
     "name": "Scroll Down",
+    "spoken": "Scroll Down",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_SCROLL_DOWN"
@@ -10098,7 +10748,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 573,
     "cap": "Edit",
     "name": "Edit",
+    "spoken": "Edit",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_EDIT"
@@ -10110,7 +10762,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 607,
     "cap": "Cancel",
     "name": "Cancel",
+    "spoken": "Cancel",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_CANCEL"
@@ -10122,7 +10776,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 617,
     "cap": "Insert Mode",
     "name": "Insert Mode",
+    "spoken": "Insert Mode",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_INS",
@@ -10135,7 +10791,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 618,
     "cap": "Delete",
     "name": "Delete",
+    "spoken": "Delete",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_DEL"
@@ -10147,7 +10805,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 633,
     "cap": "Redo/Repeat",
     "name": "Redo/Repeat",
+    "spoken": "Redo/Repeat",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_REDO"
@@ -10159,7 +10819,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 649,
     "cap": "Reply",
     "name": "Reply",
+    "spoken": "Reply",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_REPLY"
@@ -10171,7 +10833,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 651,
     "cap": "Forward Msg",
     "name": "Forward Msg",
+    "spoken": "Forward Msg",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_FORWARD_MAIL"
@@ -10183,7 +10847,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 652,
     "cap": "Send",
     "name": "Send",
+    "spoken": "Send",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_SEND"
@@ -10195,7 +10861,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 669,
     "cap": "🌐",
     "name": "Globe",
+    "spoken": "Globe",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "GLOBE",
@@ -10208,7 +10876,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 671,
     "cap": "Mission Control",
     "name": "Mission Control",
+    "spoken": "Mission Control",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_DESKTOP_SHOW_ALL_WINDOWS"
@@ -10220,7 +10890,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 674,
     "cap": "Apps",
     "name": "Apps",
+    "spoken": "Apps",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_AC_DESKTOP_SHOW_ALL_APPLICATIONS"
@@ -10232,7 +10904,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 711,
     "cap": "Keyboard Input Assist Previous",
     "name": "Keyboard Input Assist Previous",
+    "spoken": "Keyboard Input Assist Previous",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_KBIA_PREV",
@@ -10245,7 +10919,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 712,
     "cap": "Keyboard Input Assist Next",
     "name": "Keyboard Input Assist Next",
+    "spoken": "Keyboard Input Assist Next",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_KBIA_NEXT",
@@ -10258,7 +10934,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 713,
     "cap": "Keyboard Input Assist Previous Group",
     "name": "Keyboard Input Assist Previous Group",
+    "spoken": "Keyboard Input Assist Previous Group",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_KBIA_PREV_GRP",
@@ -10271,7 +10949,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 714,
     "cap": "Keyboard Input Assist Next Group",
     "name": "Keyboard Input Assist Next Group",
+    "spoken": "Keyboard Input Assist Next Group",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_KBIA_NEXT_GRP",
@@ -10284,7 +10964,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 715,
     "cap": "Keyboard Input Assist Accept",
     "name": "Keyboard Input Assist Accept",
+    "spoken": "Keyboard Input Assist Accept",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_KBIA_ACCEPT",
@@ -10297,7 +10979,9 @@ export const keyCatalog: KeyEntry[] = [
     "id": 716,
     "cap": "Keyboard Input Assist Cancel",
     "name": "Keyboard Input Assist Cancel",
+    "spoken": "Keyboard Input Assist Cancel",
     "shifted": null,
+    "shiftedSpoken": null,
     "shiftedZmk": null,
     "zmk": [
       "C_KBIA_CANCEL",

@@ -209,7 +209,7 @@ describe("the panes", () => {
     await userEvent.tab();
     expect(canvas.contains(document.activeElement)).toBe(true);
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Left half, row 1, key 1. Types `.",
+      "Left half, row 1, key 1. Types Grave Accent.",
     );
     await userEvent.tab();
     expect(canvas.contains(document.activeElement)).toBe(false);

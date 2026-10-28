@@ -60,7 +60,10 @@ export function KeyField({
         }}
       >
         <Button
-          aria-label={messages.format("picker.field", { label, key: name })}
+          aria-label={messages.format("picker.field", {
+            label,
+            key: key === undefined ? name : key.spoken,
+          })}
           onKeyDown={(event) => {
             if (event.key === "ArrowDown") {
               openWith("");

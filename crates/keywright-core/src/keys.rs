@@ -11,6 +11,7 @@
 //!   `Delete` in text.
 //! - [`source`] says what they're called in the input source the person types in, from
 //!   what macOS says each key types there.
+//! - [`speech`] says keys' names as VoiceOver should: `Semicolon` rather than `;`.
 //! - [`zmk`] reads and writes ZMK's names for keys, such as `N1` and `C_VOL_UP`.
 //! - [`dom`] maps `KeyboardEvent.code` values to keys, for the shortcut recorder.
 //!
@@ -19,6 +20,7 @@
 
 pub mod dom;
 pub mod source;
+pub mod speech;
 pub mod us;
 pub mod zmk;
 

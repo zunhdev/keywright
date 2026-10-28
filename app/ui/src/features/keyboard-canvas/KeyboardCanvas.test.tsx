@@ -34,7 +34,7 @@ describe("the Sofle's stock keymap", () => {
     expect(screen.getByRole("heading", { level: 2 }).textContent).toBe("default");
     const names = keys().map((key) => key.getAttribute("aria-label"));
     expect(names.slice(0, 2)).toEqual([
-      "Left half, row 1, key 1. Types `.",
+      "Left half, row 1, key 1. Types Grave Accent.",
       "Left half, row 1, key 2. Types 1.",
     ]);
     expect(names[53]).toBe("Left half, row 5, key 4. Hold to use the lower layer.");
@@ -92,7 +92,7 @@ describe("the Sofle's stock keymap", () => {
     });
     const grave = keys()[0];
     expect(grave?.getAttribute("aria-label")).toBe(
-      "Left half, row 1, key 1. Same as the layer below: types `.",
+      "Left half, row 1, key 1. Same as the layer below: types Grave Accent.",
     );
     expect(grave?.querySelector("[data-inherited]")?.textContent).toBe("`");
   });
