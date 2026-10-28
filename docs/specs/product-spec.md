@@ -2,7 +2,7 @@
 
 |             |                                                           |
 | ----------- | --------------------------------------------------------- |
-| **Status**  | Draft v0.7 — for review                                   |
+| **Status**  | v1.0 — Keywright 1.0.0                                    |
 | **Date**    | 2026-10-28                                                |
 | **Owner**   | zunh                                                      |
 | **Scope**   | v1.0: Keebart Sofle Choc Pro BT, macOS on Apple Silicon   |
@@ -493,3 +493,4 @@ These come from what the keyboard's live-editing protocol exposes. Keywright sta
 | 0.5     | 2026-10-24 | Spike outcomes (KEY-19). SAF-5: the keyboard forgets unsaved changes when it sleeps, too (S5). MAC-4: presets are offered per verified macOS version, and v1.0 needs them all (S7). MAC-8: Keywright maps a chosen key to Globe itself, since Modifier Keys doesn't work for the Sofle (S7). FW-1: success is the half coming back (S6). BAR-5 (S9). Battery on USB (S3). R2 resolved (S2); R5 partly resolved by self-signed releases (S8, S9); Q3 answered for now (S6). |
 | 0.6     | 2026-10-25 | The public launch (§3.2, §11, §12, Q2, Q3): v1.0 is the owner's own release, not announced. Nobody else sees Keywright before the owner's real-world trial and Linux and Windows support; the newcomer test and outreach to Keebart come after them. v3 keeps more keyboards.                                                                                                                                                                                              |
 | 0.7     | 2026-10-28 | Platform (NFR-1, KEY-98): macOS 27 only. macOS 15 and 26 are dropped rather than verified on real Macs, since v1.0 is the owner's own release.                                                                                                                                                                                                                                                                                                                             |
+| 1.0     | 2026-10-28 | Keywright 1.0.0 is released, as this spec describes it, for the owner's own use (§3.2, KEY-83).                                                                                                                                                                                                                                                                                                                                                                            |

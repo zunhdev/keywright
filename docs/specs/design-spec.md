@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.41 — for review                                                       |
+| **Status**    | v1.0 — Keywright 1.0.0                                                         |
 | **Date**      | 2026-10-28                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -625,3 +625,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.39    | 2026-10-28 | Writing (§11.1, KEY-81): buttons and menu items take title case, as on macOS; everything else sentence case. The copy check (`mise run lint:copy`) keeps firmware terms out of the UI's words.                                                                                                                                                       |
 | 0.40    | 2026-10-28 | Keyboard navigation (§4.7, KEY-116): Esc on the canvas clears the selection, so the inspector shows the layer overview.                                                                                                                                                                                                                              |
 | 0.41    | 2026-10-28 | Shortcut recorder (§5.3, KEY-118): while recording, the field says only "Press a shortcut…", on one line, beside Cancel; "⎋ cancels" didn't fit at the inspector's width. VoiceOver still hears that Escape cancels.                                                                                                                                 |
+| 1.0     | 2026-10-28 | Keywright 1.0.0 is released, as this spec describes it (KEY-83).                                                                                                                                                                                                                                                                                     |

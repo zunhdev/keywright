@@ -105,7 +105,7 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
 name = "architecture-tests"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "cargo_metadata 0.23.1",
 ]
@@ -2407,7 +2407,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-app"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "keywright-core",
  "keywright-device",
@@ -2435,7 +2435,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-cli"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "clap",
  "keywright-core",
@@ -2450,7 +2450,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-core"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "insta",
  "proptest",
@@ -2462,7 +2462,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-device"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "keywright-core",
  "keywright-sim",
@@ -2474,7 +2474,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-platform"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "libtest-mimic",
  "objc2",
@@ -2489,7 +2489,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-sim"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "keywright-core",
  "keywright-studio",
@@ -2499,7 +2499,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-studio"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "proptest",
  "proptest-derive",
@@ -2513,7 +2513,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-transport"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "bluest",
  "futures-core",
