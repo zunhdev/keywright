@@ -157,7 +157,17 @@ pub struct SessionStateChanged(pub SessionStatus);
 #[specta::specta]
 pub async fn session_state(app: tauri::State<'_, AppState>) -> Result<SessionStatus, AppError> {
     let snapshot = app.session.snapshot().await?;
-    Ok(Tracker::default().status(&snapshot.state, Some(&snapshot), &app.context().labels))
+    Ok(status(
+        &snapshot.state,
+        Some(&snapshot),
+        &app.context().labels,
+    ))
+}
+
+/// The session's status in `state`, from `snapshot` too if there's one, with keys called as
+/// `labels` calls them.
+pub(super) fn status(state: &State, snapshot: Option<&Snapshot>, labels: &Labels) -> SessionStatus {
+    Tracker::default().status(state, snapshot, labels)
 }
 
 /// What [`follow`] sends the UI.

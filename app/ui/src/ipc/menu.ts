@@ -58,6 +58,7 @@ const handlers: Partial<Record<MenuItem, () => void>> = {
   "zoom-out": () => useStore.getState().zoomCanvas("out"),
   "actual-size": () => useStore.getState().zoomCanvas("actual-size"),
   "first-time-setup": startFirstRun,
+  "report-issue": () => useStore.setState({ reporting: true }),
   ...Object.fromEntries(LAYER_ITEMS.map((item, index) => [item, () => showLayerAt(index)])),
 };
 
@@ -133,6 +134,7 @@ function itemStates(store: Store): ReadonlyMap<MenuItem, ItemState> {
     ["zoom-out", item(keymap !== null && zoom > Math.min(...ZOOMS))],
     ["actual-size", item(keymap !== null && zoom !== 1)],
     ["first-time-setup", item(store.firstRun === null)],
+    ["report-issue", item(true)],
     ...LAYER_ITEMS.map((menuItem, index): [MenuItem, ItemState] => {
       const layer = keymap?.layers[index];
       const fallback = strings.format("menu.layer", { number: index + 1 });

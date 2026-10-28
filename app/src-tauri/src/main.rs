@@ -6,6 +6,9 @@
 //! window's "edited" dot while changes are being tried, and follows the input source, which
 //! key labels show (MAC-5). Editing, the keyboard and the files are other crates' work.
 //!
+//! **The log** ([`logs`], tech spec §16): what the crates report, and each change of the
+//! session's state, go to `~/Library/Logs/Keywright/`, for _Copy Diagnostics_ (NFR-4).
+//!
 //! **Menu-bar-only mode** (BAR-4): while the menu bar item is on ([`settings`]), closing
 //! the window hides it, and Keywright leaves the Dock, staying in the menu bar. Opening it
 //! again brings both back. With the item off, closing the window quits.
@@ -19,6 +22,7 @@
 
 mod ipc;
 mod json_file;
+mod logs;
 mod low_battery;
 mod mac_check;
 mod menu;
@@ -41,7 +45,8 @@ use tauri_specta::Event;
 
 use crate::ipc::{
     AppState, BatteryChanged, BatteryState, KeymapChanged, MenuItemChosen, OpenedEarly, QuitGuard,
-    QuitRequested, SessionStateChanged, SessionStatus, SettingsState, TrafficLights, Update,
+    QuitRequested, SessionState, SessionStateChanged, SessionStatus, SettingsState, TrafficLights,
+    Update,
 };
 use crate::low_battery::LowBattery;
 use crate::mac_check::Dismissals;
@@ -54,6 +59,12 @@ use crate::tray::MenuBar;
 const MAIN_WINDOW: &str = "main";
 
 fn main() -> tauri::Result<()> {
+    logs::start();
+    tracing::info!(
+        version = env!("CARGO_PKG_VERSION"),
+        macos = keywright_platform::system::macos_version_name(),
+        "Keywright started"
+    );
     let ipc = ipc::builder();
     tauri::Builder::default()
         // First, so that opening Keywright again only brings this one forward.
@@ -219,12 +230,14 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
         ));
     }
     let mut edited = false;
+    let mut logged = None;
     // Nothing listens until the UI has loaded; it asks for the state and keymap then.
     tauri::async_runtime::spawn(ipc::follow(
         state.session.clone(),
         state.follow_context(),
         move |update| match update {
             Update::Status(status) => {
+                log_state(&status, &mut logged);
                 handle.state::<QuitGuard>().set_edited(is_edited(&status));
                 if is_edited(&status) != edited {
                     edited = !edited;
@@ -243,6 +256,20 @@ fn start_session(app: &mut App) -> Result<(), Box<dyn Error>> {
     app.manage(state);
     app.manage(BatteryState(battery));
     Ok(())
+}
+
+/// Logs the session's state in `status`, if it isn't the state `logged` last.
+fn log_state(status: &SessionStatus, logged: &mut Option<SessionState>) {
+    if logged.as_ref() == Some(&status.state) {
+        return;
+    }
+    tracing::info!(
+        state = ?status.state,
+        keyboard = status.keyboard,
+        transport = ?status.transport,
+        "the session's state changed"
+    );
+    *logged = Some(status.state.clone());
 }
 
 /// Shows a macOS notification saying `message` (BAR-3). The first one asks the person

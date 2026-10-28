@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "settings-window",
-  "description": "What the Settings window's UI may use: reading and changing the settings it shows (design §9.4), choosing the input source of secondary key labels, turning the Globe key off, asking for Bluetooth and opening System Settings at Login Items or Bluetooth, how many backups are kept and showing their folder, and resetting the first run. Each tab adds the commands it uses.",
+  "description": "What the Settings window's UI may use: reading and changing the settings it shows (design §9.4), choosing the input source of secondary key labels, turning the Globe key off, asking for Bluetooth and opening System Settings at Login Items or Bluetooth, how many backups are kept and showing their folder, resetting the first run, and copying diagnostics. Each tab adds the commands it uses.",
   "windows": ["settings"],
   "permissions": [
     "allow-general-settings",
@@ -21,6 +21,8 @@
     "allow-backup-settings",
     "allow-set-backups-kept",
     "allow-show-backups-folder",
-    "allow-reset-first-run"
+    "allow-reset-first-run",
+    "allow-diagnostics",
+    "allow-copy-diagnostics"
   ]
 }

@@ -26,6 +26,7 @@ mod backups;
 mod battery;
 mod bluetooth;
 mod connection;
+mod diagnostics;
 mod edit;
 mod error;
 mod firmware;
@@ -205,6 +206,9 @@ pub fn builder() -> Builder<tauri::Wry> {
             first_run::first_run_pending,
             first_run::finish_first_run,
             first_run::reset_first_run,
+            diagnostics::diagnostics,
+            diagnostics::copy_diagnostics,
+            diagnostics::open_new_issue,
             keymap::session_keymap,
             action::key_catalog,
             action::keyboard_type,

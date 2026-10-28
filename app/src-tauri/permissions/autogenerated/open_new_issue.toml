@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-open-new-issue"
+description = "Enables the open_new_issue command without any pre-configured scope."
+commands.allow = ["open_new_issue"]
+
+[[permission]]
+identifier = "deny-open-new-issue"
+description = "Denies the open_new_issue command without any pre-configured scope."
+commands.deny = ["open_new_issue"]

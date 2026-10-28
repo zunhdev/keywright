@@ -48,6 +48,11 @@ thiserror.workspace = true
 # The session runs on Tauri's Tokio runtime, and the simulated keyboard's unlock waits on
 # its timer. `select!` follows the session and the input source at once.
 tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
+# The log, in `~/Library/Logs/Keywright/` (tech spec §16): what Keywright's crates report,
+# written to a file a day.
+tracing.workspace = true
+tracing-appender.workspace = true
+tracing-subscriber.workspace = true
 
 [dev-dependencies]
 # Parses the menu shortcuts the way Tauri does, to check them.

@@ -91,6 +91,8 @@ export interface UiSlice {
   readonly restoring: boolean;
   /** Whether the Import preview shows (design §9.2). */
   readonly importing: boolean;
+  /** Whether Help › Report an Issue… shows the diagnostics report (NFR-4). */
+  readonly reporting: boolean;
   /**
    * How many times the shell has asked for the Import preview, so that it shows the backup
    * asked for last, even if it was open already.
@@ -198,6 +200,7 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   quitting: false,
   restoring: false,
   importing: false,
+  reporting: false,
   importRequests: 0,
   firstRun: null,
   search: "",
