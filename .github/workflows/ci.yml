@@ -171,6 +171,9 @@ jobs:
       - name: Check the design tokens' contrast
         run: mise run lint:contrast
 
+      - name: Check the UI's words
+        run: mise run lint:copy
+
       - name: Check the CSS Modules' typings
         run: mise run lint:css-types
 

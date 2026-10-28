@@ -31,7 +31,7 @@ A folder appears with its first file.
 - **Colours** are checked: `mise run lint:contrast` fails if a token pair the UI draws drops below WCAG AA. A new pairing gets a rule in `scripts/contrast/rules.ts`.
 - **Motion** moves by multiples of `--motion-distance`, which Reduce Motion sets to 0, so animations become fades.
 - **Icons** come from Lucide, through `<Icon icon={…} />`, which sizes them and hides them from VoiceOver: label the button or text they sit in.
-- **Strings** live in `i18n/en.ts`, never in components: `useMessages().format("app.name")`. Keys are typed, so a missing string fails `tsc`.
+- **Strings** live in `i18n/en.ts`, never in components: `useMessages().format("app.name")`. Keys are typed, so a missing string fails `tsc`. They follow design §11: `mise run lint:copy` fails on a firmware term, such as "binding", or ZMK's syntax, such as `&kp`, in them or in the words the Rust side sends; its rules are in `scripts/copy/rules.ts`.
 - **The React Compiler** memoizes components in the build, so code doesn't need `useMemo` or `useCallback` for speed.
 - **State** is one Zustand store (`app/store.ts`). Its `session` and `keymap` mirror the Rust side, which `ipc/` keeps in step: components only read them. The UI's own state, such as the selection or the zoom, has actions. Domain logic stays in Rust.
 - **Menu items** that Keywright owns arrive as `menu://item` events: `ipc/menu.ts` handles the ones the UI acts on, and enables and renames them with `commands.menuSet`.

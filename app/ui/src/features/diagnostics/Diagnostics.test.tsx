@@ -73,7 +73,7 @@ test("Report an Issue says when the report wasn't copied, and doesn't open GitHu
   await shownReport();
   await userEvent.click(screen.getByRole("button", { name: "Copy and Open GitHub" }));
   expect((await screen.findByRole("alert")).textContent).toBe(
-    "Keywright couldn't copy the diagnostics.",
+    "Keywright couldn't copy the diagnostics. Try again in a moment.",
   );
   expect(calls.map(([command]) => command)).not.toContain("open_new_issue");
   expect(useStore.getState().reporting).toBe(true);
@@ -84,7 +84,9 @@ test("Report an Issue says when the browser didn't open", async () => {
   draw();
   await shownReport();
   await userEvent.click(screen.getByRole("button", { name: "Copy and Open GitHub" }));
-  expect((await screen.findByRole("alert")).textContent).toBe("Your browser didn't open the page.");
+  expect((await screen.findByRole("alert")).textContent).toBe(
+    "Your browser didn't open the page. The diagnostics are copied: open a new issue at github.com/zunhdev/keywright, and paste them in.",
+  );
   expect(useStore.getState().reporting).toBe(true);
 });
 
@@ -128,6 +130,8 @@ test("Settings › Advanced says when it couldn't copy, and still shows the repo
   rustSide(["copy_diagnostics"]);
   drawAdvanced();
   await userEvent.click(screen.getByRole("button", { name: "Copy Diagnostics" }));
-  expect(await screen.findByText("Keywright couldn't copy the diagnostics.")).toBeDefined();
+  expect(
+    await screen.findByText("Keywright couldn't copy the diagnostics. Try again in a moment."),
+  ).toBeDefined();
   expect(await shownReport()).toBe(REPORT);
 });

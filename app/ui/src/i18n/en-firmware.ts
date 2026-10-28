@@ -110,7 +110,8 @@ export const firmwareStrings = {
   "error.unknown-keyboard": "Keywright doesn't know how to update this keyboard's firmware.",
   "error.not-firmware": "That file isn't firmware for your keyboard.",
   "error.no-firmware-chosen": "Choose the half's firmware first.",
-  "error.drives-not-watched": "macOS can't tell Keywright when the half's drive appears.",
+  "error.drives-not-watched":
+    "macOS can't tell Keywright when the half's drive appears. Quit Keywright, open it again, and try once more.",
   "error.copy-failed":
     "Copying the firmware failed. The half can still go into update mode, so try again.",
   "error.did-not-restart":
@@ -118,5 +119,5 @@ export const firmwareStrings = {
   "error.did-not-come-back":
     "The half restarted, but didn't come back within 30 seconds. Check its cable, then try again.",
   "error.update-cancelled": "Stopped waiting for the half.",
-  "error.update-failed": "The update stopped unexpectedly.",
+  "error.update-failed": "The update stopped unexpectedly. Check the half's cable, then try again.",
 } satisfies Record<string, LocalizedString>;

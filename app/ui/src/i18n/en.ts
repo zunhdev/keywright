@@ -138,7 +138,8 @@ export const en = {
   "does-nothing.confirm": "Does Nothing",
 
   // Why a change didn't happen, by the Rust side's error code (NFR-6).
-  "error.not-ready": "The keymap can't be changed right now.",
+  "error.not-ready":
+    "The keymap can't be changed until your keyboard is unlocked and its keymap is read.",
   "error.busy": "The keyboard is still making the last change. Try again in a moment.",
   "error.nothing-to-undo": "There's nothing to undo.",
   "error.nothing-to-redo": "There's nothing to redo.",
@@ -147,14 +148,15 @@ export const en = {
   "error.keyboard-failed": "The keyboard didn't make the change, so Keywright undid it.",
   "error.backup-failed": "Keywright couldn't back up the keymap, so it changed nothing.",
   "error.session-stopped": "Keywright lost track of the keyboard. Quit and open it again.",
-  "error.menu-failed": "The menu bar didn't take a change.",
+  "error.menu-failed":
+    "The menu bar didn't take a change. If a menu looks wrong, quit and open Keywright again.",
   "error.invalid-layer-name": "Your keyboard can't take that layer name.",
   "error.no-stock-keymap": "Keywright doesn't have this keyboard's stock keymap.",
-  "error.reset-failed": "Your keyboard couldn't restore its stock settings.",
-  "error.settings-not-opened": "System Settings didn't open.",
-  "error.setting-not-changed": "Keywright couldn't change that setting.",
+  "error.reset-failed": "Your keyboard couldn't restore its stock settings. Try again in a moment.",
+  "error.settings-not-opened": "System Settings didn't open. Open it from the Apple menu instead.",
+  "error.setting-not-changed": "Keywright couldn't change that setting. Try again in a moment.",
   "error.no-globe-code":
-    "Your keymap uses every key code Keywright can make act as Globe: right Option, F18 and F19.",
+    "Your keymap already uses every key Keywright can make act as Globe: right Option, F18 and F19.",
   "error.globe-not-mapped": "macOS didn't take the Globe key. Try again in a moment.",
   "error.dismissal-not-saved":
     "Dismissed for now. Keywright couldn't save that, so it comes back when you open Keywright again.",

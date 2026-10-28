@@ -21,3 +21,4 @@ extend-exclude = [
 # Words that typos would "correct" but that are right here, such as names from ZMK or
 # macOS. Map each word to itself, and say where it comes from.
 darw = "darw" # ZMK's deprecated alias for the down arrow key
+shft = "shft" # ZMK's short name for Shift, as in LSHFT
