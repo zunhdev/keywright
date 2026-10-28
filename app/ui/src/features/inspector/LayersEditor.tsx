@@ -49,6 +49,7 @@ export function LayersEditor({
   return (
     <div className={styles.fields}>
       <SegmentedControl
+        fill
         aria-label={messages.format("layers.mode")}
         selectedKeys={[mode]}
         onSelectionChange={(selected) => {
