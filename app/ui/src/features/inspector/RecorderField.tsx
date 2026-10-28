@@ -103,15 +103,11 @@ export function RecorderField({
     <div className={styles.fields}>
       <div className={styles.recorder}>
         <div className={styles.recorded} data-recording={recording || undefined}>
-          <span aria-hidden="true">
-            {recording ? (
-              <>
-                {messages.format("recorder.press")}{" "}
-                <span className={styles.description}>{messages.format("recorder.cancel")}</span>
-              </>
-            ) : (
-              shown
-            )}
+          {/* One line, which a long shortcut's words end in an ellipsis to keep. While
+              recording, Cancel beside it is the way out, and Esc presses it, as on any Mac
+              Cancel button; VoiceOver hears so. */}
+          <span aria-hidden="true" className={styles.shown} title={recording ? undefined : shown}>
+            {recording ? messages.format("recorder.press") : shown}
           </span>
           <VisuallyHidden>
             {recording ? messages.format("recorder.press-spoken") : spoken}

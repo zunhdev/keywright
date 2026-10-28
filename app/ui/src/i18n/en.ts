@@ -201,7 +201,6 @@ export const en = {
   "recorder.stop": "Cancel",
   "recorder.none": "No key yet",
   "recorder.press": "Press a shortcut…",
-  "recorder.cancel": "⎋ cancels",
   "recorder.press-spoken": "Press a shortcut. Escape cancels.",
   "recorder.recorded": (args) => `Recorded ${text(args, "shortcut")}.`,
   "recorder.hint":
