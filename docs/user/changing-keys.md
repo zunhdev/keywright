@@ -7,7 +7,7 @@ Every key on every layer does one thing, which Keywright calls its _action_: typ
 - **The toolbar**, at the top: your keyboard's name, the connection button (such as _USB · Unlocked_), search, the ⚠ button while some keys don't work on a Mac, how many changes you're trying, and **Save**.
 - **Layers**, on the left: your keyboard's layers, and how to reach each one.
 - **The keyboard**, in the middle: the layer shown, drawn as your keyboard is laid out.
-- **The inspector**, on the right: what the selected key does, and what to change it to. With no key selected, it describes the layer.
+- **The inspector**, on the right: what the selected key does, and what to change it to. With no key selected, it describes the layer: press Escape on the keyboard to clear the selection.
 
 ⌃⌘S hides or shows the layers, and ⌥⌘0 the inspector. ⌘+ and ⌘− zoom the keyboard, and ⌘0 sets it back.
 

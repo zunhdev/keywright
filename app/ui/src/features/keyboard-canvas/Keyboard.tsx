@@ -36,8 +36,9 @@ function turning(knob: Knob): string {
  * The layer's name, the keyboard with what its keys do on that layer, and the knobs.
  *
  * The keyboard is one tab stop: the selected key. From there, the arrow keys move to the
- * nearest key in their direction, T makes the selected keys "same as layer below", and ⌫
- * makes them "do nothing", after a hint the first time (design §4.7). A click selects a
+ * nearest key in their direction, T makes the selected keys "same as layer below", ⌫
+ * makes them "do nothing", after a hint the first time, and Escape clears the selection,
+ * which shows the layer overview (design §4.7). A click selects a
  * key, ⇧-click the keys between, and ⌘-click adds or takes out one; a right-click opens
  * the keys' menu, and dragging a key onto another swaps them (design §4.5).
  */
@@ -102,6 +103,12 @@ export function Keyboard({
       event.preventDefault();
       if (doesNothingHintSeen()) void setKeys("does-nothing");
       else setHint(true);
+    } else if (event.key === "Escape" && selection.length > 0) {
+      // Back to the layer overview; focus stays on the key. While recording or dragging,
+      // Escape cancels that instead.
+      if (drag !== null || useStore.getState().recording !== null) return;
+      event.preventDefault();
+      select([]);
     }
   };
 

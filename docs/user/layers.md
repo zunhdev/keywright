@@ -15,7 +15,7 @@ The Sofle comes with four:
 
 The list on the left shows each layer: its colour, its name, a • while you're trying changes on it, and how to reach it. Click a layer to show it, or press ⌘1 to ⌘9.
 
-With no key selected, the inspector describes the layer shown: its name, every way to reach it, its keys that don't work on a Mac, and anything wrong, such as no key turning it on.
+With no key selected, the inspector describes the layer shown (press Escape on the keyboard to clear the selection): its name, every way to reach it, its keys that don't work on a Mac, and anything wrong, such as no key turning it on.
 
 ![The raise layer: faded keys are the same as the layer below; the inspector says Hold raise, and lists keys that don't work on a Mac](images/layers.png)
 
