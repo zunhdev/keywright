@@ -41,7 +41,7 @@ function useGuide(): FirmwareGuide | AppError | null {
 function StepList({ all, at }: { all: readonly Step[]; at: number }) {
   const messages = useMessages();
   return (
-    <ol className={styles.steps} aria-label={messages.format("firmware.steps")}>
+    <ol className={styles.steps} role="list" aria-label={messages.format("firmware.steps")}>
       {all.map((step, index) => (
         <li
           // The steps are fixed once chosen, and some repeat a half.

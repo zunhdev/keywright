@@ -46,8 +46,8 @@ export function rustSide(): Array<{ positions: unknown; action: unknown }> {
     if (command === "shortcut_words" && args !== undefined && "shortcut" in args) {
       const shortcut = JSON.stringify(args["shortcut"]);
       return shortcut === JSON.stringify({ mods: 10, page: "keyboard", id: 0x21 })
-        ? { label: "⇧⌘4", name: "⇧⌘4", preset: "Screenshot of an area" }
-        : { label: `key ${shortcut}`, name: "", preset: null };
+        ? { label: "⇧⌘4", name: "⇧⌘4", spoken: "Shift-Command-4", preset: "Screenshot of an area" }
+        : { label: `key ${shortcut}`, name: "", spoken: `key ${shortcut}`, preset: null };
     }
     return null;
   });

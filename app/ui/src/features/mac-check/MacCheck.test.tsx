@@ -56,6 +56,11 @@ describe("the toolbar's Mac check", () => {
     expect(within(summary).getByText("Macs have no Insert key, so it does nothing.")).toBeDefined();
     expect(within(summary).getAllByRole("button", { name: /^Use /u })).toHaveLength(5);
     expect(within(summary).getAllByRole("button", { name: "Dismiss" })).toHaveLength(7);
+    // A list, which WebKit wouldn't say without bullets, whose buttons say what they're for.
+    expect(within(summary).getByRole("list").children).toHaveLength(7);
+    const copy = { description: "Copy (Linux style)" };
+    expect(within(summary).getByRole("button", { name: "Use ⌘C", ...copy })).toBeDefined();
+    expect(within(summary).getByRole("button", { name: "Dismiss", ...copy })).toBeDefined();
     await expectNoAxeViolations(summary);
   });
 

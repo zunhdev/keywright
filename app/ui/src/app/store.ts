@@ -64,6 +64,8 @@ export interface UiSlice {
   readonly copied: boolean;
   /** What VoiceOver says next, politely, such as the layer just shown (design §12). */
   readonly announcement: string;
+  /** What VoiceOver says at once, interrupting: only that the keyboard was lost (§12). */
+  readonly alert: string;
   /**
    * The shortcut recorder waiting for a shortcut for the selected keys, if one is:
    * `KEY_RECORDER`, the key or shortcut field that ⌘R starts, or another field's ID.
@@ -191,6 +193,7 @@ const uiSlice: StateCreator<Store, [], [], UiSlice> = (set) => ({
   selection: [],
   copied: false,
   announcement: "",
+  alert: "",
   recording: null,
   unlockSheet: false,
   relocked: false,

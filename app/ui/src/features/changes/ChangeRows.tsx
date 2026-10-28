@@ -42,7 +42,7 @@ export function ChangeRows({ rows, renderAction }: ChangeRowsProps) {
               <LayerName id={group.layer} name={group.name} />
             )}
           </h3>
-          <ul className={styles.rows}>
+          <ul className={styles.rows} role="list">
             {group.rows.map((row) => {
               const what =
                 row.place ??

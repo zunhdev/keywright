@@ -216,6 +216,10 @@
   border-radius: var(--radius-panel);
   background: var(--bg-panel);
   box-shadow: var(--shadow-overlay);
+
+  p {
+    margin: 0;
+  }
 }
 
 /* What happened, and what to do: over the canvas, in the middle. */

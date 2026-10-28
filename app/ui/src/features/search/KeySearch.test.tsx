@@ -5,6 +5,7 @@ import { userEvent } from "@testing-library/user-event";
 
 import { App } from "../../app/App.tsx";
 import { useStore } from "../../app/store.ts";
+import { expectNoAxeViolations } from "../../test/axe.ts";
 import { status } from "../../test/canvas.tsx";
 import { macActions, sofleKeymap } from "../../test/sofle.ts";
 import { focusSearch } from "./focus.ts";
@@ -53,6 +54,7 @@ describe("searching keys", () => {
     const rows = layerRows();
     expect(rows[0]).toBe(`default ${found}`);
     expect(screen.getByText(/^\d+ keys$/u)).toBeDefined();
+    await expectNoAxeViolations(document.body);
   });
 
   test("↩ and ⇧↩ go to the next and previous match, switching layers as needed", async () => {

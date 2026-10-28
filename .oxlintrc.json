@@ -13,6 +13,9 @@
     "eslint/no-inline-comments": "off",
     "eslint/no-warning-comments": "off",
     "import/max-dependencies": "off",
+    // WebKit drops the list role of a list drawn without bullets, so VoiceOver doesn't say
+    // "list, 3 items": those lists say role="list" again.
+    "jsx-a11y/no-redundant-roles": ["error", { "ol": ["list"], "ul": ["list"] }],
     "import/no-unassigned-import": [
       "error",
       { "allow": ["**/*.css", "**/no-performance-tracks.ts"] }

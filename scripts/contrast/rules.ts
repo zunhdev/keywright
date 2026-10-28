@@ -54,6 +54,15 @@ export const PAIRS: readonly Pair[] = [
     { foreground, backgrounds: ["bg-window", "bg-panel"], minimum: TEXT },
     { foreground, backgrounds: ["surface-key"], minimum: GRAPHIC },
   ]),
+  // A danger button hovered and pressed, and a destructive choice highlighted.
+  {
+    foreground: "danger",
+    backgrounds: ["surface-hover", "surface-pressed", "accent-subtle"],
+    minimum: TEXT,
+  },
+  // A selected key's badges: changed, and doesn't work on a Mac.
+  { foreground: "accent", backgrounds: ["accent-subtle"], minimum: GRAPHIC },
+  { foreground: "warning", backgrounds: ["accent-subtle"], minimum: GRAPHIC },
   { foreground: "border-key", backgrounds: ["surface-key", "bg-canvas"], minimum: GRAPHIC },
   ...layers.map((foreground) => ({
     foreground,

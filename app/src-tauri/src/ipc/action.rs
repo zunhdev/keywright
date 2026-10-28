@@ -956,14 +956,16 @@ pub fn dom_codes() -> Vec<DomCode> {
         .collect()
 }
 
-/// What a key or shortcut is called (design §5.3): on a keycap, in text, and the Mac
-/// action it is, if it's one.
+/// What a key or shortcut is called (design §5.3): on a keycap, in text, to VoiceOver,
+/// and the Mac action it is, if it's one.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 pub struct ShortcutWords {
     /// As a keycap shows it, such as `⇧⌘4`.
     pub label: String,
     /// As text calls it, such as `Escape`.
     pub name: String,
+    /// As VoiceOver should say it, by names rather than symbols, such as `Shift-Command-4`.
+    pub spoken: String,
     /// The Mac action preset it is, such as `Screenshot of an area`, if it's one.
     pub preset: Option<String>,
 }
@@ -986,6 +988,7 @@ fn words(shortcut: Shortcut, labels: &Labels) -> ShortcutWords {
     ShortcutWords {
         label: keycap::shortcut_label(shortcut, labels),
         name: keycap::shortcut_name(shortcut, labels),
+        spoken: keycap::shortcut_spoken(shortcut, labels),
         preset: presets::PRESETS
             .iter()
             .find(|preset| preset.shortcut == shortcut)
@@ -1158,6 +1161,7 @@ mod tests {
             &Labels::us(),
         );
         assert_eq!(screenshot_area.label, "⇧⌘4");
+        assert_eq!(screenshot_area.spoken, "Shift-Command-4");
         assert_eq!(
             screenshot_area.preset.as_deref(),
             Some("Screenshot of an area")

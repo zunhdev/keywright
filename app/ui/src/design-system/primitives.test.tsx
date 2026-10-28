@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, mock, test } from "bun:test";
 
-import { act, render, screen, waitForElementToBeRemoved } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { Lock } from "lucide-react";
 import { DialogTrigger, type Key, type Selection } from "react-aria-components";
@@ -8,7 +8,6 @@ import { DialogTrigger, type Key, type Selection } from "react-aria-components";
 import { expectNoAxeViolations } from "../test/axe.ts";
 import { Button } from "./Button.tsx";
 import { Checkbox } from "./Checkbox.tsx";
-import { CoachMark } from "./CoachMark.tsx";
 import { ComboBox, ComboBoxItem } from "./ComboBox.tsx";
 import { Icon } from "./Icon.tsx";
 import { List, ListItem } from "./List.tsx";
@@ -241,35 +240,4 @@ test("a checkbox is named by its label, and turns on and off", async () => {
   await userEvent.click(box);
   expect(onChange.mock.calls).toEqual([[false]]);
   await expectNoAxeViolations(document.body);
-});
-
-test("a coach mark points at what's drawn, leaves focus where it is, and offers its button", async () => {
-  const onPress = mock<() => void>();
-  render(
-    <CoachMark target="#tab" action={<Button onPress={onPress}>Skip</Button>}>
-      Click a key.
-    </CoachMark>,
-  );
-  // Booleans, not elements: a failing element match hangs while bun prints it.
-  expect(screen.queryByRole("note") === null).toBe(true);
-
-  // It shows once what it points at is drawn, and goes with it.
-  const target = document.createElement("button");
-  target.id = "tab";
-  target.textContent = "Tab";
-  act(() => {
-    document.body.append(target);
-  });
-  target.focus();
-  const coachMark = await screen.findByRole("note");
-  expect(coachMark.textContent).toContain("Click a key.");
-  expect(document.activeElement === target).toBe(true);
-  await expectNoAxeViolations(document.body);
-  await userEvent.click(screen.getByRole("button", { name: "Skip" }));
-  expect(onPress).toHaveBeenCalledTimes(1);
-  const removed = waitForElementToBeRemoved(coachMark);
-  act(() => {
-    target.remove();
-  });
-  await removed;
 });

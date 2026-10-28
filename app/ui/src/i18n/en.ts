@@ -200,6 +200,8 @@ export const en = {
   "recorder.none": "No key yet",
   "recorder.press": "Press a shortcut…",
   "recorder.cancel": "⎋ cancels",
+  "recorder.press-spoken": "Press a shortcut. Escape cancels.",
+  "recorder.recorded": (args) => `Recorded ${text(args, "shortcut")}.`,
   "recorder.hint":
     "Some shortcuts, like ⌘Tab or ⌘Space, are used by macOS before Keywright can see them. Find them under Mac actions or search their name.",
   "key.modifiers": "Modifiers",

@@ -50,6 +50,7 @@ export function KeyboardCanvas() {
   const keymap = useStore((store) => store.keymap);
   const layer = useStore(shownLayer);
   const announcement = useStore((store) => store.announcement);
+  const alert = useStore((store) => store.alert);
   const relocked = useStore((store) => store.relocked);
   const editable = session?.state.kind === "ready";
   const kind = session?.state.kind ?? "no-device";
@@ -59,6 +60,11 @@ export function KeyboardCanvas() {
   const card = session !== null && hasCard(session);
   // A port that's silent may be about to answer (design §7): it gets a moment first.
   const silent = isSilent(session);
+  const state = session ? messages.format(`session.${session.state.kind}`) : "";
+  // Where the state shows: over a keyboard that can't be changed, as a scrim, or alone in
+  // the pane while connecting. Elsewhere, something else says it, such as the no-keyboard
+  // screen.
+  const over = drawn && !editable ? "keyboard" : drawn || kind !== "probing" ? null : "pane";
   return (
     <div ref={viewport} className={styles.viewport}>
       {drawn ? (
@@ -82,21 +88,30 @@ export function KeyboardCanvas() {
       ) : card ? (
         <StateCard session={session} />
       ) : null}
-      {/* What VoiceOver says when it can, such as the layer just shown (design §12). */}
+      {/* VoiceOver hears the state from the status below. */}
+      {over === null ? null : (
+        <div
+          className={styles.state}
+          data-over={over}
+          data-scrim-only={(drawn && (card || relocked)) || undefined}
+          aria-hidden="true"
+        >
+          {state}
+        </div>
+      )}
+      {/* What VoiceOver says (design §12), from regions that stay as they are: WebKit
+          misses a change to one restyled at the same time. Politely, such as the layer
+          just shown, and each new state, or that the keyboard locked itself; at once, a
+          keyboard lost. */}
       <div className={styles.announcement} aria-live="polite">
         {announcement}
       </div>
-      {/* A live region (`output` has the status role), so VoiceOver says each new state.
-          Over a keyboard that can't be changed, it's the scrim's message. */}
-      <output
-        className={styles.state}
-        data-over={
-          drawn && !editable ? "keyboard" : drawn || kind !== "probing" ? "nothing" : undefined
-        }
-        data-scrim-only={(drawn && (card || relocked)) || undefined}
-      >
-        {session ? messages.format(`session.${session.state.kind}`) : ""}
+      <output className={styles.announcement}>
+        {relocked && kind === "locked" ? messages.format("relock.text") : state}
       </output>
+      <div className={styles.announcement} aria-live="assertive">
+        {alert}
+      </div>
     </div>
   );
 }

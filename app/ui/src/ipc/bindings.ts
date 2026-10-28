@@ -1870,14 +1870,16 @@ export type Shortcut = {
 };
 
 /**
- *  What a key or shortcut is called (design §5.3): on a keycap, in text, and the Mac
- *  action it is, if it's one.
+ *  What a key or shortcut is called (design §5.3): on a keycap, in text, to VoiceOver,
+ *  and the Mac action it is, if it's one.
  */
 export type ShortcutWords = {
 	/**  As a keycap shows it, such as `⇧⌘4`. */
 	label: string,
 	/**  As text calls it, such as `Escape`. */
 	name: string,
+	/**  As VoiceOver should say it, by names rather than symbols, such as `Shift-Command-4`. */
+	spoken: string,
 	/**  The Mac action preset it is, such as `Screenshot of an area`, if it's one. */
 	preset: string | null,
 };

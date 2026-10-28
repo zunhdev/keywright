@@ -25,7 +25,7 @@ export function UnlockSteps({ guide }: { guide: KeyboardGuide | null }) {
   return (
     <>
       <BoardOutline keys={guide.keys} width={440} marks={marks} />
-      <ol className={styles.steps}>
+      <ol className={styles.steps} role="list">
         {guide.unlock.map((step, index) => (
           <li key={step.position}>
             <span className={styles.number} aria-hidden="true">
@@ -108,7 +108,8 @@ export function RelockBanner() {
   const messages = useMessages();
   return (
     <div className={styles.banner}>
-      <output>{messages.format("relock.text")}</output>
+      {/* The canvas's status says it to VoiceOver as it happens. */}
+      <p aria-hidden="true">{messages.format("relock.text")}</p>
       <Button
         variant="primary"
         size="compact"

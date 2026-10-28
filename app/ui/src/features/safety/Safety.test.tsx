@@ -7,6 +7,7 @@ import { I18nProvider } from "react-aria-components";
 import { useStore } from "../../app/store.ts";
 import { LOCALE } from "../../i18n/messages.ts";
 import type { AppError, Keymap } from "../../ipc/bindings.ts";
+import { expectNoAxeViolations } from "../../test/axe.ts";
 import { status } from "../../test/canvas.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
 import { Inspector } from "../inspector/Inspector.tsx";
@@ -45,6 +46,7 @@ describe("a change that would strand the user", () => {
     const alert = screen.getByRole("alert");
     expect(within(alert).getByText("This removes the only Unlock editing key.")).toBeDefined();
     expect(within(alert).getByText(/until you reset the keyboard/u)).toBeDefined();
+    await expectNoAxeViolations(document.body);
     await userEvent.click(within(alert).getByRole("button", { name: "Change Anyway" }));
     expect(send.mock.calls).toEqual([[false], [true]]);
     expect(screen.queryByRole("alert")).toBeNull();
@@ -112,6 +114,7 @@ describe("what's wrong with the keymap as it is", () => {
     });
     const warnings = screen.getByRole("region", { name: "Warnings" });
     expect(within(warnings).getByText(/no way back to the base layer/u)).toBeDefined();
+    await expectNoAxeViolations(document.body);
     await userEvent.click(within(warnings).getByRole("button", { name: "Show Keys" }));
     expect(useStore.getState().layer).toBe(0);
     expect(useStore.getState().selection).toEqual([0]);

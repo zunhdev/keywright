@@ -164,6 +164,7 @@ describe("the review sheet", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Discard All…" }));
     const sure = screen.getByRole("dialog", { name: "Discard 3 changes?" });
     expect(within(sure).getByText(/goes back to how it was when you last saved/u)).toBeDefined();
+    await expectNoAxeViolations(sure);
     await userEvent.click(within(sure).getByRole("button", { name: "Discard" }));
     expect(calls).toEqual(["discard_changes"]);
   });
@@ -181,6 +182,7 @@ describe("quitting while changes are tried", () => {
     expect(
       within(dialog).getByText(/trying 2 changes.*forgets them when it restarts or goes to sleep/u),
     ).toBeDefined();
+    await expectNoAxeViolations(dialog);
     await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(calls).toEqual([]);

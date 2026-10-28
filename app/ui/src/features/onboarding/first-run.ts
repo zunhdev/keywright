@@ -16,7 +16,7 @@
  * bar question, and the Rust side remembers that it has, so it shows once; Help › Run
  * First-Time Setup shows it again.
  */
-import { type Store, useStore } from "../../app/store.ts";
+import { activeRecorder, type Store, useStore } from "../../app/store.ts";
 import { commands, type Keymap } from "../../ipc/bindings.ts";
 
 /** Where the first run is. Try it is two steps: its coach mark on a key, then on Save. */
@@ -25,8 +25,8 @@ export type FirstRun =
   | {
       readonly step: "try-key";
       /**
-       * How many changes were being tried when a key was last clicked, so that the first
-       * change after moves on to Save; `null` before a key is.
+       * How many changes were being tried when a shortcut was last being recorded, so
+       * that the first change after moves on to Save; `null` before one is.
        */
       readonly changes: number | null;
     };
@@ -104,7 +104,8 @@ function isDone(run: FirstRun, { session, keymap }: Store): boolean {
 
 /**
  * `run`, moved on past the steps that are done with the window as `store` has it. In Try
- * it, a change taken back lowers the count the first change is measured from.
+ * it, the first change is measured from when a shortcut is first recorded, and a change
+ * taken back lowers the count it's measured from.
  */
 export function advance(run: FirstRun, store: Store): FirstRun {
   let at = run;
@@ -114,9 +115,10 @@ export function advance(run: FirstRun, store: Store): FirstRun {
     at = next;
   }
   const changes = store.session?.changes ?? 0;
-  if (at.step === "try-key" && at.changes !== null && changes < at.changes) {
-    return { step: "try-key", changes };
-  }
+  if (at.step !== "try-key") return at;
+  // Recording, however it started: a click on a key, R, ⌘R or Record.
+  if (at.changes === null && activeRecorder(store) !== null) return { step: "try-key", changes };
+  if (at.changes !== null && changes < at.changes) return { step: "try-key", changes };
   return at;
 }
 
@@ -145,14 +147,11 @@ export function passStep({ done = false } = {}): void {
 
 /**
  * In Try it, a click on a key records a shortcut for it, as the coach mark says (design
- * §8). Call it after a click selects a key: it starts the recorder then, and the first
- * change from here moves on to Save.
+ * §8). Call it after a click selects a key: it starts the recorder then.
  */
 export function recordOnClick(): void {
-  const { firstRun, session, startRecording } = useStore.getState();
-  if (firstRun?.step !== "try-key") return;
-  useStore.setState({ firstRun: { step: "try-key", changes: session?.changes ?? 0 } });
-  startRecording();
+  const { firstRun, startRecording } = useStore.getState();
+  if (firstRun?.step === "try-key") startRecording();
 }
 
 /**

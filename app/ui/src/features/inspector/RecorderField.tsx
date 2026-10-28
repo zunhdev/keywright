@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { VisuallyHidden } from "react-aria-components";
 
 import { activeRecorder, useStore } from "../../app/store.ts";
 import { Button } from "../../design-system/Button.tsx";
-import { useMessages } from "../../i18n/messages.ts";
+import { messages as strings, useMessages } from "../../i18n/messages.ts";
 import { commands, type Shortcut, type ShortcutWords } from "../../ipc/bindings.ts";
 import { useRecorder } from "./recorder.ts";
 
@@ -34,9 +35,36 @@ function useShortcutWords(shortcut: Shortcut | null): ShortcutWords | null {
 }
 
 /**
+ * A shortcut and the Mac action it is, as `words` give them: `⇧⌘4 · Screenshot of an
+ * area` to see, or `Shift-Command-4, Screenshot of an area` for VoiceOver.
+ */
+function withPreset(words: ShortcutWords, spoken = false): string {
+  if (words.preset === null) return spoken ? words.spoken : words.label;
+  return spoken ? `${words.spoken}, ${words.preset}` : `${words.label} · ${words.preset}`;
+}
+
+/**
+ * Has VoiceOver say what was recorded, in words (design §12), through the window's
+ * announcements: the field itself isn't a live region, or each key selected would be said.
+ */
+function announceRecorded(shortcut: Shortcut): void {
+  void commands
+    .shortcutWords(shortcut)
+    .then((words) => {
+      const recorded = strings().format("recorder.recorded", {
+        shortcut: withPreset(words, true),
+      });
+      useStore.setState({ announcement: recorded });
+      return words;
+    })
+    .catch(() => null);
+}
+
+/**
  * The key or shortcut, as the keycap shows it, with the Mac action it is, and Record
  * (design §5.3): the next shortcut pressed, by physical key, becomes the value. While it
- * records, the field says so; Esc cancels.
+ * records, the field says so; Esc cancels. VoiceOver hears it in words rather than
+ * symbols, and hears when recording starts and what was recorded.
  */
 export function RecorderField({
   value,
@@ -58,33 +86,36 @@ export function RecorderField({
     onRecord: (shortcut) => {
       useStore.getState().stopRecording();
       onRecord(shortcut);
+      announceRecorded(shortcut);
     },
     onCancel: () => {
       useStore.getState().stopRecording();
     },
   });
+  useEffect(() => {
+    if (recording) useStore.setState({ announcement: strings().format("recorder.press-spoken") });
+  }, [recording]);
   // Until the core's words come, a key shows nothing rather than "No key yet".
-  const shown =
-    value === null
-      ? messages.format("recorder.none")
-      : words === null
-        ? ""
-        : words.preset === null
-          ? words.label
-          : `${words.label} · ${words.preset}`;
+  const none = messages.format("recorder.none");
+  const shown = value === null ? none : words === null ? "" : withPreset(words);
+  const spoken = value === null ? none : words === null ? "" : withPreset(words, true);
   return (
     <div className={styles.fields}>
       <div className={styles.recorder}>
-        {/* VoiceOver hears when recording starts, and what was recorded. */}
-        <div className={styles.recorded} data-recording={recording || undefined} aria-live="polite">
-          {recording ? (
-            <>
-              {messages.format("recorder.press")}{" "}
-              <span className={styles.description}>{messages.format("recorder.cancel")}</span>
-            </>
-          ) : (
-            shown
-          )}
+        <div className={styles.recorded} data-recording={recording || undefined}>
+          <span aria-hidden="true">
+            {recording ? (
+              <>
+                {messages.format("recorder.press")}{" "}
+                <span className={styles.description}>{messages.format("recorder.cancel")}</span>
+              </>
+            ) : (
+              shown
+            )}
+          </span>
+          <VisuallyHidden>
+            {recording ? messages.format("recorder.press-spoken") : spoken}
+          </VisuallyHidden>
         </div>
         {/* While recording, the keys go to the recorder, so only a click can cancel here. */}
         <Button

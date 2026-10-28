@@ -5,8 +5,8 @@
   overflow: auto;
 }
 
-/* What the session is doing: alone in the pane, over a keyboard that can't be changed,
-   or, over one that can, only for VoiceOver. */
+/* What the session is doing: alone in the pane, or over a keyboard that can't be
+   changed. */
 .state {
   position: absolute;
   inset: 0;
@@ -22,17 +22,9 @@
     font: var(--type-title);
   }
 
-  /* A card or banner says it: the scrim stays, and the words are for VoiceOver. */
+  /* A card or banner says it: only the scrim stays. */
   &[data-scrim-only] {
     color: transparent;
-  }
-
-  &[data-over="nothing"] {
-    clip-path: inset(50%);
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    white-space: nowrap;
   }
 }
 

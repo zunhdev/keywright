@@ -9,6 +9,7 @@ import { useStore } from "../../app/store.ts";
 import { toasts } from "../../design-system/Toast.tsx";
 import { LOCALE } from "../../i18n/messages.ts";
 import type { Keymap } from "../../ipc/bindings.ts";
+import { expectNoAxeViolations } from "../../test/axe.ts";
 import { status } from "../../test/canvas.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
 import { Inspector } from "../inspector/Inspector.tsx";
@@ -94,6 +95,7 @@ describe("restoring stock", () => {
     expect(within(sheet).getByText(/every key, and the order of the layers/u)).toBeDefined();
     expect(within(sheet).getByText("The 2 changes you're trying go too.")).toBeDefined();
     expect(within(sheet).getByText(/backs up your keymap first/u)).toBeDefined();
+    await expectNoAxeViolations(sheet);
     await userEvent.click(within(sheet).getByRole("button", { name: "Restore Stock Settings" }));
     expect(calls).toEqual(["restore_stock_settings {}"]);
     expect(toasts.visibleToasts.map((toast) => toast.content.title)).toContain(

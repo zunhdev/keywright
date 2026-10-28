@@ -8,6 +8,7 @@ import { toasts } from "../../design-system/Toast.tsx";
 import { expectNoAxeViolations } from "../../test/axe.ts";
 import { drawWindow, report, sofle } from "../../test/connection.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
+import { lost } from "./follow.ts";
 
 describe("with no keyboard", () => {
   test("shows the Sofle in outline, and how to connect it by cable or Bluetooth", async () => {
@@ -58,6 +59,7 @@ describe("the unlock sheet", () => {
 
     await userEvent.click(within(sheet).getByRole("button", { name: "Why do I need this?" }));
     expect(within(sheet).getByText(/protects its layout from other apps/u)).toBeDefined();
+    await expectNoAxeViolations(sheet);
 
     report(sofle({ kind: "loading" }));
     expect(screen.queryByRole("dialog")).toBeNull();
@@ -90,11 +92,15 @@ describe("once it could be edited", () => {
     });
     report(sofle({ kind: "locked" }));
     expect(screen.queryByRole("dialog")).toBeNull();
-    expect(screen.getByText("Your keyboard locked itself. Unlock to keep editing.")).toBeDefined();
+    // The banner says it, and VoiceOver hears it from the canvas's status.
+    const relocked = "Your keyboard locked itself. Unlock to keep editing.";
+    expect(screen.getByRole("status").textContent).toBe(relocked);
+    expect(screen.getAllByText(relocked).length).toBe(2);
+    await expectNoAxeViolations(document.body);
     await userEvent.click(screen.getByRole("button", { name: "Unlock…" }));
     expect(await screen.findByRole("dialog", { name: "Unlock your keyboard" })).toBeDefined();
     report(sofle({ kind: "ready" }));
-    expect(screen.queryByText(/locked itself/u)).toBeNull();
+    expect(screen.queryByText(/locked itself/u) === null).toBe(true);
     stop();
   });
 
@@ -108,6 +114,33 @@ describe("once it could be edited", () => {
     );
     for (const toast of toasts.visibleToasts) toasts.close(toast.key);
     stop();
+  });
+
+  test("a keyboard that stays gone is said at once, and one that comes back isn't", async () => {
+    const after = lost.after;
+    lost.after = 10;
+    const { container, stop } = drawWindow(sofle({ kind: "ready" }, 2));
+    // React Aria's own announcer, in the page's body, is assertive too.
+    const alert = () => container.querySelector("[aria-live='assertive']")?.textContent;
+    try {
+      // Gone for a moment, as when it moves to Bluetooth: nothing to say.
+      report({ ...sofle({ kind: "no-device" }), keyboard: null, transport: null });
+      report(sofle({ kind: "probing" }, 2));
+      await Bun.sleep(30);
+      expect(alert()).toBe("");
+      report({ ...sofle({ kind: "no-device" }), keyboard: null, transport: null });
+      await waitFor(() => {
+        expect(alert()).toBe(
+          "Lost connection to Sofle Choc BT. Your changes are kept here; reconnect to continue.",
+        );
+      });
+      report(sofle({ kind: "locked" }));
+      expect(alert()).toBe("");
+    } finally {
+      // Even when it fails, so as not to fail the tests after it.
+      lost.after = after;
+      stop();
+    }
   });
 
   test("leaving demo mode isn't a move", () => {

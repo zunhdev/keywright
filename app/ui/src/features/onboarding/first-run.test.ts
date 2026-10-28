@@ -78,9 +78,12 @@ describe("the first run's steps", () => {
     expect(advance(check, window({ kind: "locked" }, 0, allFine))).toBe(check);
   });
 
-  test("Try it goes on to Save after the first change from a click on a key", () => {
+  test("Try it goes on to Save after the first change from recording a shortcut", () => {
     const beforeClick: FirstRun = { step: "try-key", changes: null };
     expect(advance(beforeClick, window({ kind: "ready" }, 3))).toBe(beforeClick);
+    // Recording, from a click or the keyboard, counts changes from there.
+    const recording = { ...window({ kind: "ready" }, 3), selection: [0], recording: "key" };
+    expect(advance(beforeClick, recording)).toEqual({ step: "try-key", changes: 3 });
     const clicked: FirstRun = { step: "try-key", changes: 3 };
     expect(advance(clicked, window({ kind: "ready" }, 3))).toBe(clicked);
     expect(advance(clicked, window({ kind: "ready" }, 4))).toEqual({ step: "try-save" });
@@ -171,8 +174,12 @@ describe("Try it", () => {
       selection: [tabKey(sofleKeymap)],
     });
     recordOnClick();
-    expect(useStore.getState().recording).toBe("key");
-    expect(useStore.getState().firstRun).toEqual({ step: "try-key", changes: 2 });
+    const store = useStore.getState();
+    expect(store.recording).toBe("key");
+    expect(store.firstRun && advance(store.firstRun, store)).toEqual({
+      step: "try-key",
+      changes: 2,
+    });
   });
 
   test("outside it, a click only selects", () => {
