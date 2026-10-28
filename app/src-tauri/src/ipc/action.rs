@@ -758,8 +758,12 @@ pub struct KeyEntry {
     pub cap: String,
     /// What text calls it, such as `Delete`.
     pub name: String,
+    /// What VoiceOver should call it, such as `Semicolon` for `;` (design §12).
+    pub spoken: String,
     /// What it types with Shift, if that's another character, such as `!` for 1.
     pub shifted: Option<String>,
+    /// What VoiceOver should call that, such as `Exclamation Mark`.
+    pub shifted_spoken: Option<String>,
     /// What ZMK calls it with Shift, as Keywright writes that, such as `EXCL` for ⇧1, if
     /// it types another character with Shift.
     pub shifted_zmk: Option<String>,
@@ -846,8 +850,10 @@ pub fn catalog(labels: &Labels) -> Vec<KeyEntry> {
                 page: usage.page.into(),
                 id: usage.id,
                 cap,
+                spoken: keys::speech::spoken(&name),
                 name,
                 shifted_zmk: shifted.as_ref().map(|_| shifted_zmk_name(usage, &zmk)),
+                shifted_spoken: shifted.as_deref().map(keys::speech::spoken),
                 shifted,
                 zmk,
                 group: KeyCategory::of(usage).into(),

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { VisuallyHidden } from "react-aria-components";
 
 import { activeRecorder, KEY_RECORDER, useStore } from "../../app/store.ts";
 import { Button } from "../../design-system/Button.tsx";
@@ -66,7 +67,15 @@ export function KeyInspector({
             : keymap.keys[first]?.place}
         </p>
         <LayerName id={layer.id} name={layer.name} />
-        {positions.length > 1 ? null : <p className={styles.sentence}>{key.sentence}</p>}
+        {/* VoiceOver hears the sentence in words, such as "Types Semicolon." for ";". */}
+        {positions.length > 1 ? null : key.spoken === key.sentence ? (
+          <p className={styles.sentence}>{key.sentence}</p>
+        ) : (
+          <p className={styles.sentence}>
+            <span aria-hidden="true">{key.sentence}</span>
+            <VisuallyHidden elementType="span">{key.spoken}</VisuallyHidden>
+          </p>
+        )}
       </header>
       <ActionPicker
         category={shown}

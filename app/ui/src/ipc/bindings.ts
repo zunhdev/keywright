@@ -1316,8 +1316,12 @@ export type KeyEntry = {
 	cap: string,
 	/**  What text calls it, such as `Delete`. */
 	name: string,
+	/**  What VoiceOver should call it, such as `Semicolon` for `;` (design §12). */
+	spoken: string,
 	/**  What it types with Shift, if that's another character, such as `!` for 1. */
 	shifted: string | null,
+	/**  What VoiceOver should call that, such as `Exclamation Mark`. */
+	shiftedSpoken: string | null,
 	/**
 	 *  What ZMK calls it with Shift, as Keywright writes that, such as `EXCL` for ⇧1, if
 	 *  it types another character with Shift.

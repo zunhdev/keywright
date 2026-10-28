@@ -29,6 +29,7 @@ use crate::guard::{Activation, BASE, ConditionalLayer, layer_keys};
 use crate::hid::{HidUsage, Mods, Shortcut, UsagePage};
 use crate::keymap::{Binding, Keymap, LayerId};
 use crate::keys::source::Labels;
+use crate::keys::speech;
 
 /// What a key shows and does on one layer.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -719,8 +720,8 @@ pub fn shortcut_name(shortcut: Shortcut, labels: &Labels) -> String {
 }
 
 /// A key or shortcut as VoiceOver should say it: by names rather than symbols, such as
-/// `Escape`, `Control-Shift` or `Shift-Command-4`. With Shift alone, a key is what it
-/// types, such as `!`.
+/// `Escape`, `Control-Shift`, `Shift-Command-4` or `Command-Comma`. With Shift alone, a
+/// key is what it types, such as `Exclamation Mark` for `!`.
 #[must_use]
 pub fn shortcut_spoken(shortcut: Shortcut, labels: &Labels) -> String {
     let mods = shortcut.mods;
@@ -736,9 +737,9 @@ pub fn shortcut_spoken(shortcut: Shortcut, labels: &Labels) -> String {
     if only_shift(mods)
         && let Some(shifted) = labels.shifted(shortcut.usage)
     {
-        return shifted;
+        return speech::spoken(&shifted);
     }
-    let (_, name) = names(shortcut, labels);
+    let name = speech::spoken(&names(shortcut, labels).1);
     let mut words = modifiers(mods.bits());
     words.push(&name);
     words.join("-")

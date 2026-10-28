@@ -73,7 +73,7 @@ function option(picker: HTMLElement, list: string, name: string): HTMLElement {
 
 test("the field shows its key's keycap and name, and opens the picker on the Keyboard tab", async () => {
   field({ page: "keyboard", id: 0x2a });
-  expect(screen.getByRole("button", { name: "Key: ⌫ Delete" })).toBeDefined();
+  expect(screen.getByRole("button", { name: "Key: Delete" })).toBeDefined();
   const picker = await open();
   expect(
     within(picker)
@@ -85,7 +85,7 @@ test("the field shows its key's keycap and name, and opens the picker on the Key
   );
   // The field's key is selected; a key that types something else with Shift says so.
   expect(option(picker, "Keyboard", "Delete").getAttribute("aria-selected")).toBe("true");
-  expect(option(picker, "Keyboard", "1, ! with Shift")).toBeDefined();
+  expect(option(picker, "Keyboard", "1, Exclamation Mark with Shift")).toBeDefined();
 });
 
 test("a field without a key says so", () => {
@@ -121,10 +121,10 @@ describe("the Symbols tab", () => {
     const chosen = field();
     let picker = await open();
     await userEvent.click(within(picker).getByRole("tab", { name: "Symbols" }));
-    await userEvent.click(option(picker, "Symbols", "{, Shift ["));
+    await userEvent.click(option(picker, "Symbols", "Left Brace, Shift Left Bracket"));
     picker = await open();
     await userEvent.click(within(picker).getByRole("tab", { name: "Symbols" }));
-    await userEvent.click(option(picker, "Symbols", "["));
+    await userEvent.click(option(picker, "Symbols", "Left Bracket"));
     expect(chosen).toEqual(["⇧[", "no ⇧ ["]);
   });
 
@@ -134,17 +134,19 @@ describe("the Symbols tab", () => {
     expect(within(picker).getByRole("tab", { name: "Symbols" }).getAttribute("aria-selected")).toBe(
       "true",
     );
-    expect(option(picker, "Symbols", "{, Shift [").getAttribute("aria-selected")).toBe("true");
-    expect(option(picker, "Symbols", "[").getAttribute("aria-selected")).toBe("false");
+    expect(
+      option(picker, "Symbols", "Left Brace, Shift Left Bracket").getAttribute("aria-selected"),
+    ).toBe("true");
+    expect(option(picker, "Symbols", "Left Bracket").getAttribute("aria-selected")).toBe("false");
   });
 
   test("a character chosen there comes back under Recent", async () => {
     field();
     let picker = await open();
     await userEvent.click(within(picker).getByRole("tab", { name: "Symbols" }));
-    await userEvent.click(option(picker, "Symbols", "(, Shift 9"));
+    await userEvent.click(option(picker, "Symbols", "Left Parenthesis, Shift 9"));
     picker = await open();
-    expect(option(picker, "Recent", "(, Shift 9")).toBeDefined();
+    expect(option(picker, "Recent", "Left Parenthesis, Shift 9")).toBeDefined();
   });
 });
 
@@ -173,7 +175,7 @@ describe("the search", () => {
     const chosen = field();
     const picker = await open();
     await search(picker, "!");
-    await userEvent.click(option(picker, "Keys found", "!, Shift 1"));
+    await userEvent.click(option(picker, "Keys found", "Exclamation Mark, Shift 1"));
     expect(chosen).toEqual(["⇧1"]);
   });
 

@@ -37,7 +37,10 @@ const A: HidUsage = key(0x04);
 const C: HidUsage = key(0x06);
 const N1: HidUsage = key(0x1E);
 const N4: HidUsage = key(0x21);
+const N9: HidUsage = key(0x26);
 const ESCAPE: HidUsage = key(0x29);
+const SEMICOLON: HidUsage = key(0x33);
+const PERIOD: HidUsage = key(0x37);
 const LEFT_CONTROL: HidUsage = key(0xE0);
 const RIGHT_CONTROL: HidUsage = key(0xE4);
 const LEFT_SHIFT: HidUsage = key(0xE1);
@@ -173,6 +176,39 @@ mod shortcuts {
     }
 
     #[test]
+    fn voiceover_hears_punctuation_by_name() {
+        let us = Labels::us();
+        assert_eq!(shortcut_spoken(plain(SEMICOLON), &us), "Semicolon");
+        assert_eq!(
+            shortcut_spoken(with(Mods::LEFT_COMMAND, PERIOD), &us),
+            "Command-Period"
+        );
+        assert_eq!(
+            shortcut_spoken(with(Mods::LEFT_SHIFT | Mods::LEFT_COMMAND, PERIOD), &us),
+            "Shift-Command-Period"
+        );
+        assert_eq!(
+            shortcut_spoken(with(Mods::LEFT_SHIFT, N9), &us),
+            "Left Parenthesis"
+        );
+    }
+
+    #[test]
+    fn no_key_is_spoken_as_bare_punctuation() {
+        let us = Labels::us();
+        for usage in crate::keys::named_usages() {
+            for mods in [Mods::NONE, Mods::LEFT_SHIFT, Mods::LEFT_COMMAND] {
+                let spoken = shortcut_spoken(with(mods, usage), &us);
+                // A word, or a part of a shortcut, with nothing VoiceOver would say.
+                let bare = spoken
+                    .split([' ', '-'])
+                    .any(|word| !word.chars().any(char::is_alphanumeric));
+                assert!(!bare, "{usage:?} with {mods:?} is spoken as {spoken:?}");
+            }
+        }
+    }
+
+    #[test]
     fn voiceover_hears_names_rather_than_symbols() {
         let shift_command = Mods::LEFT_SHIFT | Mods::LEFT_COMMAND;
         assert_eq!(
@@ -193,7 +229,7 @@ mod shortcuts {
         );
         assert_eq!(
             shortcut_spoken(with(Mods::LEFT_SHIFT, N1), &Labels::us()),
-            "!"
+            "Exclamation Mark"
         );
         assert_eq!(shortcut_spoken(plain(ESCAPE), &Labels::us()), "Escape");
     }
@@ -431,7 +467,7 @@ mod same_as_layer_below {
         assert_eq!(grave.keycap, label("`"));
         assert!(grave.inherited);
         assert_eq!(grave.sentence, "Same as the layer below: types `.");
-        assert_eq!(grave.spoken, "Same as the layer below: types `.");
+        assert_eq!(grave.spoken, "Same as the layer below: types Grave Accent.");
     }
 
     #[test]
