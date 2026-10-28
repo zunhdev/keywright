@@ -1,5 +1,5 @@
 //! A simulated keyboard in place of a real one, for working on the UI without hardware:
-//! `KEYWRIGHT_SIMULATOR=sofle mise run dev`. Demo mode (DEV-6) will offer one in the app.
+//! `KEYWRIGHT_SIMULATOR=sofle mise run dev`. Demo mode (DEV-6) offers one in the app too.
 //!
 //! Some scenarios go wrong on purpose, so each of the window's connection states can be
 //! seen (design §7): the keyboard locks itself, restarts, is the wrong half, or starts

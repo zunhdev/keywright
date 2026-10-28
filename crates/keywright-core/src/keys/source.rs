@@ -4,7 +4,7 @@
 //! The platform reads what each key types, by its virtual key code ([`Typed`]), and
 //! [`Labels::from_typed`] turns that into labels for the keys that type characters:
 //! letters, digits, punctuation and the extra keys of Japanese keyboards. A key keeps its
-//! US label ([`us`](super::us)) where the input source says nothing useful, such as for
+//! US label ([`us`]) where the input source says nothing useful, such as for
 //! Return, which types a control character, or when there's no input source to ask, as on
 //! the command line ([`Labels::us`]).
 

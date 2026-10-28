@@ -74,6 +74,12 @@ run = [
   "bun run knip",
 ]
 
+[tasks."lint:docs"]
+description = "Check that the Rust API docs build without broken links or other warnings"
+# `missing_docs` is a workspace lint, which clippy checks; this checks the docs themselves.
+env = { RUSTDOCFLAGS = "-D warnings" }
+run = "cargo doc --workspace --no-deps"
+
 [tasks."lint:workflows"]
 description = "Check GitHub Actions workflows for mistakes and security problems"
 run = ["actionlint", "zizmor ."]

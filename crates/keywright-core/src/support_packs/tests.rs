@@ -128,7 +128,9 @@ mod every_pack {
                     layer.name,
                     expected.name,
                     "{}",
-                    context(format!("layer {id}"))
+                    context(format!(
+                        "layer {id}'s name: left is the pack's, right the .keymap's display-name"
+                    ))
                 );
                 assert_eq!(
                     layer.bindings.len(),
