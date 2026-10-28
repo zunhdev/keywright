@@ -16,6 +16,36 @@ export type KeyId = `${Page}:${number}`;
 /** A key's ID. */
 export const keyId = (key: { page: Page; id: number }): KeyId => `${key.page}:${key.id}`;
 
+/** The keyboard page's left-hand modifier keys, ⌃ ⇧ ⌥ ⌘, are 0xE0 to 0xE3, and their
+ * right-hand twins four places up. */
+const LEFT_MODIFIERS = [0xe0, 0xe3] as const;
+const SIDE = 4;
+
+/** Whether `key` is a left-hand modifier key. */
+const isLeftHandModifier = (key: { page: Page; id: number }) =>
+  key.page === "keyboard" && key.id >= LEFT_MODIFIERS[0] && key.id <= LEFT_MODIFIERS[1];
+
+/** Whether `key` is a right-hand modifier key, such as the Sofle's right ⌘. */
+export const isRightHandModifier = (key: { page: Page; id: number }) =>
+  key.page === "keyboard" &&
+  key.id >= LEFT_MODIFIERS[0] + SIDE &&
+  key.id <= LEFT_MODIFIERS[1] + SIDE;
+
+/**
+ * `key` as the key catalog has it. Modifier keys look and act the same on either side
+ * (MAC-1), so the catalog lists the left-hand ones, and a right-hand modifier is its
+ * left-hand twin there; the inspector's Details keeps its side.
+ */
+export function catalogKey<K extends { page: Page; id: number }>(key: K): K {
+  return isRightHandModifier(key) ? { ...key, id: key.id - SIDE } : key;
+}
+
+/** `key`, on the right-hand side if `right` and it's a modifier key; other keys as they are. */
+export function onSide<K extends { page: Page; id: number }>(key: K, right: boolean): K {
+  const left = catalogKey(key);
+  return right && isLeftHandModifier(left) ? { ...left, id: left.id + SIDE } : left;
+}
+
 /** A field's key, and whether ⇧ is held with it, so that ⇧[ is the character {. */
 export interface Chosen {
   readonly key: KeyId;
