@@ -212,6 +212,12 @@ describe("the first run", () => {
     await userEvent.click(within(check).getByRole("button", { name: "Not Now" }));
     await findCoachMark(TRY_KEY);
     expect(calls).toEqual([]);
+    // It opened by itself, so focus goes to the keyboard's tab stop (design §12).
+    await waitFor(() => {
+      expect(document.activeElement?.getAttribute("aria-label")).toStartWith(
+        "Left half, row 1, key 1.",
+      );
+    });
     stop();
   });
 

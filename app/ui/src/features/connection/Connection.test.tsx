@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
 
-import { act, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import { I18nProvider } from "react-aria-components";
 
 import { useStore } from "../../app/store.ts";
+import { WindowToolbar } from "../../app/WindowToolbar.tsx";
 import { toasts } from "../../design-system/Toast.tsx";
+import { LOCALE } from "../../i18n/messages.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
 import { drawWindow, report, sofle } from "../../test/connection.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
@@ -68,10 +71,36 @@ describe("the unlock sheet", () => {
 
   test("Cancel closes it and leaves the keyboard locked", async () => {
     const { stop } = drawWindow(sofle({ kind: "probing" }));
+    render(
+      <I18nProvider locale={LOCALE}>
+        <WindowToolbar />
+      </I18nProvider>,
+    );
     report(sofle({ kind: "locked" }));
     await userEvent.click(await screen.findByRole("button", { name: "Cancel" }));
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(useStore.getState().session?.state.kind).toBe("locked");
+    // It opened by itself, so nothing had focus to get it back (design §12). There's no
+    // keyboard to edit, so focus goes to the window's first control.
+    await waitFor(() => {
+      expect(document.activeElement?.textContent).toBe("USB · Locked");
+    });
+    stop();
+  });
+
+  test("once unlocked, gives focus to the keyboard", async () => {
+    const { stop } = drawWindow(sofle({ kind: "probing" }));
+    report(sofle({ kind: "locked" }));
+    await screen.findByRole("dialog", { name: "Unlock your keyboard" });
+    act(() => {
+      useStore.setState({ keymap: sofleKeymap, session: sofle({ kind: "ready" }) });
+    });
+    // To its tab stop, the first key, as Tab would.
+    await waitFor(() => {
+      expect(document.activeElement?.getAttribute("aria-label")).toStartWith(
+        "Left half, row 1, key 1.",
+      );
+    });
     stop();
   });
 

@@ -123,11 +123,13 @@ export function Keyboard({
         <LayerName id={layer.id} name={layer.name} />
       </h2>
       {/* The keys handle the keyboard and the pointer themselves; this only sees what
-          they don't, on their way up. */}
+          they don't, on their way up. Its tab stop is the window's home, where focus goes
+          when a sheet that opened by itself closes. */}
       {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
         ref={keyboard}
         className={styles.keyboard}
+        data-focus-home
         style={
           {
             width: extent.width * unit,
