@@ -2,7 +2,7 @@
 
 Remap your ZMK keyboard on a Mac, in plain language. No firmware builds, no `&kp` syntax.
 
-> **Status: pre-release.** Keywright works with its first keyboard, and v1.0 is on its way. Until it's released, you can [build it from source](CONTRIBUTING.md#development-setup-and-building-from-source).
+> **Status: 1.0.** Keywright works with its first keyboard. [Download it](https://github.com/zunhdev/keywright/releases/latest), or [build it from source](CONTRIBUTING.md#development-setup-and-building-from-source).
 
 Keywright is a free, open-source macOS app, with a companion CLI, for changing what the keys on a ZMK wireless keyboard do. Changes apply live over USB or Bluetooth, use Mac vocabulary (⌘ ⌥ ⌃ ⇧) and can always be undone.
 

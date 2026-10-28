@@ -4,8 +4,6 @@ This page takes you from installing Keywright to your first changed key, saved o
 
 ## Install Keywright
 
-> Keywright isn't released yet. Until version 1.0 is out, [build it from source](#build-it-from-source).
-
 ### Download it
 
 1. On the [Releases page](https://github.com/zunhdev/keywright/releases), download `Keywright-<version>-aarch64-apple-darwin.zip`.

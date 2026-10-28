@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.92 — for review                                        |
+| **Status**    | v1.0 — Keywright 1.0.0                                          |
 | **Date**      | 2026-10-28                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -930,3 +930,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.90    | 2026-10-28 | Messages (§5.1, §13.2, KEY-115): the fuzz target `message_decode` reads arbitrary bytes as messages both ways, starting from the recorded sessions' frames; `fuzz.yml` also runs when the firmware image reader changes.                                                                                                                                           |
 | 0.91    | 2026-10-28 | Platform (§1.1, §8.2, KEY-98): macOS 27 only; the app's minimum system version is 27.0, and a new major version joins the supported versions once the presets and rules are verified on it.                                                                                                                                                                        |
 | 0.92    | 2026-10-28 | Release (§17, KEY-78): `release.yml` checks the tag against `Cargo.toml`, builds without caches, signs with `APPLE_SIGNING_IDENTITY` from the `release` environment's secrets, checks the signature, and drafts a pre-release for a version such as `1.0.0-rc.1`.                                                                                                  |
+| 1.0     | 2026-10-28 | Keywright 1.0.0 is released, built as this spec describes it (KEY-83).                                                                                                                                                                                                                                                                                             |

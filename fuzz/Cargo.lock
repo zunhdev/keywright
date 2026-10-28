@@ -168,7 +168,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-core"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "serde",
  "thiserror",
@@ -186,7 +186,7 @@ dependencies = [
 
 [[package]]
 name = "keywright-studio"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 dependencies = [
  "prost",
  "prost-build",
