@@ -60,12 +60,15 @@ objc2-foundation = { version = "0.3.2", default-features = false, features = [
   "std",
   "NSGeometry",
   "NSProcessInfo",
+  "NSString",
 ] }
+# `NSPasteboard` is the clipboard, for copying diagnostics.
 objc2-app-kit = { version = "0.3.2", default-features = false, features = [
   "std",
   "NSApplication",
   "NSButton",
   "NSControl",
+  "NSPasteboard",
   "NSResponder",
   "NSView",
   "NSWindow",
@@ -109,6 +112,11 @@ thiserror = "2.0.21"
 toml = { version = "1.1.8", default-features = false, features = ["parse", "serde", "std"] }
 tokio = "1.53.3"
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
+# The app's log files (tech spec §16): `tracing-subscriber` writes each event `tracing`
+# reports as a line of text, and `tracing-appender` writes the lines to a new file each day,
+# deleting the oldest.
+tracing-appender = "0.2.5"
+tracing-subscriber = { version = "0.3.23", default-features = false, features = ["fmt", "std"] }
 trycmd = "1.2.1"
 
 # Every member inherits these lints with `[lints] workspace = true` (tech spec §13.2).

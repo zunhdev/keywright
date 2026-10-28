@@ -66,6 +66,10 @@ pub enum AppError {
     ExportFailed,
     /// Finder didn't show the file.
     NotShownInFinder,
+    /// The diagnostics weren't copied: macOS didn't take them.
+    NotCopied,
+    /// The browser didn't open the page.
+    PageNotOpened,
     /// Keywright doesn't know how to update the keyboard's firmware: it has no support
     /// pack for it.
     UnknownKeyboard,

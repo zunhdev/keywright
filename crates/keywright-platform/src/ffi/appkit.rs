@@ -4,9 +4,14 @@
 
 use objc2::rc::Retained;
 use objc2::{MainThreadMarker, sel};
-use objc2_app_kit::{NSApplication, NSView, NSWindow, NSWindowButton, NSWindowStyleMask};
+use objc2_app_kit::{
+    NSApplication, NSPasteboard, NSPasteboardTypeString, NSView, NSWindow, NSWindowButton,
+    NSWindowStyleMask,
+};
+use objc2_foundation::NSString;
 use raw_window_handle::{RawWindowHandle, WindowHandle};
 
+use crate::pasteboard::PasteboardError;
 use crate::window::{TextEdit, WindowError};
 
 /// The window that holds `handle`'s view, on the main thread.
@@ -68,4 +73,47 @@ pub fn send_text_edit(edit: TextEdit) -> Result<(), WindowError> {
     // above.
     let _ = unsafe { NSApplication::sharedApplication(mtm).sendAction_to_from(action, None, None) };
     Ok(())
+}
+
+/// Puts `text` on the general pasteboard as plain text, in place of what was there.
+/// `NSPasteboard` may be used from any thread.
+pub fn copy_text(text: &str) -> Result<(), PasteboardError> {
+    copy_to(&NSPasteboard::generalPasteboard(), text)
+}
+
+/// Puts `text` on `pasteboard` as plain text, in place of what was there.
+fn copy_to(pasteboard: &NSPasteboard, text: &str) -> Result<(), PasteboardError> {
+    pasteboard.clearContents();
+    if pasteboard.setString_forType(&NSString::from_str(text), plain_text()) {
+        Ok(())
+    } else {
+        Err(PasteboardError::Refused)
+    }
+}
+
+/// The pasteboard type of plain text, `public.utf8-plain-text`.
+fn plain_text() -> &'static NSString {
+    // SAFETY: `NSPasteboardTypeString` is a constant AppKit defines, an immutable NSString
+    // that lives as long as the process. Reading it has no side effects.
+    unsafe { NSPasteboardTypeString }
+}
+
+#[cfg(test)]
+mod tests {
+    use objc2_app_kit::NSPasteboard;
+    use objc2_foundation::NSString;
+
+    use super::{copy_to, plain_text};
+
+    #[test]
+    fn copied_text_replaces_what_the_pasteboard_held() {
+        // A pasteboard of the tests' own, so they leave the clipboard alone. Named, so each
+        // run uses the same one.
+        let name = NSString::from_str("dev.zunh.keywright.tests");
+        let pasteboard = NSPasteboard::pasteboardWithName(&name);
+        copy_to(&pasteboard, "first").unwrap();
+        copy_to(&pasteboard, "### Diagnostics\n- Keywright 0.1.0").unwrap();
+        let held = pasteboard.stringForType(plain_text()).unwrap();
+        assert_eq!(held.to_string(), "### Diagnostics\n- Keywright 0.1.0");
+    }
 }

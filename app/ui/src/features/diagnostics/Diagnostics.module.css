@@ -1,0 +1,47 @@
+/*
+ * The diagnostics report (NFR-4): read-only text in the mono font (design §10.1). Long log
+ * lines wrap, and the report scrolls, so the person can read it all before pasting it.
+ */
+.report {
+  box-sizing: border-box;
+  align-self: stretch;
+  width: 100%;
+  height: 160px;
+  margin: 0;
+  padding: var(--space-2);
+  resize: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font: 400 11px / 16px var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow: auto;
+}
+
+/* Help › Report an Issue…: the note, the report, then the buttons. */
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.body,
+.problem {
+  margin: 0;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  & > :not(.spacer) {
+    flex: none;
+  }
+}
+
+.spacer {
+  flex: 1;
+}

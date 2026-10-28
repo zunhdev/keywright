@@ -5,6 +5,7 @@ import { DiscardSheet } from "../features/changes/DiscardSheet.tsx";
 import { QuitDialog } from "../features/changes/QuitDialog.tsx";
 import { ReviewSheet } from "../features/changes/ReviewSheet.tsx";
 import { UnlockSheet } from "../features/connection/UnlockSheet.tsx";
+import { ReportIssueSheet } from "../features/diagnostics/ReportIssueSheet.tsx";
 import { Inspector } from "../features/inspector/Inspector.tsx";
 import { KeyboardCanvas } from "../features/keyboard-canvas/KeyboardCanvas.tsx";
 import { LayersPane } from "../features/layers/LayersPane.tsx";
@@ -74,6 +75,7 @@ export function MainWindow() {
       <QuitDialog />
       <RestoreSheet />
       <ImportSheet />
+      <ReportIssueSheet />
       <FirstRun />
       {inspector === null ? null : (
         <aside

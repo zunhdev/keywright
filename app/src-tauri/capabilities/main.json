@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main-window",
-  "description": "What the main window's UI may use: following the session and the menus, changing keys and undoing changes, fixing and dismissing the Mac check's findings, making a key act as Globe and opening Keywright at login from the Globe helper, the first run and its menu bar question, enabling and renaming its menu items and editing text with them, dragging the window by its toolbar and starting it after the traffic lights, importing and exporting backups, and opening System Settings and Keywright's docs. Each feature adds the commands and events it uses.",
+  "description": "What the main window's UI may use: following the session and the menus, changing keys and undoing changes, fixing and dismissing the Mac check's findings, making a key act as Globe and opening Keywright at login from the Globe helper, the first run and its menu bar question, enabling and renaming its menu items and editing text with them, dragging the window by its toolbar and starting it after the traffic lights, importing and exporting backups, copying diagnostics and opening a new issue for them (Help › Report an Issue…), and opening System Settings and Keywright's docs. Each feature adds the commands and events it uses.",
   "windows": ["main"],
   "permissions": [
     "core:event:allow-listen",
@@ -61,6 +61,9 @@
     "allow-set-open-at-login",
     "allow-first-run-pending",
     "allow-finish-first-run",
+    "allow-diagnostics",
+    "allow-copy-diagnostics",
+    "allow-open-new-issue",
     "allow-traffic-lights",
     "core:window:allow-start-dragging",
     "core:window:allow-internal-toggle-maximize",

@@ -287,3 +287,11 @@ test("Help › Run First-Time Setup starts the first run, and is disabled while 
   expect(menu.get("first-time-setup")).toBe("first-time-setup (disabled): null");
   stop();
 });
+
+test("Help › Report an Issue… shows the diagnostics report, whatever the keyboard does", async () => {
+  const { stop } = await readySofle();
+  expect(menu.get("report-issue")).toBe("report-issue: null");
+  await emit("menu://item", "report-issue");
+  expect(useStore.getState().reporting).toBe(true);
+  stop();
+});

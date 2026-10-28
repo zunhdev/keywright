@@ -10,8 +10,9 @@
 //! - the login item (`login_item`);
 //! - whether Keywright may use Bluetooth, read without asking (`bluetooth`);
 //! - the window's "edited" dot, and the standard text-editing actions;
-//! - where Keywright keeps its files, such as automatic backups (`paths`);
-//! - the macOS version, for the Mac actions verified on it (`system`).
+//! - the clipboard, for copying diagnostics (`pasteboard`);
+//! - where Keywright keeps its files, such as automatic backups and logs (`paths`);
+//! - the macOS version, for the Mac actions verified on it and diagnostics (`system`).
 //!
 //! All platform-specific code lives here, behind `cfg(target_os)`, so the rest of Keywright
 //! stays portable (NFR-7).
@@ -27,6 +28,7 @@ mod ffi;
 pub mod globe;
 pub mod input_source;
 pub mod login_item;
+pub mod pasteboard;
 pub mod paths;
 pub mod system;
 pub mod uf2;

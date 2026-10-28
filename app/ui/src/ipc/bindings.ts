@@ -126,6 +126,26 @@ export const commands = {
 	 *  Fails if the setting can't be saved.
 	 */
 	resetFirstRun: () => typedError<null, AppError>(__TAURI_INVOKE("reset_first_run")),
+	/**  The report on Keywright now, for the person to read before copying it. */
+	diagnostics: () => __TAURI_INVOKE<string>("diagnostics"),
+	/**
+	 *  Copies `report`, as [`diagnostics`] gave it, to the clipboard, taking out anything
+	 *  private again.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if macOS doesn't take the text.
+	 */
+	copyDiagnostics: (report: string) => typedError<null, AppError>(__TAURI_INVOKE("copy_diagnostics", { report })),
+	/**
+	 *  Opens a new issue in Keywright's repository on GitHub, in the browser, for the report to
+	 *  be pasted in.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Fails if the browser doesn't open.
+	 */
+	openNewIssue: () => typedError<null, AppError>(__TAURI_INVOKE("open_new_issue")),
 	/**
 	 *  The keymap the canvas draws, or `null` before the session has read one.
 	 * 
@@ -792,6 +812,10 @@ export type AppError =
 { code: "export-failed" } | 
 /**  Finder didn't show the file. */
 { code: "not-shown-in-finder" } | 
+/**  The diagnostics weren't copied: macOS didn't take them. */
+{ code: "not-copied" } | 
+/**  The browser didn't open the page. */
+{ code: "page-not-opened" } | 
 /**
  *  Keywright doesn't know how to update the keyboard's firmware: it has no support
  *  pack for it.
