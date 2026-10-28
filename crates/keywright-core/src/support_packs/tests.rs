@@ -100,95 +100,141 @@ mod every_pack {
     #[test]
     fn matches_its_upstream_keymap() {
         for pack in embedded() {
-            let dir = upstream_dir(&pack.id);
-            let keymaps: Vec<_> = fs::read_dir(&dir)
-                .unwrap_or_else(|error| panic!("{}: {error}", dir.display()))
-                .map(|entry| entry.unwrap().path())
-                .filter(|path| {
-                    path.extension()
-                        .is_some_and(|extension| extension == "keymap")
-                })
-                .collect();
-            let [path] = keymaps.as_slice() else {
-                panic!("{} should have one .keymap file", dir.display());
-            };
-            let upstream = zmk_keymap::read(&fs::read_to_string(path).unwrap());
+            let upstream = upstream_keymap(&pack.id);
             let context = |what: String| format!("support-packs/{}: {what}", pack.id);
+            layers_match(pack, &upstream, &context);
+            hints_match(pack, &upstream, &context);
+        }
+    }
 
-            let layers = &pack.stock_keymap.layers;
+    /// The `.keymap` file in the pack's `upstream/`, read.
+    fn upstream_keymap(id: &str) -> zmk_keymap::Keymap {
+        let dir = upstream_dir(id);
+        let keymaps: Vec<_> = fs::read_dir(&dir)
+            .unwrap_or_else(|error| panic!("{}: {error}", dir.display()))
+            .map(|entry| entry.unwrap().path())
+            .filter(|path| {
+                path.extension()
+                    .is_some_and(|extension| extension == "keymap")
+            })
+            .collect();
+        let [path] = keymaps.as_slice() else {
+            panic!("{} should have one .keymap file", dir.display());
+        };
+        zmk_keymap::read(&fs::read_to_string(path).unwrap())
+    }
+
+    /// The stock keymap's layers are the `.keymap`'s, key by key.
+    fn layers_match(
+        pack: &SupportPack,
+        upstream: &zmk_keymap::Keymap,
+        context: &dyn Fn(String) -> String,
+    ) {
+        let layers = &pack.stock_keymap.layers;
+        assert_eq!(
+            layers.len(),
+            upstream.layers.len(),
+            "{}",
+            context("the layer count: left is stock-keymap.toml's, right the .keymap's".into())
+        );
+        for ((id, layer), expected) in (0..).zip(layers).zip(&upstream.layers) {
             assert_eq!(
-                layers.len(),
-                upstream.layers.len(),
+                layer.id,
+                LayerId(id),
                 "{}",
-                context("layers".into())
+                context(format!(
+                    "layer {id}'s ID: stock-keymap.toml's layers count from 0, in the .keymap's order"
+                ))
             );
-            for ((id, layer), expected) in (0..).zip(layers).zip(&upstream.layers) {
-                assert_eq!(layer.id, LayerId(id), "{}", context("layer IDs".into()));
+            assert_eq!(
+                layer.name,
+                expected.name,
+                "{}",
+                context(format!(
+                    "layer {id}'s name: left is the pack's, right the .keymap's display-name"
+                ))
+            );
+            assert_eq!(
+                layer.bindings.len(),
+                expected.bindings.len(),
+                "{}",
+                context(format!(
+                    "layer {id}'s key count: left is stock-keymap.toml's, right the .keymap's"
+                )),
+            );
+            // Compared as actions, so `kp ASTRK` upstream is the same as `kp STAR`.
+            for (position, (text, expected)) in
+                layer.bindings.iter().zip(&expected.bindings).enumerate()
+            {
                 assert_eq!(
-                    layer.name,
-                    expected.name,
+                    ActionText::parse(text),
+                    ActionText::parse(expected),
                     "{}",
                     context(format!(
-                        "layer {id}'s name: left is the pack's, right the .keymap's display-name"
-                    ))
+                        "layer {id}, key {position} is `{text}` in stock-keymap.toml, but `{expected}` in the .keymap"
+                    )),
                 );
-                assert_eq!(
-                    layer.bindings.len(),
-                    expected.bindings.len(),
-                    "{}",
-                    context(format!("layer {id}'s keys")),
-                );
-                // Compared as actions, so `kp ASTRK` upstream is the same as `kp STAR`.
-                for (position, (text, expected)) in
-                    layer.bindings.iter().zip(&expected.bindings).enumerate()
-                {
-                    assert_eq!(
-                        ActionText::parse(text),
-                        ActionText::parse(expected),
-                        "{}",
-                        context(format!(
-                            "layer {id}, key {position}: `{text}`, upstream `{expected}`"
-                        )),
-                    );
-                }
             }
-
-            let conditional_layers: Vec<_> = pack
-                .hints
-                .conditional_layers
-                .iter()
-                .map(|layer| {
-                    let ids = layer.if_layers.iter().map(|id| id.0).collect::<Vec<_>>();
-                    (ids, layer.then_layer.0)
-                })
-                .collect();
-            assert_eq!(
-                conditional_layers,
-                upstream.conditional_layers,
-                "{}",
-                context("conditional layers".into()),
-            );
-
-            let turns: Vec<_> = pack
-                .hints
-                .knobs
-                .iter()
-                .map(|knob| knob.turn.to_vec())
-                .collect();
-            let sensors: Vec<_> = upstream.layers[0]
-                .sensor_bindings
-                .iter()
-                .map(|binding| {
-                    let words: Vec<_> = binding.split(' ').collect();
-                    let (behavior, keys) = words.split_first().unwrap();
-                    assert_eq!(*behavior, "inc_dec_kp", "{}", context("knobs".into()));
-                    keys.iter()
-                        .map(|name| key((*name).to_owned()).unwrap())
-                        .collect::<Vec<_>>()
-                })
-                .collect();
-            assert_eq!(turns, sensors, "{}", context("knobs".into()));
         }
+    }
+
+    /// The hints' conditional layers and knobs are the `.keymap`'s.
+    fn hints_match(
+        pack: &SupportPack,
+        upstream: &zmk_keymap::Keymap,
+        context: &dyn Fn(String) -> String,
+    ) {
+        let conditional_layers: Vec<_> = pack
+            .hints
+            .conditional_layers
+            .iter()
+            .map(|layer| {
+                let ids = layer.if_layers.iter().map(|id| id.0).collect::<Vec<_>>();
+                (ids, layer.then_layer.0)
+            })
+            .collect();
+        assert_eq!(
+            conditional_layers,
+            upstream.conditional_layers,
+            "{}",
+            context(
+                "hints.toml's `[[conditional-layer]]`s, left, should be the .keymap's conditional_layers, right"
+                    .into()
+            ),
+        );
+
+        let turns: Vec<_> = pack
+            .hints
+            .knobs
+            .iter()
+            .map(|knob| knob.turn.to_vec())
+            .collect();
+        let sensors: Vec<_> = upstream.layers[0]
+            .sensor_bindings
+            .iter()
+            .map(|binding| {
+                let words: Vec<_> = binding.split(' ').collect();
+                let (behavior, keys) = words.split_first().unwrap();
+                assert_eq!(
+                    *behavior,
+                    "inc_dec_kp",
+                    "{}",
+                    context("the .keymap's sensor-bindings should be inc_dec_kp".into())
+                );
+                keys.iter()
+                    .map(|name| key((*name).to_owned()).unwrap())
+                    .collect::<Vec<_>>()
+            })
+            .collect();
+        assert_eq!(
+            turns,
+            sensors,
+            "{}",
+            context(
+                "hints.toml's `[[knob]]` turns, left, should be the .keymap's sensor-bindings, right"
+                    .into()
+            ),
+        );
     }
 
     #[test]
@@ -574,7 +620,10 @@ mod loading {
         }
         // Characters count, not bytes.
         let files = changed(PACK, device_names, "device-names = [\"Sofle Choc BT ⌨\"]");
-        assert!(matches!(error(&files), PackError::StockKeyboard("name")));
+        assert!(matches!(
+            error(&files),
+            PackError::StockKeyboard { field: "name", .. }
+        ));
     }
 
     #[test]
@@ -599,20 +648,40 @@ mod loading {
         assert_eq!(error(&files), PackError::EmptyRow("all".to_owned()));
         // A layout can have as many keys as a backup.
         set_layout(&mut files, rows(backup::MAX_KEYS));
-        assert_eq!(error(&files), PackError::StockKeyboard("key count"));
+        assert!(matches!(
+            error(&files),
+            PackError::StockKeyboard {
+                field: "key-count",
+                ..
+            }
+        ));
 
         let files = changed(
             LAYOUT,
             "{ x = 175, y = 437 }",
             "{ x = 175, y = 437, width = 0 }",
         );
-        assert_eq!(error(&files), PackError::KeySize(50));
+        assert_eq!(
+            error(&files),
+            PackError::KeySize {
+                position: 50,
+                width: 0,
+                height: 100
+            }
+        );
         let files = changed(
             LAYOUT,
             "{ x = 175, y = 437 }",
             "{ x = 175, y = 437, height = -100 }",
         );
-        assert_eq!(error(&files), PackError::KeySize(50));
+        assert_eq!(
+            error(&files),
+            PackError::KeySize {
+                position: 50,
+                width: 100,
+                height: -100
+            }
+        );
     }
 
     #[test]
@@ -625,7 +694,7 @@ mod loading {
             (
                 "support-pack = \"keebart-sofle-choc-pro-bt\"",
                 "",
-                "support pack",
+                "support-pack",
             ),
             (
                 "name = \"Sofle Choc BT\"",
@@ -635,20 +704,29 @@ mod loading {
             (
                 "physical-layout = \"Default Layout\"",
                 "physical-layout = \"Default\"",
-                "physical layout",
+                "physical-layout",
             ),
         ] {
-            assert_eq!(
-                error(&changed(STOCK_KEYMAP, from, to)),
-                PackError::StockKeyboard(field),
-            );
+            let PackError::StockKeyboard { field: found, .. } =
+                error(&changed(STOCK_KEYMAP, from, to))
+            else {
+                panic!("{field} should be refused");
+            };
+            assert_eq!(found, field);
         }
         let files = changed(
             LAYOUT,
             "{ x = 1225, y = 437 },",
             "{ x = 1225, y = 437 }, { x = 1325, y = 437 },",
         );
-        assert_eq!(error(&files), PackError::StockKeyboard("key count"));
+        assert_eq!(
+            error(&files),
+            PackError::StockKeyboard {
+                field: "key-count",
+                found: "60".to_owned(),
+                expected: "how many keys layout.toml has, 61".to_owned(),
+            }
+        );
     }
 
     #[test]
@@ -668,8 +746,9 @@ mod loading {
         assert_eq!(
             error(&changed(HINTS, "tap = 41", "tap = 60")),
             PackError::NoSuchKey {
-                hint: "the unlock keys",
+                hint: "`[unlock] tap`",
                 position: 60,
+                keys: 60,
             },
         );
         assert_eq!(
@@ -679,22 +758,25 @@ mod loading {
                 "slots = [1, 2, 3, 4, 99]"
             )),
             PackError::NoSuchKey {
-                hint: "the Bluetooth keys",
+                hint: "`[bluetooth] slots`",
                 position: 99,
+                keys: 60,
             },
         );
         assert_eq!(
             error(&changed(HINTS, "position = 43", "position = 60")),
             PackError::NoSuchKey {
-                hint: "a knob",
+                hint: "a `[[knob]]`",
                 position: 60,
+                keys: 60,
             },
         );
         assert_eq!(
             error(&changed(HINTS, "then-layer = 3", "then-layer = 4")),
             PackError::NoSuchLayer {
-                hint: "a conditional layer",
+                hint: "a `[[conditional-layer]]`",
                 layer: LayerId(4),
+                layers: (0..4).map(LayerId).collect(),
             },
         );
     }
@@ -720,12 +802,25 @@ mod loading {
                 "hold = [56]\ntap = 41",
                 "hold = []\ntap = 41"
             )),
-            PackError::UnlockKeys
+            PackError::UnlockKeys {
+                found: Some("kp B".to_owned())
+            }
         );
         // Paste on Raise.
         assert_eq!(
             error(&changed(HINTS, "tap = 41", "tap = 40")),
-            PackError::UnlockKeys
+            PackError::UnlockKeys {
+                found: Some("kp K_PASTE".to_owned())
+            }
+        );
+        // Q doesn't turn a layer on.
+        assert_eq!(
+            error(&changed(
+                HINTS,
+                "hold = [56]\ntap = 41",
+                "hold = [15]\ntap = 41"
+            )),
+            PackError::UnlockKeys { found: None }
         );
         // Slot 5 is on key 5, not 6.
         assert_eq!(
@@ -734,7 +829,10 @@ mod loading {
                 "slots = [1, 2, 3, 4, 5]",
                 "slots = [1, 2, 3, 4, 6]"
             )),
-            PackError::BluetoothKeys(5),
+            PackError::BluetoothKeys {
+                slot: 5,
+                found: Some("kp N6".to_owned())
+            },
         );
         // Holding Lower and Raise turns on Adjust, which has the slots too.
         let files = changed(HINTS, "hold = [56]\nslots", "hold = [53, 56]\nslots");
@@ -756,10 +854,70 @@ mod loading {
     }
 
     #[test]
-    fn errors_say_what_is_wrong() {
+    fn layers_are_listed_in_words() {
+        assert_eq!(list(&[]), "none");
+        assert_eq!(list(&[LayerId(0)]), "0");
+        assert_eq!(list(&[LayerId(0), LayerId(3)]), "0 and 3");
+    }
+
+    /// Each message names the file, what it found and what it expected (KEY-119).
+    #[test]
+    fn errors_say_what_was_expected() {
+        let message = |files: &[(&str, String)]| error(files).to_string();
         assert_eq!(
-            error(&changed(HINTS, "tap = 41", "tap = 60")).to_string(),
-            "hints.toml: the unlock keys refers to key 60, which the layout doesn't have",
+            message(&changed(HINTS, "tap = 41", "tap = 60")),
+            "hints.toml: `[unlock] tap` names key 60, but layout.toml's keys go from 0 to 59",
+        );
+        assert_eq!(
+            message(&changed(HINTS, "then-layer = 3", "then-layer = 4")),
+            "hints.toml: a `[[conditional-layer]]` names layer 4, but the stock keymap's layers \
+             are 0, 1, 2 and 3",
+        );
+        assert_eq!(
+            message(&changed(HINTS, "tap = 41", "tap = 40")),
+            "hints.toml: with the stock keymap, holding `[unlock] hold` and tapping `tap` reaches \
+             `kp K_PASTE`, but it must reach `studio_unlock`",
+        );
+        assert_eq!(
+            PackError::UnlockKeys { found: None }.to_string(),
+            "hints.toml: with the stock keymap, holding `[unlock] hold` and tapping `tap` doesn't \
+             reach a key: a held key doesn't turn a layer on, but it must reach `studio_unlock`",
+        );
+        assert_eq!(
+            message(&changed(
+                HINTS,
+                "slots = [1, 2, 3, 4, 5]",
+                "slots = [1, 2, 3, 4, 6]"
+            )),
+            "hints.toml: with the stock keymap, holding `[bluetooth] hold` and tapping slot 5's \
+             key reaches `kp N6`, but it must reach `bt BT_SEL 4`",
+        );
+        assert_eq!(
+            message(&changed(
+                STOCK_KEYMAP,
+                "name = \"Sofle Choc BT\"",
+                "name = \"Corne Choc BT\""
+            )),
+            "stock-keymap.toml: `[keyboard] name` is \"Corne Choc BT\", but it must be one of \
+             pack.toml's device names: \"Sofle Choc BT\", \"Sofle Choc Pro\"",
+        );
+        assert_eq!(
+            message(&changed(PACK, "format = 1", "format = 2")),
+            "pack.toml: `format` is 2, but this version of Keywright reads format 1",
+        );
+        assert_eq!(
+            PackError::DeviceName("Sofle Choc Pro BT 2".to_owned()).to_string(),
+            "pack.toml: the device name `Sofle Choc Pro BT 2` has 19 characters, but a ZMK \
+             keyboard's name has 1 to 16",
+        );
+        assert_eq!(
+            PackError::KeySize {
+                position: 50,
+                width: 0,
+                height: 100
+            }
+            .to_string(),
+            "layout.toml: key 50 is 0 by 100, but a key's width and height must be more than 0",
         );
         assert_eq!(
             PackError::StockBinding {
@@ -769,10 +927,6 @@ mod loading {
             }
             .to_string(),
             "stock-keymap.toml: layer 2, key 7: the action is empty",
-        );
-        assert_eq!(
-            PackError::BluetoothKeys(3).to_string(),
-            "hints.toml: with the stock keymap, the keys for Bluetooth slot 3 don't select it",
         );
     }
 }
