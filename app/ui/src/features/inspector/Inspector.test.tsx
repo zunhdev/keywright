@@ -185,6 +185,25 @@ test("a new selection starts the inspector afresh", () => {
   expect(screen.getByRole("button", { name: "Action: Layers" })).toBeDefined();
 });
 
+test("the kind of action follows the key when an undo, discard or import changes it", async () => {
+  inspect([Q]);
+  // A kind picked without an action yet stays.
+  const menu = await openPicker();
+  await userEvent.click(within(menu).getByRole("menuitem", { name: "Mac actions" }));
+  expect(screen.getByRole("button", { name: "Action: Mac actions" }).isConnected).toBe(true);
+  // The key changes from outside the editor, as an undo would: the picker follows.
+  const keymap = structuredClone(sofleKeymap);
+  const key = keymap.layers[0]?.keys[Q];
+  if (key === undefined) throw new Error("the keymap has no Q");
+  key.action = { kind: "transparent" };
+  act(() => {
+    useStore.setState({ keymap });
+  });
+  expect(screen.getByRole("button", { name: "Action: Same as layer below" }).isConnected).toBe(
+    true,
+  );
+});
+
 test("the inspector has no accessibility problems", async () => {
   const { container } = inspect([Q]);
   await expectNoAxeViolations(container);

@@ -49,6 +49,15 @@ export function KeyInspector({
   const [category, setCategory] = useState<CategoryId>(
     key === undefined ? "key" : categoryOf(key.action, choices),
   );
+  // The key's action can change from outside the editor, by an undo, a discard or an
+  // import: then the kind follows it, unless the action still belongs with the kind shown.
+  // A kind picked without an action yet stays, as the action doesn't change.
+  const keyAction = key === undefined ? null : JSON.stringify(key.action);
+  const [seen, setSeen] = useState(keyAction);
+  if (key !== undefined && keyAction !== seen) {
+    setSeen(keyAction);
+    if (!belongsTo(key.action, category, choices)) setCategory(categoryOf(key.action, choices));
+  }
   const recording = useStore((store) => activeRecorder(store) === KEY_RECORDER);
   // ⌘R records a key or shortcut, so that editor shows while it records.
   const shown = recording ? "key" : category;
