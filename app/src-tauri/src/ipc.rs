@@ -11,7 +11,7 @@
 //!   `session://keymap` for the canvas, and `session://battery`.
 //! - **Keys** are named as the input source the person types in names them
 //!   ([`input_source`]), in every payload that names keys.
-//! - **Errors** are codes with data, never English text ([`AppError`]): the UI words them.
+//! - **Errors** are codes with data, never English text ([`error::AppError`]): the UI words them.
 //!
 //! A window may call a command only if its capability allows it: build.rs lists the
 //! commands, and `capabilities/` grants them.

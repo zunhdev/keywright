@@ -2,7 +2,7 @@
 
 Remap your ZMK keyboard on a Mac, in plain language. No firmware builds, no `&kp` syntax.
 
-> **Status: pre-alpha.** The specs are being written. There is no usable app yet.
+> **Status: pre-release.** Keywright works with its first keyboard, and v1.0 is on its way. Until it's released, you can [build it from source](CONTRIBUTING.md#development-setup-and-building-from-source).
 
 Keywright is a free, open-source macOS app, with a companion CLI, for changing what the keys on a ZMK wireless keyboard do. Changes apply live over USB or Bluetooth, use Mac vocabulary (⌘ ⌥ ⌃ ⇧) and can always be undone.
 
@@ -14,6 +14,7 @@ The first supported keyboard is the [Keebart Sofle Choc Pro BT](https://www.keeb
 - [Design spec](docs/specs/design-spec.md): how it looks, reads and behaves.
 - [Tech spec](docs/specs/tech-spec.md): how it's built (Rust core, Tauri v2, React + TypeScript with Bun).
 - [Architecture decisions](docs/adr/README.md): why it's built that way.
+- [Contributor guides](docs/contributing/README.md): the architecture, testing, adding a keyboard or a Mac action, and releasing.
 
 ## Contributing
 

@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.85 — for review                                        |
+| **Status**    | Draft v0.86 — for review                                        |
 | **Date**      | 2026-10-28                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -650,6 +650,7 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | **cargo-fuzz**         | Fuzzing of frame decoder, protobuf decode, backup parser and UF2 image reader. Targets live in `fuzz/`, a workspace of their own that cargo-deny also checks. They run on the pinned stable toolchain, without sanitizers: the fuzzed crates have no `unsafe`, so AddressSanitizer would find nothing. Debug assertions stay on, so overflows fail.                                                         | Short run on each PR touching those crates; long run nightly           |
 | **cargo-mutants**      | Mutation testing: checks that tests actually catch changed logic                                                                                                                                                                                                                                                                                                                                            | Weekly on `keywright-core`, report only                                |
 | **Architecture tests** | The `architecture-tests` crate. Its tests read `cargo metadata` and assert the crate dependency rules from §2 and the `unsafe` policy from §4. They run with the other tests.                                                                                                                                                                                                                               | Required                                                               |
+| **rustdoc**            | The API documentation, from the doc comments: `missing_docs` (above) asks for one on every public item, and `mise run lint:docs` builds the docs with warnings as errors, so a broken link to an item fails (product §9.1).                                                                                                                                                                                 | `cargo doc --workspace --no-deps`, `RUSTDOCFLAGS=-D warnings`          |
 
 ### 13.3 TypeScript tools
 
@@ -922,3 +923,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.83    | 2026-10-28 | Change rows (§8.3, KEY-111): `ReviewRow`'s `spoken` gives a key's before and after as sentences for VoiceOver.                                                                                                                                                                                                                                                     |
 | 0.84    | 2026-10-28 | Toasts (§12.2, KEY-112): the toast's own live regions are off, and a polite log beside the toasts says each one once.                                                                                                                                                                                                                                              |
 | 0.85    | 2026-10-28 | Focus after sheets (§12.2, KEY-113): a sheet with nothing to give focus back to gives it to the window's home, `[data-focus-home]`.                                                                                                                                                                                                                                |
+| 0.86    | 2026-10-28 | Contributor docs (§13.2, KEY-75): `mise run lint:docs` checks the API docs build without warnings.                                                                                                                                                                                                                                                                 |

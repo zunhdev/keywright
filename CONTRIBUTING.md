@@ -1,12 +1,21 @@
 # Contributing to Keywright
 
-Thanks for your interest! Keywright is at an early stage: the specs are still being written. Right now the most useful contributions are feedback on the [specs](docs/specs/), and issues that describe what frustrates you about remapping keyboards on a Mac.
+Thanks for your interest! Keywright isn't released yet, but it works with its first keyboard, and v1.0 is on its way. Reports of what doesn't work for you, support packs for more ZMK keyboards, and fixes are all welcome.
+
+## Guides
+
+- [Architecture](docs/contributing/architecture.md): the crates, the rules between them, and how a change travels from the UI to the keyboard.
+- [Testing](docs/contributing/testing.md): the tests at each layer, the simulated keyboard, UI tests, fuzzing, and tests on a real keyboard.
+- [How to add a keyboard support pack](docs/contributing/support-packs.md).
+- [How to add a Mac action preset](docs/contributing/mac-action-presets.md).
+- [Releasing](docs/contributing/releasing.md), with the [release checklist](docs/contributing/release-checklist.md).
+- The [specs](docs/specs/) say what Keywright does and how it's built, and the [architecture decisions](docs/adr/README.md) why.
 
 ## Reporting bugs and requesting features
 
 Open an issue using one of the templates. For a security problem, **don't** open an issue. Follow [SECURITY.md](SECURITY.md) instead.
 
-## Development setup
+## Development setup and building from source
 
 Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mise.jdx.dev) installs every tool at the version the project pins, including Bun, and runs the same checks as CI. You don't need Node.
 
@@ -19,6 +28,10 @@ Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mis
    mise install    # install the pinned tools
    mise run check  # run everything CI requires
    ```
+
+4. Build Keywright with `mise run build`: `Keywright.app` lands in `target/release/bundle/macos/`, and the `keywright` command-line tool in `target/release/`. Or run it from source with `mise run dev`, below.
+
+Each build of `Keywright.app` is signed ad hoc, so macOS treats it as a new app: allow Bluetooth again after you rebuild it, from the connection chip's _Allow Bluetooth…_. `mise run dev` runs under your terminal's permissions instead.
 
 | Command                       | What it does                                                                                                                                                                                                                                                                                                                                  |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

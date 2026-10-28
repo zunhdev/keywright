@@ -61,6 +61,9 @@ jobs:
       - name: Lint (rustfmt, clippy, cargo-shear)
         run: mise run lint:rust
 
+      - name: Check the API docs (rustdoc)
+        run: mise run lint:docs
+
       # Regenerates keywright-core's key tables and fails if they differ from the committed
       # ones. It runs here because it needs macOS, for the SDK's Events.h, and rustfmt.
       - name: Check the generated key tables
