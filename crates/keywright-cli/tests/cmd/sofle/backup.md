@@ -42,7 +42,7 @@ Waiting up to 2 minutes for it to be unlocked…
 # Keywright keymap backup. https://github.com/zunhdev/keywright
 format = 1
 created = [..]
-app = "keywright 0.1.0"
+app = "keywright [..]"
 reason = "export"
 
 [keyboard]

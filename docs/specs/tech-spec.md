@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.91 — for review                                        |
+| **Status**    | Draft v0.92 — for review                                        |
 | **Date**      | 2026-10-28                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -769,15 +769,15 @@ The reports are in `docs/spikes/`. S1 is done: no write pacing, and the client w
 
 ## 17. Release and distribution (NFR-10)
 
-`release.yml` runs on a `v*` tag, on a macOS arm64 runner:
+`release.yml` runs on a `v*` tag, on a macOS arm64 runner, without caches, so nothing a pull request saved ends up in a release:
 
-1. `mise run check` (the full gate).
-2. `tauri build --bundles app`, **signed with Keywright's self-signed certificate** (`signingIdentity`), which the job imports from repository secrets into a temporary keychain and trusts for code signing there. Spike S8 found that this keeps people's Bluetooth and removable-drive permissions across updates, where an ad-hoc signature (`"-"`), whose designated requirement is the build's own hash, loses them every time; the login item survives either way (`docs/spikes/s8-signing.md`). Losing or replacing the certificate costs every user one more grant.
-3. Zip with `ditto -c -k --keepParent Keywright.app` (preserves bundle metadata).
+1. The tag must be `v` and the version in `Cargo.toml`. Then `mise run check` (the full gate).
+2. `tauri build --bundles app`, **signed with Keywright's self-signed certificate** (`APPLE_SIGNING_IDENTITY`, in place of the ad-hoc `signingIdentity` local builds use), which the job imports from the `release` environment's secrets, which only `v*` tags can use, into a temporary keychain and trusts for code signing there. Spike S8 found that this keeps people's Bluetooth and removable-drive permissions across updates, where an ad-hoc signature (`"-"`), whose designated requirement is the build's own hash, loses them every time; the login item survives either way (`docs/spikes/s8-signing.md`). Losing or replacing the certificate costs every user one more grant.
+3. Check the signature (`codesign --verify --deep --strict`, and a designated requirement that names the certificate). Zip with `ditto -c -k --keepParent Keywright.app` (preserves bundle metadata) → `Keywright-<version>-aarch64-apple-darwin.zip`.
 4. Build the CLI: `cargo build --release -p keywright-cli` → `keywright-<version>-aarch64-apple-darwin.tar.gz`.
 5. Write `SHA256SUMS`.
 6. **Build provenance attestations** (`actions/attest-build-provenance`), so users can verify artifacts with `gh attestation verify`. This partly compensates for the missing signature.
-7. Create a draft GitHub Release from the release notes template (`docs/contributing/release-notes-template.md`). The maintainer reviews it and publishes.
+7. Create a draft GitHub Release from the release notes template (`docs/contributing/release-notes-template.md`), a pre-release for a version such as `1.0.0-rc.1`. The maintainer reviews it and publishes.
 
 The install docs ([`docs/user/getting-started.md`](../user/getting-started.md)) cover moving the app to /Applications with Finder before first launch (which avoids App Translocation), _System Settings › Privacy & Security › Open Anyway_, and the `xattr -dr com.apple.quarantine` alternative. The certificate isn't Apple's, so Gatekeeper blocks every new version until _Open Anyway_: the release notes say so each time. Building from source is `mise install && mise run build`.
 
@@ -929,3 +929,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.89    | 2026-10-28 | Copy check (§13.3, §13.5, KEY-81): `mise run lint:copy` checks the catalogue's strings and the words the app sends the UI for firmware terms, ZMK's syntax and other systems' modifier names; CI's **ui** job runs it.                                                                                                                                             |
 | 0.90    | 2026-10-28 | Messages (§5.1, §13.2, KEY-115): the fuzz target `message_decode` reads arbitrary bytes as messages both ways, starting from the recorded sessions' frames; `fuzz.yml` also runs when the firmware image reader changes.                                                                                                                                           |
 | 0.91    | 2026-10-28 | Platform (§1.1, §8.2, KEY-98): macOS 27 only; the app's minimum system version is 27.0, and a new major version joins the supported versions once the presets and rules are verified on it.                                                                                                                                                                        |
+| 0.92    | 2026-10-28 | Release (§17, KEY-78): `release.yml` checks the tag against `Cargo.toml`, builds without caches, signs with `APPLE_SIGNING_IDENTITY` from the `release` environment's secrets, checks the signature, and drafts a pre-release for a version such as `1.0.0-rc.1`.                                                                                                  |
