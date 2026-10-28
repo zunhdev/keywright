@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.38 — for review                                                       |
+| **Status**    | Draft v0.39 — for review                                                       |
 | **Date**      | 2026-10-28                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -303,7 +303,7 @@ The picker is a popover anchored to the key field. It opens to the field's left,
  ■ Base
    Left · Tab       Tab              →  Tap Esc, hold ⌃        [Revert]
  ─────────────────────────────────────────────────────────────────────
- [Discard all…]                                  [Cancel] [Save to keyboard]
+ [Discard All…]                                  [Cancel] [Save to Keyboard]
 ```
 
 - **The sheet's size.** It's as wide as its rows need, at least 480 px and at most the window less its margins, so it fits the smallest window (960 × 600). The columns line up across layers, each as wide as its content: a long place, before or after (a tap-and-hold, a long shortcut) ends in an ellipsis, with its whole text in a tooltip, rather than widening the sheet. The after column's tooltip is the key's sentence. The after column takes any room left, so _Revert_ lines up at the right edge. The rows scroll when there are many; the footer's buttons always show whole.
@@ -490,7 +490,7 @@ With `prefers-contrast: more`, borders move up two steps, ghosted "same as layer
 
 ### 11.1 Voice
 
-- Plain, calm and specific. Sentence case everywhere ("Save to keyboard", not "Save To Keyboard").
+- Plain, calm and specific. Sentence case for text, labels, titles and headings ("Review changes", "Show in menu bar"). Buttons and menu items take title case, as everywhere on macOS: _Save to Keyboard_, _Fix All_, _Not Now_.
 - Say what happened and what to do next. Never blame the user.
 - Firmware terms are banned from the default UI: behavior, binding, HID, usage, central, peripheral, devicetree, keycode, `&kp`. The product spec glossary (§6.2) defines the replacements.
 
@@ -621,3 +621,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.36    | 2026-10-28 | Toasts (§12, KEY-112): VoiceOver hears a toast once, politely, without its ✓, rather than at once and twice.                                                                                                                                                                                                                                         |
 | 0.37    | 2026-10-28 | Focus (§12, KEY-113): a sheet that opened by itself gives focus to the keyboard when it closes, or to the window's first control while there's no keyboard.                                                                                                                                                                                          |
 | 0.38    | 2026-10-28 | Help (§9.6, KEY-74): Keywright Help opens the user guide, and Keyboard Shortcuts its page of shortcuts.                                                                                                                                                                                                                                              |
+| 0.39    | 2026-10-28 | Writing (§11.1, KEY-81): buttons and menu items take title case, as on macOS; everything else sentence case. The copy check (`mise run lint:copy`) keeps firmware terms out of the UI's words.                                                                                                                                                       |

@@ -111,3 +111,35 @@ Gaps found, filed as bugs:
 - [KEY-111](https://linear.app/zunhdev/issue/KEY-111): the review's, Import's and Backups' rows read their keys as symbols. Fixed since: each row is said in words.
 - [KEY-112](https://linear.app/zunhdev/issue/KEY-112): toasts interrupted VoiceOver, twice: "Saved to keyboard" came as two alerts. Fixed since: a toast is said once, politely, without its ✓.
 - [KEY-113](https://linear.app/zunhdev/issue/KEY-113): sheets that open by themselves left focus on the page when they closed. Fixed since: focus goes to the keyboard, or to the window's first control while there's no keyboard.
+
+## Words (MAC-1, product §11)
+
+The default UI speaks Mac, never ZMK: no firmware terms such as "binding" or "behavior", no ZMK syntax such as `&kp`, Mac modifier names only, and errors that say what happened and what to do next (design §11). `mise run lint:copy` checks the words it can reach: every string in the English catalogue, and the words the app sends the UI about the simulated Sofle's keys, actions and guide. These items check the rest, with _Show ZMK names_ off.
+
+### How to run it
+
+1. **The words built outside the catalogue**, by reading their source: the menus (`app/src-tauri/src/menu.rs`), the menu bar item (`tray.rs`), the low-battery notification (`low_battery.rs`), the keycaps' labels and sentences and the undo menu's names (`keywright-core`'s `keycap.rs`), and the support packs' names and firmware words (`support-packs/*/pack.toml`).
+2. **The window, by eye**, in a dev build with the simulated Sofle (`KEYWRIGHT_SIMULATOR=sofle mise run dev`): the main window locked, loading and unlocked, each kind of action's editor, the key picker's tabs, Review, the Mac check, the first run, Settings' tabs, the Backups window, Import, the Firmware Update assistant and Report an Issue. Look for the terms above, for title case anywhere but buttons and menu items, and for errors without a next step.
+3. **With _Show ZMK names_ on**, ZMK's names appear in the inspector's footer and the key picker, and nowhere else.
+
+### The checklist
+
+| Item                                                       | How                   | Result |
+| ---------------------------------------------------------- | --------------------- | ------ |
+| No firmware terms or ZMK syntax in the catalogue           | `mise run lint:copy`  | ✓      |
+| None in the keycaps, sentences, Mac actions and the guide  | `mise run lint:copy`  | ✓      |
+| None in the menus, the menu bar item and the notifications | Reading their source  | ✓      |
+| Mac modifier names only                                    | `mise run lint:copy`  | ✓      |
+| Sentence case, but title case for buttons and menu items   | Reading the catalogue | ✓      |
+| Every error says what happened and what to do next         | Reading the catalogue | ✓      |
+| ZMK names only with _Show ZMK names_ on                    | Reading the UI's code | ✓      |
+
+### Last run
+
+2026-10-28, `main` after M4 (KEY-81), by reading the catalogue and the sources above, without the window. Fixed in the pass:
+
+- The Globe error said "every key code Keywright can make act as Globe": it says "every key" now.
+- Ten errors said what happened but not what to do next, such as "Keywright couldn't write the file." Each has a next step now, such as "Try saving it in another folder."
+- Design §11.1 asked for sentence case everywhere, while the UI, like macOS, gives buttons and menu items title case (_Save to Keyboard_). The design spec says so now.
+
+The next release candidate's run should go through the window by eye (step 2).

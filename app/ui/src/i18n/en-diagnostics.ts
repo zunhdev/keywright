@@ -12,8 +12,9 @@ export const diagnosticsStrings = {
   "diagnostics.copy": "Copy Diagnostics",
   "diagnostics.copied": "Copied. Read it through before you paste it anywhere.",
   "diagnostics.report": "Diagnostics report",
-  "error.not-copied": "Keywright couldn't copy the diagnostics.",
-  "error.page-not-opened": "Your browser didn't open the page.",
+  "error.not-copied": "Keywright couldn't copy the diagnostics. Try again in a moment.",
+  "error.page-not-opened":
+    "Your browser didn't open the page. The diagnostics are copied: open a new issue at github.com/zunhdev/keywright, and paste them in.",
   "report.title": "Report an Issue",
   "report.body":
     "Open a new issue on GitHub, say what happened, and paste these diagnostics into it. Read them through first: serial numbers and your home folder's name are left out.",

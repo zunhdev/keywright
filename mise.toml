@@ -96,6 +96,10 @@ run = "bun scripts/generate-key-tables.ts --check"
 description = "Check that the UI's colour tokens meet WCAG AA, in light, dark and Increase Contrast"
 run = "bun scripts/check-contrast.ts"
 
+[tasks."lint:copy"]
+description = "Check that the UI's words use no firmware terms or ZMK syntax (design §11.1)"
+run = "bun scripts/check-copy.ts"
+
 [tasks."lint:css-types"]
 description = "Check that the UI's CSS Modules' typings match their stylesheets"
 run = "bun scripts/generate-css-types.ts --check"

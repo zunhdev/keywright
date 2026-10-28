@@ -155,7 +155,9 @@ test("a setting that can't be saved says so", async () => {
   draw();
   const appearance = await screen.findByRole("radiogroup", { name: "Appearance" });
   await userEvent.click(within(appearance).getByRole("radio", { name: "Light" }));
-  expect(await screen.findByText("Keywright couldn't change that setting.")).toBeDefined();
+  expect(
+    await screen.findByText("Keywright couldn't change that setting. Try again in a moment."),
+  ).toBeDefined();
 });
 
 test("when macOS wants approval, the switch stays off and says where to give it", async () => {

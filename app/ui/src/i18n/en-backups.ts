@@ -58,6 +58,6 @@ export const backupStrings = {
   "error.no-such-backup": "That backup isn't there any more.",
   "error.unreadable-backup": "Keywright can't read that backup.",
   "error.nothing-to-import": "There's no backup to import.",
-  "error.export-failed": "Keywright couldn't write the file.",
+  "error.export-failed": "Keywright couldn't write the file. Try saving it in another folder.",
   "error.not-shown-in-finder": "Finder didn't show the file.",
 } satisfies Record<string, LocalizedString>;
