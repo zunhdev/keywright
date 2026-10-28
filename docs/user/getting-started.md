@@ -25,7 +25,7 @@ To check a download, each release lists the files' checksums in `SHA256SUMS`: `s
 
 ### Build it from source
 
-You need a Mac with Apple silicon and macOS 15 or later.
+You need a Mac with Apple silicon and macOS 27.
 
 1. Install [rustup](https://rustup.rs), as its page says, and [mise](https://mise.jdx.dev), for example with `brew install mise`.
 2. Get the code, and build it:

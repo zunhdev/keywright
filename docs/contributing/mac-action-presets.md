@@ -39,11 +39,11 @@ app_shortcut("Copy", "Copies the selection.", Mods::LEFT_COMMAND, 0x06, "copy"),
 - **The ID** is the key's HID usage ID, on the consumer page for `control` and on the keyboard page for the others.
 - **The icon** is the name of a [Lucide](https://lucide.dev/icons/) icon, in kebab case, such as `layout-grid`.
 
-The helpers mark a preset as checked on the versions spike S7 checked, macOS 27. If you checked it on other versions, list them:
+The helpers mark a preset as checked on the versions spike S7 checked: macOS 27, the only one Keywright supports. When a new macOS version comes out, check every preset on it, and list it:
 
 ```rust
 Preset {
-    verified_on: &[MacOsVersion(26), MacOsVersion(27)],
+    verified_on: &[MacOsVersion(27), MacOsVersion(28)],
     ..control("Mission Control", "Shows all your open windows.", 0x29F, "layout-grid")
 },
 ```

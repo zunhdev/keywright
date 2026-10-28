@@ -6,7 +6,7 @@ Remap your ZMK keyboard on a Mac, in plain language. No firmware builds, no `&kp
 
 Keywright is a free, open-source macOS app, with a companion CLI, for changing what the keys on a ZMK wireless keyboard do. Changes apply live over USB or Bluetooth, use Mac vocabulary (⌘ ⌥ ⌃ ⇧) and can always be undone.
 
-The first supported keyboard is the [Keebart Sofle Choc Pro BT](https://www.keebart.com/products/sofle-wireless). Keywright runs on macOS 15 or later on Apple Silicon.
+The first supported keyboard is the [Keebart Sofle Choc Pro BT](https://www.keebart.com/products/sofle-wireless). Keywright runs on macOS 27 on Apple Silicon.
 
 ## Documentation
 

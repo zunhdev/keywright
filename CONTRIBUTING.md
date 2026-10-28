@@ -17,7 +17,7 @@ Open an issue using one of the templates. For a security problem, **don't** open
 
 ## Development setup and building from source
 
-Keywright is developed on macOS 15 or later on Apple Silicon. [mise](https://mise.jdx.dev) installs every tool at the version the project pins, including Bun, and runs the same checks as CI. You don't need Node.
+Keywright runs on macOS 27 on Apple Silicon, and builds on macOS 15 or later. [mise](https://mise.jdx.dev) installs every tool at the version the project pins, including Bun, and runs the same checks as CI. You don't need Node.
 
 1. Install [rustup](https://rustup.rs). The first `cargo` command then installs the Rust version pinned in `rust-toolchain.toml`.
 2. Install mise, for example with `brew install mise`.

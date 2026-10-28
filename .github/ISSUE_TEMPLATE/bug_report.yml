@@ -42,7 +42,7 @@ body:
     id: macos
     attributes:
       label: macOS version
-      placeholder: macOS 26.1
+      placeholder: macOS 27.2
   - type: textarea
     id: logs
     attributes:
