@@ -38,10 +38,6 @@ env:
 jobs:
   fuzz:
     name: Fuzz smoke
-    # Paused while main development is under way, to save CI minutes (KEY-94): run
-    # `mise run fuzz` locally when a pull request changes the fuzzed code. It runs when the
-    # repository variable FULL_CI is true, or when the workflow is run by hand.
-    if: vars.FULL_CI == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
