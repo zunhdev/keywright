@@ -178,28 +178,34 @@ pub struct Illustrations {
     pub underside: Option<String>,
 }
 
-/// Why a pack can't be loaded.
+/// Why a pack can't be loaded. Each message names the file, what it found, and what it
+/// expected, so a contributor can fix the pack without reading this code.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum PackError {
     /// A file every pack needs is missing.
-    #[error("{0} is missing")]
+    #[error(
+        "{0} is missing: every pack has pack.toml, layout.toml, stock-keymap.toml and hints.toml"
+    )]
     MissingFile(&'static str),
     /// A file isn't one a pack can have.
-    #[error("{0} isn't a file a support pack can have")]
+    #[error(
+        "{0} isn't a file a support pack can have: those are pack.toml, layout.toml, \
+         stock-keymap.toml, hints.toml, and illustrations/top.svg and underside.svg"
+    )]
     UnknownFile(String),
     /// A file isn't valid TOML, or not shaped as it should be.
     #[error("{file}: {message}")]
     Syntax {
         /// The file.
         file: &'static str,
-        /// What's wrong.
+        /// What's wrong, as the TOML reader says it, which names what it expected.
         message: String,
     },
     /// The pack is a format this version doesn't read.
-    #[error("the pack has format {0}, which this version of Keywright doesn't read")]
+    #[error("pack.toml: `format` is {0}, but this version of Keywright reads format {FORMAT}")]
     Format(u32),
     /// The pack's ID isn't its directory's name.
-    #[error("the pack's ID is `{id}`, but its directory is `{dir}`")]
+    #[error("pack.toml: `id` is `{id}`, but it must be the directory's name, `{dir}`")]
     WrongId {
         /// The ID.
         id: String,
@@ -207,29 +213,52 @@ pub enum PackError {
         dir: String,
     },
     /// The pack names no device.
-    #[error("the pack doesn't name any device")]
+    #[error(
+        "pack.toml: `[match] device-names` is empty, but it needs the name the keyboard reports"
+    )]
     NoDeviceNames,
     /// A device name can't be a ZMK keyboard's.
-    #[error("`{0}` can't be a ZMK keyboard's name: it must have 1 to 16 characters")]
+    #[error(
+        "pack.toml: the device name `{0}` has {length} characters, but a ZMK keyboard's name has \
+         1 to {MAX_DEVICE_NAME_LEN}",
+        length = .0.chars().count()
+    )]
     DeviceName(String),
     /// The layout has no keys.
-    #[error("the layout has no keys")]
+    #[error("layout.toml has no keys, but it needs at least one row of keys")]
     NoKeys,
     /// The layout has more keys than a backup can hold.
-    #[error("the layout has {0} keys, more than 512")]
+    #[error("layout.toml has {0} keys, but a keyboard can have at most {max}", max = backup::MAX_KEYS)]
     TooManyKeys(usize),
     /// A row of the layout has no keys.
-    #[error("the layout's row `{0}` has no keys")]
+    #[error("layout.toml: the row `{0}` has no keys, but every row needs at least one")]
     EmptyRow(String),
     /// A key of the layout has no area.
-    #[error("key {0} of the layout isn't wider and higher than 0")]
-    KeySize(usize),
+    #[error(
+        "layout.toml: key {position} is {width} by {height}, but a key's width and height must \
+         be more than 0"
+    )]
+    KeySize {
+        /// The key.
+        position: usize,
+        /// Its width, in hundredths of a key unit.
+        width: i32,
+        /// Its height, in hundredths of a key unit.
+        height: i32,
+    },
     /// The stock keymap isn't a backup Keywright can read.
     #[error("stock-keymap.toml: {0}")]
     StockKeymap(BackupError),
     /// The stock keymap's `[keyboard]` doesn't describe the pack's keyboard.
-    #[error("stock-keymap.toml: the keyboard's {0} doesn't match the pack")]
-    StockKeyboard(&'static str),
+    #[error("stock-keymap.toml: `[keyboard] {field}` is {found}, but it must be {expected}")]
+    StockKeyboard {
+        /// The field.
+        field: &'static str,
+        /// What it is.
+        found: String,
+        /// What it must be, and where that comes from.
+        expected: String,
+    },
     /// A binding of the stock keymap can't be read.
     #[error("stock-keymap.toml: layer {}, key {position}: {error}", .layer.0)]
     StockBinding {
@@ -241,36 +270,90 @@ pub enum PackError {
         error: TextError,
     },
     /// A hint refers to a key the layout doesn't have.
-    #[error("hints.toml: {hint} refers to key {position}, which the layout doesn't have")]
+    #[error(
+        "hints.toml: {hint} names key {position}, but layout.toml's keys go from 0 to {}",
+        .keys.saturating_sub(1)
+    )]
     NoSuchKey {
-        /// The hint.
+        /// The hint, such as `[unlock]`.
         hint: &'static str,
         /// The key.
         position: usize,
+        /// How many keys the layout has.
+        keys: usize,
     },
     /// A hint refers to a layer the stock keymap doesn't have.
-    #[error("hints.toml: {hint} refers to layer {}, which the stock keymap doesn't have", .layer.0)]
+    #[error(
+        "hints.toml: {hint} names layer {}, but the stock keymap's layers are {}",
+        .layer.0,
+        list(.layers)
+    )]
     NoSuchLayer {
         /// The hint.
         hint: &'static str,
         /// The layer.
         layer: LayerId,
+        /// The stock keymap's layers.
+        layers: Vec<LayerId>,
     },
     /// Two knobs are the same key.
-    #[error("hints.toml: two knobs are key {0}")]
+    #[error("hints.toml: two `[[knob]]`s are key {0}, but each knob is a key of its own")]
     DuplicateKnob(usize),
     /// A knob's turn isn't a key ZMK names.
-    #[error("hints.toml: a knob turns to `{0}`, which isn't a key ZMK names")]
+    #[error(
+        "hints.toml: a knob turns to `{0}`, but it must be a key as ZMK names it, such as \
+         `C_VOL_UP` or `LG(C)`"
+    )]
     KnobKey(String),
     /// With the stock keymap, the unlock keys don't unlock the keyboard.
-    #[error("hints.toml: with the stock keymap, the unlock keys don't unlock the keyboard")]
-    UnlockKeys,
+    #[error(
+        "hints.toml: with the stock keymap, holding `[unlock] hold` and tapping `tap` {}, but \
+         it must reach `studio_unlock`",
+        reaches(.found.as_deref())
+    )]
+    UnlockKeys {
+        /// What the keys reach, or `None` when a held key doesn't turn a layer on.
+        found: Option<String>,
+    },
     /// With the stock keymap, a Bluetooth slot's keys don't select it.
-    #[error("hints.toml: with the stock keymap, the keys for Bluetooth slot {0} don't select it")]
-    BluetoothKeys(usize),
+    #[error(
+        "hints.toml: with the stock keymap, holding `[bluetooth] hold` and tapping slot {slot}'s \
+         key {}, but it must reach `bt BT_SEL {}`",
+        reaches(.found.as_deref()),
+        .slot.saturating_sub(1)
+    )]
+    BluetoothKeys {
+        /// The slot, counted from 1.
+        slot: usize,
+        /// What the keys reach, or `None` when a held key doesn't turn a layer on.
+        found: Option<String>,
+    },
     /// An illustration isn't an SVG image, or could run code.
-    #[error("{0} isn't an SVG image without scripts")]
+    #[error(
+        "{0} must be an SVG image, starting with `<svg`, without `<script`, `javascript:` or \
+         `<foreignObject`"
+    )]
     Illustration(&'static str),
+}
+
+/// Layers, for a message: "0, 1, 2 and 3".
+fn list(layers: &[LayerId]) -> String {
+    match layers {
+        [] => "none".to_owned(),
+        [one] => one.0.to_string(),
+        [rest @ .., last] => {
+            let rest: Vec<_> = rest.iter().map(|layer| layer.0.to_string()).collect();
+            format!("{} and {}", rest.join(", "), last.0)
+        }
+    }
+}
+
+/// What tapping a hint's keys reaches, for a message: "reaches `kp Q`".
+fn reaches(found: Option<&str>) -> String {
+    found.map_or_else(
+        || "doesn't reach a key: a held key doesn't turn a layer on".to_owned(),
+        |action| format!("reaches `{action}`"),
+    )
 }
 
 const PACK: &str = "pack.toml";
@@ -357,17 +440,38 @@ impl SupportPack {
         let stock_keymap =
             Backup::parse(required(STOCK_KEYMAP)?).map_err(PackError::StockKeymap)?;
         let keyboard = &stock_keymap.keyboard;
+        let quoted = |text: &str| format!("\"{text}\"");
         if keyboard.support_pack.as_deref() != Some(pack.id.as_str()) {
-            return Err(PackError::StockKeyboard("support pack"));
+            return Err(PackError::StockKeyboard {
+                field: "support-pack",
+                found: keyboard
+                    .support_pack
+                    .as_deref()
+                    .map_or_else(|| "missing".to_owned(), quoted),
+                expected: format!("the pack's ID, {}", quoted(&pack.id)),
+            });
         }
         if !device_names.contains(&keyboard.name) {
-            return Err(PackError::StockKeyboard("name"));
+            let names: Vec<_> = device_names.iter().map(|name| quoted(name)).collect();
+            return Err(PackError::StockKeyboard {
+                field: "name",
+                found: quoted(&keyboard.name),
+                expected: format!("one of pack.toml's device names: {}", names.join(", ")),
+            });
         }
         if keyboard.physical_layout != layout.name {
-            return Err(PackError::StockKeyboard("physical layout"));
+            return Err(PackError::StockKeyboard {
+                field: "physical-layout",
+                found: quoted(&keyboard.physical_layout),
+                expected: format!("layout.toml's name, {}", quoted(&layout.name)),
+            });
         }
         if stock_keymap.key_count != layout.keys.len() {
-            return Err(PackError::StockKeyboard("key count"));
+            return Err(PackError::StockKeyboard {
+                field: "key-count",
+                found: stock_keymap.key_count.to_string(),
+                expected: format!("how many keys layout.toml has, {}", layout.keys.len()),
+            });
         }
 
         let hints = hints(parse(HINTS, required(HINTS)?)?)?;
@@ -582,7 +686,11 @@ fn layout(file: LayoutFile) -> Result<(PhysicalLayout, Vec<Row>), PackError> {
         });
         for key in row.keys {
             if key.width <= 0 || key.height <= 0 {
-                return Err(PackError::KeySize(keys.len()));
+                return Err(PackError::KeySize {
+                    position: keys.len(),
+                    width: key.width,
+                    height: key.height,
+                });
             }
             keys.push(PhysicalKey {
                 x: key.x,

@@ -20,19 +20,26 @@ pub(super) fn hints(hints: &Hints, stock_keymap: &Backup) -> Result<(), PackErro
     let keymap = Keymap::new(stock_keymap, &hints.conditional_layers)?;
 
     let keys = [
-        ("the unlock keys", hints.unlock.hold.as_slice()),
-        ("the unlock keys", slice::from_ref(&hints.unlock.tap)),
-        ("the Bluetooth keys", hints.bluetooth.hold.as_slice()),
-        ("the Bluetooth keys", hints.bluetooth.slots.as_slice()),
+        ("`[unlock] hold`", hints.unlock.hold.as_slice()),
+        ("`[unlock] tap`", slice::from_ref(&hints.unlock.tap)),
+        ("`[bluetooth] hold`", hints.bluetooth.hold.as_slice()),
+        ("`[bluetooth] slots`", hints.bluetooth.slots.as_slice()),
     ];
-    let knobs = hints.knobs.iter().map(|knob| ("a knob", knob.position));
+    let knobs = hints
+        .knobs
+        .iter()
+        .map(|knob| ("a `[[knob]]`", knob.position));
     if let Some((hint, position)) = keys
         .iter()
         .flat_map(|(hint, positions)| positions.iter().map(move |position| (*hint, *position)))
         .chain(knobs)
         .find(|(_, position)| *position >= stock_keymap.key_count)
     {
-        return Err(PackError::NoSuchKey { hint, position });
+        return Err(PackError::NoSuchKey {
+            hint,
+            position,
+            keys: stock_keymap.key_count,
+        });
     }
 
     if let Some(layer) = hints
@@ -42,27 +49,35 @@ pub(super) fn hints(hints: &Hints, stock_keymap: &Backup) -> Result<(), PackErro
         .find(|layer| !keymap.has(**layer))
     {
         return Err(PackError::NoSuchLayer {
-            hint: "a conditional layer",
+            hint: "a `[[conditional-layer]]`",
             layer: *layer,
+            layers: keymap.layers.iter().map(|(id, _)| *id).collect(),
         });
     }
 
     let unlock = &hints.unlock;
-    if keymap.tap(&unlock.hold, unlock.tap) != Some(&ActionText::Known(Action::Unlock)) {
-        return Err(PackError::UnlockKeys);
+    let found = keymap.tap(&unlock.hold, unlock.tap);
+    if found != Some(&ActionText::Known(Action::Unlock)) {
+        return Err(PackError::UnlockKeys {
+            found: found.map(ToString::to_string),
+        });
     }
 
     let bluetooth = &hints.bluetooth;
     for (index, position) in bluetooth.slots.iter().enumerate() {
         // ZMK numbers the slots from 0, and people from 1.
+        let found = keymap.tap(&bluetooth.hold, *position);
         let selects = u32::try_from(index).is_ok_and(|profile| {
-            keymap.tap(&bluetooth.hold, *position)
+            found
                 == Some(&ActionText::Known(Action::Bluetooth(BtCommand::Select(
                     profile,
                 ))))
         });
         if !selects {
-            return Err(PackError::BluetoothKeys(index + 1));
+            return Err(PackError::BluetoothKeys {
+                slot: index + 1,
+                found: found.map(ToString::to_string),
+            });
         }
     }
     Ok(())

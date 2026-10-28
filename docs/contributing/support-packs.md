@@ -85,7 +85,13 @@ The keyboard's `.keymap` file, unchanged, and the licence it's under. The folder
 cargo test -p keywright-core support_packs
 ```
 
-The test loads every pack and says what's wrong, file by file: each message starts with the pack and the file. TOML that doesn't parse, or a field that's missing, is reported one at a time, at the file's first line when the field is missing: compare your file with the Sofle's.
+The test loads every pack and says what's wrong, one problem at a time. Each message starts with the pack and the file, and says what it found and what it expected:
+
+```text
+support-packs/acme-split: hints.toml: with the stock keymap, holding `[unlock] hold` and tapping `tap` reaches `kp K_PASTE`, but it must reach `studio_unlock`
+```
+
+TOML that doesn't parse, or a field that's missing, is reported at the file's first line when the field is missing: compare your file with the Sofle's. When the stock keymap and the `.keymap` in `upstream/` differ, the message says which layer and key, and which side is which.
 
 When it passes, add your pack to the list in [`support-packs/README.md`](../../support-packs/README.md), and run `mise run check`, as for any pull request.
 
