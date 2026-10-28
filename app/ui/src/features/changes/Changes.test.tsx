@@ -26,6 +26,7 @@ const ROWS: ReviewRow[] = [
     before: "Q",
     after: "⎋ Esc",
     sentence: "Types Escape.",
+    spoken: { before: "Types Q.", after: "Types Escape." },
   },
   {
     key: { kind: "key", layer: 0, position: 14 },
@@ -35,6 +36,7 @@ const ROWS: ReviewRow[] = [
     before: "W",
     after: "Q",
     sentence: "Types Q.",
+    spoken: { before: "Types W.", after: "Types Q." },
   },
   {
     key: { kind: "renamed", layer: 1 },
@@ -44,8 +46,21 @@ const ROWS: ReviewRow[] = [
     before: "lower",
     after: "Numbers",
     sentence: null,
+    spoken: null,
   },
 ];
+
+/** What VoiceOver reads of `element`: its text, without what's hidden from it. */
+function spokenText(element: Element | undefined): string {
+  if (element === undefined) return "";
+  return Array.from(element.childNodes, (node) =>
+    node instanceof Element
+      ? node.getAttribute("aria-hidden") === "true"
+        ? ""
+        : spokenText(node)
+      : (node.textContent ?? ""),
+  ).join("");
+}
 
 /** Fakes the Rust side: answers the review list, and records each command. */
 function rustSide(rows: ReviewRow[] = ROWS): string[] {
@@ -94,6 +109,13 @@ describe("the review sheet", () => {
     expect(await within(sheet).findByText("⎋ Esc")).toBeDefined();
     expect(within(sheet).getByText("Left half, row 2, key 2")).toBeDefined();
     expect(within(sheet).getByText("lower")).toBeDefined();
+    // VoiceOver hears each row in words, not its columns' keycaps (design §12).
+    const [row, , renamed] = within(sheet).getAllByRole("listitem");
+    expect(spokenText(row)).toStartWith(
+      "Left half, row 2, key 2. Was: Types Q. Now: Types Escape.",
+    );
+    expect(spokenText(row)).not.toMatch(/[⌃⌥⇧⌘⎋⇥→]/u);
+    expect(spokenText(renamed)).toStartWith("Name. Was: lower. Now: Numbers.");
     await userEvent.click(
       within(sheet).getByRole("button", { name: "Revert Left half, row 2, key 3" }),
     );
@@ -111,6 +133,11 @@ describe("the review sheet", () => {
       before: "Tap for ⌃⌥⇧⌘Space, hold for lower",
       after: "Tap for Mission Control, hold for ⌃⌥⇧⌘ and lower",
       sentence: "Tap for Mission Control, hold for ⌃⌥⇧⌘ and the lower layer.",
+      spoken: {
+        before: "Tap for Control-Option-Shift-Command-Space, hold for the lower layer.",
+        after:
+          "Tap for Mission Control, hold for Control-Option-Shift-Command and the lower layer.",
+      },
     };
     rustSide([long]);
     drawSheets(1);

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
+import { VisuallyHidden } from "react-aria-components";
 
-import { useMessages } from "../../i18n/messages.ts";
+import { type Messages, useMessages } from "../../i18n/messages.ts";
 import type { ReviewRow } from "../../ipc/bindings.ts";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 
@@ -15,6 +16,25 @@ function byLayer(rows: readonly ReviewRow[]) {
     else groups.push({ layer: row.layer, name: row.layerName, rows: [row] });
   }
   return groups;
+}
+
+/** Words in a row, such as a layer's name or the layers' order, as a sentence. */
+function sentence(words: string): string {
+  const text = words.replaceAll(" · ", ", ");
+  return /[.!?]$/u.test(text) ? text : `${text}.`;
+}
+
+/**
+ * What VoiceOver hears of a row (design §12): where, and how it was and is, in words: a
+ * key's sentences rather than its keycaps ("Was: Types Tab. Now: Types
+ * Control-Option-Command-K."), and the layers' order with commas.
+ */
+function spokenRow(row: ReviewRow, what: string, messages: Messages): string {
+  return messages.format("review.spoken", {
+    what,
+    before: row.spoken?.before ?? sentence(row.before),
+    after: row.spoken?.after ?? sentence(row.after),
+  });
 }
 
 export interface ChangeRowsProps {
@@ -50,19 +70,25 @@ export function ChangeRows({ rows, renderAction }: ChangeRowsProps) {
                   row.key.kind === "order" ? "review.order-row" : `review.${row.key.kind}`,
                 );
               // Each column truncates a long text, which its title gives in full; the
-              // after column's gives what the key does then, in a sentence.
+              // after column's gives what the key does then, in a sentence. VoiceOver
+              // hears the row in words instead of its columns, which show keycaps.
               return (
                 <li key={JSON.stringify(row.key)} className={styles.row}>
-                  <span className={styles.what} title={what}>
+                  <VisuallyHidden>{spokenRow(row, what, messages)}</VisuallyHidden>
+                  <span className={styles.what} title={what} aria-hidden="true">
                     {what}
                   </span>
-                  <span className={styles.before} title={row.before}>
+                  <span className={styles.before} title={row.before} aria-hidden="true">
                     {row.before}
                   </span>
-                  <span className={styles.arrow} aria-label={messages.format("review.to")}>
+                  <span className={styles.arrow} aria-hidden="true">
                     →
                   </span>
-                  <span className={styles.after} title={row.sentence ?? row.after}>
+                  <span
+                    className={styles.after}
+                    title={row.sentence ?? row.after}
+                    aria-hidden="true"
+                  >
                     {row.after}
                   </span>
                   {renderAction?.(row, what)}

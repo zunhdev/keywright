@@ -47,6 +47,7 @@ const PREVIEW: ImportPreview = {
       before: "⎋ Esc",
       after: "Q",
       sentence: "Types Q.",
+      spoken: { before: "Types Escape.", after: "Types Q." },
     },
     {
       key: { kind: "renamed", layer: 1 },
@@ -56,6 +57,7 @@ const PREVIEW: ImportPreview = {
       before: "Numbers",
       after: "lower",
       sentence: null,
+      spoken: null,
     },
   ],
   keys: 1,
