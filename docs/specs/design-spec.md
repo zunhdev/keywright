@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.40 — for review                                                       |
+| **Status**    | Draft v0.41 — for review                                                       |
 | **Date**      | 2026-10-28                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -224,12 +224,12 @@ From top to bottom:
 
 ```
  Idle         [ ⇧⌘4                      ] [Record]
- Recording    [ Press a shortcut…  ⎋ cancels ] [Cancel]  ← pulsing accent border
+ Recording    [ Press a shortcut…            ] [Cancel]  ← pulsing accent border
  Done         [ ⇧⌘4 · Screenshot area     ] [Record]   ← preset name if it matches one
 ```
 
 - _Record_ (⌘R, or **R** on the canvas) starts capture. The next key-down, with any modifiers held, is recorded by **physical key**. Releasing a lone modifier records just that modifier (e.g. ⌥).
-- **Esc** cancels, and so does Cancel, which Record becomes while recording. Esc with a modifier, such as ⌥⌘Esc, is recorded. To bind Esc itself, pick it from the key list or type "esc" in the picker.
+- **Esc** cancels, and so does Cancel, which Record becomes while recording. The field says only "Press a shortcut…", on one line: Cancel beside it shows the way out, and Esc works as on any Mac Cancel button. VoiceOver hears "Press a shortcut. Escape cancels." Esc with a modifier, such as ⌥⌘Esc, is recorded. To bind Esc itself, pick it from the key list or type "esc" in the picker.
 - Recording is for the selected keys: selecting another key or layer stops it. On a key of another kind, recording switches the inspector to _Key or shortcut_.
 - While recording, the menus give up their shortcuts, so ⌘S records ⌘S rather than saving.
 - A recorded shortcut that matches a Mac action preset shows that preset's name.
@@ -624,3 +624,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.38    | 2026-10-28 | Help (§9.6, KEY-74): Keywright Help opens the user guide, and Keyboard Shortcuts its page of shortcuts.                                                                                                                                                                                                                                              |
 | 0.39    | 2026-10-28 | Writing (§11.1, KEY-81): buttons and menu items take title case, as on macOS; everything else sentence case. The copy check (`mise run lint:copy`) keeps firmware terms out of the UI's words.                                                                                                                                                       |
 | 0.40    | 2026-10-28 | Keyboard navigation (§4.7, KEY-116): Esc on the canvas clears the selection, so the inspector shows the layer overview.                                                                                                                                                                                                                              |
+| 0.41    | 2026-10-28 | Shortcut recorder (§5.3, KEY-118): while recording, the field says only "Press a shortcut…", on one line, beside Cancel; "⎋ cancels" didn't fit at the inspector's width. VoiceOver still hears that Escape cancels.                                                                                                                                 |
