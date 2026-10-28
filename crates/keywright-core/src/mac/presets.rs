@@ -4,8 +4,8 @@
 //! A preset binds a key or shortcut that macOS acts on. Each one lists the macOS versions it
 //! was verified on, and the action picker offers it only on those ([`offered`]). Spike S7
 //! (KEY-14) verified them on macOS 27, by binding each to a key on the Sofle and pressing it
-//! (`docs/spikes/s7-mac-actions.md`). Verifying them on every supported version is part of
-//! the release checklist (KEY-98).
+//! (`docs/spikes/s7-mac-actions.md`), the only version Keywright supports (KEY-98). A new
+//! version is supported once they're verified on it.
 //!
 //! Two candidates aren't presets. Switch Input Source (⌃Space) wasn't verified: the test
 //! Mac had that shortcut turned off. Do Not Disturb has no key that macOS acts on.
@@ -13,14 +13,13 @@
 use super::{consumer, key};
 use crate::hid::{HidUsage, Mods, Shortcut};
 
-/// A macOS version, by its major number, such as 26.
+/// A macOS version, by its major number, such as 27.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct MacOsVersion(pub u16);
 
-/// The macOS versions Keywright supports (tech spec §1.1). Before a release, every preset is
-/// verified on each of them (KEY-98).
-pub const SUPPORTED_VERSIONS: [MacOsVersion; 3] =
-    [MacOsVersion(15), MacOsVersion(26), MacOsVersion(27)];
+/// The macOS versions Keywright supports (NFR-1, tech spec §1.1): macOS 27 (KEY-98). Every
+/// preset is verified on each of them.
+pub const SUPPORTED_VERSIONS: [MacOsVersion; 1] = [MacOsVersion(27)];
 
 /// A one-click Mac action.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -48,12 +47,7 @@ pub const PRESETS: &[Preset] = &[
         0x29F,
         "layout-grid",
     ),
-    control(
-        "Apps",
-        "Shows all your apps, or Launchpad before macOS 26.",
-        0x2A2,
-        "grid-3x3",
-    ),
+    control("Apps", "Shows all your apps.", 0x2A2, "grid-3x3"),
     control(
         "Spotlight",
         "Opens Spotlight, to search your Mac.",

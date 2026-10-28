@@ -52,7 +52,7 @@
       "icons/icon.png"
     ],
     "macOS": {
-      "minimumSystemVersion": "15.0",
+      "minimumSystemVersion": "27.0",
       "signingIdentity": "-"
     }
   }

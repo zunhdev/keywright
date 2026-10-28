@@ -2,7 +2,7 @@
 
 Keywright changes what the keys on your ZMK keyboard do, from your Mac, in plain words. You pick a key, choose what it should do, and try it straight away. When you like it, you save it to the keyboard. No firmware to build, no files to edit.
 
-Keywright runs on macOS 15 or later, on a Mac with Apple silicon. The first keyboard it knows is the [Keebart Sofle Choc Pro BT](https://www.keebart.com/products/sofle-wireless), over a cable or Bluetooth.
+Keywright runs on macOS 27, on a Mac with Apple silicon. The first keyboard it knows is the [Keebart Sofle Choc Pro BT](https://www.keebart.com/products/sofle-wireless), over a cable or Bluetooth.
 
 ## Contents
 

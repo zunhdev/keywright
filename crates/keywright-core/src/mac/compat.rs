@@ -2,8 +2,8 @@
 //! keyboard page's own Copy key, each with a Mac replacement to offer.
 //!
 //! Spike S7 (KEY-14) pressed each candidate on the Sofle, on macOS 27, and none of the keys
-//! in [`RULES`] did anything (`docs/spikes/s7-mac-actions.md`). The release checklist checks
-//! them on every supported version (KEY-98). [`check`] runs rules over a keymap (tech spec
+//! in [`RULES`] did anything (`docs/spikes/s7-mac-actions.md`). Keywright supports macOS 27
+//! only (KEY-98); a new version is supported once they're checked on it. [`check`] runs rules over a keymap (tech spec
 //! §8.4), and [`fix`] fixes a key all at once.
 
 use super::{consumer, key};

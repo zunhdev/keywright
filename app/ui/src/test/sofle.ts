@@ -11928,7 +11928,7 @@ export const macActions: Choice[] = [
   {
     "category": "mac",
     "label": "Apps",
-    "sentence": "Shows all your apps, or Launchpad before macOS 26.",
+    "sentence": "Shows all your apps.",
     "action": {
       "kind": "key-press",
       "key": {
