@@ -10,7 +10,7 @@ use keywright_core::action::Action;
 use keywright_core::behavior::BehaviorTable;
 use keywright_core::editor::Change;
 use keywright_core::keycap;
-use keywright_core::keymap::{Keymap, LayerId};
+use keywright_core::keymap::{Binding, Keymap, LayerId};
 use keywright_core::keys::source::Labels;
 use keywright_core::support_packs::SupportPack;
 use serde::{Deserialize, Serialize};
@@ -69,6 +69,17 @@ pub struct ReviewRow {
     pub after: String,
     /// What it does now, in a sentence, for a key.
     pub sentence: Option<String>,
+    /// How it was and is, in words for VoiceOver, for a key (design §12).
+    pub spoken: Option<SpokenChange>,
+}
+
+/// A key's change as VoiceOver should say it: in sentences, by names rather than symbols.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+pub struct SpokenChange {
+    /// What it did when saved, such as `Types Tab.`
+    pub before: String,
+    /// What it does now, such as `Types Control-Option-Command-K.`
+    pub after: String,
 }
 
 /// A position, which fits: a keyboard has at most a few hundred keys.
@@ -83,6 +94,21 @@ fn layer_name(layer: &keywright_core::keymap::Layer, index: usize) -> String {
     } else {
         layer.name.clone()
     }
+}
+
+/// What a key bound to `binding` shows and says, with keys as `labels` name them.
+fn described(
+    keymap: &Keymap,
+    behaviors: &BehaviorTable,
+    binding: Binding,
+    labels: &Labels,
+) -> keycap::Key {
+    keycap::describe_action(
+        keymap,
+        behaviors,
+        Action::from_binding(binding, behaviors),
+        labels,
+    )
 }
 
 /// What the review sheet lists: the editor's review list, in words, with keys as `labels`
@@ -119,6 +145,7 @@ pub(super) fn rows(
             .collect::<Vec<_>>()
             .join(" · ")
     };
+    let describe = |binding| described(current, behaviors, binding, labels);
     changes
         .iter()
         .map(|change| match change {
@@ -130,6 +157,7 @@ pub(super) fn rows(
                 before: order(before),
                 after: order(after),
                 sentence: None,
+                spoken: None,
             },
             Change::LayerAdded { layer } => ReviewRow {
                 key: RowKey::Added { layer: layer.0 },
@@ -139,6 +167,7 @@ pub(super) fn rows(
                 before: "Not there".to_owned(),
                 after: "Added".to_owned(),
                 sentence: None,
+                spoken: None,
             },
             Change::LayerRemoved { layer } => ReviewRow {
                 key: RowKey::Removed { layer: layer.id.0 },
@@ -148,6 +177,7 @@ pub(super) fn rows(
                 before: "There".to_owned(),
                 after: "Removed".to_owned(),
                 sentence: None,
+                spoken: None,
             },
             Change::LayerRenamed {
                 layer,
@@ -161,6 +191,7 @@ pub(super) fn rows(
                 before: before.clone(),
                 after: after.clone(),
                 sentence: None,
+                spoken: None,
             },
             Change::Binding {
                 layer,
@@ -180,15 +211,11 @@ pub(super) fn rows(
                 ),
                 before: keycap::label(current, behaviors, *before, labels),
                 after: keycap::label(current, behaviors, *after, labels),
-                sentence: Some(
-                    keycap::describe_action(
-                        current,
-                        behaviors,
-                        Action::from_binding(*after, behaviors),
-                        labels,
-                    )
-                    .sentence,
-                ),
+                sentence: Some(describe(*after).sentence),
+                spoken: Some(SpokenChange {
+                    before: describe(*before).spoken,
+                    after: describe(*after).spoken,
+                }),
             },
         })
         .collect()
@@ -287,7 +314,7 @@ mod tests {
     use keywright_sim::Simulator;
     use serde_json::json;
 
-    use super::{AppState, ReviewRow, RowKey};
+    use super::{AppState, ReviewRow, RowKey, SpokenChange};
 
     async fn ready_sofle() -> AppState {
         let session = Session::start();
@@ -336,6 +363,10 @@ mod tests {
                 before: "Q".to_owned(),
                 after: "⎋ Esc".to_owned(),
                 sentence: Some("Types Escape.".to_owned()),
+                spoken: Some(SpokenChange {
+                    before: "Types Q.".to_owned(),
+                    after: "Types Escape.".to_owned(),
+                }),
             }
         );
         assert_eq!(rows.len(), 2);

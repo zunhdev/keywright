@@ -1757,6 +1757,8 @@ export type ReviewRow = {
 	after: string,
 	/**  What it does now, in a sentence, for a key. */
 	sentence: string | null,
+	/**  How it was and is, in words for VoiceOver, for a key (design §12). */
+	spoken: SpokenChange | null,
 };
 
 /**
@@ -1886,6 +1888,14 @@ export type ShortcutWords = {
 	spoken: string,
 	/**  The Mac action preset it is, such as `Screenshot of an area`, if it's one. */
 	preset: string | null,
+};
+
+/**  A key's change as VoiceOver should say it: in sentences, by names rather than symbols. */
+export type SpokenChange = {
+	/**  What it did when saved, such as `Types Tab.` */
+	before: string,
+	/**  What it does now, such as `Types Control-Option-Command-K.` */
+	after: string,
 };
 
 /**

@@ -112,6 +112,6 @@ Fixed in the pass:
 Gaps found, filed as bugs:
 
 - [KEY-114](https://linear.app/zunhdev/issue/KEY-114): VoiceOver said nothing for punctuation keys, so "Types ;." was heard as "Types", on the canvas and in the key picker. Fixed since: they're said by name, such as "Types Semicolon."
-- [KEY-111](https://linear.app/zunhdev/issue/KEY-111): the review's, Import's and Backups' rows read their keys as symbols.
+- [KEY-111](https://linear.app/zunhdev/issue/KEY-111): the review's, Import's and Backups' rows read their keys as symbols. Fixed since: each row is said in words.
 - [KEY-112](https://linear.app/zunhdev/issue/KEY-112): toasts interrupt VoiceOver, maybe twice.
 - [KEY-113](https://linear.app/zunhdev/issue/KEY-113): sheets that open by themselves leave focus on the page when they close.

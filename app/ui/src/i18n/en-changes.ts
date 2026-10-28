@@ -12,7 +12,9 @@ export const changeStrings = {
   "review.removed": "Layer",
   "review.renamed": "Name",
   "review.key": "Key",
-  "review.to": "becomes",
+  // A row as VoiceOver hears it: its sentences end in a full stop already.
+  "review.spoken": (args) =>
+    `${text(args, "what")}. Was: ${text(args, "before")} Now: ${text(args, "after")}`,
   "review.revert": "Revert",
   "review.revert-row": (args) => `Revert ${text(args, "what")}`,
   "review.discard-all": "Discard All…",
