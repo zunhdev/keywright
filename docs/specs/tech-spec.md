@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.87 — for review                                        |
+| **Status**    | Draft v0.88 — for review                                        |
 | **Date**      | 2026-10-28                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -688,9 +688,7 @@ Contributors install the toolchain with `mise install` (the Rust toolchain itsel
 | `fuzz.yml`           | Changes to the fuzzed code         | One minute per fuzz target, starting from the nightly corpus, on PRs and pushes to `main` that change the fuzzed crates, `fuzz/` or the toolchain. It doesn't run on every PR, so it isn't a required check.                                                                                                                                                                |
 | `release.yml`        | Tag `v*`                           | §17                                                                                                                                                                                                                                                                                                                                                                         |
 
-All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The rust job's coverage step also gates the core: it fails below 80% of `keywright-core`'s lines. Once `ci.yml` exists, its jobs become **required status checks** in the `main` ruleset.
-
-**Paused during main development (KEY-93; KEY-94 re-enables them before v1.0).** To save Actions minutes, the expensive jobs only run when the repository variable `FULL_CI` is `true`, or when their workflow is run by hand: the **rust** and **app** jobs in `ci.yml` (a skipped job still satisfies its required check), `fuzz.yml`, and the nightly fuzzing and weekly mutation testing in `scheduled.yml`. CodeQL default setup is turned off. Contributors run `mise run check` and `mise run coverage` locally before opening a pull request, plus `mise run fuzz` when the fuzzed code changes and `mise run build:debug` when the app does. Pull requests still run the **rust-portable**, **ui** and **repo** jobs and `lint-workflows.yml`, and the daily advisory checks still run.
+All jobs use `mise-action` (SHA-pinned), with caches keyed on the lockfiles. Each job installs only the tools it needs, and runs the same mise tasks as `mise run check`. The rust job's coverage step also gates the core: it fails below 80% of `keywright-core`'s lines. Every `ci.yml` job, and `lint-workflows.yml`'s, is a **required status check** in the `main` ruleset.
 
 ---
 
@@ -925,3 +923,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.85    | 2026-10-28 | Focus after sheets (§12.2, KEY-113): a sheet with nothing to give focus back to gives it to the window's home, `[data-focus-home]`.                                                                                                                                                                                                                                |
 | 0.86    | 2026-10-28 | Contributor docs (§13.2, KEY-75): `mise run lint:docs` checks the API docs build without warnings.                                                                                                                                                                                                                                                                 |
 | 0.87    | 2026-10-28 | User guide (§12.1, §17, KEY-74): `docs/user/`, which Help's _Keywright Help_ and _Keyboard Shortcuts_ open.                                                                                                                                                                                                                                                        |
+| 0.88    | 2026-10-28 | CI (§13.5, KEY-94): the jobs paused during main development run again on every change, and CodeQL's default setup is back on; the `FULL_CI` switch is gone. The **app** job is a required check too.                                                                                                                                                               |

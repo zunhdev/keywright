@@ -75,12 +75,7 @@ jobs:
 
   fuzz:
     name: Fuzzing
-    # Paused while main development is under way, to save CI minutes (KEY-94). It runs
-    # when the repository variable FULL_CI is true, or when the workflow is run by hand.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (vars.FULL_CI == 'true' &&
-      (github.event_name != 'schedule' || github.event.schedule == '23 4 * * *'))
+    if: github.event_name != 'schedule' || github.event.schedule == '23 4 * * *'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:
@@ -132,11 +127,7 @@ jobs:
 
   mutants:
     name: Mutation testing (keywright-core)
-    # Paused like the fuzzing job above (KEY-94). `mise run mutants` runs it locally.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (vars.FULL_CI == 'true' &&
-      (github.event_name != 'schedule' || github.event.schedule == '23 5 * * 1'))
+    if: github.event_name != 'schedule' || github.event.schedule == '23 5 * * 1'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:
