@@ -25,6 +25,7 @@ declare const classes: {
   readonly searchInput: string;
   readonly sentence: string;
   readonly sheetBody: string;
+  readonly slot: string;
   readonly title: string;
   readonly zmk: string;
 };
