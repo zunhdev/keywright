@@ -1,8 +1,169 @@
 # Release checklist
 
-What to check by hand before a release, mostly on a real keyboard, beyond what `mise run check` and CI cover. Each section says how to run it, and records its last run. Release candidates run all of it (tech spec §14.1, §17).
+What to check by hand before a release, mostly on a real keyboard, beyond what `mise run check` and CI cover. Each section says how to run it, and records its last run. Release candidates run all of it (tech spec §14.1, §17), on the candidate's own build: the draft release's `Keywright-<version>-aarch64-apple-darwin.zip`, downloaded as people download it.
 
 Hardware prompts: Raise is on the Sofle's right half and B on its left, so unlocking needs both halves powered. "Off the Mac's cable" means the left half unplugged from the Mac; the right half can stay on its cable, or a charger can power the left half, since neither talks to the Mac.
+
+## In order
+
+Run the sections in this order: the first two need a Keywright that hasn't run on the Mac, the others go from the hardware that's at hand.
+
+| Section                                                     | Needs                                                   | Time       |
+| ----------------------------------------------------------- | ------------------------------------------------------- | ---------- |
+| [Install and update](#install-and-update-nfr-10-bar-5)      | The previous release's zip and the candidate's; logout  | 15 minutes |
+| [The newcomer task](#the-newcomer-task-product-11)          | The Sofle on its cable; a stopwatch                     | 5 minutes  |
+| [Mac presets and rules](#mac-presets-and-rules-mac-4-mac-7) | The Sofle; each supported macOS version (27)            | 20 minutes |
+| [Input sources](#input-sources-mac-5-mac-6)                 | German and Dvorak, turned on for the check              | 5 minutes  |
+| [Backups](#backups-bak-1-to-bak-4)                          | The Sofle                                               | 10 minutes |
+| [Firmware update](#firmware-update-fw-1-to-fw-4)            | The Sofle's firmware files, both halves on cables       | 15 minutes |
+| [Wireless parity](#wireless-parity-usb--bluetooth)          | The Sofle, over USB, then Bluetooth                     | 20 minutes |
+| [Accessibility](#accessibility-nfr-5)                       | VoiceOver, Full Keyboard Access; the simulated keyboard | 20 minutes |
+| [Words](#words-mac-1-product-11)                            | The simulated keyboard                                  | 10 minutes |
+
+## Install and update (NFR-10, BAR-5)
+
+A release is signed with Keywright's own certificate, not Apple's: macOS asks to confirm each new version, but keeps its permissions from one version to the next (spikes S8 and S9, `docs/spikes/`). This section checks both, as someone downloading Keywright meets them.
+
+### How to run it
+
+Start from a Mac where Keywright hasn't run, or reset what it has: quit it, delete `/Applications/Keywright.app`, and run `tccutil reset BluetoothAlways dev.zunh.keywright` and `tccutil reset SystemPolicyRemovableVolumes dev.zunh.keywright`. Remove Keywright from System Settings › General › Login Items.
+
+1. **The previous release.** Download its zip with a browser, open it, and drag Keywright into Applications with Finder. Open it: macOS says it can't check it. Click **Done**, then **Open Anyway** in System Settings › Privacy & Security.
+2. **Its permissions.** With the Sofle off the Mac's cable, choose _Use Bluetooth_: macOS asks for Bluetooth; allow it. Turn on Settings › General › _Open at login_. Log out and in: Keywright opens. (For removable drives, File › Update Firmware… asks the first time a half's drive appears; the firmware section below does that, so do it here only if that section runs on this version.)
+3. **The update.** Download the candidate's zip with a browser, and drag Keywright into Applications over the old one. Open it: **Open Anyway** again, once.
+4. **What it kept.** Without being asked: Keywright connects over Bluetooth, Settings › Keyboard says it may use Bluetooth, _Open at login_ is still on, and after logging out and in, it opens. A firmware update's drive is read without asking, if removable drives were allowed before.
+5. **The download's checks.** In the folder with the candidate's files: `shasum -a 256 -c SHA256SUMS`, and `gh attestation verify <file> --repo zunhdev/keywright` for the zip and the CLI's archive.
+
+The first release has no previous one to update from: use two test releases instead, as [releasing.md](releasing.md) describes, and note it under _Last run_.
+
+### The checklist
+
+| Item                                                        | How    | Result |
+| ----------------------------------------------------------- | ------ | ------ |
+| The download opens after _Open Anyway_                      | Step 1 |        |
+| macOS asks for Bluetooth once, when it's first needed       | Step 2 |        |
+| _Open at login_ opens Keywright at the next login           | Step 2 |        |
+| The update needs _Open Anyway_ once more, and nothing else  | Step 3 |        |
+| Bluetooth, removable drives and _Open at login_ stay as set | Step 4 |        |
+| The checksums and attestations verify                       | Step 5 |        |
+
+### Last run
+
+Not run yet.
+
+## The newcomer task (product §11)
+
+The task product §11 measures with first-time users in the public launch, run by the maintainer on each candidate: remap a key to a Mac shortcut and save it, with no docs, starting from a plugged-in keyboard. It should take well under two minutes.
+
+### How to run it
+
+1. In Settings › Advanced, choose _Reset First-Time Setup_, and quit Keywright. Plug the Sofle's left half in, with both halves on.
+2. Start a stopwatch, and open Keywright. Go through the first run as a newcomer would: unlock, the Mac check, then _Try it_: click a key, press a shortcut, such as ⌃⌥⌘K, and save it with ⌘S and _Save to Keyboard_.
+3. Stop the stopwatch when "Saved to keyboard" shows. Press the key: it does the shortcut. Restore it afterwards (Restore Stock, then save).
+
+### The checklist
+
+| Item                                                 | How           | Result |
+| ---------------------------------------------------- | ------------- | ------ |
+| The first run leads from connecting to a saved key   | Steps 1 and 2 |        |
+| It takes under two minutes, without reading the docs | The stopwatch |        |
+| The key does the shortcut after saving               | Step 3        |        |
+
+### Last run
+
+Not run yet.
+
+## Mac presets and rules (MAC-4, MAC-7)
+
+Every Mac action preset does what it says, and every compatibility rule's key still does nothing, on each supported macOS version, for each release (product §11). Keywright supports macOS 27 only (NFR-1); a new major version joins once this section passes on it (tech spec §8.2). Spike S7 found what each preset and key does on macOS 27 (`docs/spikes/s7-mac-actions.md`).
+
+### How to run it
+
+With the Sofle unlocked over USB, on the raise layer:
+
+1. **Each preset.** Select a key you can reach, such as Y, and choose it under Mac actions. Press it (hold Raise, tap the key), and check what macOS does against S7's table. Go through all of them; media keys only act while something plays. Discard the changes at the end.
+2. **⌃Space.** S7 couldn't check Switch Input Source: turn on its shortcut in System Settings › Keyboard › Keyboard Shortcuts › Input Sources, record ⌃Space on a key, and press it. If it switches, file an issue to make it a preset.
+3. **The rules.** The stock raise layer has Insert, Print Screen, the menu key, Undo, Cut, Copy and Paste in their Windows forms. The Mac check lists them. Press each: none does anything. Each _Use …_ fix does what it names.
+
+### The checklist
+
+| Item                                                | How    | macOS 27 |
+| --------------------------------------------------- | ------ | -------- |
+| Every preset does what S7 found                     | Step 1 |          |
+| ⌃Space switches the input source (not a preset yet) | Step 2 |          |
+| The rules' keys do nothing, and their fixes work    | Step 3 |          |
+
+### Last run
+
+Spike S7, 2026-10-23, macOS 27.2: every preset worked, and no rule's key did anything; ⌃Space wasn't checked. Not run on a release candidate yet.
+
+## Input sources (MAC-5, MAC-6)
+
+Keycaps show what each key types in the Mac's input source, and follow it when it changes. The tests check the layouts against macOS's own; this checks them live, in the window.
+
+### How to run it
+
+Turn on German and Dvorak in System Settings › Keyboard › Text Input, if they aren't. With the Sofle unlocked, switch between ABC, German and Dvorak from the menu bar: the keycaps change at once. Under German, Z and Y swap, and `{` needs ⌥ (⌥8). In Settings › Keyboard, choose German as the secondary labels: each key shows it in its top-right corner. Turn off what you turned on.
+
+### The checklist
+
+| Item                                                 | How      | Result |
+| ---------------------------------------------------- | -------- | ------ |
+| The keycaps follow ABC, German and Dvorak, live      | Menu bar |        |
+| A shortcut recorded under German shows German labels | Record   |        |
+| Secondary labels show the chosen layout              | Settings |        |
+
+### Last run
+
+M4 (KEY-61, 2026-10-25), macOS 27.2: Russian was switched live in the app; German and Dvorak weren't turned on, so the tests checked them against macOS's layouts instead. Not run live on a release candidate yet.
+
+## Backups (BAK-1 to BAK-4)
+
+A backup goes out and comes back whole: export, import, apply and save, on the real keyboard. The tests cover each part against the simulated keyboard; this checks them on the Sofle.
+
+### How to run it
+
+With the Sofle unlocked over USB:
+
+1. **Export** (File › Export…) to a file. Change two keys and save, so the keyboard differs from the file.
+2. **Import** the file (File › Import…): the preview lists the two keys as changing back. _Apply as Changes_, then save. The keys are as they were in the file. Restart the keyboard (switch both halves off and on): they still are.
+3. **The Backups window** (File › Backups…) lists the automatic backups, and one restores the same way.
+
+### The checklist
+
+| Item                                                  | How        | Result |
+| ----------------------------------------------------- | ---------- | ------ |
+| Export, then import shows what would change           | Steps 1, 2 |        |
+| Apply and save; the keyboard keeps it after a restart | Step 2     |        |
+| An automatic backup restores                          | Step 3     |        |
+
+### Last run
+
+M4 (KEY-66, KEY-71, 2026-10-25): export, editing the file and the import preview, on the Sofle; that run stopped before applying. Not run whole on a release candidate yet.
+
+## Firmware update (FW-1 to FW-4)
+
+The Firmware Update assistant updates each half on the real keyboard, and the keymap stays. Needs the Sofle's firmware files (`.uf2`, from Keebart), and both halves on cables to this Mac, one at a time.
+
+### How to run it
+
+1. Back up first, as the assistant offers. Then update the left half, then the right, as the assistant says: each goes into update mode with its reset button, shows up as a drive, takes the file, and restarts. The first time, macOS asks to allow the accessory, and for removable drives.
+2. Afterwards the keyboard connects and unlocks as before, with the same keymap. Choosing the right half's file for the left half is refused.
+3. `keywright flash` does the same from the command line, for one half.
+
+The settings-reset path erases the keymap and the pairings: run it only when a release changes it, and restore the backup afterwards.
+
+### The checklist
+
+| Item                                                 | How        | Result |
+| ---------------------------------------------------- | ---------- | ------ |
+| Both halves update with the assistant, keymap intact | Steps 1, 2 |        |
+| The other half's file is refused                     | Step 2     |        |
+| `keywright flash` updates a half                     | Step 3     |        |
+
+### Last run
+
+M4 (KEY-69, KEY-70, 2026-10-25): both halves were flashed with the assistant on the Sofle, with the keymap intact; the settings-reset path wasn't run on hardware. Not run on a release candidate yet.
 
 ## Wireless parity (USB × Bluetooth)
 
