@@ -2,7 +2,7 @@
 
 |               |                                                                                |
 | ------------- | ------------------------------------------------------------------------------ |
-| **Status**    | Draft v0.39 — for review                                                       |
+| **Status**    | Draft v0.40 — for review                                                       |
 | **Date**      | 2026-10-28                                                                     |
 | **Owner**     | zunh                                                                           |
 | **Builds on** | [Product spec](product-spec.md) (requirement IDs such as `EDIT-3` refer to it) |
@@ -186,17 +186,18 @@ Search matches the key's sentence, its key name, its Mac action name, and (with 
 
 Single-key shortcuts (R, T, ⌫) work only while the canvas has focus, so they never interfere with typing in a text field.
 
-| Keys                | Action                                                                                                                  |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Tab / ⇧Tab          | Move between toolbar → sidebar → canvas → inspector.                                                                    |
-| Arrow keys (canvas) | Move the selection to the nearest key in that direction, using geometry rather than index, and crossing between halves. |
-| ⌘1 … ⌘9             | Show layer 1–9.                                                                                                         |
-| ↩                   | Focus the inspector's action picker for the selected key.                                                               |
-| R or ⌘R             | Record a shortcut for the selected key (§5.3).                                                                          |
-| ⌘C / ⌘V             | Copy / paste the action (EDIT-5).                                                                                       |
-| ⌫                   | Set to "Does nothing", after a one-time confirmation hint that explains the difference from "Same as layer below".      |
-| T                   | Set to "Same as layer below".                                                                                           |
-| ⌘Z / ⇧⌘Z            | Undo / redo, with specific menu labels ("Undo Assign ⌘C to B").                                                         |
+| Keys                | Action                                                                                                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tab / ⇧Tab          | Move between toolbar → sidebar → canvas → inspector.                                                                                                                        |
+| Arrow keys (canvas) | Move the selection to the nearest key in that direction, using geometry rather than index, and crossing between halves.                                                     |
+| ⌘1 … ⌘9             | Show layer 1–9.                                                                                                                                                             |
+| ↩                   | Focus the inspector's action picker for the selected key.                                                                                                                   |
+| R or ⌘R             | Record a shortcut for the selected key (§5.3).                                                                                                                              |
+| ⌘C / ⌘V             | Copy / paste the action (EDIT-5).                                                                                                                                           |
+| ⌫                   | Set to "Does nothing", after a one-time confirmation hint that explains the difference from "Same as layer below".                                                          |
+| T                   | Set to "Same as layer below".                                                                                                                                               |
+| ⌘Z / ⇧⌘Z            | Undo / redo, with specific menu labels ("Undo Assign ⌘C to B").                                                                                                             |
+| Esc                 | Clear the selection, so the inspector shows the layer overview (§5.1). While recording or dragging a key, Esc cancels that instead, and in a popover or sheet it closes it. |
 
 ---
 
@@ -622,3 +623,4 @@ Modifiers are always shown in the order ⌃⌥⇧⌘.
 | 0.37    | 2026-10-28 | Focus (§12, KEY-113): a sheet that opened by itself gives focus to the keyboard when it closes, or to the window's first control while there's no keyboard.                                                                                                                                                                                          |
 | 0.38    | 2026-10-28 | Help (§9.6, KEY-74): Keywright Help opens the user guide, and Keyboard Shortcuts its page of shortcuts.                                                                                                                                                                                                                                              |
 | 0.39    | 2026-10-28 | Writing (§11.1, KEY-81): buttons and menu items take title case, as on macOS; everything else sentence case. The copy check (`mise run lint:copy`) keeps firmware terms out of the UI's words.                                                                                                                                                       |
+| 0.40    | 2026-10-28 | Keyboard navigation (§4.7, KEY-116): Esc on the canvas clears the selection, so the inspector shows the layer overview.                                                                                                                                                                                                                              |

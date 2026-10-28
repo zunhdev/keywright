@@ -75,6 +75,29 @@ describe("the keyboard", () => {
     ]);
   });
 
+  test("Escape clears the selection, so the inspector shows the layer overview", async () => {
+    drawSofle();
+    await userEvent.click(keyAt(Q));
+    await userEvent.keyboard("{Shift>}");
+    await userEvent.click(keyAt(E));
+    await userEvent.keyboard("{/Shift}{Escape}");
+    expect(useStore.getState().selection).toEqual([]);
+    // Focus stays on the key, so the arrow keys go on from there.
+    expect(document.activeElement === keyAt(E)).toBe(true);
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(useStore.getState().selection).toEqual([W]);
+  });
+
+  test("Escape while recording is the recorder's: the selection stays", async () => {
+    rustSide();
+    drawSofle();
+    await userEvent.click(keyAt(Q));
+    await userEvent.keyboard("r{Escape}");
+    // The recorder, in the inspector, cancels (RecorderField.test.tsx).
+    expect(useStore.getState().recording).toBe("key");
+    expect(useStore.getState().selection).toEqual([Q]);
+  });
+
   test("⌫ explains itself the first time, then makes keys do nothing", async () => {
     const calls = rustSide();
     useStore.setState({ selection: [Q] });
@@ -172,6 +195,16 @@ describe("the pointer", () => {
 });
 
 describe("the keys' menu", () => {
+  test("closes with Escape, and leaves the selection as it was", async () => {
+    rustSide();
+    drawSofle();
+    fireEvent.contextMenu(keyAt(Q), { clientX: 100, clientY: 100 });
+    expect(screen.getByRole("menu", { name: "Key" })).toBeDefined();
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("menu") === null).toBe(true);
+    expect(useStore.getState().selection).toEqual([Q]);
+  });
+
   test("opens on a right-click, and copies and pastes actions", async () => {
     const calls = rustSide();
     drawSofle();

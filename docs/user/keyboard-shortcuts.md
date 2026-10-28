@@ -6,16 +6,16 @@ Everything in Keywright works from the keyboard. Tab moves between the toolbar, 
 
 These work while the keyboard in the middle of the window has the focus, so they never get in the way of typing in a field.
 
-| Keys       | What they do                                                       |
-| ---------- | ------------------------------------------------------------------ |
-| Arrow keys | Select the nearest key in that direction, across both halves.      |
-| Return     | Go to the inspector's Action button, for the selected key.         |
-| R or ⌘R    | Record a shortcut for the selected keys.                           |
-| T          | Make the selected keys the same as the layer below.                |
-| Delete (⌫) | Make the selected keys do nothing. The first time, Keywright asks. |
-| ⌘C, ⌘V     | Copy a key's action, and paste it onto the selected keys.          |
-| ⌘A         | Select every key.                                                  |
-| Escape     | While recording, stop. While dragging a key, cancel.               |
+| Keys       | What they do                                                                                                    |
+| ---------- | --------------------------------------------------------------------------------------------------------------- |
+| Arrow keys | Select the nearest key in that direction, across both halves.                                                   |
+| Return     | Go to the inspector's Action button, for the selected key.                                                      |
+| R or ⌘R    | Record a shortcut for the selected keys.                                                                        |
+| T          | Make the selected keys the same as the layer below.                                                             |
+| Delete (⌫) | Make the selected keys do nothing. The first time, Keywright asks.                                              |
+| ⌘C, ⌘V     | Copy a key's action, and paste it onto the selected keys.                                                       |
+| ⌘A         | Select every key.                                                                                               |
+| Escape     | Clear the selection, so the inspector describes the layer. While recording, stop; while dragging a key, cancel. |
 
 ## In the menus
 
