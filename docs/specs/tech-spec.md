@@ -2,7 +2,7 @@
 
 |               |                                                                 |
 | ------------- | --------------------------------------------------------------- |
-| **Status**    | Draft v0.89 — for review                                        |
+| **Status**    | Draft v0.90 — for review                                        |
 | **Date**      | 2026-10-28                                                      |
 | **Owner**     | zunh                                                            |
 | **Builds on** | [Product spec](product-spec.md) · [Design spec](design-spec.md) |
@@ -154,6 +154,7 @@ keywright/
 - The `.proto` files are vendored from [`zmk-studio-messages`](https://github.com/zmkfirmware/zmk-studio-messages) at commit `6cb4c283`, the commit Keebart's firmware (ZMK `v0.3`) builds against. That pin and the upstream URL live in `crates/keywright-studio/proto/SOURCE.md`.
 - Code is generated at build time with `prost-build`, using `protox` as a pure-Rust compiler, so contributors don't need `protoc`.
 - Generated types stay private to the crate. The public API exposes Keywright's own request/response types, so protocol churn is contained in one place.
+- Decoding never panics: any bytes give a message or an error. The fuzz target `message_decode` reads arbitrary bytes as a message from the keyboard and as a request, and whatever decodes must encode to bytes that decode to it again. It starts from every frame in the recorded sessions (§5.4), in `fuzz/seeds/message_decode/`.
 
 ### 5.2 Framing
 
@@ -926,3 +927,4 @@ Recorded in [`docs/adr/`](../adr/README.md), in MADR 4.0 format ([ADR-0001](../a
 | 0.87    | 2026-10-28 | User guide (§12.1, §17, KEY-74): `docs/user/`, which Help's _Keywright Help_ and _Keyboard Shortcuts_ open.                                                                                                                                                                                                                                                        |
 | 0.88    | 2026-10-28 | CI (§13.5, KEY-94): the jobs paused during main development run again on every change, and CodeQL's default setup is back on; the `FULL_CI` switch is gone. The **app** job is a required check too.                                                                                                                                                               |
 | 0.89    | 2026-10-28 | Copy check (§13.3, §13.5, KEY-81): `mise run lint:copy` checks the catalogue's strings and the words the app sends the UI for firmware terms, ZMK's syntax and other systems' modifier names; CI's **ui** job runs it.                                                                                                                                             |
+| 0.90    | 2026-10-28 | Messages (§5.1, §13.2, KEY-115): the fuzz target `message_decode` reads arbitrary bytes as messages both ways, starting from the recorded sessions' frames; `fuzz.yml` also runs when the firmware image reader changes.                                                                                                                                           |

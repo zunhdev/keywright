@@ -90,10 +90,11 @@ Two traps:
 `mise run fuzz` runs each target in `fuzz/fuzz_targets/` for a minute, or for `FUZZ_SECONDS`, starting from the inputs in `fuzz/seeds/<target>/`:
 
 - `frame_decode`: the protocol's framing, as bytes from a keyboard;
+- `message_decode`: the protocol's messages, as the keyboard and the client send them;
 - `backup_parse`: `.keywright` backup files;
 - `image_parse`: firmware images (UF2).
 
-Run it when you change `keywright-studio`, the backup format or `fuzz/`. A crash leaves its input in `fuzz/artifacts/<target>/`. To reproduce it, run the target on that file alone, as the task does, with the cargo-fuzz the task installed:
+Run it when you change `keywright-studio`, the backup format, the firmware image reader or `fuzz/`. A crash leaves its input in `fuzz/artifacts/<target>/`. To reproduce it, run the target on that file alone, as the task does, with the cargo-fuzz the task installed:
 
 ```sh
 mise x cargo:cargo-fuzz@0.13.2 -- cargo fuzz run <target> <file> --sanitizer none --debug-assertions
