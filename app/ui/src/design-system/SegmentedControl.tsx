@@ -9,20 +9,24 @@ import styles from "./SegmentedControl.module.css";
 
 /**
  * A choice of one of a few options, side by side, such as Settings' Appearance (design
- * §9.4). Exactly one is always chosen. It needs an `aria-label`.
+ * §9.4). Exactly one is always chosen. It needs an `aria-label`. With `fill`, it's as wide
+ * as its container, and the options share the width, so four of them fit the inspector.
  */
-export function SegmentedControl(
-  props: Omit<
-    ToggleButtonGroupProps,
-    "className" | "style" | "selectionMode" | "disallowEmptySelection"
-  >,
-) {
+export function SegmentedControl({
+  fill = false,
+  ...props
+}: Omit<
+  ToggleButtonGroupProps,
+  "className" | "style" | "selectionMode" | "disallowEmptySelection"
+> & {
+  fill?: boolean;
+}) {
   return (
     <ToggleButtonGroup
       {...props}
       selectionMode="single"
       disallowEmptySelection
-      className={styles.group}
+      className={fill ? `${styles.group} ${styles.fill}` : styles.group}
     />
   );
 }

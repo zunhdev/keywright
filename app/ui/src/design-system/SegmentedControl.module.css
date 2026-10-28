@@ -28,3 +28,15 @@
     color: var(--text-primary);
   }
 }
+
+/* As wide as the container, with the options sharing the width: four of them, such as the
+   Layers editor's Hold, Switch, Toggle and Next key, fit the inspector at its narrowest. */
+.fill {
+  display: flex;
+  width: 100%;
+
+  & .segment {
+    flex: 1 1 auto;
+    padding: 0 var(--space-1);
+  }
+}
