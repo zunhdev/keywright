@@ -20,7 +20,7 @@ export const changeStrings = {
   "review.discard-all": "Discard All…",
   "review.cancel": "Cancel",
   "review.save": "Save to Keyboard",
-  "review.saved": "Saved to keyboard ✓",
+  "review.saved": "Saved to keyboard",
   "discard.title": (args) => {
     const count = Number(args?.["count"] ?? 0);
     return count === 1 ? "Discard 1 change?" : `Discard ${count} changes?`;

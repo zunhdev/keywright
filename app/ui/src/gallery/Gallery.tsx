@@ -274,7 +274,7 @@ export function Gallery() {
             </DialogTrigger>
             <Button
               onPress={() => {
-                toasts.add({ title: "Saved to keyboard" }, { timeout: 5000 });
+                toasts.add({ title: "Saved to keyboard", done: true }, { timeout: 5000 });
               }}
             >
               Show a toast

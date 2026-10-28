@@ -164,9 +164,7 @@ describe("the review sheet", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Save to Keyboard" }));
     expect(calls).toEqual(["save_changes"]);
     expect(useStore.getState().review).toBe(false);
-    expect(toasts.visibleToasts.map((toast) => toast.content.title)).toContain(
-      "Saved to keyboard ✓",
-    );
+    expect(toasts.visibleToasts.map((toast) => toast.content.title)).toContain("Saved to keyboard");
     for (const toast of toasts.visibleToasts) toasts.close(toast.key);
   });
 

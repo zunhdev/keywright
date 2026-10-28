@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, mock, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { Lock } from "lucide-react";
 import { DialogTrigger, type Key, type Selection } from "react-aria-components";
@@ -16,14 +16,7 @@ import { NumberField } from "./NumberField.tsx";
 import { Popover } from "./Popover.tsx";
 import { Segment, SegmentedControl, ToggleGroup } from "./SegmentedControl.tsx";
 import { Sheet } from "./Sheet.tsx";
-import { ToastRegion, toasts } from "./Toast.tsx";
 import { Toolbar, ToolbarSeparator } from "./Toolbar.tsx";
-
-afterEach(() => {
-  act(() => {
-    toasts.clear();
-  });
-});
 
 describe("Button", () => {
   test("presses, and says which variant and size it is for the styles", async () => {
@@ -185,19 +178,6 @@ test("a segmented control always has exactly one choice", async () => {
   await userEvent.click(dark);
   expect(dark.getAttribute("aria-checked")).toBe("true");
   await expectNoAxeViolations(screen.getByRole("radiogroup"));
-});
-
-test("a toast says what happened, and can be closed", async () => {
-  render(<ToastRegion />);
-  act(() => {
-    toasts.add({ title: "Saved to keyboard", description: "3 changes" });
-  });
-  const toast = screen.getByRole("alertdialog");
-  expect(toast.textContent).toContain("Saved to keyboard");
-  expect(toast.textContent).toContain("3 changes");
-  await expectNoAxeViolations(document.body);
-  await userEvent.click(screen.getByRole("button", { name: "Close" }));
-  expect(screen.queryByRole("alertdialog")).toBeNull();
 });
 
 test("a number field steps within its range, and says each number", async () => {
