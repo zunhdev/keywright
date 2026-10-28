@@ -1,7 +1,18 @@
 import { describe, expect, test } from "bun:test";
 
 import { keyCatalog } from "../../test/sofle.ts";
-import { type Board, boards, flow, type KeyId, keyId, TABS, tabOf } from "./boards.ts";
+import {
+  type Board,
+  boards,
+  catalogKey,
+  flow,
+  isRightHandModifier,
+  type KeyId,
+  keyId,
+  onSide,
+  TABS,
+  tabOf,
+} from "./boards.ts";
 
 const ansi = boards(keyCatalog, "ansi");
 
@@ -184,5 +195,27 @@ describe("the Symbols tab", () => {
     const characters = typed(boards(german, "ansi"));
     expect(characters["{"]).toBeUndefined();
     expect(characters["("]).toBe("⇧9");
+  });
+});
+
+/** A key on the keyboard page, by its usage ID. */
+const key = (id: number) => ({ page: "keyboard" as const, id });
+
+describe("modifier keys' sides", () => {
+  test("a right-hand modifier is its left-hand twin in the catalog", () => {
+    expect(isRightHandModifier(key(0xe7))).toBe(true);
+    expect(isRightHandModifier(key(0xe3))).toBe(false);
+    expect(catalogKey(key(0xe7))).toEqual(key(0xe3));
+    expect(catalogKey(key(0xe4))).toEqual(key(0xe0));
+    expect(catalogKey(key(0x04))).toEqual(key(0x04));
+    // Only the keyboard page has modifier keys.
+    expect(isRightHandModifier({ page: "consumer", id: 0xe7 })).toBe(false);
+  });
+
+  test("a modifier key moves to the side asked for; other keys stay as they are", () => {
+    expect(onSide(key(0xe2), true)).toEqual(key(0xe6));
+    expect(onSide(key(0xe6), false)).toEqual(key(0xe2));
+    expect(onSide(key(0xe6), true)).toEqual(key(0xe6));
+    expect(onSide(key(0x04), true)).toEqual(key(0x04));
   });
 });

@@ -8,7 +8,7 @@ import { Icon } from "../../design-system/Icon.tsx";
 import { useMessages } from "../../i18n/messages.ts";
 import type { KeyEntry, Page } from "../../ipc/bindings.ts";
 import { characterCount } from "../keyboard-canvas/label.ts";
-import { type Chosen, keyId } from "./boards.ts";
+import { catalogKey, type Chosen, keyId } from "./boards.ts";
 import { KeyPicker } from "./KeyPicker.tsx";
 import { rememberKey } from "./recents.ts";
 
@@ -37,7 +37,9 @@ export function KeyField({
   const keys = useStore((store) => store.keyCatalog);
   const [open, setOpen] = useState(false);
   const [initialQuery, setInitialQuery] = useState("");
-  const chosen: Chosen | null = value === null ? null : { key: keyId(value), shift: shifted };
+  // A right-hand modifier shows as its left-hand twin; the field's owner keeps the side.
+  const chosen: Chosen | null =
+    value === null ? null : { key: keyId(catalogKey(value)), shift: shifted };
   const key = keys.find((each) => keyId(each) === chosen?.key);
   const name =
     key === undefined

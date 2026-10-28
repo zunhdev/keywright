@@ -10,7 +10,7 @@ import { ComboBox, ComboBoxItem } from "../../design-system/ComboBox.tsx";
 import { Segment, SegmentedControl, ToggleGroup } from "../../design-system/SegmentedControl.tsx";
 import { useMessages } from "../../i18n/messages.ts";
 import type { Layer, Shortcut } from "../../ipc/bindings.ts";
-import { keyId } from "../key-picker/boards.ts";
+import { catalogKey, isRightHandModifier, keyId, onSide } from "../key-picker/boards.ts";
 import { KeyField } from "../key-picker/KeyField.tsx";
 import { LayerName } from "../keyboard-canvas/Keycap.tsx";
 import { RecorderField } from "./RecorderField.tsx";
@@ -53,8 +53,8 @@ function bits(selected: Iterable<unknown>, right: boolean): number {
  * A key or shortcut (design §5.3, §5.4): the shortcut, with Record to press it on the
  * keyboard; the key, from the key picker (§5.6); and the modifiers held with it, ⌃ ⌥ ⇧ ⌘,
  * left-hand unless Details says otherwise. A character, such as { from the picker's
- * Symbols tab, holds ⇧ just when it needs it. Each change goes to `onChange` once there's
- * a key. `recorder` names its
+ * Symbols tab, holds ⇧ just when it needs it. A modifier key, such as the Sofle's right ⌘,
+ * is on the side Details says too. Each change goes to `onChange` once there's a key. `recorder` names its
  * recorder, such as `KEY_RECORDER` for the one ⌘R starts.
  */
 export function ShortcutField({
@@ -71,7 +71,7 @@ export function ShortcutField({
   const messages = useMessages();
   const ownRecorder = useId();
   const mods = value?.mods ?? 0;
-  const [right, setRight] = useState(mods > 0x0f);
+  const [right, setRight] = useState(mods > 0x0f || (value !== null && isRightHandModifier(value)));
   const [details, setDetails] = useState(false);
   const change = (next: Partial<Shortcut>) => {
     // Modifiers alone wait for a key.
@@ -92,7 +92,7 @@ export function ShortcutField({
           const withShift = shift === true ? [...others, "shift"] : others;
           change({
             page: key.page,
-            id: key.id,
+            id: onSide(key, right).id,
             ...(shift === null ? {} : { mods: bits(withShift, right) }),
           });
         }}
@@ -128,7 +128,10 @@ export function ShortcutField({
             onSelectionChange={(selected) => {
               const nowRight = selected.has("right");
               setRight(nowRight);
-              change({ mods: bits(held(mods), nowRight) });
+              change({
+                mods: bits(held(mods), nowRight),
+                ...(value === null ? {} : { id: onSide(value, nowRight).id }),
+              });
             }}
           >
             <Segment id="left">{messages.format("key.left")}</Segment>
@@ -142,7 +145,8 @@ export function ShortcutField({
 
 /**
  * A modifier on its own, such as what holding a key holds: Control, Shift, Option, Command
- * or Caps Lock, from a short pop-up (design §5.6).
+ * or Caps Lock, from a short pop-up (design §5.6). A right-hand modifier shows as its
+ * modifier, and stays on its side when another is chosen.
  */
 export function ModifierPicker({
   label,
@@ -155,15 +159,17 @@ export function ModifierPicker({
 }) {
   const keys = useStore((store) => store.keyCatalog);
   const modifiers = keys.filter((key) => key.group === "modifier");
+  const shown = value === null ? null : keyId(catalogKey(value));
+  const right = value !== null && isRightHandModifier(value);
   return (
     <ComboBox
       // Shows the modifier chosen straight away, and the key's action once it changes.
       key={value === null ? "none" : keyId(value)}
       label={label}
-      defaultValue={value === null ? null : keyId(value)}
+      defaultValue={shown}
       onChange={(id) => {
         const key = modifiers.find((each) => keyId(each) === id);
-        if (key !== undefined) onChange({ mods: 0, page: key.page, id: key.id });
+        if (key !== undefined) onChange({ mods: 0, page: key.page, id: onSide(key, right).id });
       }}
     >
       {modifiers.map((key) => (

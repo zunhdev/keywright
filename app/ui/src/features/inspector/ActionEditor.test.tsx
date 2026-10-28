@@ -6,8 +6,8 @@ import { userEvent } from "@testing-library/user-event";
 import { choose, chooseKey, inspect, pick, rustSide } from "../../test/inspector.tsx";
 import { sofleKeymap } from "../../test/sofle.ts";
 
-/** Row 2's Q, and the left thumb's Lower key, on the base layer. */
-const [Q, LOWER] = [13, 53];
+/** Row 2's Q, the left thumb's Lower key, and the right thumb's ⌘, on the base layer. */
+const [Q, LOWER, RIGHT_COMMAND] = [13, 53, 59];
 
 describe("the editors", () => {
   test("Media & system lists the media keys, and choosing one sets it", async () => {
@@ -95,6 +95,48 @@ describe("the editors", () => {
       behavior: toggle,
       param1: { kind: "key", key: { mods: 0, page: "keyboard", id: 0x29 } },
       param2: { kind: "number", value: 0 },
+    });
+  });
+
+  test("a right-hand modifier key shows as its modifier, on the right, and keeps its side", async () => {
+    const set = rustSide();
+    inspect([RIGHT_COMMAND]);
+    expect(screen.getByRole("button", { name: "Key: Command" }).isConnected).toBe(true);
+    await userEvent.click(screen.getByRole("button", { name: "Details" }));
+    expect(screen.getByRole("radio", { name: "Right" }).getAttribute("aria-checked")).toBe("true");
+
+    await chooseKey("Key", "Option");
+    expect(set.at(-1)?.action).toEqual({
+      kind: "key-press",
+      key: { mods: 0, page: "keyboard", id: 0xe6 },
+    });
+    // The fake Rust side doesn't change the key, so it's still right ⌘: Left makes it left ⌘.
+    await userEvent.click(screen.getByRole("radio", { name: "Left" }));
+    expect(set.at(-1)?.action).toEqual({
+      kind: "key-press",
+      key: { mods: 0, page: "keyboard", id: 0xe3 },
+    });
+  });
+
+  test("a right-hand modifier held shows as its modifier, and stays on its side", async () => {
+    const set = rustSide();
+    const keymap = structuredClone(sofleKeymap);
+    const key = keymap.layers[0]?.keys[Q];
+    if (key === undefined) throw new Error("the keymap has no Q");
+    key.action = {
+      kind: "mod-tap",
+      hold: { mods: 0, page: "keyboard", id: 0xe4 },
+      tap: { mods: 0, page: "keyboard", id: 0x14 },
+    };
+    inspect([Q], "ready", keymap);
+    const modifier = screen.getByRole("combobox", { name: "Modifier" });
+    expect(modifier instanceof HTMLInputElement && modifier.value.includes("Control")).toBe(true);
+
+    await choose("Modifier", /Shift/u);
+    expect(set.at(-1)?.action).toEqual({
+      kind: "mod-tap",
+      hold: { mods: 0, page: "keyboard", id: 0xe5 },
+      tap: { mods: 0, page: "keyboard", id: 0x14 },
     });
   });
 });
